@@ -1,0 +1,45 @@
+{
+  "name": "medusa-fulfillment-shippo",
+  "version": "0.0.0",
+  "description": "Shippo fulfillment plugin for medusa",
+  "author": "Maciej Derulski",
+  "license": "",
+  "scripts": {
+    "build": "babel src -d . --ignore **/__tests__",
+    "prepare": "cross-env NODE_ENV=production npm run build",
+    "watch": "babel -w src --out-dir . --ignore **/__tests__",
+    "test": "jest"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "medusa-core-utils": "^1.1.30",
+    "shippo": "^1.7.1"
+  },
+  "peerDependencies": {
+    "medusa-interfaces": "1.x"
+  },
+  "repository": "https://github.com/macder/medusa-fulfillment-shippo",
+  "keywords": [
+    "medusa",
+    "medusa-plugin"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/node": "^7.7.4",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
+    "@babel/plugin-transform-classes": "^7.9.5",
+    "@babel/plugin-transform-instanceof": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.7.6",
+    "@babel/preset-env": "^7.7.5",
+    "@babel/register": "^7.7.4",
+    "@babel/runtime": "^7.9.6",
+    "client-sessions": "^0.8.0",
+    "cross-env": "^5.2.1",
+    "eslint": "^6.8.0",
+    "jest": "^25.5.2",
+    "medusa-test-utils": "^1.1.33"
+  }
+}
