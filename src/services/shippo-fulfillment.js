@@ -2,7 +2,7 @@ import { FulfillmentService } from "medusa-interfaces"
 import shippo from "shippo"
 
 // TODO: move to medusa-config plugins array
-const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY 
+const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = 'shippo'
@@ -15,25 +15,38 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async getFulfillmentOptions() {
     const carriers = await this.shippo_.carrieraccount.list({ service_levels: true, results: 100 })
-    
-    return carriers.results
+    const groups = await this.shippo_.servicegroups.list()
+
+    const services = carriers.results
       .filter(e => e.active)
       .flatMap(item => item.service_levels
-        .map(e => ({
-          carrier_id: item.object_id,
-          name: `${item.carrier_name} ${e.name}`,
-          token: e.token,
-          return_labels: e.supports_return_labels
+        .map(e => {
+          const { service_levels, ...shippingOption } = {
+            id: `shippo-fulfillment-${e.token}`,
+            name: `${item.carrier_name} ${e.name}`,
+            type: 'service',
+            ...item
+          }
+          return shippingOption
         })
       )
-    )
+
+    const serviceGroups = groups.map(e => ({
+      id: `shippo-fulfillment-${e.object_id}`,
+      type: 'service_group',
+      ...e
+    }))
+
+    return [...services, ...serviceGroups]
+
+
   }
 
   async validateOption(data) {
     return true
   }
 
-  async validateFulfillmentData(optionData, data, cart) {    
+  async validateFulfillmentData(optionData, data, cart) {
     return {
       ...data
     }
@@ -53,7 +66,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     return true
   }
 
-  calculatePrice() {
+  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     return 2000 // testing...
   }
 }
