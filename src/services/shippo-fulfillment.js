@@ -56,16 +56,18 @@ class ShippoFulfillmentService extends FulfillmentService {
       relations: ["shipping_address"],
     })
 
-    await this.createShippoAddress(shippingAddress, cart.email)
+    const shippoAddressId = await this.createShippoAddress(shippingAddress, cart.email)
       .then(r => {
         if (!r.validation_results.is_valid) {
           throw r.validation_results.messages[0]
         }
+        return r.object_id
       }).catch(e => {
         throw new MedusaError(MedusaError.Types.INVALID_DATA, e.text, e.code)
       })
 
     return {
+      shippo_address_id: shippoAddressId,
       ...data
     }
   }
