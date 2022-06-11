@@ -39,12 +39,20 @@ class ShippoFulfillmentService extends FulfillmentService {
               id: `shippo-fulfillment-${e.token}`,
               name: `${item.carrier_name} ${e.name}`,
               is_group: false,
+              supports_returns: e.supports_return_labels,
               ...item
             }
             return shippingOption
           })
         )
       )
+
+    const returnOptions = shippingOptions
+      .filter(e => e.supports_returns)
+      .map(e => ({
+        is_return: true,
+        ...e
+      }))
 
     const shippingOptionGroups = await this.shippo_.servicegroups.list()
       .then(r => r.map(e => ({
@@ -53,7 +61,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         ...e
       })))
 
-    return [...shippingOptions, ...shippingOptionGroups]
+    return [...shippingOptions, ...shippingOptionGroups, ...returnOptions]
   }
 
   async validateOption(data) {
