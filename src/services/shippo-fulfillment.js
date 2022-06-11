@@ -126,6 +126,11 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
+    // tbh, medusa invokes this method after the user adds a shipping method to their cart.
+    // the user probably wanted to see the shipping price prior to selecting it....
+    // so, this is probably best to do via the frontend by using shippos "rates at checkout api"
+    // https://goshippo.com/docs/reference/bash#rates-at-checkout-create
+    // this plugin will include an api endpoint for this to make it easier
     return 2000 // testing...
   }
 
