@@ -30,30 +30,30 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    const carriers = await this.shippo_.carrieraccount.list({ service_levels: true, results: 100 })
-    const groups = await this.shippo_.servicegroups.list()
-
-    const services = carriers.results
-      .filter(e => e.active)
-      .flatMap(item => item.service_levels
-        .map(e => {
-          const { service_levels, ...shippingOption } = {
-            id: `shippo-fulfillment-${e.token}`,
-            name: `${item.carrier_name} ${e.name}`,
-            is_group: false,
-            ...item
-          }
-          return shippingOption
-        })
+    const shippingOptions = await this.shippo_.carrieraccount.list(
+      { service_levels: true, results: 100 })
+      .then(r => r.results.filter(e => e.active)
+        .flatMap(item => item.service_levels
+          .map(e => {
+            const { service_levels, ...shippingOption } = {
+              id: `shippo-fulfillment-${e.token}`,
+              name: `${item.carrier_name} ${e.name}`,
+              is_group: false,
+              ...item
+            }
+            return shippingOption
+          })
+        )
       )
 
-    const serviceGroups = groups.map(e => ({
-      id: `shippo-fulfillment-${e.object_id}`,
-      is_group: true,
-      ...e
-    }))
+    const shippingOptionGroups = await this.shippo_.servicegroups.list()
+      .then(r => r.map(e => ({
+        id: `shippo-fulfillment-${e.object_id}`,
+        is_group: true,
+        ...e
+      })))
 
-    return [...services, ...serviceGroups]
+    return [...shippingOptions, ...shippingOptionGroups]
   }
 
   async validateOption(data) {
