@@ -11,21 +11,18 @@ const DIMENSION_UNIT_TYPE = 'cm'
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = 'shippo'
 
-  constructor({ addressRepository, cartService, totalsService }, options) {
+  constructor({ totalsService }, options) {
 
     super()
-
-    /** @private @const {AddressRepository} */
-    this.addressRepository_ = addressRepository
-
-    /** @private @const {CartService} */
-    this.cartService_ = cartService
 
     /** @private @const {Shippo} */
     this.shippo_ = shippo(SHIPPO_API_KEY)
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
+
+    // when plugin is an npm package...
+    // this.options_ = options
   }
 
   async getFulfillmentOptions() {
@@ -132,47 +129,10 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   canCalculate(data) {
-    return true
+    return false
   }
 
-  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    // tbh, medusa invokes this method after the user adds a shipping method to their cart.
-    // the user probably wanted to see the shipping price prior to selecting it....
-    // so, this is probably best to do via the frontend by using shippos "rates at checkout api"
-    // https://goshippo.com/docs/reference/bash#rates-at-checkout-create
-    // this plugin will include an api endpoint for this to make it easier
-
-    const { shipping_address: shippingAddress } = await this.cartService_.retrieve(cart.id, {
-      relations: ["shipping_address"],
-    })
-
-    const shippoAddress = await this.createShippoAddress(shippingAddress, cart.email)
-
-    const shippoShipment = await this.shippo_.shipment.create({
-      address_to: shippoAddress.object_id,
-      address_from: SHIPPO_DEFAULT_SENDER_ADDRESS_ID,
-      parcels: {
-        "length": "10",
-        "width": "15",
-        "height": "10",
-        "distance_unit": "in",
-        "weight": "1",
-        "mass_unit": "lb"
-      },
-      carrier_accounts: [
-        fulfillmentOption.carrier_id
-      ],
-      async: false
-    })
-
-    if (shippoShipment.rates) {
-      const rate = shippoShipment.rates.filter(
-        e => e.servicelevel.token == fulfillmentOption.token
-      )
-      return parseFloat(rate[0].amount_local) * 100
-    }
-
-    return false // should have a fallback flatrate... expects an integer return
+  calculatePrice(fulfillmentOption, fulfillmentData, cart) {
   }
 
   async createShippoAddress(address, email) {
