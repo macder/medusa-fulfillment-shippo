@@ -11,16 +11,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   static identifier = 'shippo'
 
   constructor({
-    addressRepository,
-    cartService,
     totalsService }, options) {
     super()
-
-    /** @private @const {AddressRepository} */
-    this.addressRepository_ = addressRepository
-
-    /** @private @const {CartService} */
-    this.cartService_ = cartService
 
     /** @private @const {Shippo} */
     this.shippo_ = shippo(SHIPPO_API_KEY)
@@ -69,24 +61,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
-    const { shipping_address: shippingAddress } = await this.cartService_.retrieve(cart.id, {
-      relations: ["shipping_address"],
-    })
-
-    const shippoAddressId = await this.createShippoAddress(shippingAddress, cart.email)
-      .then(r => {
-        if (r.country == 'US') { // shippo address validation is free for only USA addresses
-          if (!r.validation_results.is_valid) {
-            throw r.validation_results.messages[0]
-          }
-        }
-        return r.object_id
-      }).catch(e => {
-        throw new MedusaError(MedusaError.Types.INVALID_DATA, e.text, e.code)
-      })
-
     return {
-      shippo_address_id: shippoAddressId,
       ...data
     }
   }
