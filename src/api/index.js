@@ -64,30 +64,22 @@ export default (rootDirectory) => {
       e => serviceLevelTokens.includes(e.servicelevel.token)
     )
 
-    shippingOptions.forEach(async option => {
-      const optionRate = shippoRates.find(rate => {
-        return rate.servicelevel.token == option.data.token
-      })
+    const customShippingOptions = await Promise.all(
+      shippingOptions.map(async option => {
+        const optionRate = shippoRates.find(rate => {
+          return rate.servicelevel.token == option.data.token
+        })
 
-      await customShippingOptionService.create({
-        cart_id: cart_id,
-        shipping_option_id: option.id,
-        price: parseFloat(optionRate.amount) * 100
-      })
-    })
+        return await customShippingOptionService.create({
+          cart_id: cart_id,
+          shipping_option_id: option.id,
+          price: parseFloat(optionRate.amount) * 100
+        })
+      })).catch(e => ({ error: e }))
 
-    // used for replacing addresses with their shippo object_id
-    const shippoAddressIds = {
-      address_from: shippoShipment.address_from.object_id,
-      address_to: shippoShipment.address_to.object_id,
-      address_return: shippoShipment.address_return.object_id,
-    }
 
     res.json({
-      shippo_response: {
-        ...shippoShipment,
-        ...shippoAddressIds
-      }
+      customShippingOptions
     })
   })
 
