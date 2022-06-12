@@ -136,20 +136,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async createShippoAddress(address, email) {
-    return await this.shippo_.address.create({
-      "name": `${address.first_name} ${address.last_name}`,
-      "company": address.company,
-      "street1": address.address_1,
-      "street2": address?.address_2,
-      "street3": address?.address_3,
-      "city": address.city,
-      "state": address.province,
-      "zip": address.postal_code,
-      "country": address.country_code, // iso2 country code
-      "phone": address.phone,
-      "email": email,
-      "validate": (address.country_code == 'us') ?? true,
-    })
+    return await this.shippo_.address.create(shippoAddress(address, email))
   }
 }
 
