@@ -27,34 +27,6 @@ A new endpoint is exposed at `/shippo/rates/[:cart_id]` that will create custom 
 
 Use this endpoint once you have a delivery address in the checkout flow.
 
-Sample response
-```
-{
-    "customShippingOptions": [
-        {
-            "price": 2022,
-            "shipping_option_id": "so_01G5B8SM0ASZGEMQXGD9Q7NA7A",
-            "cart_id": "cart_01G5BM36YGRSJQWXGF2SSKB40V",
-            "metadata": {},
-            "id": "cso_01G5BM55KB6437SX6D82YVNR2J",
-            "deleted_at": null,
-            "created_at": "2022-06-12T09:33:10.635Z",
-            "updated_at": "2022-06-12T09:33:10.635Z"
-        },
-        {
-            "price": 3972,
-            "shipping_option_id": "so_01G58VQAQCM8JRMR4FW01DSSH4",
-            "cart_id": "cart_01G5BM36YGRSJQWXGF2SSKB40V",
-            "metadata": {},
-            "id": "cso_01G5BM55KDFNYTX2D0YP43RPAZ",
-            "deleted_at": null,
-            "created_at": "2022-06-12T09:33:10.635Z",
-            "updated_at": "2022-06-12T09:33:10.635Z"
-        }
-    ]
-}
-```
-
 Then when you query `/store/shipping-options/[:cart_id]` it will return the shipping options with the rated prices.
 
 ### Create Shippo Order
