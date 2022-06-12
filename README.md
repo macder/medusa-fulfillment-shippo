@@ -55,7 +55,7 @@ Sample response
 }
 ```
 
-Then when you query `/store/shipping-options/[:cart_id]` they will the rated prices
+Then when you query `/store/shipping-options/[:cart_id]` it will return the shipping options with the rated prices.
 
 ### Create Shippo Order
 A new Shippo order is created when an admin creates a fulfilment. The shipping method and its price at checkout is attached to the Shippo order.
