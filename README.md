@@ -113,6 +113,10 @@ POST http://localhost:9000/admin/shipping-options
 
 Repeat above steps for each shipping option.
 
+## Using Rates at Checkout
+
+WIP
+
 ## Resources
 
 Medusa Docs  
