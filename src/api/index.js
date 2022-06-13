@@ -30,8 +30,6 @@ export default (rootDirectory) => {
     const manager = req.scope.resolve("manager")
     const customShippingOptionRepository = req.scope.resolve("customShippingOptionRepository")
 
-    customShippingOptionRepository
-
     const cart = await cartService.retrieve(cart_id, {
       relations: [
         "shipping_address",
