@@ -56,6 +56,8 @@ For more in-depth details see [https://support.goshippo.com/hc/en-us/articles/44
 
 **Step 2 - Assign the Shipping Options to Regions in Medusa**
 
+> **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions. The workaround is using the admin API directly, follow instructions below
+
 Query the admin api to get a list of fulfillment options available to the region ([API reference](https://docs.medusajs.com/api/admin/region/list-fulfillment-options-available-in-the-region))
 
 `GET http://localhost:9000/admin/regions/[REGION_ID]/fulfillment-options`
