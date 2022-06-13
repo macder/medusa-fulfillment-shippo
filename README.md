@@ -56,44 +56,24 @@ For more in-depth details see [https://support.goshippo.com/hc/en-us/articles/44
 
 **Step 2 - Assign the Shipping Options to Regions in Medusa**
 
-> **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions. The workaround is using the admin API directly, follow instructions below
+> **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions. Use the admin API directly as a workaround (instructions below) or [look here](https://github.com/medusajs/admin/issues/597) and ye shall figure it out... 
 
-Query the admin api to get a list of fulfillment options available to the region ([API reference](https://docs.medusajs.com/api/admin/region/list-fulfillment-options-available-in-the-region))
-
-`GET http://localhost:9000/admin/regions/[REGION_ID]/fulfillment-options`
-
-The response should have, among others, the shipping options you created in the Shippo App from step 1
+Get the `profile_id` of the shipping profile to use:
 
 ```plaintext
-{
-  "fulfillment_options": [
-    {
-      "provider_id": "shippo",
-      "options": [
-        {
-          "id": "shippo-fulfillment-[OBJECT_ID]",
-          "is_group": true,
-          "description": "5 - 9 days",
-          "flat_rate": "10",
-          "flat_rate_currency": "CAD",
-          "free_shipping_threshold_currency": null,
-          "free_shipping_threshold_min": null,
-          "is_active": true,
-          "name": "Express Shipping Canada",
-          "object_id": "[OBJECT_ID]",
-          "rate_adjustment": 0,
-          "service_levels": [
-            {
-              "account_object_id": "[OBJECT_ID]",
-              "service_level_token": "canada_post_xpresspost"
-            }
-          ],
-          "type": "LIVE_RATE"
-        }
-      ]
-    }
-  ]
-}
+GET http://localhost:9000/admin/shipping-profile
+```
+
+Get the `region_id` of the region to use
+
+```plaintext
+GET http://localhost:9000/admin/regions
+```
+
+Get the `provider_id` of the fulfillment option to use
+
+```plaintext
+GET http://localhost:9000/admin/regions/[region_id]/fulfillment-options
 ```
 
 WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP 
