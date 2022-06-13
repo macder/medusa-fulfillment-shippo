@@ -27,6 +27,10 @@ export default (rootDirectory) => {
     const cartService = req.scope.resolve("cartService")
     const shippingProfileService = req.scope.resolve("shippingProfileService")
     const customShippingOptionService = req.scope.resolve("customShippingOptionService")
+    const manager = req.scope.resolve("manager")
+    const customShippingOptionRepository = req.scope.resolve("customShippingOptionRepository")
+
+    customShippingOptionRepository
 
     const cart = await cartService.retrieve(cart_id, {
       relations: [
@@ -53,19 +57,21 @@ export default (rootDirectory) => {
     }
 
     const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
+
     const carriers = [...new Set(shippingOptions.map(e => e.data.carrier_id))]
+
     const toAddress = shippoAddress(cart.shipping_address, cart.email)
 
     const shippoShipment = await shippoClient.shipment.create({
       address_to: toAddress,
       address_from: SHIPPO_DEFAULT_SENDER_ADDRESS_ID,
-      parcels: { // TODO replace placeholder with shippo parcel templates
+      parcels: {
         "length": "20",
-        "width": "30",
-        "height": "20",
-        "distance_unit": "in",
-        "weight": "1",
-        "mass_unit": "lb"
+        "width": "20",
+        "height": "12",
+        "distance_unit": "cm",
+        "weight": "1000",
+        "mass_unit": "g"
       },
       carrier_accounts: carriers,
       async: false
@@ -77,35 +83,37 @@ export default (rootDirectory) => {
     )
 
     const customShippingOptions = await customShippingOptionService.list({ cart_id: cart_id })
-      .then(async r => {
-        // check if cart already has custom shipping options
-        if (r.length) {
-          // cart has custom shipping options, if they are shippo_rated, update them
-          // WIP
-          return 'cart already has custom shipping options'
+      .then(async cartCustomShippingOptions => {
 
-        } else {  // cart has no custom shipping options
-          return await Promise.all(
-            shippingOptions.map(async option => {
-              const optionRate = shippoRates.find(rate => {
-                return rate.servicelevel.token == option.data.token
-              })
-
-              return await customShippingOptionService.create({
-                cart_id: cart_id,
-                shipping_option_id: option.id,
-                price: parseFloat(optionRate.amount) * 100
-              })
-            })).catch(e => ({ error: e }))
+        if (cartCustomShippingOptions.length) {
+          // remove existing options with prices so we can get new rates
+          const customShippingOptionRepo = await manager.getCustomRepository(
+            customShippingOptionRepository
+          )
+          await customShippingOptionRepo.remove(cartCustomShippingOptions)
         }
-      })
 
+        return await Promise.all(
+          shippingOptions.map(async option => {
+            const optionRate = shippoRates.find(
+              rate => rate.servicelevel.token == option.data.token
+            )
+
+            return await customShippingOptionService.create({
+              cart_id: cart_id,
+              shipping_option_id: option.id,
+              price: parseInt(parseFloat(optionRate.amount) * 100)
+            }, {
+              metadata: { is_shippo_rate: true }
+            })
+          })).catch(e => {
+            console.log(e)
+          }).catch(e => ({ error: e }))
+
+      })
     res.json({
       customShippingOptions
     })
-  })
-
-  router.get("/shippo/live-rates/:cart_id", cors(corsOptions), async (req, res) => {
   })
 
   return router;
