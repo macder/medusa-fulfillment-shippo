@@ -3,10 +3,14 @@ import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 import shippo from "shippo"
 
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
+console.log('///////////////////path.resolve', path.resolve("."))
+console.log('////////////configModule', configModule)
 const { plugins } = configModule
-
+console.log('////////////plugins', plugins)
 const options = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+console.log('////////////options', options)
 const client = shippo(options.api_key)
+console.log('////////////options.api_key', options.api_key)
 
 /** Get shippo live rates for carts shipping options
  * @param {object} toAddress - shippo to_address object
