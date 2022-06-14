@@ -4,8 +4,6 @@
 
 [Shippo](https://goshippo.com/) fulfillment provider for [Medusa](https://medusajs.com/)
 
-Medusa is an open-source headless commerce engine that enables developers to create amazing digital commerce experiences.
-
 ## Current Feature Overview
 
 *   Carrier service level fulfillment options
@@ -41,7 +39,7 @@ A new Shippo order is created when an admin creates a fulfillment. The shipping 
 
 ## Setup Rates at Checkout
 
-**Step 1 - Setup Shipping Options in Shippo App**
+### Step 1 - Setup Shipping Options in Shippo App
 
 Lets assume shipping from Canada to customers in Canada and USA via “Standard” and “Express” options
 
@@ -62,7 +60,7 @@ For example:
 
 For more in-depth details see [https://support.goshippo.com/hc/en-us/articles/4403207559963](https://support.goshippo.com/hc/en-us/articles/4403207559963)
 
-**Step 2 - Assign the Shipping Options to Regions in Medusa**
+### **Step 2 - Assign the Shipping Options to Regions in Medusa**
 
 > **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions. Use the admin API directly as a workaround (instructions below) or [look here](https://github.com/medusajs/admin/issues/597) and ye shall figure it out…
 
@@ -115,7 +113,7 @@ Repeat above steps for each shipping option.
 
 ## Using Rates at Checkout
 
-**Get shipping rates for a cart**
+### **Get shipping rates for a cart**
 
 ```plaintext
 GET http://localhost:9000/shippo/live-rates/:cart_id
@@ -141,7 +139,7 @@ Sample response:
 ]
 ```
 
-**Create shipping options with rates for cart:**
+### **Create shipping options with rates for cart:**
 
 ```plaintext
 POST GET http://localhost:9000/shippo/live-rates/
@@ -180,7 +178,7 @@ Sample response:
 }
 ```
 
-**Retrieve shipping options with rates for cart**
+### **Retrieve shipping options with rates for cart**
 
 After creating the custom shipping options in the previous step, they are available via the standard [store/shipping-options](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) endpoint
 
