@@ -1,10 +1,10 @@
 import { Router } from "express"
-import hooks from "./routes/hooks"
+import routes from "./routes"
 
 export default (container) => {
   const app = Router()
 
-  hooks(app)
+  routes(app)
 
   return app
 }
