@@ -20,7 +20,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.cartService_ = cartService
 
     /** @private @const {Shippo} */
-    this.shippo_ = shippo(this.options_)
+    this.shippo_ = shippo(this.options_.api_key)
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
