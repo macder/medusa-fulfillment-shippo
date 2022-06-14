@@ -23,7 +23,7 @@ Add to medusa-config.js
       api_key: SHIPPO_API_KEY,
       weight_unit: 'g', // valid values: g, kg, lb, oz
       dimension_unit_type: 'cm' // valid values: cm, mm, in
-	},
+    },
 }
 ```
 
