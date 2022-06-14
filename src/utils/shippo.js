@@ -1,11 +1,11 @@
+import path from "path"
 import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 import shippo from "shippo"
 
-const { configModule } = getConfigFile('../../../', "medusa-config")
-const { projectConfig } = configModule
-
-const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
-const client = shippo(SHIPPO_API_KEY)
+const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
+const { plugins } = configModule
+const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+const client = shippo(options.api_key)
 
 /** Get shippo live rates for carts shipping options
  * @param {object} toAddress - shippo to_address object
@@ -33,7 +33,7 @@ export const shippoLineItem = (item, price) => ({
   title: item.variant.product.title,
   ...price,
   weight: item.variant.weight.toString(),
-  weight_unit: projectConfig.shippo_weight_unit
+  weight_unit: options.weight_unit_type
 })
 
 export const shippoLineItems = async (cart, totalsService) => {
@@ -57,7 +57,7 @@ export const shippoLineItems = async (cart, totalsService) => {
           ).toString(),
         currency: cart.region.currency_code.toUpperCase(),
         weight: item.variant.weight.toString(),
-        weight_unit: projectConfig.shippo_weight_unit
+        weight_unit: options.weight_unit_type
       }
     })
   )
