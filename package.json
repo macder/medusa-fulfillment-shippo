@@ -1,9 +1,9 @@
 {
   "name": "medusa-fulfillment-shippo",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Shippo fulfillment plugin for medusa",
   "author": "Maciej Derulski",
-  "license": "",
+  "license": "MIT",
   "scripts": {
     "build": "babel src -d . --ignore **/__tests__",
     "prepare": "cross-env NODE_ENV=production npm run build",
@@ -22,7 +22,9 @@
   "repository": "https://github.com/macder/medusa-fulfillment-shippo",
   "keywords": [
     "medusa",
-    "medusa-plugin"
+    "medusa-plugin",
+    "medusa-fulfillment",
+    "medusa-shippo"
   ],
   "devDependencies": {
     "@babel/cli": "^7.7.5",
