@@ -1,19 +1,25 @@
 import { FulfillmentService } from "medusa-interfaces"
 import { humanizeAmount, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
+import { shippoAddress, shippoLineItem } from '../utils/shippo'
 
 // TODO: move to medusa-config plugins array
 const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
-const SHIPPO_DEFAULT_SENDER_ADDRESS_ID = process.env.SHIPPO_DEFAULT_SENDER_ADDRESS_ID
 const WEIGHT_UNIT_TYPE = 'g'
 const DIMENSION_UNIT_TYPE = 'cm'
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = 'shippo'
 
-  constructor({ totalsService }, options) {
+  constructor({ addressRepository, cartService, totalsService }, options) {
 
     super()
+
+    /** @private @const {AddressRepository} */
+    this.addressRepository_ = addressRepository
+
+    /** @private @const {CartService} */
+    this.cartService_ = cartService
 
     /** @private @const {Shippo} */
     this.shippo_ = shippo(SHIPPO_API_KEY)
@@ -21,11 +27,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
 
-    // when plugin is an npm package...
+    // for when released as an npm package
     // this.options_ = options
   }
 
   async getFulfillmentOptions() {
+
     const shippingOptions = await this.shippo_.carrieraccount.list(
       { service_levels: true, results: 100 })
       .then(r => r.results.filter(e => e.active)
@@ -79,6 +86,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
+
     const toAddress = await this.createShippoAddress(fromOrder.shipping_address, fromOrder.email)
 
     const lineItems = await Promise.all(
@@ -92,17 +100,17 @@ class ShippoFulfillmentService extends FulfillmentService {
           }
         )
 
-        return {
-          quantity: item.quantity,
-          sku: item.variant.sku,
-          title: item.variant.product.title,
+        const price = {
           total_price:
             humanizeAmount(
               totals.subtotal,
               fromOrder.currency_code
             ),
-          currency: fromOrder.currency_code,
-          weight: item.variant.weight,
+          currency: fromOrder.currency_code
+        }
+
+        return {
+          ...shippoLineItem(item, price),
           weight_unit: WEIGHT_UNIT_TYPE
         }
       })
@@ -128,6 +136,9 @@ class ShippoFulfillmentService extends FulfillmentService {
     })
   }
 
+  async createReturn(fromData) {
+  }
+
   canCalculate(data) {
     return false
   }
@@ -136,20 +147,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async createShippoAddress(address, email) {
-    return await this.shippo_.address.create({
-      "name": `${address.first_name} ${address.last_name}`,
-      "company": address.company,
-      "street1": address.address_1,
-      "street2": address?.address_2,
-      "street3": address?.address_3,
-      "city": address.city,
-      "state": address.province,
-      "zip": address.postal_code,
-      "country": address.country_code, // iso2 country code
-      "phone": address.phone,
-      "email": email,
-      "validate": (address.country_code == 'us') ?? true,
-    })
+    return await this.shippo_.address.create(shippoAddress(address, email))
   }
 }
 
