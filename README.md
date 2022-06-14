@@ -1,17 +1,17 @@
 ## medusa-fulfillment-shippo
 
-Adds [Shippo](https://goshippo.com/) as a fulfillment provider in [Medusa](https://medusajs.com/)
+**Still in dev phase. Expect an npm release soon**
+
+[Shippo](https://goshippo.com/) fulfillment provider for [Medusa](https://medusajs.com/)
 
 Medusa is an open-source headless commerce engine that enables developers to create amazing digital commerce experiences.
-
-**Still in dev phase. Expect an npm release soon**
 
 ## Current Feature Overview
 
 *   Carrier service level fulfillment options
 *   Service group fulfillment options
 *   Rates at checkout
-*   Fulfillments create new Shippo order
+*   Fulfillment's create new Shippo order
 
 ## Getting started
 
@@ -19,9 +19,9 @@ Medusa is an open-source headless commerce engine that enables developers to cre
 
 ## Feature Details
 
-### Fulfilment Options
+### Fulfillment Options
 
-Adds Fulfilment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
+Adds Fulfillment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
 
 ### Rates at Checkout
 
@@ -31,7 +31,7 @@ There are some preliminary setup steps before using this feature. Follow [the gu
 
 ### Create Shippo Order
 
-A new Shippo order is created when an admin creates a fulfilment. The shipping method and its price at checkout is attached to the Shippo order.
+A new Shippo order is created when an admin creates a fulfillment. The shipping method and its price at checkout is attached to the Shippo order.
 
 ## Planned Features
 
@@ -64,7 +64,7 @@ For more in-depth details see [https://support.goshippo.com/hc/en-us/articles/44
 
 **Step 2 - Assign the Shipping Options to Regions in Medusa**
 
-> **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions. Use the admin API directly as a workaround (instructions below) or [look here](https://github.com/medusajs/admin/issues/597) and ye shall figure it out... Hint: “0”
+> **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions. Use the admin API directly as a workaround (instructions below) or [look here](https://github.com/medusajs/admin/issues/597) and ye shall figure it out…
 
 The manual way:
 
@@ -115,7 +115,78 @@ Repeat above steps for each shipping option.
 
 ## Using Rates at Checkout
 
-WIP
+**Get shipping rates for a cart**
+
+```plaintext
+GET http://localhost:9000/shippo/live-rates/:cart_id
+```
+
+Returns an array of Shippo live-rate objects that match the carts shipping options.
+
+The cart must have a complete shipping address or the response will be a validation error.
+
+Sample response:
+
+```plaintext
+[
+  {
+    "title": "Express Shipping Canada",
+    "description": "2 days",
+    "amount": "26.37",
+    "currency": "CAD",
+    "amount_local": "26.37",
+    "currency_local": "CAD",
+    "estimated_days": 1
+  }
+]
+```
+
+**Create shipping options with rates for cart:**
+
+```plaintext
+POST GET http://localhost:9000/shippo/live-rates/
+--data {"cart_id":"CART_ID"}
+```
+
+Creates custom shipping options with the rates for the cart based on its available shipping options.
+
+These are created using the core [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService)
+
+Sample response:
+
+```plaintext
+{
+  "customShippingOptions": [
+    {
+      "price": 2637,
+      "shipping_option_id": "SHIPPING_OPTION_ID",
+      "cart_id": "CART_ID",
+      "metadata": {
+        "is_shippo_rate": true,
+        "title": "Express Shipping Canada",
+        "description": "",
+        "amount": "26.37",
+        "currency": "CAD",
+        "amount_local": "26.37",
+        "currency_local": "CAD",
+        "estimated_days": 1
+      },
+      "id": "ID",
+      "deleted_at": null,
+      "created_at": "2022-06-14T02:58:02.368Z",
+      "updated_at": "2022-06-14T02:58:02.368Z"
+    }
+  ]
+}
+```
+
+**Retrieve shipping options with rates for cart**
+
+After creating the custom shipping options in the previous step, they are available via the standard [store/shipping-options](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) endpoint
+
+```plaintext
+GET http://localhost:9000/store/shipping-options/:cart_id
+```
 
 ## Resources
 
