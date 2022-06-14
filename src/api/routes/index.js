@@ -15,9 +15,8 @@ export default (app) => {
     middlewares.wrap(require("./live-rates").default)
   )
   route.post(
-    "/live-rates/:cart_id",
+    "/live-rates",
     bodyParser.raw({ type: "application/json" }),
-    // bodyParser.json(),
     middlewares.wrap(require("./live-rates-post").default)
   )
 

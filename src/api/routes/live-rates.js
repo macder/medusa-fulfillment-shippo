@@ -1,16 +1,11 @@
-import shippo from "shippo"
-import { shippoAddress, shippoLineItems } from "../../utils/shippo"
+import { shippoAddress, shippoLineItems, shippoRates } from "../../utils/shippo"
 import { Validator } from '../../utils/validator'
-
-const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
 
 export default async (req, res) => {
   const { cart_id } = req.params
   const cartService = req.scope.resolve("cartService")
   const totalsService = req.scope.resolve("totalsService")
   const shippingProfileService = req.scope.resolve("shippingProfileService")
-
-  const client = shippo(SHIPPO_API_KEY)
 
   const cart = await cartService.retrieve(cart_id, {
     relations: [
@@ -40,18 +35,7 @@ export default async (req, res) => {
   const lineItems = await shippoLineItems(cart, totalsService)
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
 
-  const rates = await client.liverates.create({
-    address_to: toAddress,
-    line_items: lineItems
-  }).then(
-      response => response.results
-        .filter(
-          item => shippingOptions
-            .find(
-              option => (option.data.name === item.title) && true 
-            )
-        )
-    )
+  const rates = await shippoRates(toAddress, lineItems, shippingOptions)
 
   res.json([...rates])
 }
