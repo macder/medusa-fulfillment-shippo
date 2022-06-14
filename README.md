@@ -1,41 +1,31 @@
-## medusa-fulfillment-shippo
+# medusa-fulfillment-shippo
 
-**Still in dev phase. Expect an npm release soon**
+Adds Shippo as a fulfillment provider in Medusa Commerce.
 
-[Shippo](https://goshippo.com/) fulfillment provider for [Medusa](https://medusajs.com/)
+Adds a fulfillment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
 
-## Current Feature Overview
+On each new fulfillment, an order is created in Shippo.
 
-*   Carrier service level fulfillment options
-*   Service group fulfillment options
-*   Rates at checkout
-*   Fulfillment's create new Shippo order
+Live shipping rates for carts at checkout.
 
 ## Getting started
 
-*   WIP
+Install:
 
-## Feature Details
+`npm install medusa-fulfillment-shippo`
 
-### Fulfillment Options
+Add to medusa-config.js
 
-Adds Fulfillment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
-
-### Rates at Checkout
-
-Live shipping rates for carts at checkout
-
-There are some preliminary setup steps before using this feature. Follow [the guide](#setup-rates-at-checkout) to get started:
-
-### Create Shippo Order
-
-A new Shippo order is created when an admin creates a fulfillment. The shipping method and its price at checkout is attached to the Shippo order.
-
-## Planned Features
-
-*   Returns
-*   Customs for international orders
-*   Swaps (exchanges)
+```plaintext
+{
+  resolve: `medusa-fulfillment-shippo`,
+    options: {
+	  api_key: SHIPPO_API_KEY,
+      weight_unit: 'g', // valid values: g, kg, lb, oz
+      dimension_unit_type: 'cm' // valid values: cm, mm, in
+	},
+}
+```
 
 ## Setup Rates at Checkout
 
@@ -185,6 +175,12 @@ After creating the custom shipping options in the previous step, they are availa
 ```plaintext
 GET http://localhost:9000/store/shipping-options/:cart_id
 ```
+
+## Limitations
+
+Currently this plugin does not support returns/exchanges, customs declarations, webhooks.
+
+These are currently under development for future releases.
 
 ## Resources
 
