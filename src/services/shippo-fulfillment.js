@@ -1,19 +1,17 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, MedusaError } from "medusa-core-utils"
+import { humanizeAmount, MedusaError, getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 import { shippoAddress, shippoLineItem } from '../utils/shippo'
-
-// TODO: move to medusa-config plugins array
-const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
-const WEIGHT_UNIT_TYPE = 'g'
-const DIMENSION_UNIT_TYPE = 'cm'
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = 'shippo'
 
   constructor({ addressRepository, cartService, totalsService }, options) {
-
+    
     super()
+
+    // for when released as an npm package
+    this.options_ = options
 
     /** @private @const {AddressRepository} */
     this.addressRepository_ = addressRepository
@@ -22,34 +20,31 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.cartService_ = cartService
 
     /** @private @const {Shippo} */
-    this.shippo_ = shippo(SHIPPO_API_KEY)
+    this.shippo_ = shippo(this.options_)
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
-
-    // for when released as an npm package
-    // this.options_ = options
   }
 
   async getFulfillmentOptions() {
 
     const shippingOptions = await this.shippo_.carrieraccount.list(
-      { service_levels: true, results: 100 })
+      { service_levels: true,  results: 100 })
       .then(r => r.results.filter(e => e.active)
-        .flatMap(item => item.service_levels
-          .map(e => {
-            const { service_levels, ...shippingOption } = {
-              ...e,
-              id: `shippo-fulfillment-${e.token}`,
-              name: `${item.carrier_name} ${e.name}`,
-              carrier_id: item.object_id,
-              is_group: false,
-              ...item
-            }
-            return shippingOption
-          })
-        )
+      .flatMap(item => item.service_levels
+        .map(e => {
+          const { service_levels, ...shippingOption } = {
+            ...e,
+            id: `shippo-fulfillment-${e.token}`,
+            name: `${item.carrier_name} ${e.name}`,
+            carrier_id: item.object_id,
+            is_group: false,
+            ...item
+          }
+          return shippingOption
+        })
       )
+    )
 
     const returnOptions = shippingOptions
       .filter(e => e.supports_return_labels)
@@ -57,7 +52,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         ...e,
         name: `${e.name} - Support return labels`,
         is_return: true,
-
+        
       }))
 
     const shippingOptionGroups = await this.shippo_.servicegroups.list()
@@ -86,7 +81,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-
     const toAddress = await this.createShippoAddress(fromOrder.shipping_address, fromOrder.email)
 
     const lineItems = await Promise.all(
@@ -101,17 +95,17 @@ class ShippoFulfillmentService extends FulfillmentService {
         )
 
         const price = {
-          total_price:
+          total_price: 
             humanizeAmount(
               totals.subtotal,
               fromOrder.currency_code
-            ),
+          ),
           currency: fromOrder.currency_code
         }
 
         return {
           ...shippoLineItem(item, price),
-          weight_unit: WEIGHT_UNIT_TYPE
+          weight_unit: this.options_.weight_unit_type
         }
       })
     )
@@ -132,18 +126,16 @@ class ShippoFulfillmentService extends FulfillmentService {
       shipping_cost_currency: fromOrder.currency_code,
       shipping_method: fromOrder.shipping_methods[0].shipping_option.name,
       weight: totalWeight,
-      weight_unit: WEIGHT_UNIT_TYPE
+      weight_unit: this.options_.weight_unit_type
     })
-  }
-
-  async createReturn(fromData) {
   }
 
   canCalculate(data) {
     return false
   }
 
-  calculatePrice(fulfillmentOption, fulfillmentData, cart) {
+  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
+
   }
 
   async createShippoAddress(address, email) {
