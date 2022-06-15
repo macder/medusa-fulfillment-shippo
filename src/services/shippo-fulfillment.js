@@ -1,5 +1,5 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, MedusaError, getConfigFile } from "medusa-core-utils"
+import { humanizeAmount, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
 import { shippoAddress, shippoLineItem } from '../utils/shippo'
 
@@ -7,10 +7,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   static identifier = 'shippo'
 
   constructor({ addressRepository, cartService, totalsService }, options) {
-    
+
     super()
 
-    // for when released as an npm package
     this.options_ = options
 
     /** @private @const {AddressRepository} */
@@ -27,24 +26,23 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-
     const shippingOptions = await this.shippo_.carrieraccount.list(
-      { service_levels: true,  results: 100 })
+      { service_levels: true, results: 100 })
       .then(r => r.results.filter(e => e.active)
-      .flatMap(item => item.service_levels
-        .map(e => {
-          const { service_levels, ...shippingOption } = {
-            ...e,
-            id: `shippo-fulfillment-${e.token}`,
-            name: `${item.carrier_name} ${e.name}`,
-            carrier_id: item.object_id,
-            is_group: false,
-            ...item
-          }
-          return shippingOption
-        })
+        .flatMap(item => item.service_levels
+          .map(e => {
+            const { service_levels, ...shippingOption } = {
+              ...e,
+              id: `shippo-fulfillment-${e.token}`,
+              name: `${item.carrier_name} ${e.name}`,
+              carrier_id: item.object_id,
+              is_group: false,
+              ...item
+            }
+            return shippingOption
+          })
+        )
       )
-    )
 
     const returnOptions = shippingOptions
       .filter(e => e.supports_return_labels)
@@ -52,7 +50,6 @@ class ShippoFulfillmentService extends FulfillmentService {
         ...e,
         name: `${e.name} - Support return labels`,
         is_return: true,
-        
       }))
 
     const shippingOptionGroups = await this.shippo_.servicegroups.list()
@@ -62,7 +59,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         ...e
       })))
 
-    return [...shippingOptions, ...shippingOptionGroups, ...returnOptions]
+    return [...shippingOptions, ...shippingOptionGroups]
   }
 
   async validateOption(data) {
@@ -95,17 +92,16 @@ class ShippoFulfillmentService extends FulfillmentService {
         )
 
         const price = {
-          total_price: 
+          total_price:
             humanizeAmount(
               totals.subtotal,
               fromOrder.currency_code
-          ),
+            ),
           currency: fromOrder.currency_code
         }
 
         return {
           ...shippoLineItem(item, price),
-          weight_unit: this.options_.weight_unit_type
         }
       })
     )
@@ -114,19 +110,27 @@ class ShippoFulfillmentService extends FulfillmentService {
       .map(e => e.weight * e.quantity)
       .reduce((sum, current) => sum + current, 0)
 
-    const shippoOrder = await this.shippo_.order.create({
-      order_id: fromOrder.id,
+    const shippingCost = humanizeAmount(
+      fromOrder.shipping_methods[0].price,
+      fromOrder.currency_code
+    )
+    const shippingOptionName = fromOrder.shipping_methods[0].shipping_option.name
+    const shippingCostCurrency = fromOrder.currency_code.toUpperCase()
+
+    return await this.shippo_.order.create({
+      order_number: fulfillment.id,
       to_address: toAddress.object_id,
       line_items: lineItems,
       placed_at: fromOrder.created_at,
-      shipping_cost: humanizeAmount(
-        fromOrder.shipping_methods[0].price,
-        fromOrder.currency_code
-      ),
-      shipping_cost_currency: fromOrder.currency_code,
-      shipping_method: fromOrder.shipping_methods[0].shipping_option.name,
+      shipping_cost: shippingCost,
+      shipping_cost_currency: shippingCostCurrency,
+      shipping_method: `${shippingOptionName} ${shippingCostCurrency}`,
       weight: totalWeight,
       weight_unit: this.options_.weight_unit_type
+    }).then(
+      response => ({ shippo_order_id: response.object_id })
+    ).catch(e => {
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
     })
   }
 
@@ -135,7 +139,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-
   }
 
   async createShippoAddress(address, email) {
