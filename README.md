@@ -1,4 +1,4 @@
-# medusa-fulfillment-shippo
+## medusa-fulfillment-shippo
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
@@ -72,24 +72,49 @@ POST http://localhost:9000/admin/regions/:region_id/fulfillment-providers
 Get the `PROFILE_ID` of the shipping profile to use: ([API ref](https://docs.medusajs.com/api/admin/shipping-profile/list-shipping-profiles))
 
 ```plaintext
-GET http://localhost:9000/admin/shipping-profile
+GET http://localhost:9000/admin/shipping-profiles
 ```
 
-Get the `NAME` and `DATA` fields of the Shippo option created in Step 1: ([API ref](https://docs.medusajs.com/api/admin/shipping-option/list-shipping-options))
+Get the fulfillment options for the region ([API ref](https://docs.medusajs.com/api/admin/region/list-fulfillment-options-available-in-the-region))
 
 ```plaintext
-GET http://localhost:9000/admin/shipping-options?region_id=[:region_id]
+GET http://localhost:9000/admin/regions/:REGION_ID/fulfillment-options
 ```
 
-Create the shipping option for the region using the data fields collected from previous steps: ([API ref](https://docs.medusajs.com/api/admin/shipping-option/create-shipping-option))
+In the response, find the `FULFILLMENT_OPTION_OBJECT` 
+
+```plaintext
+{
+  "id": "shippo-fulfillment-...",
+  "is_group": true,
+  "description": "2 days",
+  "flat_rate": "25",
+  "flat_rate_currency": "CAD",
+  "free_shipping_threshold_currency": null,
+  "free_shipping_threshold_min": null,
+  "is_active": true,
+  "name": "Express Shipping Canada",
+  "object_id": "...",
+  "rate_adjustment": 0,
+  "service_levels": [
+    {
+      "account_object_id": "...",
+      "service_level_token": "canada_post_xpresspost"
+    }
+  ],
+  "type": "LIVE_RATE"
+}
+```
+
+Create the shipping option for the region. ([API ref](https://docs.medusajs.com/api/admin/shipping-option/create-shipping-option))
 
 ```plaintext
 POST http://localhost:9000/admin/shipping-options
 --data {
-  "name": "Express Shipping",
-  "data": [DATA],
-  "region_id": "[REGION_ID]",
-  "profile_id": "[PROFILE_ID]",
+  "name": "DISPLAY NAME",
+  "data": [FULFILLMENT_OPTION_OBJECT],
+  "region_id": [:REGION_ID],
+  "profile_id": [:PROFILE_ID],
   "requirements": [],
   "price_type": "calculated",
   "amount": null,

@@ -1,6 +1,6 @@
 {
   "name": "medusa-fulfillment-shippo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shippo fulfillment plugin for medusa",
   "author": "Maciej Derulski",
   "license": "MIT",
