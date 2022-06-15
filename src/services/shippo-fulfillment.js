@@ -131,7 +131,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   canCalculate(data) {
-    return false
+    return (data.type === 'LIVE_RATE')
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
