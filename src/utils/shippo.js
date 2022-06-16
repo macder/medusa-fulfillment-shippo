@@ -5,6 +5,7 @@ import shippo from "shippo"
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
 const { plugins } = configModule
 const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+
 const client = shippo(options.api_key)
 
 /** Get shippo live rates for carts shipping options
@@ -13,7 +14,7 @@ const client = shippo(options.api_key)
  * @param {array} shippingOptions - array of shipping_option objects
  * @return {array} array filtered for cart of shippo live-rates objects
  */
-export const shippoRates = async (toAddress, lineItems, shippingOptions) => 
+export const shippoRates = async (toAddress, lineItems, shippingOptions) =>
   await client.liverates.create({
     address_to: toAddress,
     line_items: lineItems
@@ -26,6 +27,10 @@ export const shippoRates = async (toAddress, lineItems, shippingOptions) =>
           )
       )
   )
+
+export const shippoGetOrder = async (shippoOrderID) => {
+  return await client.order.retrieve(shippoOrderID)
+}
 
 export const shippoLineItem = (item, price) => ({
   quantity: item.quantity,
@@ -52,9 +57,9 @@ export const shippoLineItems = async (cart, totalsService) => {
         sku: item.variant.sku,
         title: item.variant.product.title,
         total_price: humanizeAmount(
-            totals.subtotal,
-            cart.region.currency_code
-          ).toString(),
+          totals.subtotal,
+          cart.region.currency_code
+        ).toString(),
         currency: cart.region.currency_code.toUpperCase(),
         weight: item.variant.weight.toString(),
         weight_unit: options.weight_unit_type
@@ -82,6 +87,12 @@ export const shippoAddress = (address, email) => ({
   validate: (address.country_code == 'us') ?? true
 })
 
+/** 
+ * @param {string} id - a medusa ID
+ * @return {string} - the type of ID, eg. order, ful, pay, etc
+ */
+export const getIDType = id => id.substr(0, id.indexOf('_'))
+
 /** Calculates dimensional weight of LineItem
  * @param {object} item - cart LineItem
  * @return {int} - calculated dimensional weight
@@ -96,4 +107,3 @@ export const itemDimensionalWeight = (
 export const cartDimensionalWeights = items => items.map(
   item => itemDimensionalWeight(item) * item.quantity
 )
-
