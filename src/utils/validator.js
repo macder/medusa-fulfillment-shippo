@@ -1,8 +1,5 @@
 import { Validator as v } from "medusa-core-utils"
 
-// const sValidator = Validator
-
-
 v.shippingAddress = () => {
   return v.alternatives().try(
     v.string(),
@@ -34,4 +31,3 @@ v.shippingAddress = () => {
 }
 
 export const Validator = v
-// export default Validator
