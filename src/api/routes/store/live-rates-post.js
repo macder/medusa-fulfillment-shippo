@@ -1,5 +1,5 @@
 import { Validator } from "medusa-core-utils"
-import { shippoAddress, shippoLineItems, shippoRates } from "../../utils/shippo"
+import { shippoAddress, shippoLineItems, shippoRates } from "../../../utils/shippo"
 
 export default async (req, res) => {
   const { cart_id } = req.body
