@@ -1,5 +1,5 @@
-import { shippoAddress, shippoLineItems, shippoRates } from "../../utils/shippo"
-import { Validator } from '../../utils/validator'
+import { shippoAddress, shippoLineItems, shippoRates } from "../../../utils/shippo"
+import { Validator } from '../../../utils/validator'
 
 export default async (req, res) => {
   const { cart_id } = req.params

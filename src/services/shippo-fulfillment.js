@@ -118,7 +118,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     const shippingCostCurrency = fromOrder.currency_code.toUpperCase()
 
     return await this.shippo_.order.create({
-      order_number: fulfillment.id,
+      order_number: fromOrder.display_id,
       to_address: toAddress.object_id,
       line_items: lineItems,
       placed_at: fromOrder.created_at,
