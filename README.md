@@ -4,15 +4,17 @@ Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Adds a fulfillment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
 
-On each new fulfillment, an order is created in Shippo.
-
 Live shipping rates for carts at checkout.
+
+New fulfillments create orders in Shippo.
+
+Endpoint to retrieve Shippo orders using a Medusa fulfillment ID
 
 ## Getting started
 
 Install:
 
-`npm install medusa-fulfillment-shippo`
+`> npm i medusa-fulfillment-shippo`
 
 Add to medusa-config.js
 
@@ -131,7 +133,7 @@ Repeat above steps for each shipping option.
 ### **Get shipping rates for a cart**
 
 ```plaintext
-GET http://localhost:9000/shippo/live-rates/:cart_id
+GET http://localhost:9000/store/shippo/live-rates/:cart_id
 ```
 
 Returns an array of Shippo live-rate objects that match the carts shipping options.
@@ -157,13 +159,15 @@ Sample response:
 ### **Create shipping options with rates for cart:**
 
 ```plaintext
-POST GET http://localhost:9000/shippo/live-rates/
+POST GET http://localhost:9000/store/shippo/live-rates/
 --data {"cart_id":"CART_ID"}
 ```
 
 Creates custom shipping options with the rates for the cart based on its available shipping options.
 
 These are created using the core [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService)
+
+Query this endpoint in the checkout flow when the shipping address becomes available.
 
 Sample response:
 
@@ -200,6 +204,22 @@ After creating the custom shipping options in the previous step, they are availa
 ```plaintext
 GET http://localhost:9000/store/shipping-options/:cart_id
 ```
+
+## Shippo Orders
+
+Creating an order fulfillment in admin will create an order in Shippo.
+
+View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/orders)
+
+A new endpoint is exposed that will retrieve a Shippo order for the fulfillment
+
+```plaintext
+GET http://localhost:9000/admin/shippo/order/:fulfillment_id
+```
+
+Returns `shippo_order` object
+
+Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed and replaced with their `object_id`
 
 ## Limitations
 
