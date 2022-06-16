@@ -30,5 +30,11 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./shippo-order").default)
   )
 
+  route.get(
+    "/shippo/order/:fulfillment_id/packingslip",
+    authenticate(),
+    middlewares.wrap(require("./order-packingslip").default)
+  )
+
   return app
 }

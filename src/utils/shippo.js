@@ -28,9 +28,11 @@ export const shippoRates = async (toAddress, lineItems, shippingOptions) =>
       )
   )
 
-export const shippoGetOrder = async (shippoOrderID) => {
-  return await client.order.retrieve(shippoOrderID)
-}
+export const shippoGetOrder = async (shippoOrderID) =>
+  await client.order.retrieve(shippoOrderID)
+
+export const shippoGetPackingSlip = async (shippoOrderID) =>
+  await client.order.packingslip(shippoOrderID)
 
 export const shippoLineItem = (item, price) => ({
   quantity: item.quantity,
