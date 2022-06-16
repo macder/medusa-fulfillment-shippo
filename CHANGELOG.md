@@ -8,7 +8,7 @@ Added
 - cors to api endpoints [#22](https://github.com/macder/medusa-fulfillment-shippo/issues/22)
 
 Changed
-- **BREAKING**: all API endpoints URI
+- **BREAKING**: API endpoint URI's [#21](https://github.com/macder/medusa-fulfillment-shippo/issues/21)
 
 Bug Fixes:
 - Correct order number in new Shippo orders [#24](https://github.com/macder/medusa-fulfillment-shippo/issues/24)
