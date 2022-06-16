@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] (2022-06-15)
+Added
+- Endpoint to retrieve shippo orders [#20](https://github.com/macder/medusa-fulfillment-shippo/issues/20)
+- cors to api endpoints [#22](https://github.com/macder/medusa-fulfillment-shippo/issues/22)
+
+Changed
+- **BREAKING**: all API endpoints URI
+
+Bug Fixes:
+- Correct order number in new Shippo orders [#24](https://github.com/macder/medusa-fulfillment-shippo/issues/24)
+
 
 ## [0.1.2] (2022-06-15)
 ### Added
