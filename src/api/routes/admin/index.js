@@ -36,5 +36,12 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./order-packingslip").default)
   )
 
+  // all your errors are belong to this
+  route.use((err, req, res, next) => {
+    if (!res.headersSent) {
+      res.status(418).json(err)
+    }
+  })
+
   return app
 }
