@@ -10,20 +10,6 @@ export default async (req, res) => {
   const manager = req.scope.resolve("manager")
   const customShippingOptionRepository = req.scope.resolve("customShippingOptionRepository")
 
-  const schema = Validator.object().keys({
-    cart_id: Validator.string().required(),
-  })
-
-  try {
-    const { value, error } = schema.validate(req.body)
-    if (error) throw error
-  }
-  catch (e) {
-    res.json({
-      type: 'ValidationError',
-      message: e.details[0].message,
-    })
-  }
   const cart = await cartService.retrieve(cart_id, {
     relations: [
       "shipping_address",
@@ -37,15 +23,14 @@ export default async (req, res) => {
   })
 
   // Validate if cart has a complete shipping address
-  try {
-    const validAddress = Validator.shippingAddress().validate(cart.shipping_address)
-    if (validAddress.error) throw validAddress.error
-  }
-  catch (e) {
-    res.json({
-      type: 'ValidationError',
-      message: `Shipping Address ${e.details[0].message}`,
-    })
+  const validAddress = Validator.shippingAddress().validate(cart.shipping_address)
+  if (validAddress.error) {
+    return next(
+      new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        validAddress.error.details[0].message
+      )
+    )
   }
 
   const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
@@ -82,11 +67,8 @@ export default async (req, res) => {
               ...optionRate
             }
           })
-
-        })).catch(e => {
-          console.error(e)
-        })
-    }).catch(e => ({ error: e }))
+        }))
+    })
 
   res.json({ customShippingOptions })
 }

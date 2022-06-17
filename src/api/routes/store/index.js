@@ -25,11 +25,19 @@ export default (app, rootDirectory) => {
     "/shippo/live-rates/:cart_id",
     middlewares.wrap(require("./live-rates").default)
   )
+
   route.post(
     "/shippo/live-rates",
     bodyParser.json(),
     middlewares.wrap(require("./live-rates-post").default)
   )
+
+  // all your errors are belong to this
+  route.use((err, req, res, next) => {
+    if (!res.headersSent) {
+      res.status(418).json(err)
+    }
+  })
 
   return app
 }
