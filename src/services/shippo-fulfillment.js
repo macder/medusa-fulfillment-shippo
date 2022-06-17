@@ -27,22 +27,24 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async getFulfillmentOptions() {
     const shippingOptions = await this.shippo_.carrieraccount.list(
-      { service_levels: true, results: 100 })
-      .then(r => r.results.filter(e => e.active)
-        .flatMap(item => item.service_levels
-          .map(e => {
-            const { service_levels, ...shippingOption } = {
-              ...e,
-              id: `shippo-fulfillment-${e.token}`,
-              name: `${item.carrier_name} ${e.name}`,
-              carrier_id: item.object_id,
-              is_group: false,
-              ...item
-            }
-            return shippingOption
-          })
-        )
+      { service_levels: true, results: 100 }
+    ).then(r => r.results.filter(e => e.active)
+      .flatMap(item => item.service_levels
+        .map(e => {
+          const { service_levels, ...shippingOption } = {
+            ...e,
+            id: `shippo-fulfillment-${e.token}`,
+            name: `${item.carrier_name} ${e.name}`,
+            carrier_id: item.object_id,
+            is_group: false,
+            ...item
+          }
+          return shippingOption
+        })
       )
+    ).catch(e => {
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+    })
 
     const returnOptions = shippingOptions
       .filter(e => e.supports_return_labels)
@@ -53,11 +55,15 @@ class ShippoFulfillmentService extends FulfillmentService {
       }))
 
     const shippingOptionGroups = await this.shippo_.servicegroups.list()
-      .then(r => r.map(e => ({
-        id: `shippo-fulfillment-${e.object_id}`,
-        is_group: true,
-        ...e
-      })))
+      .then(
+        response => response.map( e => ({
+          id: `shippo-fulfillment-${e.object_id}`,
+          is_group: true,
+          ...e
+        }))
+      ).catch(e => {
+        throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+      })
 
     return [...shippingOptions, ...shippingOptionGroups]
   }
@@ -78,8 +84,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-    const toAddress = await this.createShippoAddress(fromOrder.shipping_address, fromOrder.email)
-
     const lineItems = await Promise.all(
       fulfillmentItems.map(async item => {
         const totals = await this.totalsService_.getLineItemTotals(
@@ -105,6 +109,12 @@ class ShippoFulfillmentService extends FulfillmentService {
         }
       })
     )
+
+    const toAddress = await this.createShippoAddress(
+      fromOrder.shipping_address, fromOrder.email
+    ).catch(e => {
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+    })
 
     const totalWeight = lineItems
       .map(e => e.weight * e.quantity)
