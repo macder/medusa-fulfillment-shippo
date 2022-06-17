@@ -8,7 +8,7 @@ export default async (req, res) => {
     .retrieve(fulfillment_id)
       .then(async fulfillment => 
         await shippoGetPackingSlip(fulfillment.data.shippo_order_id)
-      ).catch(e => e)
+      )
 
   res.json({ shippoPackingSlip })
 }
