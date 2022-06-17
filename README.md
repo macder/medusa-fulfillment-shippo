@@ -8,7 +8,7 @@ Live shipping rates for carts at checkout.
 
 New fulfillments create orders in Shippo.
 
-Endpoint to retrieve Shippo orders using a Medusa fulfillment ID
+Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillment ID
 
 ## Getting started
 
@@ -159,7 +159,7 @@ Sample response:
 ### **Create shipping options with rates for cart:**
 
 ```plaintext
-POST GET http://localhost:9000/store/shippo/live-rates/
+POST http://localhost:9000/store/shippo/live-rates/
 --data {"cart_id":"CART_ID"}
 ```
 
@@ -220,6 +220,14 @@ GET http://localhost:9000/admin/shippo/order/:fulfillment_id
 Returns `shippo_order` object
 
 Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed and replaced with their `object_id`
+
+## Shippo Packaging Slip
+
+Retrieve shippo package slip using medusa fulfillment id:
+
+```plaintext
+GET http://localhost:9000/admin/shippo/order/:fulfillment_id/packingslip
+```
 
 ## Limitations
 
