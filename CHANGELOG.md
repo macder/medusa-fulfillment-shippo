@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] (2022-06-16)
+Added
+- Endpoint to retrieve shippo packing slip [#27](https://github.com/macder/medusa-fulfillment-shippo/issues/27)
+
+Changed
+- Endpoint errors return sane json [#32](https://github.com/macder/medusa-fulfillment-shippo/issues/32)
 ## [0.2.0] (2022-06-15)
 Added
 - Endpoint to retrieve shippo orders [#20](https://github.com/macder/medusa-fulfillment-shippo/issues/20)
