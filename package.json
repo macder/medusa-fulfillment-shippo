@@ -7,16 +7,16 @@
   "scripts": {
     "build": "babel src -d . --ignore **/__tests__",
     "prepare": "cross-env NODE_ENV=production npm run build",
-    "watch": "babel -w src --out-dir . --ignore **/__tests__",
+    "watch": "onchange -v src/** -- copyfiles {{file}} ../my-medusa-store",
     "test": "jest"
   },
   "dependencies": {
+    "@babel/plugin-transform-classes": "^7.9.5",
+    "@babel/plugin-transform-instanceof": "^7.8.3",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "medusa-core-utils": "^1.1.30",
-    "shippo": "https://github.com/macder/shippo-node-client.git",
-    "@babel/plugin-transform-classes": "^7.9.5",
-    "@babel/plugin-transform-instanceof": "^7.8.3"
+    "shippo": "https://github.com/macder/shippo-node-client.git"
   },
   "peerDependencies": {
     "medusa-interfaces": "1.x"
