@@ -8,7 +8,7 @@ import middlewares from "../../middlewares"
 const route = Router()
 
 export default (app, rootDirectory) => {
-  const { configModule } = getConfigFile(rootDirectory, 'medusa-config')
+  const { configModule } = getConfigFile(rootDirectory, "medusa-config")
   const config = (configModule && configModule.projectConfig) || {}
 
   const adminCors = config.admin_cors || ""
@@ -19,7 +19,7 @@ export default (app, rootDirectory) => {
       credentials: true,
     })
   )
-  
+
   app.use("/admin", route)
 
   route.use(bodyParser.json())

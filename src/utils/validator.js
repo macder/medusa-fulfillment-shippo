@@ -1,7 +1,8 @@
 import { Validator as v } from "medusa-core-utils"
 
-v.shippingAddress = () => {
-  return v.object().keys({
+const schemaShippingAddress = v
+  .object()
+  .keys({
     id: v.string().required(),
     created_at: v.date().required(),
     updated_at: v.date().allow(null, "").optional(),
@@ -9,22 +10,19 @@ v.shippingAddress = () => {
     customer_id: v.string().allow(null, "").optional(),
     first_name: v.string().required(),
     last_name: v.string().required(),
-    company: v.string()
-      .allow(null, "")
-      .optional(),
+    company: v.string().allow(null, "").optional(),
     address_1: v.string().required(),
-    address_2: v.string()
-      .allow(null, "")
-      .optional(),
+    address_2: v.string().allow(null, "").optional(),
     city: v.string().required(),
     country_code: v.string().required(),
-    province: v.string().required(),
+    province: v.string().allow(null, "").optional(),
     postal_code: v.string().required(),
     phone: v.string().optional(),
-    metadata: v.object()
-      .allow(null, {})
-      .optional(),
+    metadata: v.object().allow(null, {}).optional(),
   })
-}
+  .messages({
+    "object.base": "ValidationError: shipping address missing",
+  })
 
-export { v as Validator }
+export const validateShippingAddress = (address) =>
+  schemaShippingAddress.validate(address)
