@@ -114,14 +114,11 @@ class ShippoFulfillmentService extends FulfillmentService {
       .map((e) => e.weight * e.quantity)
       .reduce((sum, current) => sum + current, 0)
 
-    const shippingCost = humanizeAmount(
-      fromOrder.shipping_methods[0].price,
-      fromOrder.currency_code
-    )
-
     const shippingOptionName =
       fromOrder.shipping_methods[0].shipping_option.name
     const shippingCostCurrency = fromOrder.currency_code.toUpperCase()
+
+    const currencyCode = fromOrder.currency_code.toUpperCase()
 
     return await this.shippo_.order
       .create({
@@ -129,9 +126,13 @@ class ShippoFulfillmentService extends FulfillmentService {
         to_address: toAddress.object_id,
         line_items: lineItems,
         placed_at: fromOrder.created_at,
-        shipping_cost: shippingCost,
+        shipping_cost: humanizeAmount(fromOrder.shipping_total, currencyCode),
         shipping_cost_currency: shippingCostCurrency,
         shipping_method: `${shippingOptionName} ${shippingCostCurrency}`,
+        total_tax: humanizeAmount(fromOrder.tax_total, currencyCode),
+        total_price: humanizeAmount(fromOrder.total, currencyCode),
+        subtotal_price: humanizeAmount(fromOrder.subtotal, currencyCode),
+        currency: currencyCode,
         weight: totalWeight,
         weight_unit: this.options_.weight_unit_type,
       })
