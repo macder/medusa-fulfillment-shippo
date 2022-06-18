@@ -1,6 +1,10 @@
-import { shippoAddress, shippoLineItem, shippoRates } from "../../../utils/shippo"
 import { MedusaError } from "medusa-core-utils"
-import { Validator } from '../../../utils/validator'
+import {
+  shippoAddress,
+  shippoLineItem,
+  shippoRates,
+} from "../../../utils/shippo"
+import { validateShippingAddress } from "../../../utils/validator"
 
 export default async (req, res, next) => {
   const { cart_id } = req.params
@@ -16,12 +20,12 @@ export default async (req, res, next) => {
       "items.variant",
       "items.variant.product",
       "discounts",
-      "region"
-    ]
+      "region",
+    ],
   })
 
   // Validate if cart has a complete shipping address
-  const validAddress = Validator.shippingAddress().validate(cart.shipping_address)
+  const validAddress = validateShippingAddress(cart.shipping_address)
   if (validAddress.error) {
     return next(
       new MedusaError(
@@ -34,7 +38,7 @@ export default async (req, res, next) => {
   const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
 
   const lineItems = await Promise.all(
-    cart.items.map(async item => {
+    cart.items.map(async (item) => {
       const totals = await totalsService.getLineItemTotals(item, cart)
       return shippoLineItem(item, totals.subtotal, cart.region.currency_code)
     })
@@ -42,11 +46,6 @@ export default async (req, res, next) => {
 
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
 
-  const rates = await shippoRates(
-    toAddress,
-    lineItems,
-    shippingOptions
-  )
-
+  const rates = await shippoRates(toAddress, lineItems, shippingOptions)
   res.json([...rates])
 }

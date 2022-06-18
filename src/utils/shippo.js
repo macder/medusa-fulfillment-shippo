@@ -1,10 +1,11 @@
-import path from "path"
 import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 import shippo from "shippo"
 
-const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
 const { plugins } = configModule
 const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+
+const { projectConfig } = configModule
+const options = projectConfig
 
 const client = shippo(options.api_key)
 
@@ -15,18 +16,18 @@ const client = shippo(options.api_key)
  * @return {array} array filtered for cart of shippo live-rates objects
  */
 export const shippoRates = async (toAddress, lineItems, shippingOptions) =>
-  await client.liverates.create({
-    address_to: toAddress,
-    line_items: lineItems
-  }).then(
-    response => response.results
-      .filter(
-        item => shippingOptions
-          .find(
-            option => (option.data.name === item.title) && true
-          )
+  await client.liverates
+    .create({
+      address_to: toAddress,
+      line_items: lineItems,
+    })
+    .then((response) =>
+      response.results.filter((item) =>
+        shippingOptions.find(
+          (option) => option.data.name === item.title && true
+        )
       )
-  )
+    )
 
 export const shippoGetOrder = async (shippoOrderID) =>
   await client.order.retrieve(shippoOrderID)
@@ -34,25 +35,25 @@ export const shippoGetOrder = async (shippoOrderID) =>
 export const shippoGetPackingSlip = async (shippoOrderID) =>
   await client.order.packingslip(shippoOrderID)
 
-/** Get a flat product object from LineItem
+/** Makes a flat product object from a LineItem
  * @param {LineItem} - LineItem object
  * @return {object} - flat product
  */
 export const productLineItem = ({ variant: { product, ...variant } }) => ({
   product_title: product.title,
   variant_title: variant.title,
-  weight: (variant.weight) ?? product.weight,
-  length: (variant.length) ?? product.length,
-  height: (variant.height) ?? product.height,
-  width: (variant.width) ?? product.width,
-  origin_country: (variant.origin_country) ?? product.origin_country,
-  material: (variant.material) ?? product.material,
+  weight: variant.weight ?? product.weight,
+  length: variant.length ?? product.length,
+  height: variant.height ?? product.height,
+  width: variant.width ?? product.width,
+  origin_country: variant.origin_country ?? product.origin_country,
+  material: variant.material ?? product.material,
   sku: variant.sku,
   barcode: variant.barcode,
   ean: variant.ean,
   upc: variant.upc,
-  hs_code: (variant.hs_code) ?? product.hs_code,
-  mid_code: (variant.mid_code) ?? product.mid_code
+  hs_code: variant.hs_code ?? product.hs_code,
+  mid_code: variant.mid_code ?? product.mid_code,
 })
 
 export const shippoLineItem = (lineItem, totalPrice, currency) => {
@@ -67,7 +68,7 @@ export const shippoLineItem = (lineItem, totalPrice, currency) => {
     sku: product.sku,
     weight: product.weight.toString(),
     weight_unit: options.weight_unit_type,
-    manufacture_country: product.origin_country
+    manufacture_country: product.origin_country,
   }
 }
 
@@ -88,26 +89,26 @@ export const shippoAddress = (address, email) => ({
   country: address.country_code.toUpperCase(),
   phone: address.phone,
   email: email,
-  validate: (address.country_code == 'us') ?? true
+  validate: address.country_code == "us" ?? true,
 })
 
-/** 
+/**
  * @param {string} id - a medusa ID
  * @return {string} - the type of ID, eg. order, ful, pay, etc
  */
-export const getIDType = id => id.substr(0, id.indexOf('_'))
+export const getIDType = (id) => id.substr(0, id.indexOf("_"))
 
 /** Calculates dimensional weight of LineItem
  * @param {object} item - cart LineItem
  * @return {int} - calculated dimensional weight
  */
-export const itemDimensionalWeight = (
-  { variant: { height, width, length } } = item) => height * width * length
+export const itemDimensionalWeight = ({
+  variant: { height, width, length },
+} = item) => height * width * length
 
 /** Dimensional weight of each item in cart
  * @param {array} items - cart items array
  * @return {array} - calculated dimensional weight from each item
  */
-export const cartDimensionalWeights = items => items.map(
-  item => itemDimensionalWeight(item) * item.quantity
-)
+export const cartDimensionalWeights = (items) =>
+  items.map((item) => itemDimensionalWeight(item) * item.quantity)
