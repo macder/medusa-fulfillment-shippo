@@ -34,6 +34,29 @@ export const shippoGetOrder = async (shippoOrderID) =>
 export const shippoGetPackingSlip = async(shippoOrderID) =>
   await client.order.packingslip(shippoOrderID)
 
+/** Get a flat product object from LineItem
+ * @param {LineItem} - LineItem object
+ * @return {object} - flat product
+ */
+export const flatLineItemProduct = (
+  { variant: { product, ...variant } }
+) => ({
+  product_title: product.title,
+  variant_title: variant.title,
+  weight: (variant.weight) ?? product.weight,
+  length: (variant.length) ?? product.length,
+  height: (variant.height) ?? product.height,
+  width: (variant.width) ?? product.width,
+  origin_country: (variant.origin_country) ?? product.origin_country,
+  material: (variant.material) ?? product.material,
+  sku: variant.sku,
+  barcode: variant.barcode,
+  ean: variant.ean,
+  upc: variant.upc,
+  hs_code: (variant.hs_code) ?? product.hs_code,
+  mid_code: (variant.mid_code) ?? product.mid_code
+})
+
 export const shippoLineItem = (item, price) => ({
   quantity: item.quantity,
   sku: item.variant.sku,
@@ -54,21 +77,25 @@ export const shippoLineItems = async (cart, totalsService) => {
           use_tax_lines: true,
         }
       )
+
+      const product = flatLineItemProduct(item)
+
       return {
         quantity: item.quantity,
-        sku: item.variant.sku,
-        title: item.variant.product.title,
+        sku: product.sku,
+        title: product.title,
         total_price: humanizeAmount(
           totals.subtotal,
           cart.region.currency_code
         ).toString(),
         currency: cart.region.currency_code.toUpperCase(),
-        weight: item.variant.weight.toString(),
+        weight: product.weight.toString(),
         weight_unit: options.weight_unit_type
       }
     })
   )
 }
+
 /** Convert medusa address to shippo
  * @param {object} address - medusa address object
  * @param {string} email - mail address
