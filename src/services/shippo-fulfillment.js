@@ -1,13 +1,12 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, MedusaError } from "medusa-core-utils"
+import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
-import { shippoAddress, shippoLineItem } from '../utils/shippo'
+import { shippoAddress, shippoLineItem } from "../utils/shippo"
 
 class ShippoFulfillmentService extends FulfillmentService {
-  static identifier = 'shippo'
+  static identifier = "shippo"
 
   constructor({ addressRepository, cartService, totalsService }, options) {
-
     super()
 
     this.options_ = options
