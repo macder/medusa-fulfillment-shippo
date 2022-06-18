@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] (2022-06-17)
+Fixes
+- Critical bug [#34](https://github.com/macder/medusa-fulfillment-shippo/issues/34)
 ## [0.3.0] (2022-06-16)
 Added
 - Endpoint to retrieve shippo packing slip [#27](https://github.com/macder/medusa-fulfillment-shippo/issues/27)
