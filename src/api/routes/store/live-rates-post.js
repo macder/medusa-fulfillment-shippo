@@ -1,5 +1,5 @@
 import { Validator } from "medusa-core-utils"
-import { shippoAddress, shippoLineItems, shippoRates } from "../../../utils/shippo"
+import { shippoAddress, shippoLineItem, shippoRates } from "../../../utils/shippo"
 
 export default async (req, res) => {
   const { cart_id } = req.body
@@ -34,7 +34,14 @@ export default async (req, res) => {
   }
 
   const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
-  const lineItems = await shippoLineItems(cart, totalsService)
+
+  const lineItems = await Promise.all(
+    cart.items.map(async item => {
+      const totals = await totalsService.getLineItemTotals(item, cart)
+      return shippoLineItem(item, totals.subtotal, cart.region.currency_code)
+    })
+  )
+
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
   const rates = await shippoRates(toAddress, lineItems, shippingOptions)
 
@@ -47,8 +54,8 @@ export default async (req, res) => {
         )
 
         await customShippingOptionRepo.remove(cartCustomShippingOptions)
-
       }
+
       return await Promise.all(
         shippingOptions.map(async option => {
           const optionRate = rates.find(
@@ -61,7 +68,7 @@ export default async (req, res) => {
             cart_id: cart_id,
             shipping_option_id: option.id,
             price: parseInt(parseFloat(price) * 100)
-          },{
+          }, {
             metadata: {
               is_shippo_rate: true,
               ...optionRate

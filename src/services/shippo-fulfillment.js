@@ -55,13 +55,13 @@ class ShippoFulfillmentService extends FulfillmentService {
       }))
 
     const shippingOptionGroups = await this.shippo_.servicegroups.list()
-      .then(
-        response => response.map( e => ({
+      .then(response => response.map(
+        e => ({
           id: `shippo-fulfillment-${e.object_id}`,
           is_group: true,
           ...e
-        }))
-      ).catch(e => {
+        })
+      )).catch(e => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
 
@@ -86,27 +86,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     const lineItems = await Promise.all(
       fulfillmentItems.map(async item => {
-        const totals = await this.totalsService_.getLineItemTotals(
-          item,
-          fromOrder,
-          {
-            include_tax: true,
-            use_tax_lines: true,
-          }
-        )
-
-        const price = {
-          total_price:
-            humanizeAmount(
-              totals.subtotal,
-              fromOrder.currency_code
-            ),
-          currency: fromOrder.currency_code
-        }
-
-        return {
-          ...shippoLineItem(item, price),
-        }
+        const totals = await this.totalsService_.getLineItemTotals(item, fromOrder)
+        return shippoLineItem(item, totals.subtotal, fromOrder.region.currency_code)
       })
     )
 
@@ -124,6 +105,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       fromOrder.shipping_methods[0].price,
       fromOrder.currency_code
     )
+
     const shippingOptionName = fromOrder.shipping_methods[0].shipping_option.name
     const shippingCostCurrency = fromOrder.currency_code.toUpperCase()
 

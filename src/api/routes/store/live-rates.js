@@ -1,4 +1,4 @@
-import { shippoAddress, shippoLineItems, shippoRates } from "../../../utils/shippo"
+import { shippoAddress, shippoLineItem, shippoRates } from "../../../utils/shippo"
 import { MedusaError } from "medusa-core-utils"
 import { Validator } from '../../../utils/validator'
 
@@ -32,12 +32,19 @@ export default async (req, res, next) => {
   }
 
   const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
-  const lineItems = await shippoLineItems(cart, totalsService)
+
+  const lineItems = await Promise.all(
+    cart.items.map(async item => {
+      const totals = await totalsService.getLineItemTotals(item, cart)
+      return shippoLineItem(item, totals.subtotal, cart.region.currency_code)
+    })
+  )
+
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
 
   const rates = await shippoRates(
-    toAddress, 
-    lineItems, 
+    toAddress,
+    lineItems,
     shippingOptions
   )
 
