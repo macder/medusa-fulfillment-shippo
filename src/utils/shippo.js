@@ -31,16 +31,14 @@ export const shippoRates = async (toAddress, lineItems, shippingOptions) =>
 export const shippoGetOrder = async (shippoOrderID) =>
   await client.order.retrieve(shippoOrderID)
 
-export const shippoGetPackingSlip = async(shippoOrderID) =>
+export const shippoGetPackingSlip = async (shippoOrderID) =>
   await client.order.packingslip(shippoOrderID)
 
 /** Get a flat product object from LineItem
  * @param {LineItem} - LineItem object
  * @return {object} - flat product
  */
-export const flatLineItemProduct = (
-  { variant: { product, ...variant } }
-) => ({
+export const productLineItem = ({ variant: { product, ...variant } }) => ({
   product_title: product.title,
   variant_title: variant.title,
   weight: (variant.weight) ?? product.weight,
@@ -57,43 +55,20 @@ export const flatLineItemProduct = (
   mid_code: (variant.mid_code) ?? product.mid_code
 })
 
-export const shippoLineItem = (item, price) => ({
-  quantity: item.quantity,
-  sku: item.variant.sku,
-  title: item.variant.product.title,
-  ...price,
-  weight: item.variant.weight.toString(),
-  weight_unit: options.weight_unit_type
-})
+export const shippoLineItem = (lineItem, totalPrice, currency) => {
+  const product = productLineItem(lineItem)
 
-export const shippoLineItems = async (cart, totalsService) => {
-  return await Promise.all(
-    cart.items.map(async item => {
-      const totals = await totalsService.getLineItemTotals(
-        item,
-        cart,
-        {
-          include_tax: true,
-          use_tax_lines: true,
-        }
-      )
-
-      const product = flatLineItemProduct(item)
-
-      return {
-        quantity: item.quantity,
-        sku: product.sku,
-        title: product.title,
-        total_price: humanizeAmount(
-          totals.subtotal,
-          cart.region.currency_code
-        ).toString(),
-        currency: cart.region.currency_code.toUpperCase(),
-        weight: product.weight.toString(),
-        weight_unit: options.weight_unit_type
-      }
-    })
-  )
+  return {
+    title: product.product_title,
+    variant_title: product.variant_title,
+    quantity: lineItem.quantity,
+    total_price: humanizeAmount(totalPrice, currency).toString(),
+    currency: currency.toUpperCase(),
+    sku: product.sku,
+    weight: product.weight.toString(),
+    weight_unit: options.weight_unit_type,
+    manufacture_country: product.origin_country
+  }
 }
 
 /** Convert medusa address to shippo
