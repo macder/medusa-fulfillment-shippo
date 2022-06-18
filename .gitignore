@@ -4,6 +4,7 @@ node_modules
 .env*
 /*.js
 !index.js
+!.eslintrc.js
 yarn.lock
 
 /dist
@@ -12,4 +13,5 @@ yarn.lock
 /services
 /models
 /subscribers
+/utils
 /__mocks__
