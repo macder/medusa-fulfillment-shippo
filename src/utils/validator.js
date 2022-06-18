@@ -21,7 +21,7 @@ const schemaShippingAddress = v
     metadata: v.object().allow(null, {}).optional(),
   })
   .messages({
-    "object.base": "ValidationError: shipping address missing",
+    "object.base": "ValidationError shipping address missing",
   })
 
 export const validateShippingAddress = (address) =>
