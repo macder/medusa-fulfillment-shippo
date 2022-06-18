@@ -39,12 +39,14 @@
     "@babel/register": "^7.7.4",
     "@babel/runtime": "^7.9.6",
     "client-sessions": "^0.8.0",
+    "copyfiles": "^2.4.1",
     "cross-env": "^5.2.1",
     "eslint": "^8.2.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^25.5.2",
-    "medusa-test-utils": "^1.1.33"
+    "medusa-test-utils": "^1.1.33",
+    "onchange": "^7.1.0"
   }
 }
