@@ -1,4 +1,4 @@
-import { getConfigFile, humanizeAmount } from "medusa-core-utils"
+import { humanizeAmount } from "medusa-core-utils"
 import shippo from "shippo"
 
 const { plugins } = configModule

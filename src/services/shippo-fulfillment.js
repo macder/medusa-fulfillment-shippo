@@ -1,5 +1,5 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
+import { humanizeAmount, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
 import { shippoAddress, shippoLineItem } from "../utils/shippo"
 
@@ -88,6 +88,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
+
     const lineItems = await Promise.all(
       fulfillmentItems.map(async (item) => {
         const totals = await this.totalsService_.getLineItemTotals(
