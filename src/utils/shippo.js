@@ -1,3 +1,4 @@
+import path from 'path'
 import { humanizeAmount, getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
