@@ -1,11 +1,16 @@
-import path from 'path'
+import path from "path"
 import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 import shippo from "shippo"
 import { BP3D } from "binpackingjs"
 
-const { configModule } = getConfigFile(path.resolve('.'), 'medusa-config')
-const { plugins } = configModule
-const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+// / //// npm //////////
+const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
+// const { plugins } = configModule
+// const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+// / ///////////////////////////////////////////////
+
+const { projectConfig } = configModule
+const options = projectConfig
 
 const client = shippo(options.api_key)
 
@@ -40,9 +45,14 @@ export const shippoRates = async (
       )
     )
 
+  return rates
+}
+
+// TODO: move to client.js
 export const shippoGetOrder = async (shippoOrderID) =>
   await client.order.retrieve(shippoOrderID)
 
+// TODO: move to client.js
 export const shippoGetPackingSlip = async (shippoOrderID) =>
   await client.order.packingslip(shippoOrderID)
 
@@ -67,6 +77,7 @@ export const productLineItem = ({ variant: { product, ...variant } }) => ({
   mid_code: variant.mid_code ?? product.mid_code,
 })
 
+// TODO: move to client.js
 export const shippoLineItem = (lineItem, totalPrice, currency) => {
   const product = productLineItem(lineItem)
 
@@ -141,9 +152,11 @@ export const parcelFits = async (lineItems) => {
 
   const bins = await shippoUserParcelTemplates().then((response) =>
     response.results.map(
-      (box) =>
-        new Bin(box.object_id, box.width, box.height, box.length, box.weight)
-    )
+      (box) => {
+        box.dim_weight = box.length * box.width * box.height
+        return box
+      }
+    ).sort((a, b) => a.dim_weight - b.dim_weight).map(box => new Bin(box.object_id, box.width, box.height, box.length, box.weight))
   )
 
   const fitParcels = []
