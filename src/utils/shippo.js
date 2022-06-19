@@ -4,9 +4,6 @@ import shippo from "shippo"
 const { plugins } = configModule
 const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
 
-const { projectConfig } = configModule
-const options = projectConfig
-
 const client = shippo(options.api_key)
 
 /** Get shippo live rates for carts shipping options
