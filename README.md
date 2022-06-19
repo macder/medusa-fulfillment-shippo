@@ -2,13 +2,31 @@
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
-Adds a fulfillment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
+Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout.
+Live shipping rates for carts at checkout, optimized with a first-fit-decreasing (FFD) bin packing algorithm.
 
-New fulfillments create orders in Shippo.
+Creates Shippo orders for new fulfillments.
 
 Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillment ID
+
+## Table of Contents
+
+*   Getting Started
+*   Rates at Checkout
+    *   Setup
+        1.  Setup Shipping Options in Shippo App
+        2.  Assign the Shipping Options to Regions in Medusa
+    *   Usage
+        1.  Get shipping rates for a cart
+        2.  Create shipping options with rates for cart
+        3.  Retrieve shipping options with rates for cart
+    *   Optimizing
+        1.  Lorem Ipsum
+*   Shippo Orders
+*   Packaging Slip
+*   Limitations
+*   Resources
 
 ## Getting started
 
@@ -204,6 +222,26 @@ After creating the custom shipping options in the previous step, they are availa
 ```plaintext
 GET http://localhost:9000/store/shipping-options/:cart_id
 ```
+
+## Optimizing Rates at Checkout
+
+Estimating shipping costs within reasonable accuracy for items in a cart is a challenging problem, to put it mildly. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel, regardless if all items fit, when calculating rates.
+
+But, this is not a dead-end…
+
+medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all the products in medusa must have values for length, width, height, and weight.
+
+### How it works
+
+*   Sorts cart items from largest to smallest
+    *   Attempt fitting sorted items one at a time into smallest parcel.
+    *   If there are remaining items, tries fitting all sorted items one at a time into the next smallest parcel.
+    *   If there are no remaining items, use this parcel for shipping rate.
+    *   If all items cannot fit into single parcel, use the default template (_future versions might include multi parcel implementation_)
+
+### Setup parcel templates
+
+WIP lorem ipsum
 
 ## Shippo Orders
 
