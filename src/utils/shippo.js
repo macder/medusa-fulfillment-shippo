@@ -1,6 +1,7 @@
-import { humanizeAmount } from "medusa-core-utils"
+import { humanizeAmount, getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
+const { configModule } = getConfigFile(path.resolve('.'), 'medusa-config')
 const { plugins } = configModule
 const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
 
