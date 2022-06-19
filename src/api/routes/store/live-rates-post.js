@@ -2,10 +2,12 @@ import {
   shippoAddress,
   shippoLineItem,
   shippoRates,
+  parcelFits,
 } from "../../../utils/shippo"
 import { validateShippingAddress } from "../../../utils/validator"
+import { MedusaError } from "medusa-core-utils"
 
-export default async (req, res) => {
+export default async (req, res, next) => {
   const { cart_id } = req.body
   const cartService = req.scope.resolve("cartService")
   const totalsService = req.scope.resolve("totalsService")
@@ -50,8 +52,14 @@ export default async (req, res) => {
     })
   )
 
+  const parcels = await parcelFits(cart.items)
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
-  const rates = await shippoRates(toAddress, lineItems, shippingOptions)
+  const rates = await shippoRates(
+    toAddress,
+    lineItems,
+    shippingOptions,
+    parcels[0]
+  )
 
   const customShippingOptions = await customShippingOptionService
     .list({ cart_id })
