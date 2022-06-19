@@ -1,6 +1,14 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.4.0] (2022-06-18)
+Added
+- Price totals to shippo order [#26](https://github.com/macder/medusa-fulfillment-shippo/issues/26)
+- Product codes to shippo order line items [#41](https://github.com/macder/medusa-fulfillment-shippo/issues/41)
+
+Bug Fixes
+- Shipping address validation error message [#37](https://github.com/macder/medusa-fulfillment-shippo/issues/37)
+- Shipping address state/province validation [#38](https://github.com/macder/medusa-fulfillment-shippo/issues/38)
 
 ## [0.3.1] (2022-06-17)
 Fixes
