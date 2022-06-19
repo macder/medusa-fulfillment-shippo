@@ -225,9 +225,9 @@ GET http://localhost:9000/store/shipping-options/:cart_id
 
 ## Optimizing Rates at Checkout
 
-Estimating shipping costs within reasonable accuracy for items in a cart is a challenging problem, to put it mildly. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel, regardless if all items fit, when calculating rates.
+Estimating shipping costs within reasonable accuracy for items in a cart is a challenging problem, to put it mildly. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel template, regardless if all items fit when calculating rates.
 
-But, this is not a dead-end…
+**But, this is not a dead-end…**
 
 medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all the products in medusa must have values for length, width, height, and weight.
 
@@ -241,7 +241,19 @@ medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpack
 
 ### Setup parcel templates
 
-WIP lorem ipsum
+Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
+
+To get most optimal results, it is recommended to create package templates for all your shipping boxes.
+
+### Verify product dimensions and weight
+
+In your medusa store, make sure products have correct values for length, width, height, weight
+
+### Accuracy of Rates
+
+Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to have accurate data values about their products and packaging. This plugin does its best to use the supplied data to create reasonably optimized requests for rates, but makes no guarantees and assumes no responsibility about any result. 
+
+Assuming your medusa store has accurate product dimensions/weight, and your package templates in shippo reflect a carefully planned boxing strategy, expect reasonably high accurate rates for single item fulfillments and reasonably accurate rates multi-item fulfillments that fit in a single parcel. Multi parcel for rates at checkout is currently not supported. If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
 ## Shippo Orders
 
