@@ -12,21 +12,25 @@ Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillme
 
 ## Table of Contents
 
-*   Getting Started
-*   Rates at Checkout
-    *   Setup
-        1.  Setup Shipping Options in Shippo App
-        2.  Assign the Shipping Options to Regions in Medusa
-    *   Usage
-        1.  Get shipping rates for a cart
-        2.  Create shipping options with rates for cart
-        3.  Retrieve shipping options with rates for cart
-    *   Optimizing
-        1.  Lorem Ipsum
-*   Shippo Orders
-*   Packaging Slip
-*   Limitations
-*   Resources
+- [medusa-fulfillment-shippo](#medusa-fulfillment-shippo)
+- [Table of Contents](#table-of-contents)
+- [Getting started](#getting-started)
+- [Setup Rates at Checkout](#setup-rates-at-checkout)
+  - [Step 1 - Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
+  - [**Step 2 - Assign the Shipping Options to Regions in Medusa**](#step-2---assign-the-shipping-options-to-regions-in-medusa)
+- [Using Rates at Checkout](#using-rates-at-checkout)
+  - [**Get shipping rates for a cart**](#get-shipping-rates-for-a-cart)
+  - [**Create shipping options with rates for cart:**](#create-shipping-options-with-rates-for-cart)
+  - [**Retrieve shipping options with rates for cart**](#retrieve-shipping-options-with-rates-for-cart)
+- [Optimizing Rates at Checkout](#optimizing-rates-at-checkout)
+  - [How it works](#how-it-works)
+  - [Setup parcel templates](#setup-parcel-templates)
+  - [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
+  - [Accuracy of Rates](#accuracy-of-rates)
+- [Shippo Orders](#shippo-orders)
+- [Shippo Packaging Slip](#shippo-packaging-slip)
+- [Limitations](#limitations)
+- [Resources](#resources)
 
 ## Getting started
 
@@ -251,7 +255,7 @@ In your medusa store, make sure products have correct values for length, width, 
 
 ### Accuracy of Rates
 
-Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create reasonably optimized requests for rates, but makes no guarantees and assumes no responsibility about any result. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
+Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create reasonably optimized requests for rates, but makes no guarantees and assumes no responsibility about any result, regardless of any mentions or claims thereafter. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
 
 Assuming your medusa store has accurate product dimensions/weight, and your package templates in shippo reflect a carefully planned boxing strategy, expect reasonably high accurate rates for single item fulfillments and reasonably accurate rates multi-item fulfillments that fit in a single parcel. Multi parcel for rates at checkout is currently not supported. If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
