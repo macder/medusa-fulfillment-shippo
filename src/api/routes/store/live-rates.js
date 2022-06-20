@@ -36,7 +36,6 @@ export default async (req, res, next) => {
     )
   }
 
-  const parcels = await parcelFits(cart.items)
   const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
 
   const lineItems = await Promise.all(
@@ -47,6 +46,8 @@ export default async (req, res, next) => {
   )
 
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
+  const parcels = await parcelFits(cart.items)
+
   const rates = await shippoRates(
     toAddress,
     lineItems,
