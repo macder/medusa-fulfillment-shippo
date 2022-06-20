@@ -4,7 +4,7 @@ Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout, optimized with a first-fit-decreasing ([FFD](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)) bin packing algorithm.
+Live shipping rates for carts at checkout, optimized with a 3D rotational first-fit-decreasing ([FFD](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)) bin packing algorithm.
 
 Creates Shippo orders for new fulfillments.
 
@@ -228,20 +228,20 @@ GET http://localhost:9000/store/shipping-options/:cart_id
 
 ## Optimizing Rates at Checkout
 
-Estimating an accurate shipping cost for a cart with multiple items is a challenging problem. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel template, regardless if all items fit when calculating rates.
+Estimating an accurate shipping cost for a cart with multiple items of various dimensions is a challenging problem. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel template, regardless if all items fit when calculating rates.
 
 **But, this is not a dead-end…**
 
-medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all the products in medusa must have values for length, width, height, and weight.
+medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
 
 ### How it works
 
 * Sorts parcels from smallest to largest
 * Sorts items from largest to smallest
-    * Attempt fitting items into smallest parcel the largest item can fit.
+    * Attempts fitting items into smallest parcel the largest item can fit.
     * If there are items remaining, try the next parcel size
     * If there are no remaining items, use this parcel for shipping rate.
-    * If all items cannot fit into single parcel, use the default template (_future versions might include multi parcel implementation_)
+    * If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
 
 ### Setup parcel templates
 
