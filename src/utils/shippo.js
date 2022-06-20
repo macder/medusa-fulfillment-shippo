@@ -3,14 +3,9 @@ import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 import shippo from "shippo"
 import { BP3D } from "binpackingjs"
 
-// / //// npm //////////
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
-// const { plugins } = configModule
-// const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
-// / ///////////////////////////////////////////////
-
-const { projectConfig } = configModule
-const options = projectConfig
+const { plugins } = configModule
+const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
 
 const client = shippo(options.api_key)
 
