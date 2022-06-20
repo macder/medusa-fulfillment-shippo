@@ -89,6 +89,7 @@ export default async (req, res, next) => {
             {
               metadata: {
                 is_shippo_rate: true,
+                shippo_parcel: parcels[0],
                 ...optionRate,
               },
             }
