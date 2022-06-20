@@ -8,3 +8,4 @@ yarn.lock
 src
 .gitignore
 .babelrc
+/.github

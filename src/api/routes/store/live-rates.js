@@ -1,5 +1,6 @@
 import { MedusaError } from "medusa-core-utils"
 import {
+  parcelFits,
   shippoAddress,
   shippoLineItem,
   shippoRates,
@@ -45,7 +46,14 @@ export default async (req, res, next) => {
   )
 
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
+  const parcels = await parcelFits(cart.items)
 
-  const rates = await shippoRates(toAddress, lineItems, shippingOptions)
+  const rates = await shippoRates(
+    toAddress,
+    lineItems,
+    shippingOptions,
+    parcels[0]
+  )
+
   res.json([...rates])
 }
