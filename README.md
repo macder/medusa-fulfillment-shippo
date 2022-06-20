@@ -4,7 +4,7 @@ Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout, optimized with an equivalent first-fit-decreasing ([FFD](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)) bin packing algorithm.
+Live shipping rates for carts at checkout, optimized with a first-fit-decreasing ([FFD](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)) bin packing algorithm.
 
 Creates Shippo orders for new fulfillments.
 
@@ -236,11 +236,12 @@ medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpack
 
 ### How it works
 
-*   Sorts cart items from largest to smallest
-    *   Attempt fitting sorted items one at a time into smallest parcel.
-    *   If there are remaining items, tries fitting all sorted items one at a time into the next smallest parcel.
-    *   If there are no remaining items, use this parcel for shipping rate.
-    *   If all items cannot fit into single parcel, use the default template (_future versions might include multi parcel implementation_)
+* Order parcels from smallest to largest
+* Order items from largest to smallest
+    * Attempt fitting items into smallest parcel the largest item can fit.
+    * If there are items remaining, try the next parcel size
+    * If there are no remaining items, use this parcel for shipping rate.
+    * If all items cannot fit into single parcel, use the default template (_future versions might include multi parcel implementation_)
 
 ### Setup parcel templates
 
