@@ -14,10 +14,10 @@ Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillme
 
 *   [Getting Started](#getting-started)
 *   [Rates at Checkout](#setup-rates-at-checkout)
-    *   Setup
+    *   [Setup](#setup-rates-at-checkout)
         1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
         2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
-    *   Usage
+    *   [Usage](#using-rates-at-checkout)
         1.  [Get shipping rates for a cart](#get-shipping-rates-for-a-cart)
         2.  [Create shipping options with rates for cart](#create-shipping-options-with-rates-for-cart)
         3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
