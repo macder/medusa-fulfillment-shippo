@@ -2,13 +2,34 @@
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
-Adds a fulfillment option for each service level provided by active carriers in your Shippo account. These will be available when an admin is creating shipping options for regions, profiles, etc.
+Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout.
+Live shipping rates for carts at checkout, optimized with a 3D rotational first-fit-decreasing ([FFD](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)) bin packing algorithm.
 
-New fulfillments create orders in Shippo.
+Creates Shippo orders for new fulfillments.
 
 Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillment ID
+
+## Table of Contents
+
+*   [Getting Started](#getting-started)
+*   [Rates at Checkout](#setup-rates-at-checkout)
+    *   [Setup](#setup-rates-at-checkout)
+        1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
+        2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
+    *   [Usage](#using-rates-at-checkout)
+        1.  [Get shipping rates for a cart](#get-shipping-rates-for-a-cart)
+        2.  [Create shipping options with rates for cart](#create-shipping-options-with-rates-for-cart)
+        3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
+    *   [Optimizing](#optimizing-rates-at-checkout)
+        1.  [How it works](#how-it-works)
+        2.  [Setup parcel templates](#setup-parcel-templates)
+        3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
+        4.  [Accuracy of Rates](#accuracy-of-rates)
+*   [Shippo Orders](#shippo-orders)
+*   [Packaging Slip](#shippo-packaging-slip)
+*   [Limitations](#limitations)
+*   [Resources](#resources)
 
 ## Getting started
 
@@ -204,6 +225,39 @@ After creating the custom shipping options in the previous step, they are availa
 ```plaintext
 GET http://localhost:9000/store/shipping-options/:cart_id
 ```
+
+## Optimizing Rates at Checkout
+
+Estimating an accurate shipping cost for a cart with multiple items of various dimensions is a challenging problem. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel template, regardless if all items fit when calculating rates.
+
+**But, this is not a dead-end…**
+
+medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
+
+### How it works
+
+* Sorts parcels from smallest to largest
+* Sorts items from largest to smallest
+    * Attempts fitting items into smallest parcel the largest item can fit.
+    * If there are items remaining, try the next parcel size
+    * If there are no remaining items, use this parcel for shipping rate.
+    * If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
+
+### Setup parcel templates
+
+Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
+
+To get most optimal results, it is recommended to create package templates for all your shipping boxes.
+
+### Verify product dimensions and weight
+
+In your medusa store, make sure products have correct values for length, width, height, weight
+
+### Accuracy of Rates
+
+Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
+
+Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
 ## Shippo Orders
 
