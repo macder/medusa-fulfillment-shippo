@@ -236,8 +236,8 @@ medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpack
 
 ### How it works
 
-* Order parcels from smallest to largest
-* Order items from largest to smallest
+* Sorts parcels from smallest to largest
+* Sorts items from largest to smallest
     * Attempt fitting items into smallest parcel the largest item can fit.
     * If there are items remaining, try the next parcel size
     * If there are no remaining items, use this parcel for shipping rate.
