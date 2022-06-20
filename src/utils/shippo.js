@@ -151,12 +151,16 @@ export const parcelFits = async (lineItems) => {
     )
 
   const bins = await shippoUserParcelTemplates().then((response) =>
-    response.results.map(
-      (box) => {
+    response.results
+      .map((box) => {
         box.dim_weight = box.length * box.width * box.height
         return box
-      }
-    ).sort((a, b) => a.dim_weight - b.dim_weight).map(box => new Bin(box.object_id, box.width, box.height, box.length, box.weight))
+      })
+      .sort((a, b) => a.dim_weight - b.dim_weight)
+      .map(
+        (box) =>
+          new Bin(box.object_id, box.width, box.height, box.length, box.weight)
+      )
   )
 
   const fitParcels = []
