@@ -1,6 +1,9 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.5.0] (2022-06-20)
+Added
+- Implemented a FFD bin packing algorithm for rates at checkout [#44](https://github.com/macder/medusa-fulfillment-shippo/issues/44)
 ## [0.4.0] (2022-06-18)
 Added
 - Price totals to shippo order [#26](https://github.com/macder/medusa-fulfillment-shippo/issues/26)
