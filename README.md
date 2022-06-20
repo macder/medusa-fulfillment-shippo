@@ -12,25 +12,24 @@ Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillme
 
 ## Table of Contents
 
-- [medusa-fulfillment-shippo](#medusa-fulfillment-shippo)
-- [Table of Contents](#table-of-contents)
-- [Getting started](#getting-started)
-- [Setup Rates at Checkout](#setup-rates-at-checkout)
-  - [Step 1 - Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
-  - [**Step 2 - Assign the Shipping Options to Regions in Medusa**](#step-2---assign-the-shipping-options-to-regions-in-medusa)
-- [Using Rates at Checkout](#using-rates-at-checkout)
-  - [**Get shipping rates for a cart**](#get-shipping-rates-for-a-cart)
-  - [**Create shipping options with rates for cart:**](#create-shipping-options-with-rates-for-cart)
-  - [**Retrieve shipping options with rates for cart**](#retrieve-shipping-options-with-rates-for-cart)
-- [Optimizing Rates at Checkout](#optimizing-rates-at-checkout)
-  - [How it works](#how-it-works)
-  - [Setup parcel templates](#setup-parcel-templates)
-  - [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
-  - [Accuracy of Rates](#accuracy-of-rates)
-- [Shippo Orders](#shippo-orders)
-- [Shippo Packaging Slip](#shippo-packaging-slip)
-- [Limitations](#limitations)
-- [Resources](#resources)
+*   [Getting Started](#getting-started)
+*   [Rates at Checkout](#setup-rates-at-checkout)
+    *   Setup
+        1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
+        2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
+    *   Usage
+        1.  [Get shipping rates for a cart](#get-shipping-rates-for-a-cart)
+        2.  [Create shipping options with rates for cart](#create-shipping-options-with-rates-for-cart)
+        3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
+    *   [Optimizing](#optimizing-rates-at-checkout)
+        1.  [How it works](#how-it-works)
+        2.  [Setup parcel templates](#setup-parcel-templates)
+        3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
+        4.  [Accuracy of Rates](#accuracy-of-rates)
+*   [Shippo Orders](#shippo-orders)
+*   [Packaging Slip](#shippo-packaging-slip)
+*   [Limitations](#limitations)
+*   [Resources](#resources)
 
 ## Getting started
 
