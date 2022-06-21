@@ -23,13 +23,13 @@ export default (app, rootDirectory) => {
 
   route.get(
     "/carts/:cart_id/shippo/rates",
-    middlewares.wrap(require("./live-rates").default)
+    middlewares.wrap(require("./carts-rates").default)
   )
 
   route.post(
     "/shipping-options/:cart_id/shippo/rates/",
     bodyParser.json(),
-    middlewares.wrap(require("./live-rates-post").default)
+    middlewares.wrap(require("./shipping-options-rates").default)
   )
 
   // all your errors are belong to this
