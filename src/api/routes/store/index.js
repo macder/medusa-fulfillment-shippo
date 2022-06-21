@@ -22,12 +22,12 @@ export default (app, rootDirectory) => {
   app.use("/store", route)
 
   route.get(
-    "/shippo/live-rates/:cart_id",
+    "/carts/:cart_id/shippo/rates",
     middlewares.wrap(require("./live-rates").default)
   )
 
   route.post(
-    "/shippo/live-rates",
+    "/shipping-options/:cart_id/shippo/rates/",
     bodyParser.json(),
     middlewares.wrap(require("./live-rates-post").default)
   )

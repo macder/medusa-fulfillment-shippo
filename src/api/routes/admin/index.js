@@ -25,13 +25,13 @@ export default (app, rootDirectory) => {
   route.use(bodyParser.json())
 
   route.get(
-    "/shippo/order/:fulfillment_id",
+    "/fulfillments/:fulfillment_id/shippo/order",
     authenticate(),
     middlewares.wrap(require("./shippo-order").default)
   )
 
   route.get(
-    "/shippo/order/:fulfillment_id/packingslip",
+    "/fulfillments/:fulfillment_id/shippo/packingslip",
     authenticate(),
     middlewares.wrap(require("./order-packingslip").default)
   )

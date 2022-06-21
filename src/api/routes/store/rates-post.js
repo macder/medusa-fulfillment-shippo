@@ -8,7 +8,7 @@ import { validateShippingAddress } from "../../../utils/validator"
 import { MedusaError } from "medusa-core-utils"
 
 export default async (req, res, next) => {
-  const { cart_id } = req.body
+  const { cart_id } = req.params
   const cartService = req.scope.resolve("cartService")
   const totalsService = req.scope.resolve("totalsService")
   const shippingProfileService = req.scope.resolve("shippingProfileService")
