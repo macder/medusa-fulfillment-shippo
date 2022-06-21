@@ -16,10 +16,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     this.options_ = options
 
-    // for when released as an npm package
-    // this.options_ = options
-    this.options_ = projectConfig
-
     /** @private @const {Shippo} */
     this.shippo_ = shippo(this.options_.api_key)
 
