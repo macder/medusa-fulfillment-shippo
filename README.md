@@ -4,11 +4,11 @@ Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout, optimized with a [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm (_approximately-optimal heuristic_).
+Live shipping rates for carts at checkout, optimized with a [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
 
 Creates Shippo orders for new fulfillments.
 
-Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillment ID
+Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment ID
 
 ## Table of Contents
 
@@ -26,8 +26,8 @@ Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillme
         2.  [Setup parcel templates](#setup-parcel-templates)
         3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         4.  [Accuracy of Rates](#accuracy-of-rates)
-*   [Shippo Orders](#shippo-orders)
-*   [Packaging Slip](#shippo-packaging-slip)
+*   [Orders](#orders)
+*   [Packing Slip](#packing-slip)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -258,7 +258,7 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-## Shippo Orders
+## Orders
 
 Creating an order fulfillment in admin will create an order in Shippo.
 
@@ -274,9 +274,9 @@ Returns `shippo_order` object
 
 Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed and replaced with their `object_id`
 
-## Shippo Packaging Slip
+## Packing Slips
 
-Retrieve shippo package slip using medusa fulfillment id:
+Retrieve shippo packing slips using medusa fulfillment id:
 
 ```plaintext
 GET /admin/fulfillments/:id/shippo/packingslip
