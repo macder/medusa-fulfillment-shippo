@@ -1,6 +1,7 @@
 import path from "path"
-import { getConfigFile } from "medusa-core-utils"
+import { getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
+import { shippoAddress } from "./shippo"
 
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
 const { plugins } = configModule
@@ -10,7 +11,7 @@ const { options } = plugins.find(
 
 const client = shippo(options.api_key)
 
-export const shippoUserParcelTemplates = async () =>
+export const getUserParcelTemplates = async () =>
   await client.userparceltemplates.list()
 
 /** Get shippo live rates for carts shipping options
@@ -19,7 +20,7 @@ export const shippoUserParcelTemplates = async () =>
  * @param {array} shippingOptions - array of shipping_option objects
  * @return {array} array filtered for cart of shippo live-rates objects
  */
-export const shippoRates = async (
+export const getRates = async (
   toAddress,
   lineItems,
   shippingOptions,
@@ -84,13 +85,13 @@ export const createShippoAddress = async (address, email) =>
     throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
   })
 
-export const shippoGetParcel = async (id) =>
+export const getParcel = async (id) =>
   await client.userparceltemplates.retrieve(id).catch((e) => {
     throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
   })
 
-export const shippoGetOrder = async (shippoOrderID) =>
+export const getShippoOrder = async (shippoOrderID) =>
   await client.order.retrieve(shippoOrderID)
 
-export const shippoGetPackingSlip = async (shippoOrderID) =>
+export const getPackingSlip = async (shippoOrderID) =>
   await client.order.packingslip(shippoOrderID)

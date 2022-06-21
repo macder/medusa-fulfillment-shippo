@@ -1,5 +1,5 @@
 import { BP3D } from "binpackingjs"
-import { shippoUserParcelTemplates } from "./client"
+import { getUserParcelTemplates } from "./client"
 import { productLineItem } from "./shippo"
 
 const splitItem = (item) => {
@@ -32,7 +32,7 @@ export const binPacker = async (lineItems) => {
         )
     )
 
-  const bins = await shippoUserParcelTemplates().then((response) =>
+  const bins = await getUserParcelTemplates().then((response) =>
     response.results
       .map((box) => {
         box.dim_weight = box.length * box.width * box.height
