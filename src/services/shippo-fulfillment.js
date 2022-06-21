@@ -88,7 +88,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-
     const lineItems = await Promise.all(
       fulfillmentItems.map(async (item) => {
         const totals = await this.totalsService_.getLineItemTotals(
@@ -126,7 +125,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
 
-    const shipppOrder =  await this.shippo_.order
+    const shipppOrder = await this.shippo_.order
       .create({
         order_number: fromOrder.display_id,
         order_status: "PAID",
@@ -143,11 +142,14 @@ class ShippoFulfillmentService extends FulfillmentService {
         weight: totalWeight,
         weight_unit: this.options_.weight_unit_type,
       })
-      .then((response) => ({ shippo_order_id: response.object_id, shippo_parcel: shippoParcel.object_id }))
+      .then((response) => ({
+        shippo_order_id: response.object_id,
+        shippo_parcel: shippoParcel.object_id,
+      }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
-    
+
     return shipppOrder
   }
 
