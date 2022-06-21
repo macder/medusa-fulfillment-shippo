@@ -98,5 +98,7 @@ export default async (req, res, next) => {
       )
     })
 
+  cartService.setMetadata(cart_id, "shippo_parcel", parcels[0])
+
   res.json({ customShippingOptions })
 }
