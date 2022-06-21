@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+
+## [0.5.2] (2022-06-21)
+Fixed
+- Documentation mistake - wrong field name in Getting Started readme
 ## [0.5.1] (2022-06-21)
 Bug Fixes
 - Shippo orders created on new fulfillment now have status "PAID" [#23](https://github.com/macder/medusa-fulfillment-shippo/issues/23)
