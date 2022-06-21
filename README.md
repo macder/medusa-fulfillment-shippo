@@ -154,7 +154,7 @@ Repeat above steps for each shipping option.
 ### **Get shipping rates for a cart**
 
 ```plaintext
-GET http://localhost:9000/store/shippo/live-rates/:cart_id
+GET /store/carts/:id/shippo/rates
 ```
 
 Returns an array of Shippo live-rate objects that match the carts shipping options.
@@ -180,8 +180,7 @@ Sample response:
 ### **Create shipping options with rates for cart:**
 
 ```plaintext
-POST http://localhost:9000/store/shippo/live-rates/
---data {"cart_id":"CART_ID"}
+POST /store/shipping-options/:cart_id/shippo/rates/
 ```
 
 Creates custom shipping options with the rates for the cart based on its available shipping options.
@@ -223,7 +222,7 @@ Sample response:
 After creating the custom shipping options in the previous step, they are available via the standard [store/shipping-options](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) endpoint
 
 ```plaintext
-GET http://localhost:9000/store/shipping-options/:cart_id
+GET /store/shipping-options/:cart_id
 ```
 
 ## Optimizing Rates at Checkout
@@ -268,7 +267,7 @@ View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/
 A new endpoint is exposed that will retrieve a Shippo order for the fulfillment
 
 ```plaintext
-GET http://localhost:9000/admin/shippo/order/:fulfillment_id
+GET /admin/fulfillments/:id/shippo/order
 ```
 
 Returns `shippo_order` object
@@ -280,7 +279,7 @@ Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed
 Retrieve shippo package slip using medusa fulfillment id:
 
 ```plaintext
-GET http://localhost:9000/admin/shippo/order/:fulfillment_id/packingslip
+GET /admin/fulfillments/:id/shippo/packingslip
 ```
 
 ## Limitations
