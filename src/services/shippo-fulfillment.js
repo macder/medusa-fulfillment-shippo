@@ -5,7 +5,7 @@ import path from "path"
 import {
   getShippingOptions,
   getShippingOptionGroups,
-  shippoGetParcel,
+  getParcel,
 } from "../utils/client"
 import { shippoAddress, shippoLineItem } from "../utils/shippo"
 
@@ -79,7 +79,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     const currencyCode = fromOrder.currency_code.toUpperCase()
 
-    const shippoParcel = await shippoGetParcel(fromOrder.metadata.shippo_parcel)
+    const shippoParcel = await getParcel(fromOrder.metadata.shippo_parcel)
 
     const shipppOrder = await this.shippo_.order
       .create({

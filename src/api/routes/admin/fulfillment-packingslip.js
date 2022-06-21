@@ -1,4 +1,4 @@
-import { shippoGetPackingSlip } from "../../../utils/client"
+import { getPackingSlip } from "../../../utils/client"
 
 export default async (req, res) => {
   const fulfillmentService = req.scope.resolve("fulfillmentService")
@@ -8,7 +8,7 @@ export default async (req, res) => {
     .retrieve(fulfillment_id)
     .then(
       async (fulfillment) =>
-        await shippoGetPackingSlip(fulfillment.data.shippo_order_id)
+        await getPackingSlip(fulfillment.data.shippo_order_id)
     )
 
   res.json({ shippoPackingSlip })
