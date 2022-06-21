@@ -2,7 +2,11 @@ import { FulfillmentService } from "medusa-interfaces"
 import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
 import path from "path"
-import { getShippingOptions, getShippingOptionGroups, createShippoAddress } from "../utils/client"
+import {
+  getShippingOptions,
+  getShippingOptionGroups,
+  shippoGetParcel,
+} from "../utils/client"
 import { shippoAddress, shippoLineItem } from "../utils/shippo"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -62,10 +66,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
     )
 
-    const toAddress = shippoAddress(
-      fromOrder.shipping_address,
-      fromOrder.email
-    )
+    const toAddress = shippoAddress(fromOrder.shipping_address, fromOrder.email)
 
     const totalWeight = lineItems
       .map((e) => e.weight * e.quantity)

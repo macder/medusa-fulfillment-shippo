@@ -65,10 +65,11 @@ export const shippoAddress = (address, email) => ({
   validate: address.country_code == "us" ?? true,
 })
 
-export const returnOptions = (shippingOptions) => shippingOptions
-  .filter((e) => e.supports_return_labels)
-  .map((e) => ({
-    ...e,
-    name: `${e.name} - Support return labels`,
-    is_return: true,
-  }))
+export const returnOptions = (shippingOptions) =>
+  shippingOptions
+    .filter((e) => e.supports_return_labels)
+    .map((e) => ({
+      ...e,
+      name: `${e.name} - Support return labels`,
+      is_return: true,
+    }))
