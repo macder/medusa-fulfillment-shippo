@@ -1,5 +1,5 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
+import { humanizeAmount, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
 import {
   getShippingOptions,
