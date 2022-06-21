@@ -4,7 +4,7 @@ Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout, optimized with a 3D rotational first-fit-decreasing ([FFD](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)) bin packing algorithm.
+Live shipping rates for carts at checkout, optimized with a [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm (_approximately-optimal heuristic_).
 
 Creates Shippo orders for new fulfillments.
 
