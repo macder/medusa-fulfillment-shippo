@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.6.0] (2022-06-21)
+Changed
+- **BREAKING**: API endpoint URI's [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50)
+- Housekeeping [#51](https://github.com/macder/medusa-fulfillment-shippo/issues/51)
 
 ## [0.5.2] (2022-06-21)
 Fixed
