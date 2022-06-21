@@ -2,7 +2,7 @@ import { FulfillmentService } from "medusa-interfaces"
 import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
 import path from "path"
-import { getShippingOptions, getShippingOptionGroups } from "../utils/client"
+import { getShippingOptions, getShippingOptionGroups, createShippoAddress } from "../utils/client"
 import { shippoAddress, shippoLineItem } from "../utils/shippo"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -62,12 +62,10 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
     )
 
-    const toAddress = await this.createShippoAddress(
+    const toAddress = await createShippoAddress(
       fromOrder.shipping_address,
       fromOrder.email
-    ).catch((e) => {
-      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
-    })
+    )
 
     const totalWeight = lineItems
       .map((e) => e.weight * e.quantity)
@@ -118,10 +116,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
-
-  async createShippoAddress(address, email) {
-    return await this.shippo_.address.create(shippoAddress(address, email))
-  }
 }
 
 export default ShippoFulfillmentService
