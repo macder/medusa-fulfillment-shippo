@@ -1,6 +1,8 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, MedusaError } from "medusa-core-utils"
+import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
+import path from "path"
+import { getShippingOptions, getShippingOptionGroups } from "../utils/client"
 import { shippoAddress, shippoLineItem } from "../utils/shippo"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -25,50 +27,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    const shippingOptions = await this.shippo_.carrieraccount
-      .list({ service_levels: true, results: 100 })
-      .then((r) =>
-        r.results
-          .filter((e) => e.active)
-          .flatMap((item) =>
-            item.service_levels.map((e) => {
-              const { service_levels, ...shippingOption } = {
-                ...e,
-                id: `shippo-fulfillment-${e.token}`,
-                name: `${item.carrier_name} ${e.name}`,
-                carrier_id: item.object_id,
-                is_group: false,
-                ...item,
-              }
-              return shippingOption
-            })
-          )
-      )
-      .catch((e) => {
-        throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
-      })
-
-    const returnOptions = shippingOptions
-      .filter((e) => e.supports_return_labels)
-      .map((e) => ({
-        ...e,
-        name: `${e.name} - Support return labels`,
-        is_return: true,
-      }))
-
-    const shippingOptionGroups = await this.shippo_.servicegroups
-      .list()
-      .then((response) =>
-        response.map((e) => ({
-          id: `shippo-fulfillment-${e.object_id}`,
-          is_group: true,
-          ...e,
-        }))
-      )
-      .catch((e) => {
-        throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
-      })
-
+    const shippingOptions = await getShippingOptions()
+    const shippingOptionGroups = await getShippingOptionGroups()
     return [...shippingOptions, ...shippingOptionGroups]
   }
 

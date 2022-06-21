@@ -41,6 +41,43 @@ export const shippoRates = async (
   return rates
 }
 
+export const getShippingOptions = async () => await client.carrieraccount
+  .list({ service_levels: true, results: 100 })
+  .then((r) =>
+    r.results
+      .filter((e) => e.active)
+      .flatMap((item) =>
+        item.service_levels.map((e) => {
+          const { service_levels, ...shippingOption } = {
+            ...e,
+            id: `shippo-fulfillment-${e.token}`,
+            name: `${item.carrier_name} ${e.name}`,
+            carrier_id: item.object_id,
+            is_group: false,
+            ...item,
+          }
+          return shippingOption
+        })
+      )
+  )
+  .catch((e) => {
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+  })
+
+export const getShippingOptionGroups = async () => await client.servicegroups
+  .list()
+  .then((response) =>
+    response.map((e) => ({
+      id: `shippo-fulfillment-${e.object_id}`,
+      is_group: true,
+      ...e,
+    }))
+  )
+  .catch((e) => {
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+  })
+
+
 export const shippoGetOrder = async (shippoOrderID) =>
   await client.order.retrieve(shippoOrderID)
 
