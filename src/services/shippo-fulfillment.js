@@ -52,6 +52,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
+    const toAddress = shippoAddress(fromOrder.shipping_address, fromOrder.email)
+    const currencyCode = fromOrder.currency_code.toUpperCase()
+    const shippoParcel = await getParcel(fromOrder.metadata.shippo_parcel)
+    const shippingOptionName =
+      fromOrder.shipping_methods[0].shipping_option.name
+
     const lineItems = await Promise.all(
       fulfillmentItems.map(
         async (item) =>
@@ -66,20 +72,9 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
-
-    const toAddress = shippoAddress(fromOrder.shipping_address, fromOrder.email)
-
     const totalWeight = lineItems
       .map((e) => e.weight * e.quantity)
       .reduce((sum, current) => sum + current, 0)
-
-    const shippingOptionName =
-      fromOrder.shipping_methods[0].shipping_option.name
-    const shippingCostCurrency = fromOrder.currency_code.toUpperCase()
-
-    const currencyCode = fromOrder.currency_code.toUpperCase()
-
-    const shippoParcel = await getParcel(fromOrder.metadata.shippo_parcel)
 
     const shipppOrder = await this.shippo_.order
       .create({
@@ -89,8 +84,8 @@ class ShippoFulfillmentService extends FulfillmentService {
         line_items: lineItems,
         placed_at: fromOrder.created_at,
         shipping_cost: humanizeAmount(fromOrder.shipping_total, currencyCode),
-        shipping_cost_currency: shippingCostCurrency,
-        shipping_method: `${shippingOptionName} ${shippingCostCurrency}`,
+        shipping_cost_currency: currencyCode,
+        shipping_method: `${shippingOptionName} ${currencyCode}`,
         total_tax: humanizeAmount(fromOrder.tax_total, currencyCode),
         total_price: humanizeAmount(fromOrder.total, currencyCode),
         subtotal_price: humanizeAmount(fromOrder.subtotal, currencyCode),
