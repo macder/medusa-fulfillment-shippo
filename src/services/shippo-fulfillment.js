@@ -76,7 +76,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       .map((e) => e.weight * e.quantity)
       .reduce((sum, current) => sum + current, 0)
 
-    const shipppOrder = await this.shippo_.order
+    return await this.shippo_.order
       .create({
         order_number: fromOrder.display_id,
         order_status: "PAID",
@@ -100,8 +100,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
-
-    return shipppOrder
   }
 
   canCalculate(data) {
