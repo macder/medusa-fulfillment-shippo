@@ -77,6 +77,18 @@ export const getShippingOptionGroups = async () => await client.servicegroups
     throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
   })
 
+export const createShippoAddress = async (address, email) => 
+  await client.address.create(shippoAddress(address, email))
+  .catch((e) => {
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+  })
+
+export const shippoGetParcel = async (id) => await client.userparceltemplates
+  .retrieve(id)
+  .catch((e) => {
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+  })
+
 
 export const shippoGetOrder = async (shippoOrderID) =>
   await client.order.retrieve(shippoOrderID)

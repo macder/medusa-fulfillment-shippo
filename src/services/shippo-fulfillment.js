@@ -62,7 +62,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
     )
 
-    const toAddress = await createShippoAddress(
+    const toAddress = shippoAddress(
       fromOrder.shipping_address,
       fromOrder.email
     )
@@ -77,17 +77,13 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     const currencyCode = fromOrder.currency_code.toUpperCase()
 
-    const shippoParcel = await this.shippo_.userparceltemplates
-      .retrieve(fromOrder.metadata.shippo_parcel)
-      .catch((e) => {
-        throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
-      })
+    const shippoParcel = await shippoGetParcel(fromOrder.metadata.shippo_parcel)
 
     const shipppOrder = await this.shippo_.order
       .create({
         order_number: fromOrder.display_id,
         order_status: "PAID",
-        to_address: toAddress.object_id,
+        to_address: toAddress,
         line_items: lineItems,
         placed_at: fromOrder.created_at,
         shipping_cost: humanizeAmount(fromOrder.shipping_total, currencyCode),
