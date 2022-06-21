@@ -82,26 +82,26 @@ The manual way:
 Get the `REGION_ID` of the region to use: ([API ref](https://docs.medusajs.com/api/admin/region/list-regions))
 
 ```plaintext
-GET http://localhost:9000/admin/regions
+GET /admin/regions
 ```
 
 Add Shippo as a fulfillment provider to a region ([API ref](https://docs.medusajs.com/api/admin/region/add-fulfillment-provider))
 
 ```plaintext
-POST http://localhost:9000/admin/regions/:region_id/fulfillment-providers
+POST /admin/regions/:id/fulfillment-providers
 --data '{"provider_id":"shippo"}'
 ```
 
 Get the `PROFILE_ID` of the shipping profile to use: ([API ref](https://docs.medusajs.com/api/admin/shipping-profile/list-shipping-profiles))
 
 ```plaintext
-GET http://localhost:9000/admin/shipping-profiles
+GET /admin/shipping-profiles
 ```
 
 Get the fulfillment options for the region ([API ref](https://docs.medusajs.com/api/admin/region/list-fulfillment-options-available-in-the-region))
 
 ```plaintext
-GET http://localhost:9000/admin/regions/:REGION_ID/fulfillment-options
+GET /admin/regions/:id/fulfillment-options
 ```
 
 In the response, find the `FULFILLMENT_OPTION_OBJECT` 
@@ -132,7 +132,7 @@ In the response, find the `FULFILLMENT_OPTION_OBJECT` 
 Create the shipping option for the region. ([API ref](https://docs.medusajs.com/api/admin/shipping-option/create-shipping-option))
 
 ```plaintext
-POST http://localhost:9000/admin/shipping-options
+POST /admin/shipping-options
 --data {
   "name": "DISPLAY NAME",
   "data": [FULFILLMENT_OPTION_OBJECT],
