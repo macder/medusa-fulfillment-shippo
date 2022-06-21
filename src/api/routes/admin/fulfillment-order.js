@@ -1,4 +1,4 @@
-import { shippoGetOrder } from "../../../utils/shippo"
+import { shippoGetOrder } from "../../../utils/client"
 
 export default async (req, res) => {
   const fulfillmentService = req.scope.resolve("fulfillmentService")

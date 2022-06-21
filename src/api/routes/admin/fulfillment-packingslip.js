@@ -1,4 +1,4 @@
-import { shippoGetPackingSlip } from "../../../utils/shippo"
+import { shippoGetPackingSlip } from "../../../utils/client"
 
 export default async (req, res) => {
   const fulfillmentService = req.scope.resolve("fulfillmentService")
