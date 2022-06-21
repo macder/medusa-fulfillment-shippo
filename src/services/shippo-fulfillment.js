@@ -53,17 +53,18 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await Promise.all(
-      fulfillmentItems.map(async (item) => {
-        const totals = await this.totalsService_.getLineItemTotals(
-          item,
-          fromOrder
-        )
-        return shippoLineItem(
-          item,
-          totals.subtotal,
-          fromOrder.region.currency_code
-        )
-      })
+      fulfillmentItems.map(
+        async (item) =>
+          await this.totalsService_
+            .getLineItemTotals(item, fromOrder)
+            .then((totals) =>
+              shippoLineItem(
+                item,
+                totals.subtotal,
+                fromOrder.region.currency_code
+              )
+            )
+      )
     )
 
     const toAddress = shippoAddress(fromOrder.shipping_address, fromOrder.email)
