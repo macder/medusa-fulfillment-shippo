@@ -28,7 +28,6 @@ export const productLineItem = ({ variant: { product, ...variant } }) => ({
   mid_code: variant.mid_code ?? product.mid_code,
 })
 
-// TODO: move to client.js
 export const shippoLineItem = (lineItem, totalPrice, currency) => {
   const product = productLineItem(lineItem)
 
