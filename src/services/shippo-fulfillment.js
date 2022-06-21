@@ -11,16 +11,14 @@ import { shippoAddress, shippoLineItem } from "../utils/shippo"
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
-  constructor({ addressRepository, cartService, totalsService }, options) {
+  constructor({ totalsService }, options) {
     super()
 
     this.options_ = options
 
-    /** @private @const {AddressRepository} */
-    this.addressRepository_ = addressRepository
-
-    /** @private @const {CartService} */
-    this.cartService_ = cartService
+    // for when released as an npm package
+    // this.options_ = options
+    this.options_ = projectConfig
 
     /** @private @const {Shippo} */
     this.shippo_ = shippo(this.options_.api_key)
