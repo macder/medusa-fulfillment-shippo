@@ -44,7 +44,7 @@ Add to medusa-config.js
   resolve: `medusa-fulfillment-shippo`,
     options: {
       api_key: SHIPPO_API_KEY,
-      weight_unit: 'g', // valid values: g, kg, lb, oz
+      weight_unit_type: 'g', // valid values: g, kg, lb, oz
       dimension_unit_type: 'cm' // valid values: cm, mm, in
     },
 }
