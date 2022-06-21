@@ -5,7 +5,9 @@ import { BP3D } from "binpackingjs"
 
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
 const { plugins } = configModule
-const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+const { options } = plugins.find(
+  (e) => e.resolve === "medusa-fulfillment-shippo"
+)
 
 const client = shippo(options.api_key)
 

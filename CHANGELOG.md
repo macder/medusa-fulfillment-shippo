@@ -1,6 +1,9 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.5.1] (2022-06-21)
+Bug Fixes
+- Shippo orders created on new fulfillment now have status "PAID" [#23](https://github.com/macder/medusa-fulfillment-shippo/issues/23)
 ## [0.5.0] (2022-06-20)
 Added
 - Implemented a FFD bin packing algorithm for rates at checkout [#44](https://github.com/macder/medusa-fulfillment-shippo/issues/44)
