@@ -8,7 +8,6 @@ Changed
 
 Added
 - Parcel template name from bin packing to shippo order [#53](https://github.com/macder/medusa-fulfillment-shippo/issues/53)
-- Housekeeping [#51](https://github.com/macder/medusa-fulfillment-shippo/issues/51)
 
 ## [0.5.2] (2022-06-21)
 Fixed
