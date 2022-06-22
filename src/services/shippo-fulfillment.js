@@ -11,16 +11,10 @@ import { shippoAddress, shippoLineItem } from "../utils/shippo"
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
-  constructor({ addressRepository, cartService, totalsService }, options) {
+  constructor({ totalsService }, options) {
     super()
 
     this.options_ = options
-
-    /** @private @const {AddressRepository} */
-    this.addressRepository_ = addressRepository
-
-    /** @private @const {CartService} */
-    this.cartService_ = cartService
 
     /** @private @const {Shippo} */
     this.shippo_ = shippo(this.options_.api_key)
@@ -84,7 +78,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         placed_at: fromOrder.created_at,
         shipping_cost: humanizeAmount(fromOrder.shipping_total, currencyCode),
         shipping_cost_currency: currencyCode,
-        shipping_method: `${shippingOptionName} ${currencyCode}`,
+        shipping_method: `${shippingOptionName} - (${shippoParcel.name}) - ${currencyCode}`,
         total_tax: humanizeAmount(fromOrder.tax_total, currencyCode),
         total_price: humanizeAmount(fromOrder.total, currencyCode),
         subtotal_price: humanizeAmount(fromOrder.subtotal, currencyCode),
