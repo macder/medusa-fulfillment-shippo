@@ -10,7 +10,7 @@ Creates Shippo orders for new fulfillments.
 
 Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment ID
 
-> Notice: v0.6.0 changes API URI paths. See [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50)
+> Notice: v0.6.0 - New API URI paths. See [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50)
 
 ## Table of Contents
 
