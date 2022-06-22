@@ -4,11 +4,13 @@ Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
 
-Live shipping rates for carts at checkout, optimized with a [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm (_approximately-optimal heuristic_).
+Live shipping rates for carts at checkout, optimized with a [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
 
 Creates Shippo orders for new fulfillments.
 
-Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillment ID
+Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment ID
+
+> Notice: v0.6.0 - New API URI paths. See [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50) after upgrading from =< 0.5.2
 
 ## Table of Contents
 
@@ -26,8 +28,8 @@ Endpoints to retrieve Shippo orders and packaging slips using a Medusa fulfillme
         2.  [Setup parcel templates](#setup-parcel-templates)
         3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         4.  [Accuracy of Rates](#accuracy-of-rates)
-*   [Shippo Orders](#shippo-orders)
-*   [Packaging Slip](#shippo-packaging-slip)
+*   [Orders](#orders)
+*   [Packing Slip](#packing-slip)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -82,26 +84,26 @@ The manual way:
 Get the `REGION_ID` of the region to use: ([API ref](https://docs.medusajs.com/api/admin/region/list-regions))
 
 ```plaintext
-GET http://localhost:9000/admin/regions
+GET /admin/regions
 ```
 
 Add Shippo as a fulfillment provider to a region ([API ref](https://docs.medusajs.com/api/admin/region/add-fulfillment-provider))
 
 ```plaintext
-POST http://localhost:9000/admin/regions/:region_id/fulfillment-providers
+POST /admin/regions/:id/fulfillment-providers
 --data '{"provider_id":"shippo"}'
 ```
 
 Get the `PROFILE_ID` of the shipping profile to use: ([API ref](https://docs.medusajs.com/api/admin/shipping-profile/list-shipping-profiles))
 
 ```plaintext
-GET http://localhost:9000/admin/shipping-profiles
+GET /admin/shipping-profiles
 ```
 
 Get the fulfillment options for the region ([API ref](https://docs.medusajs.com/api/admin/region/list-fulfillment-options-available-in-the-region))
 
 ```plaintext
-GET http://localhost:9000/admin/regions/:REGION_ID/fulfillment-options
+GET /admin/regions/:id/fulfillment-options
 ```
 
 In the response, find the `FULFILLMENT_OPTION_OBJECT` 
@@ -132,7 +134,7 @@ In the response, find the `FULFILLMENT_OPTION_OBJECT` 
 Create the shipping option for the region. ([API ref](https://docs.medusajs.com/api/admin/shipping-option/create-shipping-option))
 
 ```plaintext
-POST http://localhost:9000/admin/shipping-options
+POST /admin/shipping-options
 --data {
   "name": "DISPLAY NAME",
   "data": [FULFILLMENT_OPTION_OBJECT],
@@ -154,7 +156,7 @@ Repeat above steps for each shipping option.
 ### **Get shipping rates for a cart**
 
 ```plaintext
-GET http://localhost:9000/store/shippo/live-rates/:cart_id
+GET /store/carts/:id/shippo/rates
 ```
 
 Returns an array of Shippo live-rate objects that match the carts shipping options.
@@ -180,8 +182,7 @@ Sample response:
 ### **Create shipping options with rates for cart:**
 
 ```plaintext
-POST http://localhost:9000/store/shippo/live-rates/
---data {"cart_id":"CART_ID"}
+POST /store/shipping-options/:cart_id/shippo/rates/
 ```
 
 Creates custom shipping options with the rates for the cart based on its available shipping options.
@@ -223,7 +224,7 @@ Sample response:
 After creating the custom shipping options in the previous step, they are available via the standard [store/shipping-options](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) endpoint
 
 ```plaintext
-GET http://localhost:9000/store/shipping-options/:cart_id
+GET /store/shipping-options/:cart_id
 ```
 
 ## Optimizing Rates at Checkout
@@ -259,7 +260,7 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-## Shippo Orders
+## Orders
 
 Creating an order fulfillment in admin will create an order in Shippo.
 
@@ -268,19 +269,19 @@ View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/
 A new endpoint is exposed that will retrieve a Shippo order for the fulfillment
 
 ```plaintext
-GET http://localhost:9000/admin/shippo/order/:fulfillment_id
+GET /admin/fulfillments/:id/shippo/order
 ```
 
 Returns `shippo_order` object
 
 Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed and replaced with their `object_id`
 
-## Shippo Packaging Slip
+## Packing Slips
 
-Retrieve shippo package slip using medusa fulfillment id:
+Retrieve shippo packing slips using medusa fulfillment id:
 
 ```plaintext
-GET http://localhost:9000/admin/shippo/order/:fulfillment_id/packingslip
+GET /admin/fulfillments/:id/shippo/packingslip
 ```
 
 ## Limitations

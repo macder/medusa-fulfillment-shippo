@@ -25,15 +25,15 @@ export default (app, rootDirectory) => {
   route.use(bodyParser.json())
 
   route.get(
-    "/shippo/order/:fulfillment_id",
+    "/fulfillments/:fulfillment_id/shippo/order",
     authenticate(),
-    middlewares.wrap(require("./shippo-order").default)
+    middlewares.wrap(require("./fulfillment-order").default)
   )
 
   route.get(
-    "/shippo/order/:fulfillment_id/packingslip",
+    "/fulfillments/:fulfillment_id/shippo/packingslip",
     authenticate(),
-    middlewares.wrap(require("./order-packingslip").default)
+    middlewares.wrap(require("./fulfillment-packingslip").default)
   )
 
   // all your errors are belong to this

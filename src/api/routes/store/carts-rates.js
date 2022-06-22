@@ -1,10 +1,7 @@
 import { MedusaError } from "medusa-core-utils"
-import {
-  parcelFits,
-  shippoAddress,
-  shippoLineItem,
-  shippoRates,
-} from "../../../utils/shippo"
+import { shippoAddress, shippoLineItem } from "../../../utils/shippo"
+import { binPacker } from "../../../utils/bin-packer"
+import { getRates } from "../../../utils/client"
 import { validateShippingAddress } from "../../../utils/validator"
 
 export default async (req, res, next) => {
@@ -46,9 +43,9 @@ export default async (req, res, next) => {
   )
 
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
-  const parcels = await parcelFits(cart.items)
+  const parcels = await binPacker(cart.items)
 
-  const rates = await shippoRates(
+  const rates = await getRates(
     toAddress,
     lineItems,
     shippingOptions,

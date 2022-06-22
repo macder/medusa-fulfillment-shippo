@@ -1,14 +1,11 @@
-import {
-  shippoAddress,
-  shippoLineItem,
-  shippoRates,
-  parcelFits,
-} from "../../../utils/shippo"
+import { shippoAddress, shippoLineItem } from "../../../utils/shippo"
+import { binPacker } from "../../../utils/bin-packer"
+import { getRates } from "../../../utils/client"
 import { validateShippingAddress } from "../../../utils/validator"
 import { MedusaError } from "medusa-core-utils"
 
 export default async (req, res, next) => {
-  const { cart_id } = req.body
+  const { cart_id } = req.params
   const cartService = req.scope.resolve("cartService")
   const totalsService = req.scope.resolve("totalsService")
   const shippingProfileService = req.scope.resolve("shippingProfileService")
@@ -52,9 +49,9 @@ export default async (req, res, next) => {
     })
   )
 
-  const parcels = await parcelFits(cart.items)
+  const parcels = await binPacker(cart.items)
   const toAddress = shippoAddress(cart.shipping_address, cart.email)
-  const rates = await shippoRates(
+  const rates = await getRates(
     toAddress,
     lineItems,
     shippingOptions,
