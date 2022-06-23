@@ -1,14 +1,10 @@
 import path from "path"
 import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 
-// / //// npm //////////
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
-// const { plugins } = configModule
-// const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
-// / ///////////////////////////////////////////////
+const { plugins } = configModule
+const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
 
-const { projectConfig } = configModule
-const options = projectConfig
 
 /** Makes a flat product object from a LineItem
  * @param {LineItem} - LineItem object
