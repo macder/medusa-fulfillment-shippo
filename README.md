@@ -155,6 +155,10 @@ Repeat above steps for each shipping option.
 
 ### **Get shipping rates for a cart**
 
+Request rates for all “live-rate” shipping option available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart. Useful if you just need flat data for UI
+
+The cart must have a complete shipping address
+
 **HTTP:**
 
 ```plaintext
@@ -166,10 +170,6 @@ GET /store/carts/:id/shippo/rates
 ```javascript
 await shippoFulfillmentService.fetchLiveRates(cart_id)
 ```
-
-Returns an array of Shippo live-rate objects that match the carts shipping options.
-
-The cart must have a complete shipping address or the response will be a validation error.
 
 Sample response:
 
@@ -198,7 +198,7 @@ POST /store/shipping-options/:cart_id/shippo/rates/
 **Service:**
 
 ```javascript
-await shippoFulfillmentService.updateShippingRates(cart_id)
+shippoFulfillmentService.updateShippingRates(cart_id)
 ```
 
 Creates custom shipping options with the rates for the cart based on its available shipping options.
@@ -299,7 +299,7 @@ Retrieve Shippo order for fulfillment
 
 **HTTP:**
 
-```plaintext
+```javascript
 GET /admin/fulfillments/:id/shippo/order
 ```
 
