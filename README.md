@@ -10,7 +10,7 @@ Creates Shippo orders for new fulfillments.
 
 Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment ID
 
-> Notice: v0.6.0 - New API URI paths. See [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50) after upgrading from =< 0.5.2
+> Notice: v0.6.0 - New API URI paths. See [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50) after upgrading from =\< 0.5.2
 
 ## Table of Contents
 
@@ -155,8 +155,16 @@ Repeat above steps for each shipping option.
 
 ### **Get shipping rates for a cart**
 
+**HTTP:**
+
 ```plaintext
 GET /store/carts/:id/shippo/rates
+```
+
+**Service:**
+
+```javascript
+await shippoFulfillmentService.fetchLiveRates(cart_id)
 ```
 
 Returns an array of Shippo live-rate objects that match the carts shipping options.
@@ -181,8 +189,16 @@ Sample response:
 
 ### **Create shipping options with rates for cart:**
 
+**HTTP:**
+
 ```plaintext
 POST /store/shipping-options/:cart_id/shippo/rates/
+```
+
+**Service:**
+
+```javascript
+shippoFulfillmentService.updateShippingRates(cart_id)
 ```
 
 Creates custom shipping options with the rates for the cart based on its available shipping options.
@@ -223,8 +239,21 @@ Sample response:
 
 After creating the custom shipping options in the previous step, they are available via the standard [store/shipping-options](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) endpoint
 
+**HTTP:**
+
 ```plaintext
 GET /store/shipping-options/:cart_id
+```
+
+**Service:**
+
+```javascript
+const cart = await cartService.retrieve(cart_id, {
+  select: ["subtotal"],
+  relations: ["region", "items", "items.variant", "items.variant.product"],
+})
+
+const options = await shippingProfileService.fetchCartOptions(cart)
 ```
 
 ## Optimizing Rates at Checkout
@@ -237,12 +266,12 @@ medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpack
 
 ### How it works
 
-* Sorts parcels from smallest to largest
-* Sorts items from largest to smallest
-    * Attempts fitting items into smallest parcel the largest item can fit.
-    * If there are items remaining, try the next parcel size
-    * If there are no remaining items, use this parcel for shipping rate.
-    * If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
+*   Sorts parcels from smallest to largest
+*   Sorts items from largest to smallest
+    *   Attempts fitting items into smallest parcel the largest item can fit.
+    *   If there are items remaining, try the next parcel size
+    *   If there are no remaining items, use this parcel for shipping rate.
+    *   If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
 
 ### Setup parcel templates
 
@@ -266,10 +295,21 @@ Creating an order fulfillment in admin will create an order in Shippo.
 
 View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/orders)
 
-A new endpoint is exposed that will retrieve a Shippo order for the fulfillment
+Retrieve Shippo order for fulfillment
 
-```plaintext
+**HTTP:**
+
+```javascript
 GET /admin/fulfillments/:id/shippo/order
+```
+
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.retrieve(shippo_order_id)
 ```
 
 Returns `shippo_order` object
@@ -278,10 +318,21 @@ Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed
 
 ## Packing Slips
 
-Retrieve shippo packing slips using medusa fulfillment id:
+Retrieve Shippo packingslip for fulfillment
+
+**HTTP:**
 
 ```plaintext
 GET /admin/fulfillments/:id/shippo/packingslip
+```
+
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.packingslip(shippo_order_id)
 ```
 
 ## Limitations
