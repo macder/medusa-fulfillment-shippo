@@ -16,6 +16,7 @@ export default async (req, res, next) => {
   const customShippingOptionRepository = req.scope.resolve(
     "customShippingOptionRepository"
   )
+  const shippoFulfillmentService = req.scope.resolve("shippoFulfillmentService")
 
   const cart = await cartService.retrieve(cart_id, {
     relations: [
@@ -29,34 +30,11 @@ export default async (req, res, next) => {
     ],
   })
 
-  // Validate if cart has a complete shipping address
-  const validAddress = validateShippingAddress(cart.shipping_address)
-  if (validAddress.error) {
-    return next(
-      new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        validAddress.error.details[0].message
-      )
-    )
-  }
+  const rates = await shippoFulfillmentService.fetchLiveRates(cart_id)
+
+  console.log(rates)
 
   const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
-
-  const lineItems = await Promise.all(
-    cart.items.map(async (item) => {
-      const totals = await totalsService.getLineItemTotals(item, cart)
-      return shippoLineItem(item, totals.subtotal, cart.region.currency_code)
-    })
-  )
-
-  const parcels = await binPacker(cart.items)
-  const toAddress = shippoAddress(cart.shipping_address, cart.email)
-  const rates = await getRates(
-    toAddress,
-    lineItems,
-    shippingOptions,
-    parcels[0]
-  )
 
   const customShippingOptions = await customShippingOptionService
     .list({ cart_id })
@@ -86,7 +64,7 @@ export default async (req, res, next) => {
             {
               metadata: {
                 is_shippo_rate: true,
-                shippo_parcel: parcels[0],
+                // shippo_parcel: parcels[0],
                 ...optionRate,
               },
             }
@@ -95,7 +73,7 @@ export default async (req, res, next) => {
       )
     })
 
-  cartService.setMetadata(cart_id, "shippo_parcel", parcels[0])
+  // cartService.setMetadata(cart_id, "shippo_parcel", parcels[0])
 
   res.json({ customShippingOptions })
 }

@@ -45,6 +45,28 @@ class Shippo {
     return []
   }
 
+  async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {
+    // console.log(toAddress, lineItems, shippingOptions, parcel)
+
+    const rates = await this.client_.liverates
+      .create({
+        address_to: toAddress,
+        line_items: lineItems,
+        parcel: parcel,
+      })
+      .then((response) =>
+        response.results.filter((item) =>
+          shippingOptions.find(
+            (option) => option.data.name === item.title && true
+          )
+        )
+      )
+
+    // console.log('***********Shippo Class', rates)
+
+    return rates
+  }
+
   async findActiveCarriers_(carriers) {
     return carriers.filter((carrier) => carrier.active)
   }
