@@ -1,12 +1,11 @@
+import path from "path"
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, MedusaError } from "medusa-core-utils"
-import shippo from "shippo"
-import {
-  getShippingOptions,
-  getShippingOptionGroups,
-  getParcel,
-} from "../utils/client"
-import { shippoAddress, shippoLineItem } from "../utils/shippo"
+import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
+// import shippo from "shippo"
+import { getParcel } from "../utils/client"
+import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
+
+import Shippo from "../utils/shippo"
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
@@ -14,19 +13,24 @@ class ShippoFulfillmentService extends FulfillmentService {
   constructor({ totalsService }, options) {
     super()
 
-    this.options_ = options
+    const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
+    const { projectConfig } = configModule
+
+    // for when released as an npm package
+    // this.options_ = options
+    this.options_ = projectConfig
 
     /** @private @const {Shippo} */
-    this.shippo_ = shippo(this.options_.api_key)
+    // this.shippo_ = shippo(this.options_.api_key)
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
+
+    this.client_ = new Shippo(this.options_.api_key)
   }
 
   async getFulfillmentOptions() {
-    const shippingOptions = await getShippingOptions()
-    const shippingOptionGroups = await getShippingOptionGroups()
-    return [...shippingOptions, ...shippingOptionGroups]
+    return await this.client_.retrieveFulfillmentOptions
   }
 
   async validateOption(data) {
@@ -45,12 +49,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-    const toAddress = shippoAddress(fromOrder.shipping_address, fromOrder.email)
-    const currencyCode = fromOrder.currency_code.toUpperCase()
-    const shippoParcel = await getParcel(fromOrder.metadata.shippo_parcel)
-    const shippingOptionName =
-      fromOrder.shipping_methods[0].shipping_option.name
-
     const lineItems = await Promise.all(
       fulfillmentItems.map(
         async (item) =>
@@ -65,30 +63,14 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
-    const totalWeight = lineItems
-      .map((e) => e.weight * e.quantity)
-      .reduce((sum, current) => sum + current, 0)
 
-    return await this.shippo_.order
-      .create({
-        order_number: fromOrder.display_id,
-        order_status: "PAID",
-        to_address: toAddress,
-        line_items: lineItems,
-        placed_at: fromOrder.created_at,
-        shipping_cost: humanizeAmount(fromOrder.shipping_total, currencyCode),
-        shipping_cost_currency: currencyCode,
-        shipping_method: `${shippingOptionName} - (${shippoParcel.name}) - ${currencyCode}`,
-        total_tax: humanizeAmount(fromOrder.tax_total, currencyCode),
-        total_price: humanizeAmount(fromOrder.total, currencyCode),
-        subtotal_price: humanizeAmount(fromOrder.subtotal, currencyCode),
-        currency: currencyCode,
-        weight: totalWeight,
-        weight_unit: this.options_.weight_unit_type,
-      })
+    const shippoOrder = await this.formatOrder(fromOrder, lineItems)
+
+    return await this.client_
+      .createOrder(shippoOrder)
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel: shippoParcel.object_id,
+        // shippo_parcel: shippoParcel.object_id,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -100,6 +82,16 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
+
+  formatAddress(address, email) {
+    return shippoAddress(address, email)
+  }
+
+  async formatOrder(order, lineItems) {
+    return await shippoOrder(order, lineItems)
+  }
 }
 
 export default ShippoFulfillmentService
+
+// console.log('***********', JSON.stringify(shippingOptions, null, 2))

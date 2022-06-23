@@ -1,4 +1,4 @@
-import { shippoAddress, shippoLineItem } from "../../../utils/shippo"
+import { shippoAddress, shippoLineItem } from "../../../utils/shippo-old"
 import { binPacker } from "../../../utils/bin-packer"
 import { getRates } from "../../../utils/client"
 import { validateShippingAddress } from "../../../utils/validator"

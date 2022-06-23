@@ -1,6 +1,6 @@
 import { BP3D } from "binpackingjs"
 import { getUserParcelTemplates } from "./client"
-import { productLineItem } from "./shippo"
+import { productLineItem } from "./shippo-old"
 
 const splitItem = (item) => {
   const multiItem = []

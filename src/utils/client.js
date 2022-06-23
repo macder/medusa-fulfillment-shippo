@@ -1,13 +1,16 @@
 import path from "path"
 import { getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
-import { shippoAddress } from "./shippo"
+import { shippoAddress } from "./shippo-old"
 
+// / //// npm //////////
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
-const { plugins } = configModule
-const { options } = plugins.find(
-  (e) => e.resolve === "medusa-fulfillment-shippo"
-)
+// const { plugins } = configModule
+// const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+// / ///////////////////////////////////////////////
+
+const { projectConfig } = configModule
+const options = projectConfig
 
 const client = shippo(options.api_key)
 
