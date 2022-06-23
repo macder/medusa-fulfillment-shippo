@@ -38,7 +38,7 @@ export const shippoLineItem = (lineItem, totalPrice, currency) => {
     title: product.product_title,
     variant_title: product.variant_title,
     quantity: lineItem.quantity,
-    total_price: humanizeAmount(totalPrice, currency).toString(),
+    total_price: humanizeAmount(totalPrice, currency),
     currency: currency.toUpperCase(),
     sku: product.sku,
     weight: product.weight.toString(),

@@ -57,17 +57,15 @@ class ShippoFulfillmentService extends FulfillmentService {
             .then((totals) =>
               shippoLineItem(
                 item,
-                totals.subtotal,
+                totals.unit_price,
                 fromOrder.region.currency_code
               )
             )
       )
     )
 
-    const shippoOrder = await this.formatOrder(fromOrder, lineItems)
-
     return await this.client_
-      .createOrder(shippoOrder)
+      .createOrder(await shippoOrder(fromOrder, lineItems))
       .then((response) => ({
         shippo_order_id: response.object_id,
         // shippo_parcel: shippoParcel.object_id,
@@ -82,16 +80,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
-
-  formatAddress(address, email) {
-    return shippoAddress(address, email)
-  }
-
-  async formatOrder(order, lineItems) {
-    return await shippoOrder(order, lineItems)
-  }
 }
 
 export default ShippoFulfillmentService
-
-// console.log('***********', JSON.stringify(shippingOptions, null, 2))
