@@ -192,16 +192,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  // TODO: ...
-  async fetchPackingSlip(orderId) {
-    return await this.client_.fetchPackingSlip(orderId)
-  }
-
-  // TODO: ...
-  async fetchOrder(id) {
-    return await this.client_.fetchOrder(id)
-  }
-
   async retrieveCart_(id) {
     return await this.cartService_.retrieve(id, {
       relations: [

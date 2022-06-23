@@ -55,14 +55,6 @@ class Shippo {
     return await this.client_.userparceltemplates.retrieve(id)
   }
 
-  async fetchPackingSlip(orderId) {
-    return await this.client_.order.packingslip(orderId)
-  }
-
-  async fetchOrder(id) {
-    return await this.client_.order.retrieve(id)
-  }
-
   async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {
     return await this.client_.liverates
       .create({
