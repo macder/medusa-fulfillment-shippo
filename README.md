@@ -198,7 +198,7 @@ POST /store/shipping-options/:cart_id/shippo/rates/
 **Service:**
 
 ```javascript
-shippoFulfillmentService.updateShippingRates(cart_id)
+await shippoFulfillmentService.updateShippingRates(cart_id)
 ```
 
 Creates custom shipping options with the rates for the cart based on its available shipping options.
