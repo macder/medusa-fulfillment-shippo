@@ -42,8 +42,9 @@ class Shippo {
   }
 
   async fetchCustomParcelTemplates() {
-    return await this.client_.userparceltemplates.list()
-      .then(response => response.results)
+    return await this.client_.userparceltemplates
+      .list()
+      .then((response) => response.results)
   }
 
   async fetchCustomParcel(id) {
@@ -53,7 +54,7 @@ class Shippo {
   async fetchPackingSlip(orderId) {
     return await this.client_.order.packingslip(orderId)
   }
-  
+
   async fetchOrder(id) {
     return await this.client_.order.retrieve(id)
   }
