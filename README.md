@@ -341,7 +341,7 @@ The fork adds support for the following endpoints:
 *   user-parcel-templates
 *   orders/:id/packingslip
 
-The client can be accessed directly if you need it
+The client is exposed on the `useClient` property
 
 ```javascript
 const client = shippoFulfillmentService.useClient
