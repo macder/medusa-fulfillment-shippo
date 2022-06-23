@@ -114,17 +114,17 @@ In the response, find the `FULFILLMENT_OPTION_OBJECT` 
   "is_group": true,
   "description": "2 days",
   "flat_rate": "25",
-  "flat_rate_currency": "CAD",
+  "flat_rate_currency": "USD",
   "free_shipping_threshold_currency": null,
   "free_shipping_threshold_min": null,
   "is_active": true,
-  "name": "Express Shipping Canada",
+  "name": "Express Shipping USA",
   "object_id": "...",
   "rate_adjustment": 0,
   "service_levels": [
     {
       "account_object_id": "...",
-      "service_level_token": "canada_post_xpresspost"
+      "service_level_token": "canada_post_xpresspost_usa"
     }
   ],
   "type": "LIVE_RATE"
@@ -155,7 +155,7 @@ Repeat above steps for each shipping option.
 
 ### **Get shipping rates for a cart**
 
-Request rates for all “live-rate” shipping option available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart. Useful if you just need flat data for UI
+Request rates for all “live-rate” shipping options available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart. Useful if you just need flat data for UI
 
 The cart must have a complete shipping address
 
@@ -176,12 +176,12 @@ Sample response:
 ```plaintext
 [
   {
-    "title": "Express Shipping Canada",
-    "description": "2 days",
-    "amount": "26.37",
+    "title": "Express Shipping USA",
+    "description": "",
+    "amount": "32.56",
     "currency": "CAD",
-    "amount_local": "26.37",
-    "currency_local": "CAD",
+    "amount_local": "25.04",
+    "currency_local": "USD",
     "estimated_days": 1
   }
 ]
@@ -213,23 +213,21 @@ Sample response:
 {
   "customShippingOptions": [
     {
-      "price": 2637,
+      "price": 2504,
       "shipping_option_id": "SHIPPING_OPTION_ID",
       "cart_id": "CART_ID",
       "metadata": {
         "is_shippo_rate": true,
-        "title": "Express Shipping Canada",
+        "title": "Express Shipping USA",
         "description": "",
-        "amount": "26.37",
+        "amount": "32.56",
         "currency": "CAD",
-        "amount_local": "26.37",
-        "currency_local": "CAD",
+        "amount_local": "25.04",
+        "currency_local": "USD",
         "estimated_days": 1
       },
-      "id": "ID",
-      "deleted_at": null,
-      "created_at": "2022-06-14T02:58:02.368Z",
-      "updated_at": "2022-06-14T02:58:02.368Z"
+      "id": "CSO_ID",
+
     }
   ]
 }
