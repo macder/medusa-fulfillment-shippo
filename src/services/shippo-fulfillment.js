@@ -1,7 +1,6 @@
 import path from "path"
 import { FulfillmentService } from "medusa-interfaces"
 import { humanizeAmount, getConfigFile, MedusaError } from "medusa-core-utils"
-import { getParcel } from "../utils/client"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
 import { validateShippingAddress } from "../utils/validator"
 import Shippo from "../utils/shippo"
@@ -42,11 +41,11 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {CustomShippingOptionService} */
     this.customShippingOptionService_ = customShippingOptionService
 
+    /** @private @const {CustomShippingOptionRepository_} */
     this.customShippingOptionRepository_ = customShippingOptionRepository
 
+    /** @private @const {Manager} */
     this.manager_ = manager
-
-    console.log(customShippingOptionRepository)
 
     this.client_ = new Shippo(this.options_.api_key)
   }
@@ -73,11 +72,13 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
 
+    const parcel = await this.client_.fetchCustomParcel(fromOrder.metadata.shippo_parcel_template)
+
     return await this.client_
-      .createOrder(await shippoOrder(fromOrder, lineItems))
+      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        // shippo_parcel: shippoParcel.object_id,
+        shippo_parcel_template: fromOrder.shippo_parcel_template,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -88,7 +89,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     return data.type === "LIVE_RATE"
   }
 
-  async calculatePrice(fulfillmentOption, fulfillmentData, cart) { }
+  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
 
   async fetchLiveRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
@@ -109,14 +110,14 @@ class ShippoFulfillmentService extends FulfillmentService {
     const lineItems = await this.formatLineItems_(cart.items, cart)
     const toAddress = shippoAddress(cart.shipping_address, cart.email)
 
-    const parcels = await binPacker(cart.items)
+    const parcels = await this.client_.fetchCustomParcelTemplates()
+    const packedParcels = await binPacker(cart.items, parcels)
 
-    return await this.client_.fetchLiveRates(
-      toAddress,
-      lineItems,
-      shippingOptions,
-      parcels[0]
-    )
+    return await this.client_
+      .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
+      .then((response) =>
+        response.map((rate) => ({ ...rate, parcel_template: packedParcels[0] }))
+      )
   }
 
   async updateShippingRates(cartId) {
@@ -146,6 +147,7 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
 
             const price = optionRate.amount_local || optionRate.amount
+            this.cartService_.setMetadata(cartId, "shippo_parcel_template", optionRate.parcel_template)
 
             return await this.customShippingOptionService_.create(
               {
@@ -156,7 +158,6 @@ class ShippoFulfillmentService extends FulfillmentService {
               {
                 metadata: {
                   is_shippo_rate: true,
-                  // shippo_parcel: parcels[0],
                   ...optionRate,
                 },
               }
@@ -187,6 +188,16 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
+  }
+
+  // TODO: ...
+  async fetchPackingSlip(orderId) {
+    return await this.client_.fetchPackingSlip(orderId)
+  }
+
+  // TODO: ...
+  async fetchOrder(id) {
+    return await this.client_.fetchOrder(id)
   }
 
   async retrieveCart_(id) {

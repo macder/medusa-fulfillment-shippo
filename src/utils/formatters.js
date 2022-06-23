@@ -70,9 +70,6 @@ export const shippoAddress = (address, email) => ({
 export const shippoOrder = async (order, lineItems, parcel) => {
   const toAddress = shippoAddress(order.shipping_address, order.email)
   const currencyCode = order.currency_code.toUpperCase()
-
-  // const shippoParcel = await getParcel(fromOrder.metadata.shippo_parcel)
-
   const shippingOptionName = order.shipping_methods[0].shipping_option.name
 
   const totalWeight = lineItems
@@ -86,11 +83,7 @@ export const shippoOrder = async (order, lineItems, parcel) => {
     placed_at: order.created_at,
     shipping_cost: humanizeAmount(order.shipping_total, currencyCode),
     shipping_cost_currency: currencyCode,
-
-    // shipping_method: `${shippingOptionName} - (${shippoParcel.name}) - ${currencyCode}`,
-
-    shipping_method: `${shippingOptionName} - ${currencyCode}`,
-
+    shipping_method: `${shippingOptionName} - (${parcel.name}) - ${currencyCode}`,
     total_tax: humanizeAmount(order.tax_total, currencyCode),
     total_price: humanizeAmount(order.total, currencyCode),
     subtotal_price: humanizeAmount(order.subtotal, currencyCode),

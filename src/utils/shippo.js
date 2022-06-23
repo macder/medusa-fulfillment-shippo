@@ -37,18 +37,29 @@ class Shippo {
     return await this.client_.servicegroups.list()
   }
 
-  async fetchUserParcelTemplate_(id) {
-    return await this.client.userparceltemplates.retrieve(id)
-  }
-
-  async fetchCarrierParcelTemplate_(token) {
+  async fetchCarrierParcelTemplate(token) {
     return []
   }
 
-  async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {
-    // console.log(toAddress, lineItems, shippingOptions, parcel)
+  async fetchCustomParcelTemplates() {
+    return await this.client_.userparceltemplates.list()
+      .then(response => response.results)
+  }
 
-    const rates = await this.client_.liverates
+  async fetchCustomParcel(id) {
+    return await this.client_.userparceltemplates.retrieve(id)
+  }
+
+  async fetchPackingSlip(orderId) {
+    return await this.client_.order.packingslip(orderId)
+  }
+  
+  async fetchOrder(id) {
+    return await this.client_.order.retrieve(id)
+  }
+
+  async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {
+    return await this.client_.liverates
       .create({
         address_to: toAddress,
         line_items: lineItems,
@@ -61,10 +72,6 @@ class Shippo {
           )
         )
       )
-
-    // console.log('***********Shippo Class', rates)
-
-    return rates
   }
 
   async findActiveCarriers_(carriers) {

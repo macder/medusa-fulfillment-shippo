@@ -1,6 +1,5 @@
 import { BP3D } from "binpackingjs"
-import { getUserParcelTemplates } from "./client"
-import { productLineItem } from "./shippo-old"
+import { productLineItem } from "./formatters"
 
 const splitItem = (item) => {
   const multiItem = []
@@ -11,7 +10,7 @@ const splitItem = (item) => {
 }
 
 // bin packing FFD
-export const binPacker = async (lineItems) => {
+export const binPacker = async (lineItems, parcels) => {
   const { Item, Bin, Packer } = BP3D
 
   const items = lineItems
@@ -32,18 +31,16 @@ export const binPacker = async (lineItems) => {
         )
     )
 
-  const bins = await getUserParcelTemplates().then((response) =>
-    response.results
-      .map((box) => {
-        box.dim_weight = box.length * box.width * box.height
-        return box
-      })
-      .sort((a, b) => a.dim_weight - b.dim_weight)
-      .map(
-        (box) =>
-          new Bin(box.object_id, box.width, box.height, box.length, box.weight)
-      )
-  )
+  const bins = parcels
+    .map((box) => {
+      box.dim_weight = box.length * box.width * box.height
+      return box
+    })
+    .sort((a, b) => a.dim_weight - b.dim_weight)
+    .map(
+      (box) =>
+        new Bin(box.object_id, box.width, box.height, box.length, box.weight)
+    )
 
   const fitParcels = []
   bins.forEach((bin, i) => {
