@@ -1,32 +1,51 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { humanizeAmount, MedusaError } from "medusa-core-utils"
-import shippo from "shippo"
-import {
-  getShippingOptions,
-  getShippingOptionGroups,
-  getParcel,
-} from "../utils/client"
-import { shippoAddress, shippoLineItem } from "../utils/shippo"
+import { MedusaError } from "medusa-core-utils"
+import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
+import { validateShippingAddress } from "../utils/validator"
+import Shippo from "../utils/shippo"
+import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
-  constructor({ totalsService }, options) {
+  constructor(
+    {
+      cartService,
+      customShippingOptionService,
+      customShippingOptionRepository,
+      shippingProfileService,
+      manager,
+      totalsService,
+    },
+    options
+  ) {
     super()
 
     this.options_ = options
 
-    /** @private @const {Shippo} */
-    this.shippo_ = shippo(this.options_.api_key)
-
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
+
+    /** @private @const {CartService} */
+    this.cartService_ = cartService
+
+    /** @private @const {ShippingProfileService} */
+    this.shippingProfileService_ = shippingProfileService
+
+    /** @private @const {CustomShippingOptionService} */
+    this.customShippingOptionService_ = customShippingOptionService
+
+    /** @private @const {CustomShippingOptionRepository_} */
+    this.customShippingOptionRepository_ = customShippingOptionRepository
+
+    /** @private @const {Manager} */
+    this.manager_ = manager
+
+    this.client_ = new Shippo(this.options_.api_key)
   }
 
   async getFulfillmentOptions() {
-    const shippingOptions = await getShippingOptions()
-    const shippingOptionGroups = await getShippingOptionGroups()
-    return [...shippingOptions, ...shippingOptionGroups]
+    return await this.client_.retrieveFulfillmentOptions
   }
 
   async validateOption(data) {
@@ -45,50 +64,15 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-    const toAddress = shippoAddress(fromOrder.shipping_address, fromOrder.email)
-    const currencyCode = fromOrder.currency_code.toUpperCase()
-    const shippoParcel = await getParcel(fromOrder.metadata.shippo_parcel)
-    const shippingOptionName =
-      fromOrder.shipping_methods[0].shipping_option.name
+    const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
 
-    const lineItems = await Promise.all(
-      fulfillmentItems.map(
-        async (item) =>
-          await this.totalsService_
-            .getLineItemTotals(item, fromOrder)
-            .then((totals) =>
-              shippoLineItem(
-                item,
-                totals.subtotal,
-                fromOrder.region.currency_code
-              )
-            )
-      )
-    )
-    const totalWeight = lineItems
-      .map((e) => e.weight * e.quantity)
-      .reduce((sum, current) => sum + current, 0)
+    const parcel = await this.client_.fetchCustomParcel(fromOrder.metadata.shippo_parcel_template)
 
-    return await this.shippo_.order
-      .create({
-        order_number: fromOrder.display_id,
-        order_status: "PAID",
-        to_address: toAddress,
-        line_items: lineItems,
-        placed_at: fromOrder.created_at,
-        shipping_cost: humanizeAmount(fromOrder.shipping_total, currencyCode),
-        shipping_cost_currency: currencyCode,
-        shipping_method: `${shippingOptionName} - (${shippoParcel.name}) - ${currencyCode}`,
-        total_tax: humanizeAmount(fromOrder.tax_total, currencyCode),
-        total_price: humanizeAmount(fromOrder.total, currencyCode),
-        subtotal_price: humanizeAmount(fromOrder.subtotal, currencyCode),
-        currency: currencyCode,
-        weight: totalWeight,
-        weight_unit: this.options_.weight_unit_type,
-      })
+    return await this.client_
+      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel: shippoParcel.object_id,
+        shippo_parcel_template: fromOrder.shippo_parcel_template,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -100,6 +84,129 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
+
+  async fetchLiveRates(cartId) {
+    const cart = await this.retrieveCart_(cartId)
+
+    // Validate if cart has a complete shipping address
+    const validAddress = validateShippingAddress(cart.shipping_address)
+    if (validAddress.error) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        validAddress.error.details[0].message
+      )
+    }
+
+    const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
+      cart
+    )
+
+    const lineItems = await this.formatLineItems_(cart.items, cart)
+    const toAddress = shippoAddress(cart.shipping_address, cart.email)
+
+    const parcels = await this.client_.fetchCustomParcelTemplates()
+    const packedParcels = await binPacker(cart.items, parcels)
+
+    return await this.client_
+      .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
+      .then((response) =>
+        response.map((rate) => ({ ...rate, parcel_template: packedParcels[0] }))
+      )
+  }
+
+  async updateShippingRates(cartId) {
+    const cart = await this.retrieveCart_(cartId)
+    const rates = await this.fetchLiveRates(cartId)
+
+    const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
+      cart
+    )
+
+    const customShippingOptions = await this.customShippingOptionService_
+      .list({ cart_id: cartId })
+      .then(async (cartCustomShippingOptions) => {
+        if (cartCustomShippingOptions.length) {
+          const customShippingOptionRepo =
+            await this.manager_.getCustomRepository(
+              this.customShippingOptionRepository_
+            )
+
+          await customShippingOptionRepo.remove(cartCustomShippingOptions)
+        }
+
+        return await Promise.all(
+          shippingOptions.map(async (option) => {
+            const optionRate = rates.find(
+              (rate) => rate.title == option.data.name
+            )
+
+            const price = optionRate.amount_local || optionRate.amount
+            this.cartService_.setMetadata(cartId, "shippo_parcel_template", optionRate.parcel_template)
+
+            return await this.customShippingOptionService_.create(
+              {
+                cart_id: cartId,
+                shipping_option_id: option.id,
+                price: parseInt(parseFloat(price) * 100),
+              },
+              {
+                metadata: {
+                  is_shippo_rate: true,
+                  ...optionRate,
+                },
+              }
+            )
+          })
+        )
+      })
+      .catch((e) => {
+        console.error(e)
+      })
+
+    return customShippingOptions
+  }
+
+  async formatLineItems_(items, order) {
+    return await Promise.all(
+      items.map(
+        async (item) =>
+          await this.totalsService_
+            .getLineItemTotals(item, order)
+
+            .then((totals) =>
+              shippoLineItem(
+                item,
+                totals.unit_price,
+                order.region.currency_code
+              )
+            )
+      )
+    )
+  }
+
+  // TODO: ...
+  async fetchPackingSlip(orderId) {
+    return await this.client_.fetchPackingSlip(orderId)
+  }
+
+  // TODO: ...
+  async fetchOrder(id) {
+    return await this.client_.fetchOrder(id)
+  }
+
+  async retrieveCart_(id) {
+    return await this.cartService_.retrieve(id, {
+      relations: [
+        "shipping_address",
+        "items",
+        "items.tax_lines",
+        "items.variant",
+        "items.variant.product",
+        "discounts",
+        "region",
+      ],
+    })
+  }
 }
 
 export default ShippoFulfillmentService
