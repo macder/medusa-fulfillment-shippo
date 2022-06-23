@@ -51,7 +51,9 @@ Add to medusa-config.js
 }
 ```
 
-## Setup Rates at Checkout
+## Rates at Checkout
+
+Provide customers with accurate shipping rates at checkout to reduce over and under charges. This plugin implements a first-fit-decreasing bin packing algorithm to choose an appropriate parcel for the items in a cart. Follow this guide to get setup and then optimize.
 
 ### Step 1 - Setup Shipping Options in Shippo App
 
@@ -190,7 +192,7 @@ Sample response:
 
 Update the price of any “live-rate” shipping option available to the cart. This will use the carts shipping options as templates to create new or update existing custom shipping options via [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService). They will become available when requesting a carts shipping options. Useful right before it's time to show the customer their shipping options, i.e during checkout after submitting a shipping address.
 
-> Note: This may change in the future. Currently the interfaced [calculatePrice](https://github.com/medusajs/medusa/blob/6c1a722b38da294355ceba659360fbe52d07558f/packages/medusa-interfaces/src/fulfillment-service.js#L59) method for fullfillmentService is invoked after the user adds a shipping method to their cart, a bit too late for the show... hence the use of CustomShippingOptionService at this time. 
+> Note: This may change in the future. Currently the interfaced [calculatePrice](https://github.com/medusajs/medusa/blob/6c1a722b38da294355ceba659360fbe52d07558f/packages/medusa-interfaces/src/fulfillment-service.js#L59) method for fullfillmentService is invoked after the user adds a shipping method to their cart, a bit too late for the show... hence the use of CustomShippingOptionService at this time.
 
 **HTTP:**
 
