@@ -153,7 +153,7 @@ Repeat above steps for each shipping option.
 
 ## Using Rates at Checkout
 
-### **Get shipping rates for a cart**
+### **Get rates for cart**
 
 Request rates for all “live-rate” shipping options available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart. Useful if you just need flat data for UI
 
@@ -187,7 +187,11 @@ Sample response:
 ]
 ```
 
-### **Create shipping options with rates for cart:**
+### **Set rates for cart:**
+
+Update the price of any “live-rate” shipping option available to the cart. This will use the carts shipping options as templates to create new or update existing custom shipping options via [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService). They will become available when requesting a carts shipping options. Useful right before it's time to show the customer their shipping options, i.e during checkout after submitting a shipping address.
+
+The cart must have a complete shipping address.
 
 **HTTP:**
 
@@ -200,12 +204,6 @@ POST /store/shipping-options/:cart_id/shippo/rates/
 ```javascript
 await shippoFulfillmentService.updateShippingRates(cart_id)
 ```
-
-Creates custom shipping options with the rates for the cart based on its available shipping options.
-
-These are created using the core [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService)
-
-Query this endpoint in the checkout flow when the shipping address becomes available.
 
 Sample response:
 
@@ -251,7 +249,7 @@ const cart = await cartService.retrieve(cart_id, {
   relations: ["region", "items", "items.variant", "items.variant.product"],
 })
 
-const options = await shippingProfileService.fetchCartOptions(cart)
+await shippingProfileService.fetchCartOptions(cart)
 ```
 
 ## Optimizing Rates at Checkout
@@ -293,11 +291,11 @@ Creating an order fulfillment in admin will create an order in Shippo.
 
 View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/orders)
 
-Retrieve Shippo order for fulfillment
+Retrieve Shippo order for a fulfillment
 
 **HTTP:**
 
-```javascript
+```plaintext
 GET /admin/fulfillments/:id/shippo/order
 ```
 
@@ -312,11 +310,9 @@ await client.order.retrieve(shippo_order_id)
 
 Returns `shippo_order` object
 
-Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed and replaced with their `object_id`
-
 ## Packing Slips
 
-Retrieve Shippo packingslip for fulfillment
+Retrieve Shippo packing slip for a fulfillment
 
 **HTTP:**
 
@@ -335,7 +331,7 @@ await client.order.packingslip(shippo_order_id)
 
 ## Limitations
 
-Currently this plugin does not support returns/exchanges, customs declarations, webhooks.
+Currently, this plugin does not support returns/exchanges, customs declarations, webhooks.
 
 These are currently under development for future releases.
 
