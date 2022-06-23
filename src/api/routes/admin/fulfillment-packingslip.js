@@ -7,9 +7,9 @@ export default async (req, res) => {
     await fulfillmentService
       .retrieve(fulfillment_id)
       .then(
-        async (fulfillment) =>
+        async ({ data: { shippo_order_id } }) =>
           await shippoFulfillmentService.useClient.order
-            .packingslip(fulfillment.data.shippo_order_id)
+            .packingslip(shippo_order_id)
             .then((response) => ({ response }))
       )
   )

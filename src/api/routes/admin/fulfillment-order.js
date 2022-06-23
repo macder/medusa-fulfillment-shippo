@@ -7,9 +7,9 @@ export default async (req, res) => {
     await fulfillmentService
       .retrieve(fulfillment_id)
       .then(
-        async (fulfillment) =>
+        async ({ data: { shippo_order_id } }) =>
           await shippoFulfillmentService.useClient.order
-            .retrieve(fulfillment.data.shippo_order_id)
+            .retrieve(shippo_order_id)
             .then((response) =>
               Object.assign(response, {
                 to_address: response.to_address.object_id,
