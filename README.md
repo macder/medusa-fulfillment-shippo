@@ -20,8 +20,8 @@ Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment
         1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
         2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
     *   [Usage](#using-rates-at-checkout)
-        1.  [Get shipping rates for a cart](#get-shipping-rates-for-a-cart)
-        2.  [Create shipping options with rates for cart](#create-shipping-options-with-rates-for-cart)
+        1.  [Get rates for cart](#get-rates-for-cart)
+        2.  [Set rates for cart](#set-rates-for-cart)
         3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
     *   [Optimizing](#optimizing-rates-at-checkout)
         1.  [How it works](#how-it-works)
@@ -30,6 +30,7 @@ Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment
         4.  [Accuracy of Rates](#accuracy-of-rates)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
+*   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -155,7 +156,7 @@ Repeat above steps for each shipping option.
 
 ### **Get rates for cart**
 
-Request rates for all “live-rate” shipping options available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart. Useful if you just need flat data for UI
+Request rates for all “live-rate” shipping options available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart or shipping options. Useful if you just need flat data for UI
 
 The cart must have a complete shipping address
 
@@ -328,6 +329,37 @@ const client = shippoFulfillmentService.useClient
 
 await client.order.packingslip(shippo_order_id)
 ```
+
+## Shippo Node Client
+
+This plugin is using a forked version of the official shippo-node-client. 
+
+The fork adds support for the following endpoints:
+
+*   live-rates
+*   service-groups
+*   user-parcel-templates
+*   orders/:id/packingslip
+
+The client can be accessed directly if you need it
+
+```javascript
+const client = shippoFulfillmentService.useClient
+
+// Forks additional methods
+await client.liverates.create({...parms})
+await client.userparceltemplates.list()
+await client.userparceltemplates.retrieve(id)
+await client.servicegroups.list()
+await client.servicegroups.create({...params})
+...
+```
+
+See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
+
+[Official client](https://github.com/goshippo/shippo-node-client)
+
+[Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
 
 ## Limitations
 
