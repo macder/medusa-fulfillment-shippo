@@ -1,74 +1,103 @@
-import path from "path"
-import { getConfigFile, humanizeAmount } from "medusa-core-utils"
+import shippo from "shippo"
 
-const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
-const { plugins } = configModule
-const { options } = plugins.find(
-  (e) => e.resolve === "medusa-fulfillment-shippo"
-)
+class Shippo {
+  constructor(token) {
+    this.client_ = shippo(token)
 
-/** Makes a flat product object from a LineItem
- * @param {LineItem} - LineItem object
- * @return {object} - flat product
- */
-export const productLineItem = ({ variant: { product, ...variant } }) => ({
-  product_title: product.title,
-  variant_title: variant.title,
-  weight: variant.weight ?? product.weight,
-  length: variant.length ?? product.length,
-  height: variant.height ?? product.height,
-  width: variant.width ?? product.width,
-  origin_country: variant.origin_country ?? product.origin_country,
-  material: variant.material ?? product.material,
-  sku: variant.sku,
-  barcode: variant.barcode,
-  ean: variant.ean,
-  upc: variant.upc,
-  hs_code: variant.hs_code ?? product.hs_code,
-  mid_code: variant.mid_code ?? product.mid_code,
-})
+    this.retrieveFulfillmentOptions = this.composeFulfillmentOptions_()
+    this.createOrder = this.createOrder_
+  }
 
-export const shippoLineItem = (lineItem, totalPrice, currency) => {
-  const product = productLineItem(lineItem)
+  async composeFulfillmentOptions_() {
+    const shippingOptions = await this.fetchCarriers_().then((carriers) =>
+      this.findActiveCarriers_(carriers).then((activeCarriers) =>
+        this.splitCarriersToServices_(activeCarriers)
+      )
+    )
 
-  return {
-    title: product.product_title,
-    variant_title: product.variant_title,
-    quantity: lineItem.quantity,
-    total_price: humanizeAmount(totalPrice, currency).toString(),
-    currency: currency.toUpperCase(),
-    sku: product.sku,
-    weight: product.weight.toString(),
-    weight_unit: options.weight_unit_type,
-    manufacture_country: product.origin_country,
+    const shippingOptionGroups = await this.fetchServiceGroups_().then(
+      (groups) =>
+        groups.map((serviceGroup) => ({
+          id: `shippo-fulfillment-${serviceGroup.object_id}`,
+          is_group: true,
+          ...serviceGroup,
+        }))
+    )
+
+    return [...shippingOptions, ...shippingOptionGroups]
+  }
+
+  async fetchCarriers_() {
+    return await this.client_.carrieraccount
+      .list({ service_levels: true, results: 100 })
+      .then((response) => response.results)
+  }
+
+  async fetchServiceGroups_() {
+    return await this.client_.servicegroups.list()
+  }
+
+  async fetchCarrierParcelTemplate(token) {
+    return []
+  }
+
+  async fetchCustomParcelTemplates() {
+    return await this.client_.userparceltemplates
+      .list()
+      .then((response) => response.results)
+  }
+
+  async fetchCustomParcel(id) {
+    return await this.client_.userparceltemplates.retrieve(id)
+  }
+
+  async fetchPackingSlip(orderId) {
+    return await this.client_.order.packingslip(orderId)
+  }
+
+  async fetchOrder(id) {
+    return await this.client_.order.retrieve(id)
+  }
+
+  async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {
+    return await this.client_.liverates
+      .create({
+        address_to: toAddress,
+        line_items: lineItems,
+        parcel: parcel,
+      })
+      .then((response) =>
+        response.results.filter((item) =>
+          shippingOptions.find(
+            (option) => option.data.name === item.title && true
+          )
+        )
+      )
+  }
+
+  async findActiveCarriers_(carriers) {
+    return carriers.filter((carrier) => carrier.active)
+  }
+
+  async splitCarriersToServices_(carriers) {
+    return carriers.flatMap((carrier) =>
+      carrier.service_levels.map((service_type) => {
+        const { service_levels, ...service } = {
+          ...service_type,
+          id: `shippo-fulfillment-${service_type.token}`,
+          name: `${carrier.carrier_name} ${service_type.name}`,
+          carrier_id: carrier.object_id,
+          is_group: false,
+          ...carrier,
+        }
+        return service
+      })
+    )
+  }
+
+  async createOrder_(order) {
+    return await this.client_.order.create(order)
   }
 }
 
-/** Convert medusa address to shippo
- * @param {object} address - medusa address object
- * @param {string} email - mail address
- * @return {object} - shippo address object
- */
-export const shippoAddress = (address, email) => ({
-  name: `${address.first_name} ${address.last_name}`,
-  company: address.company,
-  street1: address.address_1,
-  street2: address?.address_2,
-  street3: address?.address_3,
-  city: address.city,
-  state: address.province,
-  zip: address.postal_code,
-  country: address.country_code.toUpperCase(),
-  phone: address.phone,
-  email: email,
-  validate: address.country_code == "us" ?? true,
-})
-
-export const returnOptions = (shippingOptions) =>
-  shippingOptions
-    .filter((e) => e.supports_return_labels)
-    .map((e) => ({
-      ...e,
-      name: `${e.name} - Support return labels`,
-      is_return: true,
-    }))
+export default Shippo
