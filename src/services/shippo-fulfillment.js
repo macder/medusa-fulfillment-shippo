@@ -42,6 +42,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.manager_ = manager
 
     this.client_ = new Shippo(this.options_.api_key)
+
+    this.useClient = this.client_.getClient()
   }
 
   async getFulfillmentOptions() {

@@ -8,6 +8,10 @@ class Shippo {
     this.createOrder = this.createOrder_
   }
 
+  getClient() {
+    return this.client_
+  }
+
   async composeFulfillmentOptions_() {
     const shippingOptions = await this.fetchCarriers_().then((carriers) =>
       this.findActiveCarriers_(carriers).then((activeCarriers) =>
