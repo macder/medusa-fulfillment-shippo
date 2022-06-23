@@ -66,7 +66,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
 
-    const parcel = await this.client_.fetchCustomParcel(fromOrder.metadata.shippo_parcel_template)
+    const parcel = await this.client_.fetchCustomParcel(
+      fromOrder.metadata.shippo_parcel_template
+    )
 
     return await this.client_
       .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
@@ -141,7 +143,11 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
 
             const price = optionRate.amount_local || optionRate.amount
-            this.cartService_.setMetadata(cartId, "shippo_parcel_template", optionRate.parcel_template)
+            this.cartService_.setMetadata(
+              cartId,
+              "shippo_parcel_template",
+              optionRate.parcel_template
+            )
 
             return await this.customShippingOptionService_.create(
               {

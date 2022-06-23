@@ -1,6 +1,13 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.7.0] (2022-06-23)
+Changed
+- Refactored fetching methods into a class [#56](https://github.com/macder/medusa-fulfillment-shippo/issues/56)
+- New public methods (expect more changes) [#58](https://github.com/macder/medusa-fulfillment-shippo/issues/58)
+
+Fixed
+- Line item prices in shippo orders [#57](https://github.com/macder/medusa-fulfillment-shippo/issues/57)
 ## [0.6.0] (2022-06-21)
 Changed
 - **BREAKING**: API endpoint URI's [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50)
