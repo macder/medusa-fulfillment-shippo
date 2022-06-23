@@ -71,20 +71,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-    const lineItems = await Promise.all(
-      fulfillmentItems.map(
-        async (item) =>
-          await this.totalsService_
-            .getLineItemTotals(item, fromOrder)
-            .then((totals) =>
-              shippoLineItem(
-                item,
-                totals.unit_price,
-                fromOrder.region.currency_code
-              )
-            )
-      )
-    )
+    const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
 
     return await this.client_
       .createOrder(await shippoOrder(fromOrder, lineItems))
@@ -101,21 +88,10 @@ class ShippoFulfillmentService extends FulfillmentService {
     return data.type === "LIVE_RATE"
   }
 
-  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
+  async calculatePrice(fulfillmentOption, fulfillmentData, cart) { }
 
-  async fetchLiveRates(cartID) {
-    const cart = await this.cartService_.retrieve(cartID, {
-      relations: [
-        "shipping_address",
-        "items",
-        "items.tax_lines",
-        "items.variant",
-        "items.variant.product",
-        "discounts",
-        "region",
-      ],
-    })
-    // console.log(cart)
+  async fetchLiveRates(cartId) {
+    const cart = await this.retrieveCart_(cartId)
 
     // Validate if cart has a complete shipping address
     const validAddress = validateShippingAddress(cart.shipping_address)
@@ -129,21 +105,11 @@ class ShippoFulfillmentService extends FulfillmentService {
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
     )
-    // console.log(shippingOptions)
 
-    const lineItems = await Promise.all(
-      cart.items.map(async (item) => {
-        const totals = await this.totalsService_.getLineItemTotals(item, cart)
-        return shippoLineItem(item, totals.subtotal, cart.region.currency_code)
-      })
-    )
-    // console.log(lineItems)
-
+    const lineItems = await this.formatLineItems_(cart.items, cart)
     const toAddress = shippoAddress(cart.shipping_address, cart.email)
-    // console.log(toAddress)
 
     const parcels = await binPacker(cart.items)
-    // console.log('*************parcels ', parcels)
 
     return await this.client_.fetchLiveRates(
       toAddress,
@@ -153,26 +119,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  async createCustomShippingOptions(cartId, rates) {
-    // console.log(rates)
-    const cart = await this.cartService_.retrieve(cartId, {
-      relations: [
-        "shipping_address",
-        "items",
-        "items.tax_lines",
-        "items.variant",
-        "items.variant.product",
-        "discounts",
-        "region",
-      ],
-    })
-    // console.log(cart)
+  async updateShippingRates(cartId) {
+    const cart = await this.retrieveCart_(cartId)
+    const rates = await this.fetchLiveRates(cartId)
 
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
     )
-    // console.log(shippingOptions)
-    // const cart_id = cartId
 
     const customShippingOptions = await this.customShippingOptionService_
       .list({ cart_id: cartId })
@@ -192,13 +145,11 @@ class ShippoFulfillmentService extends FulfillmentService {
               (rate) => rate.title == option.data.name
             )
 
-            console.log("*********************", optionRate)
-
             const price = optionRate.amount_local || optionRate.amount
 
             return await this.customShippingOptionService_.create(
               {
-                cartId,
+                cart_id: cartId,
                 shipping_option_id: option.id,
                 price: parseInt(parseFloat(price) * 100),
               },
@@ -218,6 +169,38 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
 
     return customShippingOptions
+  }
+
+  async formatLineItems_(items, order) {
+    return await Promise.all(
+      items.map(
+        async (item) =>
+          await this.totalsService_
+            .getLineItemTotals(item, order)
+
+            .then((totals) =>
+              shippoLineItem(
+                item,
+                totals.unit_price,
+                order.region.currency_code
+              )
+            )
+      )
+    )
+  }
+
+  async retrieveCart_(id) {
+    return await this.cartService_.retrieve(id, {
+      relations: [
+        "shipping_address",
+        "items",
+        "items.tax_lines",
+        "items.variant",
+        "items.variant.product",
+        "discounts",
+        "region",
+      ],
+    })
   }
 }
 
