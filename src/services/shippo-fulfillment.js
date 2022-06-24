@@ -21,8 +21,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     super()
 
-    this.options_ = options
-
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
 
