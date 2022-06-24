@@ -4,9 +4,7 @@ import { MedusaError, getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
 class ShippoClientService extends BaseService {
-
   constructor({}, options) {
-
     super()
 
     const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
