@@ -24,10 +24,6 @@ class ShippoClientService extends BaseService {
     return this.client_
   }
 
-  testMethod(msg) {
-    return msg
-  }
-
   async composeFulfillmentOptions_() {
     const shippingOptions = await this.fetchCarriers_().then((carriers) =>
       this.findActiveCarriers_(carriers).then((activeCarriers) =>

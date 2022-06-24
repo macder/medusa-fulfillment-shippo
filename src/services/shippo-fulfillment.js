@@ -1,7 +1,7 @@
 import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
-import { validateShippingAddress } from "../utils/validator"
+// import { validateShippingAddress } from "../utils/validator"
 import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -15,6 +15,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       shippingProfileService,
       manager,
       totalsService,
+      shippoClientService,
     },
     options
   ) {
@@ -65,17 +66,17 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-    const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
 
+    const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
     const parcel = await this.client_.fetchCustomParcel(
       fromOrder.metadata.shippo_parcel_template
     )
 
     return await this.client_
-      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
+      .createOrder(shippoOrder(fromOrder, lineItems, parcel))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel_template: fromOrder.shippo_parcel_template,
+        shippo_parcel_template: fromOrder.metadata.shippo_parcel_template,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -92,13 +93,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     const cart = await this.retrieveCart_(cartId)
 
     // Validate if cart has a complete shipping address
-    const validAddress = validateShippingAddress(cart.shipping_address)
-    if (validAddress.error) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        validAddress.error.details[0].message
-      )
-    }
+    // const validAddress = validateShippingAddress(cart.shipping_address)
+    // if (validAddress.error) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.INVALID_DATA,
+    //     validAddress.error.details[0].message
+    //   )
+    // }
 
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart

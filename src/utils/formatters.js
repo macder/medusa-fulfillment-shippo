@@ -62,11 +62,10 @@ export const shippoAddress = (address, email) => ({
   validate: address.country_code == "us" ?? true,
 })
 
-export const shippoOrder = async (order, lineItems, parcel) => {
+export const shippoOrder = (order, lineItems, parcel) => {
   const toAddress = shippoAddress(order.shipping_address, order.email)
   const currencyCode = order.currency_code.toUpperCase()
   const shippingOptionName = order.shipping_methods[0].shipping_option.name
-
   const totalWeight = lineItems
     .map((e) => e.weight * e.quantity)
     .reduce((sum, current) => sum + current, 0)
