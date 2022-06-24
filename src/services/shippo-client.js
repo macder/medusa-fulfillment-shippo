@@ -16,7 +16,7 @@ class ShippoClientService extends BaseService {
 
     this.client_ = shippo(this.options_.api_key)
 
-    this.retrieveFulfillmentOptions = this.composeFulfillmentOptions_()
+    this.retrieveFulfillmentOptions = this.composeFulfillmentOptions_
     this.createOrder = this.createOrder_
   }
 

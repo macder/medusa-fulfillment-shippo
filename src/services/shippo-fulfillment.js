@@ -21,8 +21,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     super()
 
-    this.options_ = options
-
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
 
@@ -47,7 +45,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    return await this.client_.retrieveFulfillmentOptions
+    return await this.client_.retrieveFulfillmentOptions()
   }
 
   async validateOption(data) {
@@ -81,6 +79,10 @@ class ShippoFulfillmentService extends FulfillmentService {
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
+  }
+
+  async cancelFulfillment(fulfillment) {
+    return Promise.resolve({})
   }
 
   canCalculate(data) {
