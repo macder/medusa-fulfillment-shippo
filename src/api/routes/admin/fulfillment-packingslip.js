@@ -3,14 +3,14 @@ export default async (req, res) => {
   const shippoFulfillmentService = req.scope.resolve("shippoFulfillmentService")
   const { fulfillment_id } = req.params
 
-  const shippoPackingSlip = await fulfillmentService
-    .retrieve(fulfillment_id)
-    .then(
-      async (fulfillment) =>
-        await shippoFulfillmentService.fetchPackingSlip(
-          fulfillment.data.shippo_order_id
-        )
-    )
-
-  res.json({ shippoPackingSlip })
+  res.json(
+    await fulfillmentService
+      .retrieve(fulfillment_id)
+      .then(
+        async ({ data: { shippo_order_id } }) =>
+          await shippoFulfillmentService.useClient.order
+            .packingslip(shippo_order_id)
+            .then((response) => ({ response }))
+      )
+  )
 }

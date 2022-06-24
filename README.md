@@ -1,4 +1,4 @@
-## medusa-fulfillment-shippo
+# medusa-fulfillment-shippo
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
@@ -8,20 +8,18 @@ Live shipping rates for carts at checkout, optimized with a [first-fit-decreasin
 
 Creates Shippo orders for new fulfillments.
 
-Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment ID
-
-> Notice: v0.6.0 - New API URI paths. See [#50](https://github.com/macder/medusa-fulfillment-shippo/issues/50) after upgrading from =< 0.5.2
+Retrieves Shippo orders and packing slips for fulfillments 
 
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
-*   [Rates at Checkout](#setup-rates-at-checkout)
-    *   [Setup](#setup-rates-at-checkout)
+*   [Rates at Checkout](#rates-at-checkout)
+    *   [Setup](#rates-at-checkout)
         1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
         2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
     *   [Usage](#using-rates-at-checkout)
-        1.  [Get shipping rates for a cart](#get-shipping-rates-for-a-cart)
-        2.  [Create shipping options with rates for cart](#create-shipping-options-with-rates-for-cart)
+        1.  [Get rates for cart](#get-rates-for-cart)
+        2.  [Set rates for cart](#set-rates-for-cart)
         3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
     *   [Optimizing](#optimizing-rates-at-checkout)
         1.  [How it works](#how-it-works)
@@ -30,6 +28,7 @@ Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment
         4.  [Accuracy of Rates](#accuracy-of-rates)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
+*   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -52,7 +51,9 @@ Add to medusa-config.js
 }
 ```
 
-## Setup Rates at Checkout
+## Rates at Checkout
+
+Provide customers with accurate shipping rates at checkout to reduce over and under charges. This plugin implements a first-fit-decreasing bin packing algorithm to choose an appropriate parcel for the items in a cart. Follow this guide to get setup and then optimize.
 
 ### Step 1 - Setup Shipping Options in Shippo App
 
@@ -114,17 +115,17 @@ In the response, find the `FULFILLMENT_OPTION_OBJECT` 
   "is_group": true,
   "description": "2 days",
   "flat_rate": "25",
-  "flat_rate_currency": "CAD",
+  "flat_rate_currency": "USD",
   "free_shipping_threshold_currency": null,
   "free_shipping_threshold_min": null,
   "is_active": true,
-  "name": "Express Shipping Canada",
+  "name": "Express Shipping USA",
   "object_id": "...",
   "rate_adjustment": 0,
   "service_levels": [
     {
       "account_object_id": "...",
-      "service_level_token": "canada_post_xpresspost"
+      "service_level_token": "canada_post_xpresspost_usa"
     }
   ],
   "type": "LIVE_RATE"
@@ -153,43 +154,57 @@ Repeat above steps for each shipping option.
 
 ## Using Rates at Checkout
 
-### **Get shipping rates for a cart**
+### **Get rates for cart**
+
+Request rates for all “live-rate” shipping options available to the cart. Returns an array of shippo live-rate objects. Does NOT modify the cart or shipping options. Useful if you just need flat data for UI
+
+The cart must have a complete shipping address
+
+**HTTP:**
 
 ```plaintext
 GET /store/carts/:id/shippo/rates
 ```
 
-Returns an array of Shippo live-rate objects that match the carts shipping options.
+**Service:**
 
-The cart must have a complete shipping address or the response will be a validation error.
+```javascript
+await shippoFulfillmentService.fetchLiveRates(cart_id)
+```
 
 Sample response:
 
 ```plaintext
 [
   {
-    "title": "Express Shipping Canada",
-    "description": "2 days",
-    "amount": "26.37",
+    "title": "Express Shipping USA",
+    "description": "",
+    "amount": "32.56",
     "currency": "CAD",
-    "amount_local": "26.37",
-    "currency_local": "CAD",
+    "amount_local": "25.04",
+    "currency_local": "USD",
     "estimated_days": 1
   }
 ]
 ```
 
-### **Create shipping options with rates for cart:**
+### **Set rates for cart:**
+
+Update the price of any “live-rate” shipping option available to the cart. This will use the carts shipping options as templates to create new or update existing custom shipping options via [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService). They will become available when requesting a carts shipping options. Useful right before it's time to show the customer their shipping options, i.e during checkout after submitting a shipping address.
+
+> Note: This may change in the future. Currently the interfaced [calculatePrice](https://github.com/medusajs/medusa/blob/6c1a722b38da294355ceba659360fbe52d07558f/packages/medusa-interfaces/src/fulfillment-service.js#L59) method for fullfillmentService is invoked after the user adds a shipping method to their cart, a bit too late for the show... hence the use of CustomShippingOptionService at this time.
+
+**HTTP:**
 
 ```plaintext
 POST /store/shipping-options/:cart_id/shippo/rates/
 ```
 
-Creates custom shipping options with the rates for the cart based on its available shipping options.
+**Service:**
 
-These are created using the core [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService)
-
-Query this endpoint in the checkout flow when the shipping address becomes available.
+```javascript
+await shippoFulfillmentService.updateShippingRates(cart_id)
+```
 
 Sample response:
 
@@ -197,23 +212,21 @@ Sample response:
 {
   "customShippingOptions": [
     {
-      "price": 2637,
+      "price": 2504,
       "shipping_option_id": "SHIPPING_OPTION_ID",
       "cart_id": "CART_ID",
       "metadata": {
         "is_shippo_rate": true,
-        "title": "Express Shipping Canada",
+        "title": "Express Shipping USA",
         "description": "",
-        "amount": "26.37",
+        "amount": "32.56",
         "currency": "CAD",
-        "amount_local": "26.37",
-        "currency_local": "CAD",
+        "amount_local": "25.04",
+        "currency_local": "USD",
         "estimated_days": 1
       },
-      "id": "ID",
-      "deleted_at": null,
-      "created_at": "2022-06-14T02:58:02.368Z",
-      "updated_at": "2022-06-14T02:58:02.368Z"
+      "id": "CSO_ID",
+
     }
   ]
 }
@@ -223,8 +236,21 @@ Sample response:
 
 After creating the custom shipping options in the previous step, they are available via the standard [store/shipping-options](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) endpoint
 
+**HTTP:**
+
 ```plaintext
 GET /store/shipping-options/:cart_id
+```
+
+**Service:**
+
+```javascript
+const cart = await cartService.retrieve(cart_id, {
+  select: ["subtotal"],
+  relations: ["region", "items", "items.variant", "items.variant.product"],
+})
+
+await shippingProfileService.fetchCartOptions(cart)
 ```
 
 ## Optimizing Rates at Checkout
@@ -237,12 +263,12 @@ medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpack
 
 ### How it works
 
-* Sorts parcels from smallest to largest
-* Sorts items from largest to smallest
-    * Attempts fitting items into smallest parcel the largest item can fit.
-    * If there are items remaining, try the next parcel size
-    * If there are no remaining items, use this parcel for shipping rate.
-    * If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
+*   Sorts parcels from smallest to largest
+*   Sorts items from largest to smallest
+    *   Attempts fitting items into smallest parcel the largest item can fit.
+    *   If there are items remaining, try the next parcel size
+    *   If there are no remaining items, use this parcel for shipping rate.
+    *   If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
 
 ### Setup parcel templates
 
@@ -266,27 +292,78 @@ Creating an order fulfillment in admin will create an order in Shippo.
 
 View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/orders)
 
-A new endpoint is exposed that will retrieve a Shippo order for the fulfillment
+Retrieve Shippo order for a fulfillment
+
+**HTTP:**
 
 ```plaintext
 GET /admin/fulfillments/:id/shippo/order
 ```
 
-Returns `shippo_order` object
+**Service:**
 
-Note: The `to_address`, `from_address`, and `object_owner`  fields are scrubbed and replaced with their `object_id`
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.retrieve(shippo_order_id)
+```
+
+Returns `shippo_order` object
 
 ## Packing Slips
 
-Retrieve shippo packing slips using medusa fulfillment id:
+Retrieve Shippo packing slip for a fulfillment
+
+**HTTP:**
 
 ```plaintext
 GET /admin/fulfillments/:id/shippo/packingslip
 ```
 
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.packingslip(shippo_order_id)
+```
+
+## Shippo Node Client
+
+This plugin is using a forked version of the official shippo-node-client. 
+
+The fork adds support for the following endpoints:
+
+*   live-rates
+*   service-groups
+*   user-parcel-templates
+*   orders/:id/packingslip
+
+The client is exposed on the `useClient` property
+
+```javascript
+const client = shippoFulfillmentService.useClient
+
+// Forks additional methods
+await client.liverates.create({...parms})
+await client.userparceltemplates.list()
+await client.userparceltemplates.retrieve(id)
+await client.servicegroups.list()
+await client.servicegroups.create({...params})
+...
+```
+
+See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
+
+[Official client](https://github.com/goshippo/shippo-node-client)
+
+[Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
+
 ## Limitations
 
-Currently this plugin does not support returns/exchanges, customs declarations, webhooks.
+Currently, this plugin does not support returns/exchanges, customs declarations, webhooks.
 
 These are currently under development for future releases.
 
