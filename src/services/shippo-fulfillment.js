@@ -188,7 +188,6 @@ class ShippoFulfillmentService extends FulfillmentService {
         async (item) =>
           await this.totalsService_
             .getLineItemTotals(item, order)
-
             .then((totals) =>
               shippoLineItem(
                 item,
