@@ -6,6 +6,7 @@ Added
 - Exposed shippo client for direct use [#62](https://github.com/macder/medusa-fulfillment-shippo/issues/62)
 - Exposed public methods for all features [#64](https://github.com/macder/medusa-fulfillment-shippo/issues/64)
 - Public methods documented in README [#66](https://github.com/macder/medusa-fulfillment-shippo/issues/66)
+- Parcel template ID included in live rate response [#67](https://github.com/macder/medusa-fulfillment-shippo/issues/67)
 
 Changed
 - Verifies if CSO is shippo before modifying [#63](https://github.com/macder/medusa-fulfillment-shippo/issues/63)
