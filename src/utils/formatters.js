@@ -4,9 +4,6 @@ const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
 const { plugins } = configModule
 const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
 
-const { projectConfig } = configModule
-const options = projectConfig
-
 /** Makes a flat product object from a LineItem
  * @param {LineItem} - LineItem object
  * @return {object} - flat product
