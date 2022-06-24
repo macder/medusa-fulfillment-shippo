@@ -45,7 +45,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    return await this.client_.retrieveFulfillmentOptions
+    return await this.client_.retrieveFulfillmentOptions()
   }
 
   async validateOption(data) {
