@@ -18,6 +18,6 @@ export default async (req, res) => {
               })
             )
       )
-      .then((response) => ({ response }))
+      .then((response) => ({ ...response }))
   )
 }
