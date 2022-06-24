@@ -1,4 +1,4 @@
-## medusa-fulfillment-shippo
+# medusa-fulfillment-shippo
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
@@ -13,7 +13,7 @@ Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
-*   [Rates at Checkout](#setup-rates-at-checkout)
+*   [Rates at Checkout](#rates-at-checkout)
     *   [Setup](#setup-rates-at-checkout)
         1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
         2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
