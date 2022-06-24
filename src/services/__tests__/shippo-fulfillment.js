@@ -1,5 +1,6 @@
 import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
 import ShippoFulfillmentService from "../shippo-fulfillment"
+import data from "../__data__/creatFulfillment.json"
 
 describe("ShippoFulfillmentService", () => {
   const customShippingOptionRepository = MockRepository({
@@ -30,8 +31,30 @@ describe("ShippoFulfillmentService", () => {
   }
 
   const totalsService = {
-    getLineItemTotals: jest.fn(),
+    getLineItemTotals: jest.fn(async (item, order) => data.line_item_totals),
     create: jest.fn(),
+  }
+
+  const shippoClientService = {
+    getClient: jest.fn(),
+    composeFulfillmentOptions_: jest.fn(),
+    fetchCarriers_: jest.fn(),
+    fetchServiceGroups_: jest.fn(),
+    fetchCarrierParcelTemplate: jest.fn(),
+
+    fetchCustomParcel: jest.fn((id) => {
+      // TODO: use ID
+      return data.user_parcel_template
+    }),
+
+    fetchLiveRates: jest.fn(),
+    findActiveCarriers_: jest.fn(),
+    splitCarriersToServices_: jest.fn(),
+    createOrder: jest.fn(async (order) => {
+      return {
+        object_id: 'd65f4gd654gf',
+      }
+    }),
   }
 
   const shippoFulfillmentService = new ShippoFulfillmentService({
@@ -41,48 +64,26 @@ describe("ShippoFulfillmentService", () => {
     customShippingOptionRepository,
     shippingProfileService,
     totalsService,
+    shippoClientService,
   })
 
   beforeAll(async () => {
     jest.clearAllMocks()
   })
 
-  it("successfully create a fulfillment", async () => {
-    const shippo = {
-      fetchCustomParcel: jest.fn(),
-    }
-    await shippoFulfillmentService.createFulfillment(
-      {
-        shipping_methods: [
-          {
-            shipping_option: {
-              profile_id: IdMap.getId("default"),
-              provider_id: "GLS Express",
-            },
-          },
-        ],
-        items: [{ id: IdMap.getId("test-line"), quantity: 10 }],
-      },
-      [
-        {
-          item_id: IdMap.getId("test-line"),
-          quantity: 10,
-        },
-      ],
-      {
-        order_id: "test",
-        metadata: {
-          shippo_parcel_template: IdMap.getId("test-line"),
-        },
-      }
+  it("successfully created a shippo order", async () => {
+    const createFulfillment = await shippoFulfillmentService.createFulfillment(
+      {},
+      data.fulfillmentItems,
+      data.fromOrder,
+      {}
     )
 
-    // expect(fulfillmentRepository.create).toHaveBeenCalledWith({
-    //   order_id: "test",
-    //   provider_id: "",
-    //   items: [{ item_id: IdMap.getId("test-line"), quantity: 10 }],
-    //   data: expect.anything(),
-    //   metadata: {},
-    // })
+    expect(shippoClientService.fetchCustomParcel).toHaveBeenCalledWith(data.fromOrder.metadata.shippo_parcel_template)
+
+    expect(createFulfillment).toEqual({
+      shippo_order_id: 'd65f4gd654gf',
+      shippo_parcel_template: data.fromOrder.metadata.shippo_parcel_template,
+    })
   })
 })
