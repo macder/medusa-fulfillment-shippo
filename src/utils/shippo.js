@@ -8,6 +8,10 @@ class Shippo {
     this.createOrder = this.createOrder_
   }
 
+  getClient() {
+    return this.client_
+  }
+
   async composeFulfillmentOptions_() {
     const shippingOptions = await this.fetchCarriers_().then((carriers) =>
       this.findActiveCarriers_(carriers).then((activeCarriers) =>
@@ -49,14 +53,6 @@ class Shippo {
 
   async fetchCustomParcel(id) {
     return await this.client_.userparceltemplates.retrieve(id)
-  }
-
-  async fetchPackingSlip(orderId) {
-    return await this.client_.order.packingslip(orderId)
-  }
-
-  async fetchOrder(id) {
-    return await this.client_.order.retrieve(id)
   }
 
   async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {

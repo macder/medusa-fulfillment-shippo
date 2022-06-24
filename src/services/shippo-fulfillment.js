@@ -42,6 +42,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.manager_ = manager
 
     this.client_ = new Shippo(this.options_.api_key)
+
+    this.useClient = this.client_.getClient()
   }
 
   async getFulfillmentOptions() {
@@ -128,12 +130,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       .list({ cart_id: cartId })
       .then(async (cartCustomShippingOptions) => {
         if (cartCustomShippingOptions.length) {
-          const customShippingOptionRepo =
-            await this.manager_.getCustomRepository(
-              this.customShippingOptionRepository_
-            )
-
-          await customShippingOptionRepo.remove(cartCustomShippingOptions)
+          await this.removeCustomShippingOptions_(cartCustomShippingOptions)
         }
 
         return await Promise.all(
@@ -143,7 +140,8 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
 
             const price = optionRate.amount_local || optionRate.amount
-            this.cartService_.setMetadata(
+
+            await this.cartService_.setMetadata(
               cartId,
               "shippo_parcel_template",
               optionRate.parcel_template
@@ -172,6 +170,18 @@ class ShippoFulfillmentService extends FulfillmentService {
     return customShippingOptions
   }
 
+  async removeCustomShippingOptions_(cartCustomShippingOptions) {
+    const customShippingOptionRepo = await this.manager_.getCustomRepository(
+      this.customShippingOptionRepository_
+    )
+
+    await customShippingOptionRepo.remove(
+      cartCustomShippingOptions.filter(
+        (option) => option.metadata.is_shippo_rate
+      )
+    )
+  }
+
   async formatLineItems_(items, order) {
     return await Promise.all(
       items.map(
@@ -188,16 +198,6 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
-  }
-
-  // TODO: ...
-  async fetchPackingSlip(orderId) {
-    return await this.client_.fetchPackingSlip(orderId)
-  }
-
-  // TODO: ...
-  async fetchOrder(id) {
-    return await this.client_.fetchOrder(id)
   }
 
   async retrieveCart_(id) {
