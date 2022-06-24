@@ -2,7 +2,6 @@ import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
 import { validateShippingAddress } from "../utils/validator"
-import Shippo from "../utils/shippo"
 import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -41,7 +40,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {Manager} */
     this.manager_ = manager
 
-    this.client_ = new Shippo(this.options_.api_key)
+    this.client_ = shippoClientService
 
     this.useClient = this.client_.getClient()
   }
