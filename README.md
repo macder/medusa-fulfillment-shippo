@@ -8,7 +8,7 @@ Live shipping rates for carts at checkout, optimized with a [first-fit-decreasin
 
 Creates Shippo orders for new fulfillments.
 
-Endpoints to retrieve Shippo orders and packing slips using a Medusa fulfillment ID
+Retrieves Shippo orders and packing slips for fulfillments 
 
 ## Table of Contents
 
