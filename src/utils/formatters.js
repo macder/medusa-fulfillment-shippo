@@ -1,3 +1,4 @@
+import path from "path"
 import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 
 const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
