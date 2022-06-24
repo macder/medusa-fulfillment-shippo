@@ -1,6 +1,9 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.8.1] (2022-06-23)
+Fixed
+- Config loading fail [#69](https://github.com/macder/medusa-fulfillment-shippo/issues/69)
 ## [0.8.0] (2022-06-23)
 Added
 - Exposed shippo client for direct use [#62](https://github.com/macder/medusa-fulfillment-shippo/issues/62)
