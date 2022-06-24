@@ -83,6 +83,10 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
   }
 
+  async cancelFulfillment(fulfillment) {
+    return Promise.resolve({})
+  }
+
   canCalculate(data) {
     return data.type === "LIVE_RATE"
   }
