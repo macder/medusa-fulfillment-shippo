@@ -1,5 +1,6 @@
+import path from "path"
 import { FulfillmentService } from "medusa-interfaces"
-import { MedusaError } from "medusa-core-utils"
+import { MedusaError, getConfigFile } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
 import { validateShippingAddress } from "../utils/validator"
 import Shippo from "../utils/shippo"
@@ -21,7 +22,12 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     super()
 
-    this.options_ = options
+    const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
+    const { projectConfig } = configModule
+
+    // for when released as an npm package
+    // this.options_ = options
+    this.options_ = projectConfig
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
@@ -188,7 +194,6 @@ class ShippoFulfillmentService extends FulfillmentService {
         async (item) =>
           await this.totalsService_
             .getLineItemTotals(item, order)
-
             .then((totals) =>
               shippoLineItem(
                 item,
