@@ -1,6 +1,14 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.8.0] (2022-06-23)
+Added
+- Exposed shippo client for direct use [#62](https://github.com/macder/medusa-fulfillment-shippo/issues/62)
+- Exposed public methods for all features [#64](https://github.com/macder/medusa-fulfillment-shippo/issues/64)
+- Public methods documented in README [#66](https://github.com/macder/medusa-fulfillment-shippo/issues/66)
+
+Changed
+- Verifies if CSO is shippo before modifying [#63](https://github.com/macder/medusa-fulfillment-shippo/issues/63)
 ## [0.7.0] (2022-06-23)
 Changed
 - Refactored fetching methods into a class [#56](https://github.com/macder/medusa-fulfillment-shippo/issues/56)
