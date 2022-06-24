@@ -9,3 +9,6 @@ src
 .gitignore
 .babelrc
 /.github
+__data__
+__tests__
+__mocks__
