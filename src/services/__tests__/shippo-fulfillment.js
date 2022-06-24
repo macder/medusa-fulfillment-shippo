@@ -52,7 +52,7 @@ describe("ShippoFulfillmentService", () => {
     splitCarriersToServices_: jest.fn(),
     createOrder: jest.fn(async (order) => {
       return {
-        object_id: 'd65f4gd654gf',
+        object_id: "d65f4gd654gf",
       }
     }),
   }
@@ -79,10 +79,12 @@ describe("ShippoFulfillmentService", () => {
       {}
     )
 
-    expect(shippoClientService.fetchCustomParcel).toHaveBeenCalledWith(data.fromOrder.metadata.shippo_parcel_template)
+    expect(shippoClientService.fetchCustomParcel).toHaveBeenCalledWith(
+      data.fromOrder.metadata.shippo_parcel_template
+    )
 
     expect(createFulfillment).toEqual({
-      shippo_order_id: 'd65f4gd654gf',
+      shippo_order_id: "d65f4gd654gf",
       shippo_parcel_template: data.fromOrder.metadata.shippo_parcel_template,
     })
   })
