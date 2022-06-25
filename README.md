@@ -1,5 +1,7 @@
 # medusa-fulfillment-shippo
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bceaaa00d6a04a6ebc8ae75e10da30e8)](https://app.codacy.com/gh/macder/medusa-fulfillment-shippo?utm_source=github.com&utm_medium=referral&utm_content=macder/medusa-fulfillment-shippo&utm_campaign=Badge_Grade_Settings)
+
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
