@@ -1,0 +1,121 @@
+{
+  "carrier_accounts": [
+    {
+      "carrier": "canada_post",
+      "object_id": "fdg56d15c65g4dfg",
+      "object_owner": "",
+      "account_id": "shippo_canada_post_account",
+      "parameters": {},
+      "test": true,
+      "active": true,
+      "is_shippo_account": true,
+      "metadata": "",
+      "carrier_name": "Canada Post",
+      "carrier_images": {
+        "200": "",
+        "75": ""
+      },
+      "service_levels": [
+        {
+          "token": "canada_post_tracked_packet_international",
+          "name": "Tracked Packet - International",
+          "supports_return_labels": false
+        },
+        {
+          "token": "canada_post_tracked_packet_usa",
+          "name": "Tracked Packet - USA",
+          "supports_return_labels": false
+        }
+      ]
+    },
+    {
+      "carrier": "ups",
+      "active": false,
+      "service_levels": []
+    }
+  ],
+  "service_groups": [
+    {
+      "description": "2 - 8 days",
+      "flat_rate": "15",
+      "flat_rate_currency": "CAD",
+      "free_shipping_threshold_currency": null,
+      "free_shipping_threshold_min": null,
+      "is_active": true,
+      "name": "Expedited Shipping Canada",
+      "object_id": "d742226a44fb407abaa591e0d339c348",
+      "rate_adjustment": 0,
+      "service_levels": [
+        {
+          "account_object_id": "e455196ceeb547438e97731ff9911c15",
+          "service_level_token": "canada_post_expedited_parcel"
+        }
+      ],
+      "type": "LIVE_RATE"
+    },
+    {
+      "description": "4–7 days",
+      "flat_rate": "35",
+      "flat_rate_currency": "USD",
+      "free_shipping_threshold_currency": null,
+      "free_shipping_threshold_min": null,
+      "is_active": true,
+      "name": "Expedited Shipping USA",
+      "object_id": "5be9e4cddbbd42f9a902cda759f72ca8",
+      "rate_adjustment": 0,
+      "service_levels": [
+        {
+          "account_object_id": "e455196ceeb547438e97731ff9911c15",
+          "service_level_token": "canada_post_expedited_parcel_usa"
+        }
+      ],
+      "type": "LIVE_RATE"
+    }
+  ],
+  "service_level_option": [
+    {
+      "token": "canada_post_tracked_packet_international",
+      "name": "Canada Post Tracked Packet - International",
+      "supports_return_labels": false,
+      "id": "shippo-fulfillment-canada_post_tracked_packet_international",
+      "carrier_id": "fdg56d15c65g4dfg",
+      "is_group": false,
+      "carrier": "canada_post",
+      "object_id": "fdg56d15c65g4dfg",
+      "object_owner": "",
+      "account_id": "shippo_canada_post_account",
+      "parameters": {},
+      "test": true,
+      "active": true,
+      "is_shippo_account": true,
+      "metadata": "",
+      "carrier_name": "Canada Post",
+      "carrier_images": {
+        "75": "",
+        "200": ""
+      }
+    },
+    {
+      "token": "canada_post_tracked_packet_usa",
+      "name": "Canada Post Tracked Packet - USA",
+      "supports_return_labels": false,
+      "id": "shippo-fulfillment-canada_post_tracked_packet_usa",
+      "carrier_id": "fdg56d15c65g4dfg",
+      "is_group": false,
+      "carrier": "canada_post",
+      "object_id": "fdg56d15c65g4dfg",
+      "object_owner": "",
+      "account_id": "shippo_canada_post_account",
+      "parameters": {},
+      "test": true,
+      "active": true,
+      "is_shippo_account": true,
+      "metadata": "",
+      "carrier_name": "Canada Post",
+      "carrier_images": {
+        "75": "",
+        "200": ""
+      }
+    }
+  ]
+}
