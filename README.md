@@ -1,4 +1,6 @@
 # medusa-fulfillment-shippo
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/circleci/circleci-docs)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/macder/medusa-fulfillment-shippo/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/macder/medusa-fulfillment-shippo/?branch=main)
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
