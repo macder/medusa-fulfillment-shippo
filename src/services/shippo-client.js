@@ -7,12 +7,14 @@ class ShippoClientService extends BaseService {
   constructor({}, options) {
     super()
 
-    const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
-    const { projectConfig } = configModule
-
-    // for when released as an npm package
-    // this.options_ = options
-    this.options_ = projectConfig
+    if (Object.keys(options).length === 0) {
+      const {
+        configModule: { projectConfig },
+      } = getConfigFile(path.resolve("."), "medusa-config")
+      this.options_ = projectConfig
+    } else {
+      this.options_ = options
+    }
 
     this.client_ = shippo(this.options_.api_key)
 

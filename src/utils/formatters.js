@@ -1,9 +1,11 @@
 import path from "path"
 import { getConfigFile, humanizeAmount } from "medusa-core-utils"
 
-const { configModule } = getConfigFile(path.resolve("."), "medusa-config")
-const { plugins } = configModule
-const { options } = plugins.find(e => e.resolve === 'medusa-fulfillment-shippo')
+const {
+  configModule: { projectConfig, plugins },
+} = getConfigFile(path.resolve("."), "medusa-config")
+const config = plugins.find((e) => e.resolve === "medusa-fulfillment-shippo")
+const options = config?.options ?? projectConfig
 
 /** Makes a flat product object from a LineItem
  * @param {LineItem} - LineItem object
