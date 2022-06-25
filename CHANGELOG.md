@@ -1,6 +1,11 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [0.8.3] (2022-06-24)
+Fixed
+- Flattened nested json response from both admin routes [#72](https://github.com/macder/medusa-fulfillment-shippo/issues/72)
+- Cancel fulfillment [#75](https://github.com/macder/medusa-fulfillment-shippo/issues/75), [#76](https://github.com/macder/medusa-fulfillment-shippo/issues/76)
+- Performance issue [#77](https://github.com/macder/medusa-fulfillment-shippo/issues/77)
 ## [0.8.1] (2022-06-23)
 Fixed
 - Config loading fail [#69](https://github.com/macder/medusa-fulfillment-shippo/issues/69)

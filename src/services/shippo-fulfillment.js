@@ -2,7 +2,6 @@ import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
 import { validateShippingAddress } from "../utils/validator"
-import Shippo from "../utils/shippo"
 import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -16,12 +15,11 @@ class ShippoFulfillmentService extends FulfillmentService {
       shippingProfileService,
       manager,
       totalsService,
+      shippoClientService,
     },
     options
   ) {
     super()
-
-    this.options_ = options
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
@@ -41,13 +39,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {Manager} */
     this.manager_ = manager
 
-    this.client_ = new Shippo(this.options_.api_key)
+    this.client_ = shippoClientService
 
     this.useClient = this.client_.getClient()
   }
 
   async getFulfillmentOptions() {
-    return await this.client_.retrieveFulfillmentOptions
+    return await this.client_.retrieveFulfillmentOptions()
   }
 
   async validateOption(data) {
@@ -67,20 +65,23 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-
     const parcel = await this.client_.fetchCustomParcel(
       fromOrder.metadata.shippo_parcel_template
     )
 
     return await this.client_
-      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
+      .createOrder(shippoOrder(fromOrder, lineItems, parcel))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel_template: fromOrder.shippo_parcel_template,
+        shippo_parcel_template: fromOrder.metadata.shippo_parcel_template,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
+  }
+
+  async cancelFulfillment(fulfillment) {
+    return Promise.resolve({})
   }
 
   canCalculate(data) {

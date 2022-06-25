@@ -1,10 +1,24 @@
+import { BaseService } from "medusa-interfaces"
+import path from "path"
+import { MedusaError, getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
-class Shippo {
-  constructor(token) {
-    this.client_ = shippo(token)
+class ShippoClientService extends BaseService {
+  constructor({}, options) {
+    super()
 
-    this.retrieveFulfillmentOptions = this.composeFulfillmentOptions_()
+    if (Object.keys(options).length === 0) {
+      const {
+        configModule: { projectConfig },
+      } = getConfigFile(path.resolve("."), "medusa-config")
+      this.options_ = projectConfig
+    } else {
+      this.options_ = options
+    }
+
+    this.client_ = shippo(this.options_.api_key)
+
+    this.retrieveFulfillmentOptions = this.composeFulfillmentOptions_
     this.createOrder = this.createOrder_
   }
 
@@ -96,4 +110,4 @@ class Shippo {
   }
 }
 
-export default Shippo
+export default ShippoClientService
