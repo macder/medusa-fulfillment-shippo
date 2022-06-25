@@ -1,4 +1,4 @@
-import data from "../__mocks__/shippo-data.json"
+import data from "./shippo-data.json"
 
 const shippo = () => ({
   carrieraccount: {
