@@ -1,7 +1,6 @@
 import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
-import { validateShippingAddress } from "../utils/validator"
 import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -92,15 +91,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async fetchLiveRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
-
-    // Validate if cart has a complete shipping address
-    const validAddress = validateShippingAddress(cart.shipping_address)
-    if (validAddress.error) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        validAddress.error.details[0].message
-      )
-    }
 
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
