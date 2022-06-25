@@ -1,6 +1,6 @@
 import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
 import ShippoFulfillmentService from "../shippo-fulfillment"
-import data from "../__data__/creatFulfillment.json"
+import data from "../__mocks__/shippo-fulfillment-data.json"
 
 describe("ShippoFulfillmentService", () => {
   describe("createFulfillment", () => {
