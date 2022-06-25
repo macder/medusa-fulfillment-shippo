@@ -39,14 +39,14 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.manager_ = manager
 
     /** @private @const {ShippoClientService} */
-    this.client_ = shippoClientService
+    this.shippo_ = shippoClientService
 
     /** @public @const {} */
-    this.useClient = this.client_.getClient()
+    this.useClient = this.shippo_.getClient()
   }
 
   async getFulfillmentOptions() {
-    return await this.client_.retrieveFulfillmentOptions()
+    return await this.shippo_.retrieveFulfillmentOptions()
   }
 
   async validateOption(data) {
@@ -66,12 +66,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcel = await this.client_.fetchCustomParcel(
+    const parcel = await this.shippo_.fetchCustomParcel(
       fromOrder.metadata.shippo_parcel_template
     )
 
-    return await this.client_
-      .createOrder(shippoOrder(fromOrder, lineItems, parcel))
+    return await this.shippo_
+      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
       .then((response) => ({
         shippo_order_id: response.object_id,
         shippo_parcel_template: fromOrder.metadata.shippo_parcel_template,
@@ -105,10 +105,10 @@ class ShippoFulfillmentService extends FulfillmentService {
       cart.email
     ).catch((e) => e)
 
-    const parcels = await this.client_.fetchCustomParcelTemplates()
+    const parcels = await this.shippo_.fetchCustomParcelTemplates()
     const packedParcels = await binPacker(cart.items, parcels)
 
-    return await this.client_
+    return await this.shippo_
       .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
       .then((response) =>
         response.map((rate) => ({ ...rate, parcel_template: packedParcels[0] }))

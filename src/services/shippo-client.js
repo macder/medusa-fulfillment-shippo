@@ -113,7 +113,7 @@ class ShippoClientService extends BaseService {
   }
 
   async createOrder_(order) {
-    return await this.client_().order.create(order)
+    return await this.client_.order.create(order)
   }
 }
 
