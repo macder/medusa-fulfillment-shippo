@@ -3,9 +3,7 @@ import ShippoFulfillmentService from "../shippo-fulfillment"
 import data from "../__data__/creatFulfillment.json"
 
 describe("ShippoFulfillmentService", () => {
-  
   describe("createFulfillment", () => {
-
     const totalsService = {
       getLineItemTotals: jest.fn(async (item, order) => data.line_item_totals),
       create: jest.fn(),
@@ -34,12 +32,13 @@ describe("ShippoFulfillmentService", () => {
     })
 
     it("successfully created a shippo order", async () => {
-      const createFulfillment = await shippoFulfillmentService.createFulfillment(
-        {},
-        data.fulfillmentItems,
-        data.fromOrder,
-        {}
-      )
+      const createFulfillment =
+        await shippoFulfillmentService.createFulfillment(
+          {},
+          data.fulfillmentItems,
+          data.fromOrder,
+          {}
+        )
 
       expect(shippoClientService.fetchCustomParcel).toHaveBeenCalledWith(
         data.fromOrder.metadata.shippo_parcel_template
@@ -53,7 +52,6 @@ describe("ShippoFulfillmentService", () => {
   })
 
   describe("fetchLiveRates", () => {
-
     const cartService = {
       setMetadata: jest.fn(),
       retrieve: jest.fn(),
