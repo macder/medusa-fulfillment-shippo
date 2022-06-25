@@ -5,6 +5,6 @@ export default async (req, res, next) => {
   res.json(
     await shippoFulfillmentService
       .fetchLiveRates(cart_id)
-      .then(response => response)
+      .then((response) => response)
   )
 }

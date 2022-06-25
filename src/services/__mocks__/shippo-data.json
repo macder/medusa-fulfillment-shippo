@@ -43,11 +43,11 @@
       "free_shipping_threshold_min": null,
       "is_active": true,
       "name": "Expedited Shipping Canada",
-      "object_id": "d742226a44fb407abaa591e0d339c348",
+      "object_id": "54drg6c1e4541gdf321v",
       "rate_adjustment": 0,
       "service_levels": [
         {
-          "account_object_id": "e455196ceeb547438e97731ff9911c15",
+          "account_object_id": "5gf1s5fd12fb45das",
           "service_level_token": "canada_post_expedited_parcel"
         }
       ],
@@ -65,7 +65,7 @@
       "rate_adjustment": 0,
       "service_levels": [
         {
-          "account_object_id": "e455196ceeb547438e97731ff9911c15",
+          "account_object_id": "5gf1s5fd12fb45das",
           "service_level_token": "canada_post_expedited_parcel_usa"
         }
       ],
