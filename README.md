@@ -1,6 +1,7 @@
 # medusa-fulfillment-shippo
+
 [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/circleci/circleci-docs)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/macder/medusa-fulfillment-shippo/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/macder/medusa-fulfillment-shippo/?branch=main)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
@@ -10,7 +11,7 @@ Live shipping rates for carts at checkout, optimized with a [first-fit-decreasin
 
 Creates Shippo orders for new fulfillments.
 
-Retrieves Shippo orders and packing slips for fulfillments 
+Retrieves Shippo orders and packing slips for fulfillments
 
 ## Table of Contents
 
@@ -61,22 +62,22 @@ Provide customers with accurate shipping rates at checkout to reduce over and un
 
 Lets assume shipping from Canada to customers in Canada and USA via “Standard” and “Express” options
 
-This would require setting up 4 shipping options in Shippo ([https://apps.goshippo.com/settings/rates-at-checkout](https://apps.goshippo.com/settings/rates-at-checkout))
+This would require setting up 4 shipping options in Shippo (<https://apps.goshippo.com/settings/rates-at-checkout>)
 
 1.  Standard Shipping Canada
 2.  Express Shipping Canada
 3.  Standard Shipping USA
 4.  Express Shiping USA
 
-Set each shipping option to “Live rate” and assign _service(s)_ to them
+Set each shipping option to “Live rate” and assign *service(s)* to them
 
 For example:
 
-*   Express Shipping Canada: _Canada Post XpressPost_
-*   Express Shipping USA: _Canada Post XpressPost USA_
-*   _…_
+*   Express Shipping Canada: *Canada Post XpressPost*
+*   Express Shipping USA: *Canada Post XpressPost USA*
+*   *…*
 
-For more in-depth details see [https://support.goshippo.com/hc/en-us/articles/4403207559963](https://support.goshippo.com/hc/en-us/articles/4403207559963)
+For more in-depth details see <https://support.goshippo.com/hc/en-us/articles/4403207559963>
 
 ### **Step 2 - Assign the Shipping Options to Regions in Medusa**
 
@@ -270,7 +271,7 @@ medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpack
     *   Attempts fitting items into smallest parcel the largest item can fit.
     *   If there are items remaining, try the next parcel size
     *   If there are no remaining items, use this parcel for shipping rate.
-    *   If all items cannot fit into single parcel, use the default template (_future implementation planned - this is because not all carriers in shippo support single orders with multi parcels_)
+    *   If all items cannot fit into single parcel, use the default template (*future implementation planned - this is because not all carriers in shippo support single orders with multi parcels*)
 
 ### Setup parcel templates
 
@@ -292,7 +293,7 @@ Assuming accurate data for product dimensions, weight, and package templates in 
 
 Creating an order fulfillment in admin will create an order in Shippo.
 
-View the orders at [https://apps.goshippo.com/orders](https://apps.goshippo.com/orders)
+View the orders at <https://apps.goshippo.com/orders>
 
 Retrieve Shippo order for a fulfillment
 
@@ -371,12 +372,12 @@ These are currently under development for future releases.
 
 ## Resources
 
-Medusa Docs  
+Medusa Docs\
 https://docs.medusajs.com/
 
-Medusa Shipping Architecture:  
+Medusa Shipping Architecture:\
 https://docs.medusajs.com/advanced/backend/shipping/overview
 
-Shippo API  
-https://goshippo.com/docs/intro  
+Shippo API\
+https://goshippo.com/docs/intro\
 https://goshippo.com/docs/reference
