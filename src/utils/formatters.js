@@ -49,7 +49,7 @@ export const shippoLineItem = (lineItem, totalPrice, currency) => {
  * @param {string} email - mail address
  * @return {object} - shippo address object
  */
-export const shippoAddress = (address, email) => ({
+export const shippoAddress = async (address, email) => ({
   name: `${address.first_name} ${address.last_name}`,
   company: address.company,
   street1: address.address_1,

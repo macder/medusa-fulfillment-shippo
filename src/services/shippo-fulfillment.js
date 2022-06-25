@@ -97,7 +97,11 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
 
     const lineItems = await this.formatLineItems_(cart.items, cart)
-    const toAddress = shippoAddress(cart.shipping_address, cart.email)
+
+    const toAddress = await shippoAddress(
+      cart.shipping_address,
+      cart.email
+    ).catch((e) => e)
 
     const parcels = await this.client_.fetchCustomParcelTemplates()
     const packedParcels = await binPacker(cart.items, parcels)
