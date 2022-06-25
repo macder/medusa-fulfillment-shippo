@@ -32,14 +32,16 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {CustomShippingOptionService} */
     this.customShippingOptionService_ = customShippingOptionService
 
-    /** @private @const {CustomShippingOptionRepository_} */
+    /** @private @const {CustomShippingOptionRepository} */
     this.customShippingOptionRepository_ = customShippingOptionRepository
 
     /** @private @const {Manager} */
     this.manager_ = manager
 
+    /** @private @const {ShippoClientService} */
     this.client_ = shippoClientService
 
+    /** @public @const {} */
     this.useClient = this.client_.getClient()
   }
 
