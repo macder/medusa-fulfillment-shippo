@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker"
 import { mockAddress } from "./customer"
 import { mockLineItem } from "./item"
-import { makeArrayOfMocks } from "./data-utils.js"
+import { mockRegion } from "./region"
+import { makeArrayOfMocks } from "./data-utils"
 
 // **WIP**
 
@@ -13,15 +14,15 @@ import { makeArrayOfMocks } from "./data-utils.js"
  */
 export const mockCart = ({ hasAddress = true, hasItems }) => {
   const address = mockAddress(hasAddress)
-
   const lineItems = hasItems ? makeArrayOfMocks(mockLineItem, hasItems) : []
+  const region = mockRegion({ amountCountries: 2 })
 
   const common = {
     addr_id: {
       shipping: `addr_${faker.database.mongodbObjectId()}`,
       billing: `addr_${faker.database.mongodbObjectId()}`,
     },
-    reg_id: `reg_${faker.database.mongodbObjectId()}`,
+    reg_id: region.id,
     cus_id: `cus_${faker.database.mongodbObjectId()}`,
   }
 
@@ -31,16 +32,13 @@ export const mockCart = ({ hasAddress = true, hasItems }) => {
     created_at: faker.date.past(),
     updated_at: faker.date.past(),
     deleted_at: null,
-
-    email: null,
-
+    email: hasAddress ? faker.internet.email() : null,
     customer_id: null,
     payment_id: null,
     type: "default",
     completed_at: null,
     payment_authorized_at: null,
     idempotency_key: null,
-
     metadata: null,
     subtotal: 0,
     tax_total: 0,
@@ -48,30 +46,25 @@ export const mockCart = ({ hasAddress = true, hasItems }) => {
     discount_total: 0,
     gift_card_total: 0,
     total: 0,
-
     context: {},
-
     gift_cards: [],
-    region: {},
+    region: region,
     items: lineItems,
-
     billing_address_id: null,
     shipping_address_id: common.addr_id.shipping,
-    region_id: "reg_01G4XYVBF3SDMZ5MVKBJBN8FTC",
-
+    region_id: common.reg_id,
     payment: null,
     shipping_address: {
       ...address,
       id: common.addr_id.shipping,
     },
     billing_address: null,
-
     shipping_methods: [],
     payment_sessions: [],
     discounts: [],
   }
 }
 
-console.log(
-  JSON.stringify(mockCart({ hasAddress: false, hasItems: 2 }), null, 2)
-)
+console.log(JSON.stringify(mockCart({ hasAddress: false }), null, 2))
+
+// , hasItems: 2

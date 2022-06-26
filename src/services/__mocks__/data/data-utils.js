@@ -1,2 +1,2 @@
-export const makeArrayOfMocks = (mockFn, count) =>
-  [...Array(count).keys()].map((e) => mockFn())
+export const makeArrayOfMocks = (mockFn, count, args = {}) =>
+  [...Array(count).keys()].map((e) => mockFn(args))
