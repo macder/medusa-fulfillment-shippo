@@ -2,7 +2,7 @@ import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
 import ShippoFulfillmentService from "../shippo-fulfillment"
 import data from "../__mocks__/shippo-fulfillment-data.json"
 import cartData from "../__mocks__/cart-data.json"
-import { faker } from "@faker-js/faker"
+import { parcelTemplateList } from "../__mocks__/data.js"
 
 describe("ShippoFulfillmentService", () => {
   const shippoClientService = {
@@ -18,21 +18,7 @@ describe("ShippoFulfillmentService", () => {
     }),
     fetchLiveRates: jest.fn(),
 
-    fetchCustomParcelTemplates: jest.fn(() =>
-      [...Array(4).keys()].map((e) => ({
-        object_id: faker.database.mongodbObjectId(),
-        object_owner: faker.internet.email(),
-        object_created: faker.date.past(),
-        object_updated: faker.date.past(),
-        name: faker.random.words(4),
-        length: faker.datatype.number({ min: 20, max: 100 }),
-        width: faker.datatype.number({ min: 20, max: 100 }),
-        height: faker.datatype.number({ min: 20, max: 100 }),
-        distance_unit: "cm",
-        weight: faker.datatype.number({ min: 200, max: 3000 }),
-        weight_unit: "g",
-      }))
-    ),
+    fetchCustomParcelTemplates: jest.fn(() => parcelTemplateList(4)),
   }
 
   describe("createFulfillment", () => {
