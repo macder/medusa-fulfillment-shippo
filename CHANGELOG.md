@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.8.4] (2022-06-25)
+
+Fixed
+
+*   Error messages in API responses [#80](https://github.com/macder/medusa-fulfillment-shippo/issues/80)
+
 ## \[0.8.3] (2022-06-24)
 
 Fixed
