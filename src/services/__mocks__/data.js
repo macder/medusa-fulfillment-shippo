@@ -19,7 +19,7 @@ export const mockAddress = () => ({
   province: faker.address.stateAbbr(),
   postal_code: faker.address.zipCode(),
   phone: faker.phone.phoneNumber(),
-  metadata: null
+  metadata: null,
 })
 
 export const mockParcelTemplate = () => ({

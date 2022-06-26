@@ -18,7 +18,9 @@ describe("ShippoFulfillmentService", () => {
     }),
     fetchLiveRates: jest.fn(),
 
-    fetchCustomParcelTemplates: jest.fn(() => makeArrayOf(mockParcelTemplate(), 4 )),
+    fetchCustomParcelTemplates: jest.fn(() =>
+      makeArrayOf(mockParcelTemplate(), 4)
+    ),
   }
 
   describe("createFulfillment", () => {
