@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { mockProduct, mockVariant } from "./product"
 
-export const mockItemCommon = () => ({
+const mockItemCommon = () => ({
   prod_id: `prod_${faker.database.mongodbObjectId()}`,
   variant_id: `variant_${faker.database.mongodbObjectId()}`,
   prod_title: faker.commerce.productName(),
@@ -10,7 +10,7 @@ export const mockItemCommon = () => ({
     weight: faker.datatype.number({ min: 200, max: 3000 }),
     length: faker.datatype.number({ min: 20, max: 100 }),
     width: faker.datatype.number({ min: 20, max: 100 }),
-    height: faker.datatype.number({ min: 20, max: 100 })
+    height: faker.datatype.number({ min: 20, max: 100 }),
   },
 })
 
@@ -44,7 +44,6 @@ export const mockItem = () => ({
 
 // WIP
 export const mockLineItem = () => {
-
   const common = mockItemCommon()
 
   const lineItem = {
@@ -60,7 +59,7 @@ export const mockLineItem = () => {
         ...mockProduct(),
         id: common.prod_id,
         title: common.prod_title,
-        ...common.dim
+        ...common.dim,
       },
     },
   }

@@ -1,5 +1,8 @@
 import { faker } from "@faker-js/faker"
 
+/** Mock Product
+ * @return {object} - Mocked Product
+ */
 export const mockProduct = () => ({
   id: `prod_${faker.database.mongodbObjectId()}`,
   created_at: faker.date.past(),
@@ -28,6 +31,9 @@ export const mockProduct = () => ({
   metadata: null,
 })
 
+/** Mock Variant
+ * @return {object} - Mocked Variant
+ */
 export const mockVariant = () => ({
   id: `variant_${faker.database.mongodbObjectId()}`,
   created_at: faker.date.past(),

@@ -1,7 +1,6 @@
 import { faker } from "@faker-js/faker"
 
 export const mockShippingOption = () => {
-
   return {
     id: `so_${faker.database.mongodbObjectId()}`,
     created_at: faker.date.past(),
@@ -27,17 +26,14 @@ export const mockShippingOption = () => {
       service_levels: [
         {
           account_object_id: "0101010101010101010101101010",
-          service_level_token: "canada_post_expedited_parcel"
-        }
+          service_level_token: "canada_post_expedited_parcel",
+        },
       ],
       rate_adjustment: 0,
       flat_rate_currency: "CAD",
       free_shipping_threshold_min: null,
-      free_shipping_threshold_currency: null
+      free_shipping_threshold_currency: null,
     },
-    metadata: null
+    metadata: null,
   }
-
 }
-
-

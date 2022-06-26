@@ -3,11 +3,26 @@ import { mockAddress } from "./customer"
 import { mockLineItem } from "./item"
 import { makeArrayOfMocks } from "./data-utils.js"
 
+// **WIP**
 
-export const mockCart = () => {
+/** Mock Cart
+ * @param {object} state
+ * @param {?int} [state.hasItems] - number of items in cart
+ * @param {bool} [state.hasAddress=true] - has complete address?
+ * @return {object} - Mocked Cart
+ */
+export const mockCart = ({ hasAddress = true, hasItems }) => {
+  const address = mockAddress(hasAddress)
+
+  const lineItems = hasItems ? makeArrayOfMocks(mockLineItem, hasItems) : []
 
   const common = {
-
+    addr_id: {
+      shipping: `addr_${faker.database.mongodbObjectId()}`,
+      billing: `addr_${faker.database.mongodbObjectId()}`,
+    },
+    reg_id: `reg_${faker.database.mongodbObjectId()}`,
+    cus_id: `cus_${faker.database.mongodbObjectId()}`,
   }
 
   return {
@@ -16,7 +31,7 @@ export const mockCart = () => {
     created_at: faker.date.past(),
     updated_at: faker.date.past(),
     deleted_at: null,
-    
+
     email: null,
 
     customer_id: null,
@@ -38,24 +53,25 @@ export const mockCart = () => {
 
     gift_cards: [],
     region: {},
-    items: [],
+    items: lineItems,
 
     billing_address_id: null,
-    shipping_address_id: "addr_01G6GM82WJWWTJCDKCJQKG3K4B",
+    shipping_address_id: common.addr_id.shipping,
     region_id: "reg_01G4XYVBF3SDMZ5MVKBJBN8FTC",
 
     payment: null,
-    shipping_address: mockAddress(),
+    shipping_address: {
+      ...address,
+      id: common.addr_id.shipping,
+    },
     billing_address: null,
 
     shipping_methods: [],
     payment_sessions: [],
     discounts: [],
-
   }
-
 }
 
 console.log(
-  JSON.stringify(mockCart(), null, 2)
+  JSON.stringify(mockCart({ hasAddress: false, hasItems: 2 }), null, 2)
 )
