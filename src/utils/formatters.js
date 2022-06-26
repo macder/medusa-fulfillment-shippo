@@ -64,8 +64,8 @@ export const shippoAddress = async (address, email) => ({
   validate: address.country_code == "us" ?? true,
 })
 
-export const shippoOrder = (order, lineItems, parcel) => {
-  const toAddress = shippoAddress(order.shipping_address, order.email)
+export const shippoOrder = async (order, lineItems, parcel) => {
+  const toAddress = await shippoAddress(order.shipping_address, order.email)
   const currencyCode = order.currency_code.toUpperCase()
   const shippingOptionName = order.shipping_methods[0].shipping_option.name
   const totalWeight = lineItems
