@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker"
 
-// WIP
 export const mockProduct = () => ({
   id: `prod_${faker.database.mongodbObjectId()}`,
   created_at: faker.date.past(),
@@ -29,7 +28,6 @@ export const mockProduct = () => ({
   metadata: null,
 })
 
-// WIP
 export const mockVariant = () => ({
   id: `variant_${faker.database.mongodbObjectId()}`,
   created_at: faker.date.past(),
@@ -53,5 +51,5 @@ export const mockVariant = () => ({
   width: faker.datatype.number({ min: 20, max: 100 }),
   height: faker.datatype.number({ min: 20, max: 100 }),
   metadata: null,
-  product: {}, // prod_
+  product: {},
 })
