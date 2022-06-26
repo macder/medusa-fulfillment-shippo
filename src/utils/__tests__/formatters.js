@@ -144,8 +144,8 @@ test("Formatter: shippoLineItem", () => {
   })
 })
 
-test("Formatter: shippoAddress", () => {
-  expect(shippoAddress(address, "test@test.com")).toStrictEqual({
+test("Formatter: shippoAddress", async () => {
+  expect(await shippoAddress(address, "test@test.com")).toStrictEqual({
     name: "Firstname Lastname",
     company: "",
     street1: "address1",
@@ -161,8 +161,8 @@ test("Formatter: shippoAddress", () => {
   })
 })
 
-test("Formatter: shippoOrder", () => {
-  expect(shippoOrder(order, lineItems, parcel)).toStrictEqual({
+test("Formatter: shippoOrder", async () => {
+  expect(await shippoOrder(order, lineItems, parcel)).toStrictEqual({
     order_number: 124,
     order_status: "PAID",
     to_address: {
