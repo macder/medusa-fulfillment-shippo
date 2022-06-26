@@ -400,5 +400,18 @@
         "item_id": "item_01G69PXJRY6ACWSAPN7RYBZZHT"
       }
     ]
-  }
+  },
+  "shippo_line_items": [
+    {
+      "title": "Medusa Coffee Mug",
+      "variant_title": "One Size",
+      "quantity": 2,
+      "total_price": "10",
+      "currency": "CAD",
+      "sku": "SKU_935611",
+      "weight": "500",
+      "weight_unit": "g",
+      "manufacture_country": "India"
+    }
+  ]
 }

@@ -1,4 +1,4 @@
-import data from "./shippo-data.json"
+import data from "./data/shippo-data.json"
 
 const shippo = () => ({
   carrieraccount: {
@@ -6,6 +6,9 @@ const shippo = () => ({
   },
   servicegroups: {
     list: jest.fn(async () => [...data.service_groups]),
+  },
+  liverates: {
+    create: jest.fn(async (e) => e),
   },
 })
 
