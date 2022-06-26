@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 
-export const parcelTemplate = () => ({
+export const mockParcelTemplate = () => ({
   object_id: faker.database.mongodbObjectId(),
   object_owner: faker.internet.email(),
   object_created: faker.date.past(),
@@ -14,5 +14,5 @@ export const parcelTemplate = () => ({
   weight_unit: "g",
 })
 
-export const parcelTemplateList = (count) =>
-  [...Array(count).keys()].map((e) => parcelTemplate())
+export const mockParcelTemplateList = (count) =>
+  [...Array(count).keys()].map((e) => mockParcelTemplate())
