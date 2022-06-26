@@ -1,5 +1,8 @@
 import { faker } from "@faker-js/faker"
 
+export const makeArrayOf = (item, count) =>
+  [...Array(count).keys()].map((e) => item)
+
 export const mockAddress = () => ({
   id: faker.database.mongodbObjectId(),
   created_at: faker.date.past(),
@@ -35,3 +38,7 @@ export const mockParcelTemplate = () => ({
 
 export const mockParcelTemplateList = (count) =>
   [...Array(count).keys()].map((e) => mockParcelTemplate())
+
+const test = makeArrayOfObjects(5, mockParcelTemplate())
+
+console.log(test)

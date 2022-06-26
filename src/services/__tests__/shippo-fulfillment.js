@@ -2,7 +2,7 @@ import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
 import ShippoFulfillmentService from "../shippo-fulfillment"
 import data from "../__mocks__/shippo-fulfillment-data.json"
 import cartData from "../__mocks__/cart-data.json"
-import { mockParcelTemplateList } from "../__mocks__/data.js"
+import { mockParcelTemplate, makeArrayOf } from "../__mocks__/data.js"
 
 describe("ShippoFulfillmentService", () => {
   const shippoClientService = {
@@ -18,7 +18,7 @@ describe("ShippoFulfillmentService", () => {
     }),
     fetchLiveRates: jest.fn(),
 
-    fetchCustomParcelTemplates: jest.fn(() => mockParcelTemplateList(4)),
+    fetchCustomParcelTemplates: jest.fn(() => makeArrayOf(mockParcelTemplate(), 4 )),
   }
 
   describe("createFulfillment", () => {
