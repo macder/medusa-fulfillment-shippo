@@ -35,10 +35,3 @@ export const mockParcelTemplate = () => ({
   weight: faker.datatype.number({ min: 200, max: 3000 }),
   weight_unit: "g",
 })
-
-export const mockParcelTemplateList = (count) =>
-  [...Array(count).keys()].map((e) => mockParcelTemplate())
-
-const test = makeArrayOfObjects(5, mockParcelTemplate())
-
-console.log(test)
