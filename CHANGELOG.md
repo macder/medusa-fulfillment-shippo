@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.8.5] (2022-06-25)
+
+Fixed
+
+*   Documentation inaccuracy
+
 ## \[0.8.4] (2022-06-25)
 
 Fixed
