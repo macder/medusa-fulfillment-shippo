@@ -1,7 +1,6 @@
 import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
-import { validateShippingAddress } from "../utils/validator"
 import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -33,19 +32,21 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {CustomShippingOptionService} */
     this.customShippingOptionService_ = customShippingOptionService
 
-    /** @private @const {CustomShippingOptionRepository_} */
+    /** @private @const {CustomShippingOptionRepository} */
     this.customShippingOptionRepository_ = customShippingOptionRepository
 
     /** @private @const {Manager} */
     this.manager_ = manager
 
-    this.client_ = shippoClientService
+    /** @private @const {ShippoClientService} */
+    this.shippo_ = shippoClientService
 
-    this.useClient = this.client_.getClient()
+    /** @public @const {} */
+    this.useClient = this.shippo_.getClient()
   }
 
   async getFulfillmentOptions() {
-    return await this.client_.retrieveFulfillmentOptions()
+    return await this.shippo_.retrieveFulfillmentOptions()
   }
 
   async validateOption(data) {
@@ -65,12 +66,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcel = await this.client_.fetchCustomParcel(
+    const parcel = await this.shippo_.fetchCustomParcel(
       fromOrder.metadata.shippo_parcel_template
     )
 
-    return await this.client_
-      .createOrder(shippoOrder(fromOrder, lineItems, parcel))
+    return await this.shippo_
+      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
       .then((response) => ({
         shippo_order_id: response.object_id,
         shippo_parcel_template: fromOrder.metadata.shippo_parcel_template,
@@ -93,26 +94,21 @@ class ShippoFulfillmentService extends FulfillmentService {
   async fetchLiveRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
 
-    // Validate if cart has a complete shipping address
-    const validAddress = validateShippingAddress(cart.shipping_address)
-    if (validAddress.error) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        validAddress.error.details[0].message
-      )
-    }
-
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
     )
 
     const lineItems = await this.formatLineItems_(cart.items, cart)
-    const toAddress = shippoAddress(cart.shipping_address, cart.email)
 
-    const parcels = await this.client_.fetchCustomParcelTemplates()
+    const toAddress = await shippoAddress(
+      cart.shipping_address,
+      cart.email
+    ).catch((e) => e)
+
+    const parcels = await this.shippo_.fetchCustomParcelTemplates()
     const packedParcels = await binPacker(cart.items, parcels)
 
-    return await this.client_
+    return await this.shippo_
       .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
       .then((response) =>
         response.map((rate) => ({ ...rate, parcel_template: packedParcels[0] }))

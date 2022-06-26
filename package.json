@@ -1,11 +1,11 @@
 {
   "name": "medusa-fulfillment-shippo",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Shippo fulfillment provider for medusa",
   "author": "Maciej Derulski",
   "license": "MIT",
   "scripts": {
-    "build": "babel src -d . --ignore **/__tests__",
+    "build": "babel src -d . --ignore **/__tests__,**/__mocks__",
     "prepare": "cross-env NODE_ENV=production npm run build",
     "watch": "onchange -v src/** -- copyfiles {{file}} ../my-medusa-store",
     "test": "jest"
@@ -39,6 +39,7 @@
     "@babel/preset-env": "^7.7.5",
     "@babel/register": "^7.7.4",
     "@babel/runtime": "^7.9.6",
+    "@faker-js/faker": "^7.3.0",
     "client-sessions": "^0.8.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^5.2.1",

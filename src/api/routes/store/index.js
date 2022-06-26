@@ -23,6 +23,7 @@ export default (app, rootDirectory) => {
 
   route.get(
     "/carts/:cart_id/shippo/rates",
+    bodyParser.json(),
     middlewares.wrap(require("./carts-rates").default)
   )
 

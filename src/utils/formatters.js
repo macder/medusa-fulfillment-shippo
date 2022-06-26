@@ -49,7 +49,7 @@ export const shippoLineItem = (lineItem, totalPrice, currency) => {
  * @param {string} email - mail address
  * @return {object} - shippo address object
  */
-export const shippoAddress = (address, email) => ({
+export const shippoAddress = async (address, email) => ({
   name: `${address.first_name} ${address.last_name}`,
   company: address.company,
   street1: address.address_1,
@@ -64,8 +64,8 @@ export const shippoAddress = (address, email) => ({
   validate: address.country_code == "us" ?? true,
 })
 
-export const shippoOrder = (order, lineItems, parcel) => {
-  const toAddress = shippoAddress(order.shipping_address, order.email)
+export const shippoOrder = async (order, lineItems, parcel) => {
+  const toAddress = await shippoAddress(order.shipping_address, order.email)
   const currencyCode = order.currency_code.toUpperCase()
   const shippingOptionName = order.shipping_methods[0].shipping_option.name
   const totalWeight = lineItems
