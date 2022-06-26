@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 
-export const makeArrayOf = (item, count) =>
-  [...Array(count).keys()].map((e) => item())
+export const makeArrayOf = (mockFn, count) =>
+  [...Array(count).keys()].map((e) => mockFn())
 
 export const mockAddress = () => ({
   id: faker.database.mongodbObjectId(),
