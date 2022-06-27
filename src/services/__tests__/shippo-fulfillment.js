@@ -97,22 +97,4 @@ describe("ShippoFulfillmentService", () => {
       expect(shippoFulfilService.canCalculate({})).toBe(false)
     })
   })
-
-  describe("formatLineItems_", () => {
-    // const totalsService = {
-    //   getLineItemTotals: jest.fn(async () => data.line_item_totals),
-    // }
-    // const shippoFulfilService = new ShippoFulfillmentService({
-    //   totalsService,
-    //   shippoClientService,
-    // })
-    // it("returns correct data format for shippo line item", async () => {
-    //   expect(
-    //     await shippoFulfilService.formatLineItems_(
-    //       data.fulfillmentItems,
-    //       data.fromOrder
-    //     )
-    //   ).toStrictEqual(data.shippo_line_items)
-    // })
-  })
 })
