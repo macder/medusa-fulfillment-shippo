@@ -16,3 +16,4 @@ yarn.lock
 /utils
 __data__
 temp
+coverage
