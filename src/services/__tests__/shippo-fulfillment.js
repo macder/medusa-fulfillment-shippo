@@ -1,83 +1,100 @@
-import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
+import ShippoClientService from "../shippo-client"
 import ShippoFulfillmentService from "../shippo-fulfillment"
-import data from "../__mocks__/shippo-fulfillment-data.json"
 
 describe("ShippoFulfillmentService", () => {
-  describe("createFulfillment", () => {
-    const totalsService = {
-      getLineItemTotals: jest.fn(async (item, order) => data.line_item_totals),
-      create: jest.fn(),
-    }
-
-    const shippoClientService = {
-      getClient: jest.fn(),
-      fetchCustomParcel: jest.fn((id) => {
-        // TODO: use ID
-        return data.user_parcel_template
-      }),
-      createOrder: jest.fn(async (order) => {
-        return {
-          object_id: "d65f4gd654gf",
-        }
-      }),
-    }
-
-    const shippoFulfillmentService = new ShippoFulfillmentService({
-      totalsService,
-      shippoClientService,
-    })
-
+  describe("getFulfillmentOptions", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
 
-    it("successfully created a shippo order", async () => {
-      const createFulfillment =
-        await shippoFulfillmentService.createFulfillment(
-          {},
-          data.fulfillmentItems,
-          data.fromOrder,
-          {}
-        )
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService(
+      { shippoClientService },
+      {}
+    )
 
-      expect(shippoClientService.fetchCustomParcel).toHaveBeenCalledWith(
-        data.fromOrder.metadata.shippo_parcel_template
+    it("returned fulfillment options as expected", async () => {
+      const result = await shippoFulfilService.getFulfillmentOptions()
+
+      expect(Array.isArray(result)).toBe(true)
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            name: expect.any(String),
+          }),
+        ])
       )
-
-      expect(createFulfillment).toEqual({
-        shippo_order_id: "d65f4gd654gf",
-        shippo_parcel_template: data.fromOrder.metadata.shippo_parcel_template,
-      })
     })
   })
 
-  describe("fetchLiveRates", () => {
-    const cartService = {
-      setMetadata: jest.fn(),
-      retrieve: jest.fn(),
-    }
+  describe("validateOption", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
 
-    const shippingProfileService = {
-      fetchCartOptions: jest.fn(),
-    }
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService(
+      { shippoClientService },
+      {}
+    )
 
-    const shippoClientService = {
-      getClient: jest.fn(),
-      fetchCustomParcel: jest.fn((id) => {
-        // TODO: use ID
-        return data.user_parcel_template
-      }),
-      fetchLiveRates: jest.fn(),
-    }
+    it("returned true", async () => {
+      const result = await shippoFulfilService.validateOption({ test: "test" })
+      expect(result).toEqual(true)
+    })
+  })
 
-    const shippoFulfillmentService = new ShippoFulfillmentService({
-      shippingProfileService,
-      cartService,
+  describe("validateFulfillmentData", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService(
+      { shippoClientService },
+      {}
+    )
+
+    it("returned data object from param", async () => {
+      const result = await shippoFulfilService.validateFulfillmentData(
+        { test: "test" },
+        { test: "test" },
+        { test: "test" }
+      )
+      expect(result).toEqual({ test: "test" })
+    })
+  })
+
+  describe("cancelFulfillment", () => {
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
       shippoClientService,
     })
 
-    it("successfully fetched live rates for a cart", async () => {
-      // expect(cartService.retrieve).toHaveBeenCalledWith()
+    it("returns resolved promise", async () => {
+      expect.assertions(1)
+      await expect(shippoFulfilService.cancelFulfillment()).resolves.toEqual({})
+    })
+  })
+
+  describe("canCalculate", () => {
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+    })
+    it("returns true when live-rate", async () => {
+      expect(shippoFulfilService.canCalculate({ type: "LIVE_RATE" })).toBe(true)
+    })
+    it("returns false when free", async () => {
+      expect(shippoFulfilService.canCalculate({ type: "FREE" })).toBe(false)
+    })
+    it("returns false when flat rate", async () => {
+      expect(shippoFulfilService.canCalculate({ type: "FLAT" })).toBe(false)
+    })
+    it("returns false when type missing", async () => {
+      expect(shippoFulfilService.canCalculate({})).toBe(false)
     })
   })
 })

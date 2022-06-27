@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.8.6] (2022-06-27)
+
+Misc code improvements from testing
+
 ## \[0.8.5] (2022-06-25)
 
 Fixed
