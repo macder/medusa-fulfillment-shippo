@@ -5,4 +5,4 @@
  * @return {array} - array of result objects from mockFn
  */
 export const makeArrayOfMocks = (mockFn, count, args = {}) =>
-  [...Array(count).keys()].map((e) => mockFn(args))
+  [...Array(count).keys()].map(() => mockFn(args))
