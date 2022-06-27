@@ -91,84 +91,21 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
 
-  // ////////////////////////////////////////
   async fetchLiveRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
-
-    // console.log(
-
-    //   `      \x1b[36m======================================================================
-    //   \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> cart'\x1b[0m
-
-    //   \x1b[33m ${JSON.stringify(cart, null, 2)}
-    //   \x1b[36m======================================================================END`,
-
-    //   '\x1b[0m')
-
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
     )
 
-    // console.log(
-
-    //   `      \x1b[36m======================================================================
-    //   \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> shippingOptions'\x1b[0m
-
-    //   \x1b[33m ${JSON.stringify(shippingOptions, null, 2)}
-    //   \x1b[36m======================================================================END`,
-
-    //   '\x1b[0m')
-
     const lineItems = await this.formatLineItems_(cart.items, cart)
-
-    // console.log(
-    //   `      \x1b[36m======================================================================
-    //   \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> lineItems'\x1b[0m
-
-    //   \x1b[33m ${JSON.stringify(lineItems, null, 2)}
-    //   \x1b[36m======================================================================END`,
-
-    //   "\x1b[0m"
-    // )
 
     const toAddress = await shippoAddress(
       cart.shipping_address,
       cart.email
     ).catch((e) => e)
 
-    // console.log(
-    //   `      \x1b[36m======================================================================
-    //   \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> toAddress'\x1b[0m
-
-    //   \x1b[33m ${JSON.stringify(toAddress, null, 2)}
-    //   \x1b[36m======================================================================END`,
-
-    //   "\x1b[0m"
-    // )
-
     const parcels = await this.shippo_.fetchCustomParcelTemplates()
-
-    // console.log(
-    //   `      \x1b[36m======================================================================
-    //   \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> parcels'\x1b[0m
-
-    //   \x1b[33m ${JSON.stringify(parcels, null, 2)}
-    //   \x1b[36m======================================================================END`,
-
-    //   "\x1b[0m"
-    // )
-
     const packedParcels = await binPacker(cart.items, parcels)
-
-    // console.log(
-    //   `      \x1b[36m======================================================================
-    //   \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> packedParcels'\x1b[0m
-
-    //   \x1b[33m ${JSON.stringify(packedParcels, null, 2)}
-    //   \x1b[36m======================================================================END`,
-
-    //   "\x1b[0m"
-    // )
 
     const shippoRes = await this.shippo_
       .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
@@ -177,19 +114,8 @@ class ShippoFulfillmentService extends FulfillmentService {
       )
       .catch((e) => e)
 
-    // console.log(
-    //   `      \x1b[36m======================================================================
-    // \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> shippoRes'\x1b[0m
-
-    // \x1b[33m ${JSON.stringify(shippoRes, null, 2)}
-    // \x1b[36m======================================================================END`,
-
-    //   "\x1b[0m"
-    // )
-
     return shippoRes
   }
-  // ////////////////////////////////////////////
 
   async updateShippingRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
