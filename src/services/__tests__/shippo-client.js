@@ -125,4 +125,26 @@ describe("ShippoClientService", () => {
       )
     })
   })
+
+  describe("fetchCustomParcelTemplates", () => {
+    const shippoClientService = new ShippoClientService({}, {})
+
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    it("flatens user-parcel-templates reponse to response.results", async () => {
+      const result = await shippoClientService.fetchCustomParcelTemplates()
+
+      expect(Array.isArray(result)).toBe(true)
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            object_id: expect.any(String),
+          }),
+        ])
+      )
+    })
+  })
 })

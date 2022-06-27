@@ -116,3 +116,14 @@ export const mockParcelTemplate = () => ({
   weight: faker.datatype.number({ min: 200, max: 3000 }),
   weight_unit: "g",
 })
+
+/** mockParcelTemplateResponse
+ * @param {int} count
+ * @return {object} - shippo API res:
+ * - (/user-parcel-templates)
+ */
+export const mockParcelTemplateResponse = (count) => {
+  return {
+    results: makeArrayOfMocks(mockParcelTemplate, count),
+  }
+}
