@@ -58,7 +58,9 @@ export const mockCarrierAccountsResponse = (count) => {
 export const mockServiceGroupLevels = () => {
   return {
     account_object_id: faker.database.mongodbObjectId(),
-    service_level_token: toSnakeCase(faker.random.words(faker.datatype.number({ min: 3, max: 6 })))
+    service_level_token: toSnakeCase(
+      faker.random.words(faker.datatype.number({ min: 3, max: 6 }))
+    ),
   }
 }
 
@@ -73,12 +75,15 @@ export const mockServiceGroup = () => {
     flat_rate_currency: faker.finance.currencyCode(),
     free_shipping_threshold_currency: null,
     free_shipping_threshold_min: null,
-    is_active: faker.datatype.boolean(),
+    is_active: true,
     name: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
     object_id: faker.database.mongodbObjectId(),
     rate_adjustment: 0,
-    service_levels: makeArrayOfMocks(mockServiceGroupLevels, faker.datatype.number({ min: 1, max: 6 })),
-    type: "LIVE_RATE"
+    service_levels: makeArrayOfMocks(
+      mockServiceGroupLevels,
+      faker.datatype.number({ min: 1, max: 6 })
+    ),
+    type: "LIVE_RATE",
   }
 }
 
@@ -91,7 +96,7 @@ export const mockLiveRate = (isFallback = false) => {
     currency: "USD",
     amount_local: "",
     currency_local: "",
-    estimated_days: 0
+    estimated_days: 0,
   }
 }
 

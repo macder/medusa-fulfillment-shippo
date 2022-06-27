@@ -1,7 +1,29 @@
 import ShippoClientService from "../shippo-client"
-import data from "../__mocks__/data/temp/shippo-data.json"
 
-describe("ShippoFulfillmentService", () => {
+describe("ShippoClientService", () => {
+  describe("fetchCarriers_", () => {
+    const shippoClientService = new ShippoClientService({}, {})
+
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    it("flattens response down to response.results", async () => {
+      const result = await shippoClientService.fetchCarriers_()
+
+      expect(Array.isArray(result)).toBe(true)
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            carrier: expect.any(String),
+            carrier_name: expect.any(String),
+          }),
+        ])
+      )
+    })
+  })
+
   describe("findActiveCarriers", () => {
     const shippoClientService = new ShippoClientService({}, {})
 
@@ -10,11 +32,14 @@ describe("ShippoFulfillmentService", () => {
     })
 
     it("returns only active carriers accounts", async () => {
-      const findActiveCarriers = await shippoClientService.findActiveCarriers_([
-        ...data.carrier_accounts,
-      ])
+      const result = await shippoClientService
+        .fetchCarriers_()
+        .then(
+          async (response) =>
+            await shippoClientService.findActiveCarriers_(response)
+        )
 
-      findActiveCarriers.forEach((item) => expect(item.active).toBe(true))
+      result.forEach((item) => expect(item.active).toBe(true))
     })
   })
 
@@ -26,13 +51,55 @@ describe("ShippoFulfillmentService", () => {
     })
 
     it("splits carrier objects into service levels", async () => {
-      const carriers = data.carrier_accounts.filter(
-        (item) => item.active === true
+      const carriers = await shippoClientService
+        .fetchCarriers_()
+        .then(
+          async (carriers) =>
+            await shippoClientService.findActiveCarriers_(carriers)
+        )
+
+      const expectedLength = carriers.flatMap(
+        (item) => item.service_levels
+      ).length
+      const result = await shippoClientService.splitCarriersToServices_(
+        carriers
       )
 
-      expect(
-        await shippoClientService.splitCarriersToServices_(carriers)
-      ).toStrictEqual(data.service_level_option)
+      expect(result.length).toBe(expectedLength)
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            active: true,
+            name: expect.any(String),
+            id: expect.any(String),
+          }),
+        ])
+      )
+    })
+  })
+
+  describe("fetchServiceGroups_", () => {
+    const shippoClientService = new ShippoClientService({}, {})
+
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    it("returns correctly structured service groups", async () => {
+      const result = await shippoClientService.fetchServiceGroups_()
+
+      expect(Array.isArray(result)).toBe(true)
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            is_group: true,
+            name: expect.any(String),
+          }),
+        ])
+      )
     })
   })
 
@@ -44,16 +111,18 @@ describe("ShippoFulfillmentService", () => {
     })
 
     it("returns correctly structured fulfillment options", async () => {
-      expect(
-        await shippoClientService.composeFulfillmentOptions_()
-      ).toStrictEqual(data.fulfillment_options)
+      const result = await shippoClientService.composeFulfillmentOptions_()
+
+      expect(Array.isArray(result)).toBe(true)
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: expect.any(String),
+            id: expect.any(String),
+          }),
+        ])
+      )
     })
   })
 })
-
-// console.log(
-//   `      \x1b[36m======================================================================================================
-//       \x1b[93m \x1b[40m ShippoFulfillmentService -> createFulfillment() -> parcel'\x1b[0m
-//       \x1b[33m ${JSON.stringify(fulfillmentOptions, null, 2)}
-//       \x1b[36m======================================================================================================END`,
-//   '\x1b[0m')
