@@ -107,14 +107,11 @@ class ShippoFulfillmentService extends FulfillmentService {
     const parcels = await this.shippo_.fetchCustomParcelTemplates()
     const packedParcels = await binPacker(cart.items, parcels)
 
-    const shippoRes = await this.shippo_
+    return await this.shippo_
       .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
       .then((response) =>
         response.map((rate) => ({ ...rate, parcel_template: packedParcels[0] }))
       )
-      .catch((e) => e)
-
-    return shippoRes
   }
 
   async updateShippingRates(cartId) {
