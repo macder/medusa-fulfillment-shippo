@@ -61,7 +61,3 @@ export const mockCart = ({ hasAddress = true, hasItems }) => {
     discounts: [],
   }
 }
-
-// console.log(
-//   JSON.stringify(mockCart({ hasAddress: false, hasItems: 1 }), null, 2)
-// )

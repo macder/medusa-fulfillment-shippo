@@ -58,37 +58,42 @@ export const mockCarrierAccountsResponse = (count) => {
 export const mockServiceGroupLevels = () => {
   return {
     account_object_id: faker.database.mongodbObjectId(),
-    service_level_token: "canada_post_expedited_parcel"
+    service_level_token: toSnakeCase(faker.random.words(faker.datatype.number({ min: 3, max: 6 })))
   }
 }
-
-console.log(
-  JSON.stringify(mockServiceGroupLevels(), null, 2)
-)
 
 /** mockServiceGroups
  * @param {int} count - how many?
  * @return {object} - shippo API res (/service-groups)
  */
-export const mockServiceGroups = () => {
+export const mockServiceGroup = () => {
   return {
-    description: "2 - 8 days",
+    description: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
     flat_rate: faker.random.numeric(2),
-    flat_rate_currency: "CAD",
+    flat_rate_currency: faker.finance.currencyCode(),
     free_shipping_threshold_currency: null,
     free_shipping_threshold_min: null,
-    is_active: true,
+    is_active: faker.datatype.boolean(),
     name: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
     object_id: faker.database.mongodbObjectId(),
     rate_adjustment: 0,
-    service_levels: [],
+    service_levels: makeArrayOfMocks(mockServiceGroupLevels, faker.datatype.number({ min: 1, max: 6 })),
     type: "LIVE_RATE"
   }
 }
 
-console.log(
-  JSON.stringify(mockServiceGroups(), null, 2)
-)
+// **WIP**
+export const mockLiveRate = (isFallback = false) => {
+  return {
+    title: "Express International",
+    description: "2 - 8 days",
+    amount: "40",
+    currency: "USD",
+    amount_local: "",
+    currency_local: "",
+    estimated_days: 0
+  }
+}
 
 /** mockParcelTemplate
  * @return {object}

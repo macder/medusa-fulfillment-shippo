@@ -32,13 +32,13 @@ export const mockItem = () => ({
   has_shipping: true,
   unit_price: faker.datatype.number({ min: 500, max: 1000000 }),
   variant_id: `variant_${faker.database.mongodbObjectId()}`,
-  quantity: 2,
+  quantity: faker.datatype.number({ min: 1, max: 100 }),
   fulfilled_quantity: null,
   returned_quantity: null,
   shipped_quantity: null,
   metadata: {},
-  variant: {}, // variant_
-  tax_lines: [], // litl_
+  variant: {}, 
+  tax_lines: [],
   adjustments: [],
 })
 
