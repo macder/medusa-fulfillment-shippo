@@ -24,17 +24,7 @@ class ShippoClientService extends BaseService {
         this.splitCarriersToServices_(activeCarriers)
       )
     )
-
-    const shippingOptionGroups = await this.client_.servicegroups
-      .list()
-      .then((groups) =>
-        groups.map((serviceGroup) => ({
-          id: `shippo-fulfillment-${serviceGroup.object_id}`,
-          is_group: true,
-          ...serviceGroup,
-        }))
-      )
-
+    const shippingOptionGroups = await this.fetchServiceGroups_()
     return [...shippingOptions, ...shippingOptionGroups]
   }
 
@@ -42,6 +32,16 @@ class ShippoClientService extends BaseService {
     return await this.client_.carrieraccount
       .list({ service_levels: true, results: 100 })
       .then((response) => response.results)
+  }
+
+  async fetchServiceGroups_() {
+    return await this.client_.servicegroups.list().then((groups) =>
+      groups.map((serviceGroup) => ({
+        id: `shippo-fulfillment-${serviceGroup.object_id}`,
+        is_group: true,
+        ...serviceGroup,
+      }))
+    )
   }
 
   async fetchCustomParcelTemplates() {
