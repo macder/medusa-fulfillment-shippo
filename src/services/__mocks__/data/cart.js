@@ -15,7 +15,7 @@ import { makeArrayOfMocks } from "./data-utils"
 export const mockCart = ({ hasAddress = true, hasItems }) => {
   const shippingAddress = mockAddress(hasAddress)
   const lineItems = hasItems ? makeArrayOfMocks(mockLineItem, hasItems) : []
-  const region = mockRegion({ amountCountries: 3 })
+  const region = mockRegion({ countries: 3 })
 
   const common = {
     addr_id: {
