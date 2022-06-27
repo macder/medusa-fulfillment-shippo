@@ -14,16 +14,16 @@ export const mockAddress = (isComplete = true) => {
     deleted_at: null,
     country_code: faker.address.countryCode().toLowerCase(),
 
-    customer_id: isComplete && faker.database.mongodbObjectId(), // null
-    company: isComplete && faker.company.companyName(), // null
-    first_name: isComplete && faker.name.firstName(), // null
-    last_name: isComplete && faker.name.lastName(), // null
-    address_1: isComplete && faker.address.streetAddress(), // null
-    address_2: isComplete && faker.address.secondaryAddress(), // null
-    city: isComplete && faker.address.cityName(), // null
-    province: isComplete && faker.address.stateAbbr(), // null
-    postal_code: isComplete && faker.address.zipCode(), // null
-    phone: isComplete && faker.phone.number(), // null
+    customer_id: isComplete && faker.database.mongodbObjectId(),
+    company: isComplete && faker.company.companyName(),
+    first_name: isComplete && faker.name.firstName(),
+    last_name: isComplete && faker.name.lastName(),
+    address_1: isComplete && faker.address.streetAddress(),
+    address_2: isComplete && faker.address.secondaryAddress(),
+    city: isComplete && faker.address.cityName(),
+    province: isComplete && faker.address.stateAbbr(),
+    postal_code: isComplete && faker.address.zipCode(),
+    phone: isComplete && faker.phone.number(),
 
     metadata: null,
   }
