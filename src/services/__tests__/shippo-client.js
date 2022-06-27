@@ -147,4 +147,77 @@ describe("ShippoClientService", () => {
       )
     })
   })
+
+  describe("getClient", () => {
+    const shippoClientService = new ShippoClientService({}, {})
+
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    it("return shippo client", async () => {
+      const result = shippoClientService.getClient()
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          carrieraccount: expect.any(Object),
+          servicegroups: expect.any(Object),
+          userparceltemplates: expect.any(Object),
+          liverates: expect.any(Object),
+          // TODO: add all of them when mocked
+        })
+      )
+    })
+  })
+
+  describe("setConfig_", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    it("sets config as pluging", async () => {
+      const shippoClientService = new ShippoClientService(
+        {},
+        {
+          api_key: "secret",
+          weight_unit_type: "g",
+          dimension_unit_type: "cm",
+        }
+      )
+
+      const result = () => {
+        shippoClientService.setConfig_({
+          api_key: "secret",
+          weight_unit_type: "g",
+          dimension_unit_type: "cm",
+        })
+        return shippoClientService.options_
+      }
+
+      expect(result()).toEqual(
+        expect.objectContaining({
+          api_key: expect.any(String),
+          weight_unit_type: expect.any(String),
+          dimension_unit_type: expect.any(String),
+        })
+      )
+    })
+
+    it("sets config as standalone", async () => {
+      const shippoClientService = new ShippoClientService({}, {})
+
+      const result = () => {
+        shippoClientService.setConfig_({})
+        return shippoClientService.options_
+      }
+
+      expect(result()).toEqual(
+        expect.objectContaining({
+          api_key: expect.any(String),
+          weight_unit_type: expect.any(String),
+          dimension_unit_type: expect.any(String),
+        })
+      )
+    })
+  })
 })

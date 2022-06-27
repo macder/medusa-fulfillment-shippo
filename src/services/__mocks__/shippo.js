@@ -6,7 +6,7 @@ import {
   mockServiceGroup,
 } from "../__mocks__/data"
 
-const shippo = () => ({
+const shippo = jest.fn(() => ({
   carrieraccount: {
     list: jest.fn(async () =>
       mockCarrierAccountsResponse(faker.datatype.number({ min: 20, max: 50 }))
@@ -28,6 +28,6 @@ const shippo = () => ({
   liverates: {
     create: jest.fn(async (e) => e),
   },
-})
+}))
 
 export default shippo
