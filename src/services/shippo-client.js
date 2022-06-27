@@ -18,21 +18,6 @@ class ShippoClientService extends BaseService {
     return this.client_
   }
 
-  setConfig_(options) {
-    if (Object.keys(options).length === 0) {
-      const {
-        configModule: { projectConfig },
-      } = getConfigFile(path.resolve("."), "medusa-config")
-      this.options_ = projectConfig
-    } else {
-      this.options_ = options
-    }
-  }
-
-  setClient_() {
-    this.client_ = shippo(this.options_.api_key)
-  }
-
   async composeFulfillmentOptions_() {
     const shippingOptions = await this.fetchCarriers_().then((carriers) =>
       this.findActiveCarriers_(carriers).then((activeCarriers) =>
@@ -40,14 +25,15 @@ class ShippoClientService extends BaseService {
       )
     )
 
-    const shippingOptionGroups = await this.fetchServiceGroups_().then(
-      (groups) =>
+    const shippingOptionGroups = await this.client_.servicegroups
+      .list()
+      .then((groups) =>
         groups.map((serviceGroup) => ({
           id: `shippo-fulfillment-${serviceGroup.object_id}`,
           is_group: true,
           ...serviceGroup,
         }))
-    )
+      )
 
     return [...shippingOptions, ...shippingOptionGroups]
   }
@@ -56,14 +42,6 @@ class ShippoClientService extends BaseService {
     return await this.client_.carrieraccount
       .list({ service_levels: true, results: 100 })
       .then((response) => response.results)
-  }
-
-  async fetchServiceGroups_() {
-    return await this.client_.servicegroups.list()
-  }
-
-  async fetchCarrierParcelTemplate(token) {
-    return []
   }
 
   async fetchCustomParcelTemplates() {
@@ -114,6 +92,21 @@ class ShippoClientService extends BaseService {
 
   async createOrder_(order) {
     return await this.client_.order.create(order)
+  }
+
+  setConfig_(options) {
+    if (Object.keys(options).length === 0) {
+      const {
+        configModule: { projectConfig },
+      } = getConfigFile(path.resolve("."), "medusa-config")
+      this.options_ = projectConfig
+    } else {
+      this.options_ = options
+    }
+  }
+
+  setClient_() {
+    this.client_ = shippo(this.options_.api_key)
   }
 }
 

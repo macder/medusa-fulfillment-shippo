@@ -8,9 +8,9 @@ export const makeArrayOfMocks = (mockFn, count, args = {}) =>
   [...Array(count).keys()].map(() => mockFn(args))
 
 /** toSnakeCase
-* @param {string} str - string to snake case
-* @return {string} - snake case string
-*/
+ * @param {string} str - string to snake case
+ * @return {string} - snake case string
+ */
 export const toSnakeCase = (str) =>
   str &&
   str

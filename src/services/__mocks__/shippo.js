@@ -1,4 +1,4 @@
-import data from "./data/shippo-data.json"
+import data from "./data/temp/shippo-data.json"
 
 const shippo = () => ({
   carrieraccount: {
