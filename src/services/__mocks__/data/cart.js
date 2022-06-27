@@ -13,13 +13,13 @@ import { makeArrayOfMocks } from "./data-utils"
  * @return {object} - Mocked Cart
  */
 export const mockCart = ({ hasAddress = true, hasItems }) => {
-  const address = mockAddress(hasAddress)
+  const shippingAddress = mockAddress(hasAddress)
   const lineItems = hasItems ? makeArrayOfMocks(mockLineItem, hasItems) : []
-  const region = mockRegion({ amountCountries: 2 })
+  const region = mockRegion({ amountCountries: 3 })
 
   const common = {
     addr_id: {
-      shipping: `addr_${faker.database.mongodbObjectId()}`,
+      shipping: shippingAddress.id,
       billing: `addr_${faker.database.mongodbObjectId()}`,
     },
     reg_id: region.id,
@@ -54,10 +54,7 @@ export const mockCart = ({ hasAddress = true, hasItems }) => {
     shipping_address_id: common.addr_id.shipping,
     region_id: common.reg_id,
     payment: null,
-    shipping_address: {
-      ...address,
-      id: common.addr_id.shipping,
-    },
+    shipping_address: shippingAddress,
     billing_address: null,
     shipping_methods: [],
     payment_sessions: [],
@@ -65,6 +62,6 @@ export const mockCart = ({ hasAddress = true, hasItems }) => {
   }
 }
 
-console.log(JSON.stringify(mockCart({ hasAddress: false }), null, 2))
-
-// , hasItems: 2
+console.log(
+  JSON.stringify(mockCart({ hasAddress: false, hasItems: 1 }), null, 2)
+)
