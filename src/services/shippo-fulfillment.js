@@ -93,7 +93,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async fetchLiveRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
-
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
     )
