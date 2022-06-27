@@ -14,5 +14,5 @@ yarn.lock
 /models
 /subscribers
 /utils
-/__mocks__
 __data__
+temp
