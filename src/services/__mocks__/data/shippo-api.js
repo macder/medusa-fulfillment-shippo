@@ -39,17 +39,60 @@ export const mockCarrier = () => {
 }
 
 /** mockCarrierAccountsResponse
- * @param {int} - amount of carrier accounts
- * @return {object} - mock response (/carrier_accounts?service_levels=true&results=[count])
+ * @param {int} count - amount of carrier accounts
+ * @return {object} - shippo API res:
+ * - (/carrier_accounts?service_levels=true&results=[count])
  */
 export const mockCarrierAccountsResponse = (count) => {
   return {
-    next: "",
+    next: null,
     previous: null,
     results: makeArrayOfMocks(mockCarrier, count),
   }
 }
 
+/** mockServiceGroups
+ * @param {int} count - how many?
+ * @return {object}
+ */
+export const mockServiceGroupLevels = () => {
+  return {
+    account_object_id: faker.database.mongodbObjectId(),
+    service_level_token: "canada_post_expedited_parcel"
+  }
+}
+
+console.log(
+  JSON.stringify(mockServiceGroupLevels(), null, 2)
+)
+
+/** mockServiceGroups
+ * @param {int} count - how many?
+ * @return {object} - shippo API res (/service-groups)
+ */
+export const mockServiceGroups = () => {
+  return {
+    description: "2 - 8 days",
+    flat_rate: faker.random.numeric(2),
+    flat_rate_currency: "CAD",
+    free_shipping_threshold_currency: null,
+    free_shipping_threshold_min: null,
+    is_active: true,
+    name: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
+    object_id: faker.database.mongodbObjectId(),
+    rate_adjustment: 0,
+    service_levels: [],
+    type: "LIVE_RATE"
+  }
+}
+
+console.log(
+  JSON.stringify(mockServiceGroups(), null, 2)
+)
+
+/** mockParcelTemplate
+ * @return {object}
+ */
 export const mockParcelTemplate = () => ({
   object_id: faker.database.mongodbObjectId(),
   object_owner: faker.internet.email(),
