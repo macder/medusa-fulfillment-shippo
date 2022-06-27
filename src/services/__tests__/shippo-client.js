@@ -185,16 +185,7 @@ describe("ShippoClientService", () => {
         }
       )
 
-      const result = () => {
-        shippoClientService.setConfig_({
-          api_key: "secret",
-          weight_unit_type: "g",
-          dimension_unit_type: "cm",
-        })
-        return shippoClientService.options_
-      }
-
-      expect(result()).toEqual(
+      expect(shippoClientService.options_).toEqual(
         expect.objectContaining({
           api_key: expect.any(String),
           weight_unit_type: expect.any(String),
@@ -206,12 +197,7 @@ describe("ShippoClientService", () => {
     it("sets config as standalone", async () => {
       const shippoClientService = new ShippoClientService({}, {})
 
-      const result = () => {
-        shippoClientService.setConfig_({})
-        return shippoClientService.options_
-      }
-
-      expect(result()).toEqual(
+      expect(shippoClientService.options_).toEqual(
         expect.objectContaining({
           api_key: expect.any(String),
           weight_unit_type: expect.any(String),
