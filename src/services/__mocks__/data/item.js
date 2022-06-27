@@ -37,7 +37,7 @@ export const mockItem = () => ({
   returned_quantity: null,
   shipped_quantity: null,
   metadata: {},
-  variant: {}, 
+  variant: {},
   tax_lines: [],
   adjustments: [],
 })
