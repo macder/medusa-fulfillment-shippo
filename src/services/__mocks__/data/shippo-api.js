@@ -113,7 +113,7 @@ export const mockParcelTemplate = () => ({
   width: faker.datatype.number({ min: 20, max: 200 }),
   height: faker.datatype.number({ min: 20, max: 200 }),
   distance_unit: "cm",
-  weight: faker.datatype.number({ min: 200, max: 3000 }),
+  weight: null, // faker.datatype.number({ min: 200, max: 3000 }),
   weight_unit: "g",
 })
 
