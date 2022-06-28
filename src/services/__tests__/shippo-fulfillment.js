@@ -286,26 +286,26 @@ describe("ShippoFulfillmentService", () => {
         expect(Array.isArray(result)).toBe(true)
       })
 
-      // test("liverate count is equal to shipping option count", async () => {
-      //   const result = await shippoFulfilService.fetchLiveRates()
-      //   expect(result.length).toBe(shippingOptions.length)
-      // })
+      test("liverate count is equal to shipping option count", async () => {
+        const result = await shippoFulfilService.fetchLiveRates()
+        expect(result.length).toBe(shippingOptions.length)
+      })
 
-      // it("live rate objects have correct property names", async () => {
-      //   const result = await shippoFulfilService.fetchLiveRates()
+      it("live rate objects have correct property names", async () => {
+        const result = await shippoFulfilService.fetchLiveRates()
 
-      //   expect(result).toEqual(
-      //     expect.arrayContaining([
-      //       expect.objectContaining({
-      //         title: expect.any(String),
-      //         amount: expect.any(String),
-      //         currency: expect.any(String),
-      //         amount_local: expect.any(String),
-      //         currency_local: expect.any(String),
-      //       }),
-      //     ])
-      //   )
-      // })
+        expect(result).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              title: expect.any(String),
+              amount: expect.any(String),
+              currency: expect.any(String),
+              amount_local: expect.any(String),
+              currency_local: expect.any(String),
+            }),
+          ])
+        )
+      })
     })
   })
 })
