@@ -1,20 +1,20 @@
 import { BP3D } from "binpackingjs"
 import { productLineItem } from "./formatters"
 
-const splitItem = async (item) => {
-  const multiItem = []
-  for (let i = 0; i < item.quantity; i++) {
-    multiItem[i] = productLineItem(item)
-  }
-  return multiItem
-}
-
 // bin packing FFD
-export const binPacker = async (lineItems, parcels) => {
+export const binPacker = (lineItems, parcels) => {
   const { Item, Bin, Packer } = BP3D
 
+  const splitItem = (item) => {
+    const multiItem = []
+    for (let i = 0; i < item.quantity; i++) {
+      multiItem[i] = productLineItem(item)
+    }
+    return multiItem
+  }
+
   const items = lineItems
-    .flatMap(async (item) => {
+    .flatMap((item) => {
       if (item.quantity > 1) {
         return splitItem(item)
       }
@@ -57,6 +57,8 @@ export const binPacker = async (lineItems, parcels) => {
       fitParcels.push(packer.bins[0].name)
     }
   })
+
+  console.log("*********fitParcels: ", JSON.stringify(fitParcels, null, 2))
 
   return fitParcels
 }
