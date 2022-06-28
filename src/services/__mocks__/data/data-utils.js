@@ -1,10 +1,10 @@
-/** makeArrayOfMocks
- * @param {function} mockFn - function that returns data object(s)
+/** makeArrayOf
+ * @param {function} mockFn - function returns each entry for array
  * @param {int} count - array length
- * @param {object} [args] - params for mockFn
+ * @param {array|object|string} [args] - params for mockFn
  * @return {array} - array of [mockFn] objects
  */
-export const makeArrayOfMocks = (mockFn, count, args = {}) =>
+export const makeArrayOf = (mockFn, count, args = {}) =>
   [...Array(count).keys()].map(() => mockFn(args))
 
 /** toSnakeCase

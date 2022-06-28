@@ -1,9 +1,10 @@
 import { faker } from "@faker-js/faker"
 import {
-  makeArrayOfMocks,
+  makeArrayOf,
   mockCarrierAccountsResponse,
   mockParcelTemplateResponse,
   mockServiceGroup,
+  mockLiveRate,
 } from "../__mocks__/data"
 
 const shippo = jest.fn(() => ({
@@ -14,10 +15,7 @@ const shippo = jest.fn(() => ({
   },
   servicegroups: {
     list: jest.fn(async () =>
-      makeArrayOfMocks(
-        mockServiceGroup,
-        faker.datatype.number({ min: 2, max: 10 })
-      )
+      makeArrayOf(mockServiceGroup, faker.datatype.number({ min: 2, max: 10 }))
     ),
   },
   userparceltemplates: {
@@ -26,7 +24,7 @@ const shippo = jest.fn(() => ({
     ),
   },
   liverates: {
-    create: jest.fn(async (e) => e),
+    create: jest.fn(async () => ({ results: makeArrayOf(mockLiveRate, 10) })),
   },
 }))
 

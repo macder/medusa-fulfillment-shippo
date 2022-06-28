@@ -1,7 +1,7 @@
 import { BP3D } from "binpackingjs"
 import { productLineItem } from "./formatters"
 
-const splitItem = (item) => {
+const splitItem = async (item) => {
   const multiItem = []
   for (let i = 0; i < item.quantity; i++) {
     multiItem[i] = productLineItem(item)
@@ -14,7 +14,7 @@ export const binPacker = async (lineItems, parcels) => {
   const { Item, Bin, Packer } = BP3D
 
   const items = lineItems
-    .flatMap((item) => {
+    .flatMap(async (item) => {
       if (item.quantity > 1) {
         return splitItem(item)
       }

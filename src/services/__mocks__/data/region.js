@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker"
-import { makeArrayOfMocks } from "./data-utils"
+import { makeArrayOf } from "./data-utils"
 
 /** Mock Country Codes
  * @return {object}
@@ -49,7 +49,7 @@ export const mockRegion = ({ countries }) => {
     automatic_taxes: true,
     tax_provider_id: null,
     metadata: null,
-    countries: makeArrayOfMocks(mockCountry, countries, {
+    countries: makeArrayOf(mockCountry, countries, {
       region_id: reg_id,
     }),
     payment_providers: [],
