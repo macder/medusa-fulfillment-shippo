@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.8.7] (2022-06-28)
+
+Fixed
+
+*   Bin packer async issue [#90](https://github.com/macder/medusa-fulfillment-shippo/issues/90)
+
 ## \[0.8.6] (2022-06-27)
 
 Misc code improvements from testing
