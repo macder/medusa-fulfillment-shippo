@@ -104,8 +104,9 @@ class ShippoFulfillmentService extends FulfillmentService {
       cart.email
     ).catch((e) => e)
 
-    const parcels = await this.shippo_.fetchCustomParcelTemplates()
-    const packedParcels = await binPacker(cart.items, parcels)
+    const packedParcels = await this.shippo_
+      .fetchCustomParcelTemplates()
+      .then((parcels) => binPacker(cart.items, parcels))
 
     return await this.shippo_
       .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])

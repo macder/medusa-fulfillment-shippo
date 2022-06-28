@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker"
-import { makeArrayOfMocks, toSnakeCase } from "./data-utils"
+import { makeArrayOf, toSnakeCase } from "./data-utils"
 
 const mockServiceLevel = ({ carrier }) => {
   const serviceName = faker.random.words(
@@ -30,7 +30,7 @@ export const mockCarrier = () => {
     metadata: "",
     carrier_name: carrierName,
     carrier_images: {},
-    service_levels: makeArrayOfMocks(
+    service_levels: makeArrayOf(
       mockServiceLevel,
       faker.datatype.number({ min: 1, max: 20 }),
       { carrier: carrierName }
@@ -47,7 +47,7 @@ export const mockCarrierAccountsResponse = (count) => {
   return {
     next: null,
     previous: null,
-    results: makeArrayOfMocks(mockCarrier, count),
+    results: makeArrayOf(mockCarrier, count),
   }
 }
 
@@ -79,7 +79,7 @@ export const mockServiceGroup = () => {
     name: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
     object_id: faker.database.mongodbObjectId(),
     rate_adjustment: 0,
-    service_levels: makeArrayOfMocks(
+    service_levels: makeArrayOf(
       mockServiceGroupLevels,
       faker.datatype.number({ min: 1, max: 6 })
     ),
@@ -90,7 +90,7 @@ export const mockServiceGroup = () => {
 // **WIP**
 export const mockLiveRate = (isFallback = false) => {
   return {
-    title: "Express International",
+    title: faker.random.words(faker.datatype.number({ min: 10, max: 12 })), // to match shippingOption.data.name
     description: "2 - 8 days",
     amount: "40",
     currency: "USD",
@@ -113,7 +113,7 @@ export const mockParcelTemplate = () => ({
   width: faker.datatype.number({ min: 20, max: 200 }),
   height: faker.datatype.number({ min: 20, max: 200 }),
   distance_unit: "cm",
-  weight: faker.datatype.number({ min: 200, max: 3000 }),
+  weight: null, // faker.datatype.number({ min: 200, max: 3000 }),
   weight_unit: "g",
 })
 
@@ -124,6 +124,6 @@ export const mockParcelTemplate = () => ({
  */
 export const mockParcelTemplateResponse = (count) => {
   return {
-    results: makeArrayOfMocks(mockParcelTemplate, count),
+    results: makeArrayOf(mockParcelTemplate, count),
   }
 }

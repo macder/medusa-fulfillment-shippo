@@ -7,7 +7,7 @@ const mockItemCommon = () => ({
   prod_title: faker.commerce.productName(),
   variant_title: faker.random.words(2),
   dim: {
-    weight: faker.datatype.number({ min: 200, max: 3000 }),
+    weight: faker.datatype.number({ min: 200, max: 2000 }),
     length: faker.datatype.number({ min: 20, max: 100 }),
     width: faker.datatype.number({ min: 20, max: 100 }),
     height: faker.datatype.number({ min: 20, max: 100 }),
@@ -32,7 +32,7 @@ export const mockItem = () => ({
   has_shipping: true,
   unit_price: faker.datatype.number({ min: 500, max: 1000000 }),
   variant_id: `variant_${faker.database.mongodbObjectId()}`,
-  quantity: faker.datatype.number({ min: 1, max: 100 }),
+  quantity: faker.datatype.number({ min: 1, max: 4 }),
   fulfilled_quantity: null,
   returned_quantity: null,
   shipped_quantity: null,
