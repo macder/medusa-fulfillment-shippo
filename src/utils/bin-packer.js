@@ -58,7 +58,5 @@ export const binPacker = (lineItems, parcels) => {
     }
   })
 
-  console.log("*********fitParcels: ", JSON.stringify(fitParcels, null, 2))
-
   return fitParcels
 }
