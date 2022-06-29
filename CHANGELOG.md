@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.9.0] (2022-06-29)
+
+Added
+
+*   Bin packing result data added to cart/order metadata [#96](https://github.com/macder/medusa-fulfillment-shippo/issues/96)
+
+Fixed
+
+*   Empty json reponse under certain conditions when updating live-rates for shipping options [#99](https://github.com/macder/medusa-fulfillment-shippo/issues/99)
+
 ## \[0.8.7] (2022-06-28)
 
 Fixed
