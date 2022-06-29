@@ -65,7 +65,7 @@ class BinPackerService extends BaseService {
 
       return {
         ...bin.name,
-        bin_pack: {
+        packer_output: {
           volume: {
             bin: bin.name.volume,
             items: totalItemVolume,
