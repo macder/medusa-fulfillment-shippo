@@ -30,6 +30,7 @@ Retrieves Shippo orders and packing slips for fulfillments
         2.  [Setup parcel templates](#setup-parcel-templates)
         3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         4.  [Accuracy of Rates](#accuracy-of-rates)
+    *   [Bin Packing Data](#bin-packing-data)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
 *   [Shippo Node Client](#shippo-node-client)
@@ -289,6 +290,18 @@ In your medusa store, make sure products have correct values for length, width, 
 Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
+
+## Bin Packing Data
+
+Output data from bin packing is set as metadata on the cart/order object. It includes all the packages the cart items fit into, their position and rotation in the package, vacant space, and more. 
+
+Check the `shippo_binpack` metadata field on the cart/order object.
+
+The location of this data may change
+
+Structure and field names are unlikely to change
+
+Documentation is WIP
 
 ## Orders
 
