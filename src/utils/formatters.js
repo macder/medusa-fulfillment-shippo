@@ -12,6 +12,8 @@ const options = config?.options ?? projectConfig
  * @return {object} - flat product
  */
 export const productLineItem = ({ variant: { product, ...variant } }) => ({
+  product_id: product.id,
+  variant_id: variant.id,
   product_title: product.title,
   variant_title: variant.title,
   weight: variant.weight ?? product.weight,
@@ -64,7 +66,7 @@ export const shippoAddress = async (address, email) => ({
   validate: address.country_code == "us" ?? true,
 })
 
-export const shippoOrder = async (order, lineItems, parcel) => {
+export const shippoOrder = async (order, lineItems, parcelName) => {
   const toAddress = await shippoAddress(order.shipping_address, order.email)
   const currencyCode = order.currency_code.toUpperCase()
   const shippingOptionName = order.shipping_methods[0].shipping_option.name
@@ -79,7 +81,7 @@ export const shippoOrder = async (order, lineItems, parcel) => {
     placed_at: order.created_at,
     shipping_cost: humanizeAmount(order.shipping_total, currencyCode),
     shipping_cost_currency: currencyCode,
-    shipping_method: `${shippingOptionName} - (${parcel.name}) - ${currencyCode}`,
+    shipping_method: `${shippingOptionName} - (${parcelName}) - ${currencyCode}`,
     total_tax: humanizeAmount(order.tax_total, currencyCode),
     total_price: humanizeAmount(order.total, currencyCode),
     subtotal_price: humanizeAmount(order.subtotal, currencyCode),
