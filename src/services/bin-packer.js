@@ -3,7 +3,6 @@ import { BaseService } from "medusa-interfaces"
 import { productLineItem } from "../utils/formatters"
 
 class BinPackerService extends BaseService {
-  
   bins_ = []
   items_ = []
 
@@ -13,12 +12,11 @@ class BinPackerService extends BaseService {
 
   async packBins(lineItems, parcelTemplates) {
     const { Packer } = BP3D
-
     this.setBins_(parcelTemplates)
     this.setItems_(lineItems)
     const fitBins = []
 
-    this.bins_.forEach((bin, i) => {
+    this.bins_.forEach((bin) => {
       const packer = new Packer()
       packer.addBin(bin)
 
@@ -36,19 +34,16 @@ class BinPackerService extends BaseService {
   }
 
   async result_(fitBins) {
-    return fitBins.map((bin, i) => {
-
+    return fitBins.map((bin) => {
       const binItemsVolume = bin.items.map(
         (item) =>
           this.reduceFactor_(item.width) *
           this.reduceFactor_(item.height) *
           this.reduceFactor_(item.depth)
       )
-
       const totalItemVolume = binItemsVolume.reduce((a, b) => a + b, 0)
       const volumeVacant = bin.name.volume - totalItemVolume
       const items = bin.items.map((item) => {
-
         return {
           title: item.name.title,
           product_id: item.name.product_id,
@@ -82,7 +77,6 @@ class BinPackerService extends BaseService {
 
   async setBins_(parcelTemplates) {
     const { Bin } = BP3D
-
     this.bins_ = parcelTemplates
       .map((bin) => ({
         ...bin,
@@ -97,7 +91,6 @@ class BinPackerService extends BaseService {
 
   async setItems_(lineItems) {
     const { Item } = BP3D
-
     this.items_ = lineItems
       .flatMap((item) =>
         item.quantity > 1 ? this.splitItem_(item) : productLineItem(item)
