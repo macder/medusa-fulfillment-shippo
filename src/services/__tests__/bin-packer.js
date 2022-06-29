@@ -71,15 +71,17 @@ describe("BinPackerClientService", () => {
       jest.clearAllMocks()
     })
 
-    const itemCount = faker.datatype.number({ min: 3, max: 5 })
-    const templateCount = faker.datatype.number({ min: 20, max: 100 })
+    const itemCount = faker.datatype.number({ min: 1, max: 3 })
+    const templateCount = faker.datatype.number({ min: 11, max: 22 })
 
     const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
     const lineItems = makeArrayOf(mockLineItem, itemCount)
 
     const binPackerService = new BinPackerService({}, {})
-    const result = binPackerService.packBins(lineItems, parcelTemplates)
 
     // WIP
+    it("", async () => {
+      const result = await binPackerService.packBins(lineItems, parcelTemplates)
+    })
   })
 })

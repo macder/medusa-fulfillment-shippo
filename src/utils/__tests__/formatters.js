@@ -11,7 +11,7 @@ const lineItem = {
   unit_price: 1000,
   quantity: 6,
   variant: {
-    id: '2222',
+    id: "2222",
     title: "Variant Title",
     sku: "SKU_935611",
     barcode: "123456789012",
@@ -26,7 +26,7 @@ const lineItem = {
     height: 14,
     width: 10,
     product: {
-      id: '1111',
+      id: "1111",
       title: "Product Title",
       subtitle: null,
       description: "Product description",
@@ -117,8 +117,8 @@ test("Formatter: productLineItem", () => {})
 
 test("Formatter: productLineItem", () => {
   expect(productLineItem(lineItem, "test@test.com")).toStrictEqual({
-    product_id: '1111',
-    variant_id: '2222',
+    product_id: "1111",
+    variant_id: "2222",
     product_title: "Product Title",
     variant_title: "Variant Title",
     weight: 400,
