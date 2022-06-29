@@ -3,6 +3,7 @@ import { BaseService } from "medusa-interfaces"
 import { productLineItem } from "../utils/formatters"
 
 class BinPackerService extends BaseService {
+  
   bins_ = []
   items_ = []
 
