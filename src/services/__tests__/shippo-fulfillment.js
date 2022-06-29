@@ -250,7 +250,9 @@ describe("ShippoFulfillmentService", () => {
     const shippo = jest.fn(() => ({
       userparceltemplates: {
         list: jest.fn(async () =>
-          mockParcelTemplateResponse(faker.datatype.number({ min: 20, max: 50 }))
+          mockParcelTemplateResponse(
+            faker.datatype.number({ min: 20, max: 50 })
+          )
         ),
       },
       liverates: {
@@ -274,7 +276,10 @@ describe("ShippoFulfillmentService", () => {
 
       const cartService = {
         retrieve: jest.fn(async (cartId, options, totalsConfig) =>
-          mockCart({ hasAddress: true, hasItems: faker.datatype.number({ min: 1, max: 3 }) })
+          mockCart({
+            hasAddress: true,
+            hasItems: faker.datatype.number({ min: 1, max: 3 }),
+          })
         ),
       }
 
