@@ -145,7 +145,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         }
 
         return await Promise.all(
-          shippingOptions.map(async (option) => {
+          shippingOptions.filter(e => e.data.type === "LIVE_RATE" ).map(async (option) => {
             const optionRate = rates.find(
               (rate) => rate.title == option.data.name
             )
