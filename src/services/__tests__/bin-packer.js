@@ -38,8 +38,6 @@ describe("BinPackerClientService", () => {
 
     const result = binPackerService.bins_
 
-    // console.log("*********result: ", JSON.stringify(result, null, 2))
-
     it("sets bins_ property", () => {
       expect(result.length).toBeGreaterThan(0)
     })
@@ -63,8 +61,6 @@ describe("BinPackerClientService", () => {
 
     const result = binPackerService.items_
 
-    // console.log("*********result: ", JSON.stringify(result, null, 2))
-
     it("sets bins_ property", () => {
       expect(result.length).toBeGreaterThan(0)
     })
@@ -76,7 +72,7 @@ describe("BinPackerClientService", () => {
     })
 
     const itemCount = faker.datatype.number({ min: 3, max: 5 })
-    const templateCount = faker.datatype.number({ min: 8, max: 10 })
+    const templateCount = faker.datatype.number({ min: 20, max: 100 })
 
     const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
     const lineItems = makeArrayOf(mockLineItem, itemCount)
@@ -84,10 +80,6 @@ describe("BinPackerClientService", () => {
     const binPackerService = new BinPackerService({}, {})
     const result = binPackerService.packBins(lineItems, parcelTemplates)
 
-    // console.log('*********result: ', JSON.stringify(result, null, 2))
+    // WIP
   })
 })
-
-// console.log('*********result: ', JSON.stringify(result, null, 2))
-
-// console.log('*********result: ', result)
