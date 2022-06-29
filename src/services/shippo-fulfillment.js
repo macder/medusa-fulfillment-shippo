@@ -109,7 +109,10 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     this.binPackResults_ = await this.shippo_
       .fetchCustomParcelTemplates()
-      .then((parcels) => this.binPackerService_.packBins(cart.items, parcels))
+      .then(
+        async (parcels) =>
+          await this.binPackerService_.packBins(cart.items, parcels)
+      )
 
     return await this.shippo_
       .fetchLiveRates(

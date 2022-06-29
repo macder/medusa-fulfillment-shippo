@@ -10,7 +10,7 @@ class BinPackerService extends BaseService {
     super()
   }
 
-  packBins(lineItems, parcelTemplates) {
+  async packBins(lineItems, parcelTemplates) {
     const { Packer } = BP3D
 
     this.setBins_(parcelTemplates)
