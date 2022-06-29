@@ -10,8 +10,9 @@ class BinPackerService extends BaseService {
     super()
   }
 
-  async packBins(lineItems, parcelTemplates) {
+  packBins(lineItems, parcelTemplates) {
     const { Packer } = BP3D
+
     this.setBins_(parcelTemplates)
     this.setItems_(lineItems)
     const fitBins = []
@@ -33,7 +34,7 @@ class BinPackerService extends BaseService {
     return this.result_(fitBins)
   }
 
-  async result_(fitBins) {
+  result_(fitBins) {
     return fitBins.map((bin) => {
       const binItemsVolume = bin.items.map(
         (item) =>
@@ -41,6 +42,7 @@ class BinPackerService extends BaseService {
           this.reduceFactor_(item.height) *
           this.reduceFactor_(item.depth)
       )
+
       const totalItemVolume = binItemsVolume.reduce((a, b) => a + b, 0)
       const volumeVacant = bin.name.volume - totalItemVolume
       const items = bin.items.map((item) => {
@@ -75,7 +77,7 @@ class BinPackerService extends BaseService {
     })
   }
 
-  async setBins_(parcelTemplates) {
+  setBins_(parcelTemplates) {
     const { Bin } = BP3D
     this.bins_ = parcelTemplates
       .map((bin) => ({
@@ -89,7 +91,7 @@ class BinPackerService extends BaseService {
       )
   }
 
-  async setItems_(lineItems) {
+  setItems_(lineItems) {
     const { Item } = BP3D
     this.items_ = lineItems
       .flatMap((item) =>
@@ -111,7 +113,7 @@ class BinPackerService extends BaseService {
       )
   }
 
-  async calculateVolume_({ length, depth, width, height }) {
+  calculateVolume_({ length, depth, width, height }) {
     return length
       ? length * width * height
       : this.reduceFactor_(depth) *
@@ -119,11 +121,11 @@ class BinPackerService extends BaseService {
           this.reduceFactor_(height)
   }
 
-  async reduceFactor_(num) {
+  reduceFactor_(num) {
     return num / 100000
   }
 
-  async splitItem_(item) {
+  splitItem_(item) {
     return [...Array(item.quantity).keys()].map(() => productLineItem(item))
   }
 }
