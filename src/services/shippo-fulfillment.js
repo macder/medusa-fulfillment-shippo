@@ -1,13 +1,13 @@
 import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
-import { binPacker } from "../utils/bin-packer"
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
   constructor(
     {
+      binPackerService,
       cartService,
       customShippingOptionService,
       customShippingOptionRepository,
@@ -20,8 +20,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     super()
 
-    /** @private @const {TotalsService} */
-    this.totalsService_ = totalsService
+    /** @private @const {BinPackerService_} */
+    this.binPackerService_ = binPackerService
 
     /** @private @const {CartService} */
     this.cartService_ = cartService
@@ -41,8 +41,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {ShippoClientService} */
     this.shippo_ = shippoClientService
 
+    /** @private @const {TotalsService} */
+    this.totalsService_ = totalsService
+
     /** @public @const {} */
     this.useClient = this.shippo_.getClient()
+
+    this.binPackResults_ = []
   }
 
   async getFulfillmentOptions() {
@@ -66,15 +71,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcel = await this.shippo_.fetchCustomParcel(
-      fromOrder.metadata.shippo_parcel_template
-    )
+    const parcelName = fromOrder.metadata.shippo_binpack[0].name
 
     return await this.shippo_
-      .createOrder(await shippoOrder(fromOrder, lineItems, parcel))
+      .createOrder(await shippoOrder(fromOrder, lineItems, parcelName))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel_template: fromOrder.metadata.shippo_parcel_template,
+        shippo_parcel_template: fromOrder.metadata.shippo_binpack[0].object_id,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -104,14 +107,25 @@ class ShippoFulfillmentService extends FulfillmentService {
       cart.email
     ).catch((e) => e)
 
-    const packedParcels = await this.shippo_
+    this.binPackResults_ = await this.shippo_
       .fetchCustomParcelTemplates()
-      .then((parcels) => binPacker(cart.items, parcels))
+      .then(
+        async (parcels) =>
+          await this.binPackerService_.packBins(cart.items, parcels)
+      )
 
     return await this.shippo_
-      .fetchLiveRates(toAddress, lineItems, shippingOptions, packedParcels[0])
+      .fetchLiveRates(
+        toAddress,
+        lineItems,
+        shippingOptions,
+        this.binPackResults_[0]?.object_id
+      )
       .then((response) =>
-        response.map((rate) => ({ ...rate, parcel_template: packedParcels[0] }))
+        response.map((rate) => ({
+          ...rate,
+          parcel_template: this.binPackResults_[0]?.object_id,
+        }))
       )
   }
 
@@ -140,8 +154,8 @@ class ShippoFulfillmentService extends FulfillmentService {
 
             await this.cartService_.setMetadata(
               cartId,
-              "shippo_parcel_template",
-              optionRate.parcel_template
+              "shippo_binpack",
+              this.binPackResults_
             )
 
             return await this.customShippingOptionService_.create(

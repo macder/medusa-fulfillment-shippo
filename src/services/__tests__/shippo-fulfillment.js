@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
+import BinPackerService from "../bin-packer"
 import ShippoClientService from "../shippo-client"
 import ShippoFulfillmentService from "../shippo-fulfillment"
 import {
@@ -133,7 +134,10 @@ describe("ShippoFulfillmentService", () => {
     })
 
     it("is an array of correctly formatted objects", async () => {
-      const cart = mockCart({ hasAddress: true, hasItems: 1 })
+      const cart = mockCart({
+        hasAddress: true,
+        hasItems: faker.datatype.number({ min: 1, max: 6 }),
+      })
       const result = await shippoFulfilService.formatLineItems_(
         cart.items,
         cart
@@ -247,7 +251,7 @@ describe("ShippoFulfillmentService", () => {
       userparceltemplates: {
         list: jest.fn(async () =>
           mockParcelTemplateResponse(
-            faker.datatype.number({ min: 10, max: 30 })
+            faker.datatype.number({ min: 20, max: 50 })
           )
         ),
       },
@@ -263,6 +267,8 @@ describe("ShippoFulfillmentService", () => {
     const shippoClientService = new ShippoClientService({}, {})
     shippoClientService.client_ = shippo()
 
+    const binPackerService = new BinPackerService({}, {})
+
     describe("cart with items and complete address", () => {
       beforeAll(async () => {
         jest.clearAllMocks()
@@ -270,11 +276,15 @@ describe("ShippoFulfillmentService", () => {
 
       const cartService = {
         retrieve: jest.fn(async (cartId, options, totalsConfig) =>
-          mockCart({ hasAddress: true, hasItems: 2 })
+          mockCart({
+            hasAddress: true,
+            hasItems: faker.datatype.number({ min: 1, max: 3 }),
+          })
         ),
       }
 
       const shippoFulfilService = new ShippoFulfillmentService({
+        binPackerService,
         shippoClientService,
         shippingProfileService,
         cartService,

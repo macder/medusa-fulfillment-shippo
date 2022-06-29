@@ -11,6 +11,7 @@ const lineItem = {
   unit_price: 1000,
   quantity: 6,
   variant: {
+    id: "2222",
     title: "Variant Title",
     sku: "SKU_935611",
     barcode: "123456789012",
@@ -25,6 +26,7 @@ const lineItem = {
     height: 14,
     width: 10,
     product: {
+      id: "1111",
       title: "Product Title",
       subtitle: null,
       description: "Product description",
@@ -111,8 +113,12 @@ const parcel = {
   weight_unit: null,
 }
 
+test("Formatter: productLineItem", () => {})
+
 test("Formatter: productLineItem", () => {
   expect(productLineItem(lineItem, "test@test.com")).toStrictEqual({
+    product_id: "1111",
+    variant_id: "2222",
     product_title: "Product Title",
     variant_title: "Variant Title",
     weight: 400,
@@ -158,49 +164,5 @@ test("Formatter: shippoAddress", async () => {
     phone: "123-456-7890",
     email: "test@test.com",
     validate: false,
-  })
-})
-
-test("Formatter: shippoOrder", async () => {
-  expect(await shippoOrder(order, lineItems, parcel)).toStrictEqual({
-    order_number: 124,
-    order_status: "PAID",
-    to_address: {
-      name: "Firstname Lastname",
-      company: "",
-      street1: "address1",
-      street2: "",
-      street3: "",
-      city: "city",
-      state: "XX",
-      zip: "A1A 1A1",
-      country: "CA",
-      phone: "123-456-7890",
-      email: "test1@test.com",
-      validate: false,
-    },
-    placed_at: "2022-06-24T01:59:58.247Z",
-    shipping_cost: 23.57,
-    shipping_cost_currency: "USD",
-    shipping_method: "Expedited Shipping - (Package for 4 Coffee Mugs) - USD",
-    total_tax: 0,
-    total_price: 53.57,
-    subtotal_price: 30,
-    currency: "USD",
-    line_items: [
-      {
-        title: "Medusa Coffee Mug",
-        variant_title: "One Size",
-        quantity: 3,
-        total_price: "10",
-        currency: "USD",
-        sku: "SKU_935611",
-        weight: "500",
-        weight_unit: "g",
-        manufacture_country: "Canada",
-      },
-    ],
-    weight: 1500,
-    weight_unit: "g",
   })
 })
