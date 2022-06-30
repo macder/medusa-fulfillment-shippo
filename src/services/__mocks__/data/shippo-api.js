@@ -68,7 +68,7 @@ export const mockServiceGroupLevels = () => {
  * @param {int} count - how many?
  * @return {object} - shippo API res (/service-groups)
  */
-export const mockServiceGroup = () => {
+export const mockServiceGroup = (type) => {
   return {
     description: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
     flat_rate: faker.random.numeric(2),
@@ -83,7 +83,7 @@ export const mockServiceGroup = () => {
       mockServiceGroupLevels,
       faker.datatype.number({ min: 1, max: 6 })
     ),
-    type: "LIVE_RATE",
+    type,
   }
 }
 

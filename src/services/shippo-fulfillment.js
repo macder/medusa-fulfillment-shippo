@@ -145,13 +145,64 @@ class ShippoFulfillmentService extends FulfillmentService {
     return { error: "This order has no packer data available" }
   }
 
+  async findShippingOptionTypes_(type, cart) {
+    return await this.shippingProfileService_
+      .fetchCartOptions(cart)
+      .then((cartShippingOptions) =>
+        cartShippingOptions.filter(
+          (shippingOption) => shippingOption.data.type === type
+        )
+      )
+  }
+
+  findRate_(shippingOption, rates) {
+    return rates.find((rate) => rate.title == shippingOption.data.name)
+  }
+
+  getPrice_(rate) {
+    // amount_local: calculated || amount: fallback
+    const price = rate.amount_local || rate.amount
+    return parseInt(parseFloat(price) * 100)
+  }
+
+  async createCustomShippingOption_(shippingOption, rate, cartId) {
+    return await this.customShippingOptionService_.create(
+      {
+        cart_id: cartId,
+        shipping_option_id: shippingOption.id,
+        price: this.getPrice_(rate),
+      },
+      {
+        metadata: {
+          is_shippo_rate: true,
+          ...rate,
+          shippo_binpack: this.binPackResults_,
+        },
+      }
+    )
+  }
+
+  async setCartMeta_(customShippingOption) {
+    const parcelId =
+      customShippingOption[0].metadata.shippo_binpack[0].object_id
+
+    const parcelName =
+      customShippingOption[0].metadata.shippo_binpack[0].name
+
+    const csoIds = [...Array(customShippingOption.length).keys()].map(
+      (e) => customShippingOption[e].id
+    )
+
+    await this.cartService_.setMetadata(cartId, "shippo", {
+      parcel_templace_id: parcelId,
+      parcel_template_name: parcelName,
+      custom_shipping_options: csoIds,
+    })
+  }
+
   async updateShippingRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
     const rates = await this.fetchLiveRates(cartId)
-
-    const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
-      cart
-    )
 
     const customShippingOptions = await this.customShippingOptionService_
       .list({ cart_id: cartId })
@@ -160,47 +211,22 @@ class ShippoFulfillmentService extends FulfillmentService {
           await this.removeCustomShippingOptions_(cartCustomShippingOptions)
         }
 
+        const shippingOptions = await this.findShippingOptionTypes_(
+          "LIVE_RATE",
+          cart
+        )
+
         return await Promise.all(
-          shippingOptions
-            .filter((e) => e.data.type === "LIVE_RATE")
-            .map(async (option) => {
-              const optionRate = rates.find(
-                (rate) => rate.title == option.data.name
+          shippingOptions.map(
+            async (shippingOption) =>
+              await this.createCustomShippingOption_(
+                shippingOption,
+                this.findRate_(shippingOption, rates),
+                cartId
               )
-
-              const price = optionRate.amount_local || optionRate.amount
-
-              return await this.customShippingOptionService_.create(
-                {
-                  cart_id: cartId,
-                  shipping_option_id: option.id,
-                  price: parseInt(parseFloat(price) * 100),
-                },
-                {
-                  metadata: {
-                    is_shippo_rate: true,
-                    ...optionRate,
-                    shippo_binpack: this.binPackResults_,
-                  },
-                }
-              )
-            })
-        ).then(async (customShippingOption) => {
-          const parcelId =
-            customShippingOption[0].metadata.shippo_binpack[0].object_id
-
-          const parcelName =
-            customShippingOption[0].metadata.shippo_binpack[0].name
-
-          const csoIds = [...Array(customShippingOption.length).keys()].map(
-            (e) => customShippingOption[e].id
           )
-
-          await this.cartService_.setMetadata(cartId, "shippo", {
-            parcel_templace_id: parcelId,
-            parcel_template_name: parcelName,
-            custom_shipping_options: csoIds,
-          })
+        ).then(async (customShippingOption) => {
+          this.setCartMeta_(customShippingOption)
           return customShippingOption
         })
       })
