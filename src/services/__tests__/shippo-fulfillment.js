@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
-import BinPackerService from "../bin-packer"
+import ShippoPackerService from "../shippo-packer"
 import ShippoClientService from "../shippo-client"
 import ShippoFulfillmentService from "../shippo-fulfillment"
 import {
@@ -267,7 +267,7 @@ describe("ShippoFulfillmentService", () => {
     const shippoClientService = new ShippoClientService({}, {})
     shippoClientService.client_ = shippo()
 
-    const binPackerService = new BinPackerService({}, {})
+    const shippoPackerService = new ShippoPackerService({}, {})
 
     describe("cart with items and complete address", () => {
       beforeAll(async () => {
@@ -284,7 +284,7 @@ describe("ShippoFulfillmentService", () => {
       }
 
       const shippoFulfilService = new ShippoFulfillmentService({
-        binPackerService,
+        shippoPackerService,
         shippoClientService,
         shippingProfileService,
         cartService,
