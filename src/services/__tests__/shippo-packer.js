@@ -81,7 +81,10 @@ describe("ShippoPackerService", () => {
 
     // WIP
     it("", async () => {
-      const result = await shippoPackerService.packBins(lineItems, parcelTemplates)
+      const result = await shippoPackerService.packBins(
+        lineItems,
+        parcelTemplates
+      )
     })
   })
 })

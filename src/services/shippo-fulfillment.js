@@ -13,6 +13,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       customShippingOptionRepository,
       shippingProfileService,
       manager,
+      orderService,
       totalsService,
       shippoClientService,
     },
@@ -20,7 +21,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     super()
 
-    /** @private @const {BinPackerService_} */
+    /** @private @const {ShippoPackerService_} */
     this.shippoPackerService_ = shippoPackerService
 
     /** @private @const {CartService} */
@@ -37,6 +38,9 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {Manager} */
     this.manager_ = manager
+
+    /** @private @const {OrderService} */
+    this.orderService_ = orderService
 
     /** @private @const {ShippoClientService} */
     this.shippo_ = shippoClientService
@@ -71,7 +75,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcelName = fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
+    const parcelName =
+      fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
 
     return await this.shippo_
       .createOrder(await shippoOrder(fromOrder, lineItems, parcelName))
@@ -126,6 +131,18 @@ class ShippoFulfillmentService extends FulfillmentService {
           parcel_template: this.binPackResults_[0]?.object_id,
         }))
       )
+  }
+
+  async retrievePackerResults(order_id) {
+    const order = await this.orderService_.retrieve(order_id)
+
+    if (order.metadata.shippo?.custom_shipping_options) {
+      const cso_id = order.metadata.shippo.custom_shipping_options[0]
+      return await this.customShippingOptionService_
+        .retrieve(cso_id)
+        .then((cso) => cso.metadata.shippo_binpack)
+    }
+    return { error: "This order has no packer data available" }
   }
 
   async updateShippingRates(cartId) {
