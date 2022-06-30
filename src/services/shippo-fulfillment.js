@@ -7,34 +7,28 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   constructor(
     {
-      shippoPackerService,
       cartService,
-      customShippingOptionService,
       customShippingOptionRepository,
-      shippingProfileService,
+      customShippingOptionService,
       manager,
       orderService,
-      totalsService,
+      shippingProfileService,
       shippoClientService,
+      shippoPackerService,
+      totalsService,
     },
     options
   ) {
     super()
 
-    /** @private @const {ShippoPackerService_} */
-    this.shippoPackerService_ = shippoPackerService
-
     /** @private @const {CartService} */
     this.cartService_ = cartService
 
-    /** @private @const {ShippingProfileService} */
-    this.shippingProfileService_ = shippingProfileService
+    /** @private @const {CustomShippingOptionRepository} */
+    this.customShippingOptionRepository_ = customShippingOptionRepository
 
     /** @private @const {CustomShippingOptionService} */
     this.customShippingOptionService_ = customShippingOptionService
-
-    /** @private @const {CustomShippingOptionRepository} */
-    this.customShippingOptionRepository_ = customShippingOptionRepository
 
     /** @private @const {Manager} */
     this.manager_ = manager
@@ -42,8 +36,14 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {OrderService} */
     this.orderService_ = orderService
 
+    /** @private @const {ShippingProfileService} */
+    this.shippingProfileService_ = shippingProfileService
+
     /** @private @const {ShippoClientService} */
     this.shippo_ = shippoClientService
+
+    /** @private @const {ShippoPackerService_} */
+    this.shippoPackerService_ = shippoPackerService
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
@@ -145,61 +145,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     return { error: "This order has no packer data available" }
   }
 
-  async findShippingOptionTypes_(type, cart) {
-    return await this.shippingProfileService_
-      .fetchCartOptions(cart)
-      .then((cartShippingOptions) =>
-        cartShippingOptions.filter(
-          (shippingOption) => shippingOption.data.type === type
-        )
-      )
-  }
-
-  findRate_(shippingOption, rates) {
-    return rates.find((rate) => rate.title == shippingOption.data.name)
-  }
-
-  getPrice_(rate) {
-    // amount_local: calculated || amount: fallback
-    const price = rate.amount_local || rate.amount
-    return parseInt(parseFloat(price) * 100)
-  }
-
-  async createCustomShippingOption_(shippingOption, rate, cartId) {
-    return await this.customShippingOptionService_.create(
-      {
-        cart_id: cartId,
-        shipping_option_id: shippingOption.id,
-        price: this.getPrice_(rate),
-      },
-      {
-        metadata: {
-          is_shippo_rate: true,
-          ...rate,
-          shippo_binpack: this.binPackResults_,
-        },
-      }
-    )
-  }
-
-  async setCartMeta_(customShippingOption) {
-    const parcelId =
-      customShippingOption[0].metadata.shippo_binpack[0].object_id
-
-    const parcelName =
-      customShippingOption[0].metadata.shippo_binpack[0].name
-
-    const csoIds = [...Array(customShippingOption.length).keys()].map(
-      (e) => customShippingOption[e].id
-    )
-
-    await this.cartService_.setMetadata(cartId, "shippo", {
-      parcel_templace_id: parcelId,
-      parcel_template_name: parcelName,
-      custom_shipping_options: csoIds,
-    })
-  }
-
   async updateShippingRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
     const rates = await this.fetchLiveRates(cartId)
@@ -237,16 +182,35 @@ class ShippoFulfillmentService extends FulfillmentService {
     return customShippingOptions
   }
 
-  async removeCustomShippingOptions_(cartCustomShippingOptions) {
-    const customShippingOptionRepo = await this.manager_.getCustomRepository(
-      this.customShippingOptionRepository_
+  async createCustomShippingOption_(shippingOption, rate, cartId) {
+    return await this.customShippingOptionService_.create(
+      {
+        cart_id: cartId,
+        shipping_option_id: shippingOption.id,
+        price: this.getPrice_(rate),
+      },
+      {
+        metadata: {
+          is_shippo_rate: true,
+          ...rate,
+          shippo_binpack: this.binPackResults_,
+        },
+      }
     )
+  }
 
-    await customShippingOptionRepo.remove(
-      cartCustomShippingOptions.filter(
-        (option) => option.metadata.is_shippo_rate
+  async findShippingOptionTypes_(type, cart) {
+    return await this.shippingProfileService_
+      .fetchCartOptions(cart)
+      .then((cartShippingOptions) =>
+        cartShippingOptions.filter(
+          (shippingOption) => shippingOption.data.type === type
+        )
       )
-    )
+  }
+
+  findRate_(shippingOption, rates) {
+    return rates.find((rate) => rate.title == shippingOption.data.name)
   }
 
   async formatLineItems_(items, order) {
@@ -266,6 +230,24 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
+  getPrice_(rate) {
+    // amount_local: calculated || amount: fallback
+    const price = rate.amount_local || rate.amount
+    return parseInt(parseFloat(price) * 100)
+  }
+
+  async removeCustomShippingOptions_(cartCustomShippingOptions) {
+    const customShippingOptionRepo = await this.manager_.getCustomRepository(
+      this.customShippingOptionRepository_
+    )
+
+    await customShippingOptionRepo.remove(
+      cartCustomShippingOptions.filter(
+        (option) => option.metadata.is_shippo_rate
+      )
+    )
+  }
+
   async retrieveCart_(id) {
     return await this.cartService_.retrieve(id, {
       relations: [
@@ -277,6 +259,24 @@ class ShippoFulfillmentService extends FulfillmentService {
         "discounts",
         "region",
       ],
+    })
+  }
+
+  async setCartMeta_(customShippingOption) {
+    const parcelId =
+      customShippingOption[0].metadata.shippo_binpack[0].object_id
+
+    const parcelName =
+      customShippingOption[0].metadata.shippo_binpack[0].name
+
+    const csoIds = [...Array(customShippingOption.length).keys()].map(
+      (e) => customShippingOption[e].id
+    )
+
+    await this.cartService_.setMetadata(cartId, "shippo", {
+      parcel_templace_id: parcelId,
+      parcel_template_name: parcelName,
+      custom_shipping_options: csoIds,
     })
   }
 }
