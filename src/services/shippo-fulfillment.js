@@ -171,7 +171,7 @@ class ShippoFulfillmentService extends FulfillmentService {
               )
           )
         ).then(async (customShippingOption) => {
-          this.setCartMeta_(customShippingOption)
+          this.setCartMeta_(cartId, customShippingOption)
           return customShippingOption
         })
       })
@@ -262,7 +262,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     })
   }
 
-  async setCartMeta_(customShippingOption) {
+  async setCartMeta_(cartId, customShippingOption) {
     const parcelId =
       customShippingOption[0].metadata.shippo_binpack[0].object_id
 
