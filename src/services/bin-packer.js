@@ -3,7 +3,6 @@ import { BaseService } from "medusa-interfaces"
 import { productLineItem } from "../utils/formatters"
 
 class BinPackerService extends BaseService {
-  
   bins_ = []
   items_ = []
 
@@ -66,6 +65,7 @@ class BinPackerService extends BaseService {
 
       return {
         ...bin.name,
+        object_owner: null,
         packer_output: {
           volume: {
             bin: bin.name.volume,
@@ -80,11 +80,20 @@ class BinPackerService extends BaseService {
 
   setBins_(parcelTemplates) {
     const { Bin } = BP3D
+
     this.bins_ = parcelTemplates
-      .map((bin) => ({
-        ...bin,
-        volume: this.calculateVolume_(bin),
-      }))
+      .map(
+        ({
+          object_owner,
+          object_id,
+          object_created,
+          object_updated,
+          ...bin
+        }) => ({
+          ...bin,
+          volume: this.calculateVolume_(bin),
+        })
+      )
       .sort((a, b) => a.volume - b.volume)
       .map(
         (bin) =>
