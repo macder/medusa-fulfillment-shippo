@@ -82,18 +82,10 @@ class BinPackerService extends BaseService {
     const { Bin } = BP3D
 
     this.bins_ = parcelTemplates
-      .map(
-        ({
-          object_owner,
-          object_id,
-          object_created,
-          object_updated,
-          ...bin
-        }) => ({
-          ...bin,
-          volume: this.calculateVolume_(bin),
-        })
-      )
+      .map(({ object_owner, object_created, object_updated, ...bin }) => ({
+        ...bin,
+        volume: this.calculateVolume_(bin),
+      }))
       .sort((a, b) => a.volume - b.volume)
       .map(
         (bin) =>
