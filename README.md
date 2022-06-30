@@ -297,7 +297,9 @@ If an order's shipping method rate was calculated at checkout, the output data f
 
 **HTTP:**
 
-    GET /admin/orders/:id/shippo/packer
+```plaintext
+GET /admin/orders/:id/shippo/packer
+```
 
 **Service:**
 
