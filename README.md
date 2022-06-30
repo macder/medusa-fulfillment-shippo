@@ -30,7 +30,7 @@ Retrieves Shippo orders and packing slips for fulfillments
         2.  [Setup parcel templates](#setup-parcel-templates)
         3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         4.  [Accuracy of Rates](#accuracy-of-rates)
-    *   [Bin Packing Data](#bin-packing-data)
+    *   [Parcel Packer](#parcel-packer)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
 *   [Shippo Node Client](#shippo-node-client)
@@ -291,17 +291,19 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-## Bin Packing Data
+## Parcel Packer
 
-Output data from bin packing is set as metadata on the cart/order object. It includes all the packages the cart items fit into, their position and rotation in the package, vacant space, and more. 
+If an order's shipping method rate was calculated at checkout, the output data from bin packing can be retrieved.
 
-Check the `shippo_binpack` metadata field on the cart/order object.
+**HTTP:**
 
-The location of this data may change
+    GET /admin/orders/:id/shippo/packer
 
-Structure and field names are unlikely to change
+**Service:**
 
-Documentation is WIP
+```javascript
+await shippoFulfillmentService.retrievePackerResults(order_id)
+```
 
 ## Orders
 
