@@ -37,9 +37,9 @@ export default (app, rootDirectory) => {
   )
 
   route.get(
-    "/orders/:order_id/shippo/binpack",
+    "/orders/:order_id/shippo/packer",
     authenticate(),
-    middlewares.wrap(require("./orders-binpack").default)
+    middlewares.wrap(require("./orders-packer").default)
   )
 
   // all your errors are belong to this

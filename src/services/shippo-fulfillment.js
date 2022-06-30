@@ -7,7 +7,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   constructor(
     {
-      binPackerService,
+      shippoPackerService,
       cartService,
       customShippingOptionService,
       customShippingOptionRepository,
@@ -21,7 +21,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     super()
 
     /** @private @const {BinPackerService_} */
-    this.binPackerService_ = binPackerService
+    this.shippoPackerService_ = shippoPackerService
 
     /** @private @const {CartService} */
     this.cartService_ = cartService
@@ -71,7 +71,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcelName = fromOrder.metadata.shippo.parcel_template_name ?? "N/A"
+    const parcelName = fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
 
     return await this.shippo_
       .createOrder(await shippoOrder(fromOrder, lineItems, parcelName))
@@ -110,7 +110,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       .fetchCustomParcelTemplates()
       .then(
         async (parcels) =>
-          await this.binPackerService_.packBins(cart.items, parcels)
+          await this.shippoPackerService_.packBins(cart.items, parcels)
       )
 
     return await this.shippo_

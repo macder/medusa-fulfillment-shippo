@@ -2,7 +2,7 @@ import { BP3D } from "binpackingjs"
 import { BaseService } from "medusa-interfaces"
 import { productLineItem } from "../utils/formatters"
 
-class BinPackerService extends BaseService {
+class ShippoPackerService extends BaseService {
   bins_ = []
   items_ = []
 
@@ -132,4 +132,4 @@ class BinPackerService extends BaseService {
   }
 }
 
-export default BinPackerService
+export default ShippoPackerService
