@@ -36,6 +36,12 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./fulfillment-packingslip").default)
   )
 
+  route.get(
+    "/orders/:order_id/shippo/binpack",
+    authenticate(),
+    middlewares.wrap(require("./orders-binpack").default)
+  )
+
   // all your errors are belong to this
   route.use((err, req, res, next) => {
     if (!res.headersSent) {
