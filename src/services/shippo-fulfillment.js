@@ -71,13 +71,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcelName = fromOrder.metadata.shippo_binpack[0].name
+    const parcelName = fromOrder.metadata.shippo.parcel_template_name ?? "N/A"
 
     return await this.shippo_
       .createOrder(await shippoOrder(fromOrder, lineItems, parcelName))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel_template: fromOrder.metadata.shippo_binpack[0].object_id,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -145,34 +144,48 @@ class ShippoFulfillmentService extends FulfillmentService {
         }
 
         return await Promise.all(
-          shippingOptions.filter(e => e.data.type === "LIVE_RATE" ).map(async (option) => {
-            const optionRate = rates.find(
-              (rate) => rate.title == option.data.name
-            )
+          shippingOptions
+            .filter((e) => e.data.type === "LIVE_RATE")
+            .map(async (option) => {
+              const optionRate = rates.find(
+                (rate) => rate.title == option.data.name
+              )
 
-            const price = optionRate.amount_local || optionRate.amount
+              const price = optionRate.amount_local || optionRate.amount
 
-            await this.cartService_.setMetadata(
-              cartId,
-              "shippo_binpack",
-              this.binPackResults_
-            )
-
-            return await this.customShippingOptionService_.create(
-              {
-                cart_id: cartId,
-                shipping_option_id: option.id,
-                price: parseInt(parseFloat(price) * 100),
-              },
-              {
-                metadata: {
-                  is_shippo_rate: true,
-                  ...optionRate,
+              return await this.customShippingOptionService_.create(
+                {
+                  cart_id: cartId,
+                  shipping_option_id: option.id,
+                  price: parseInt(parseFloat(price) * 100),
                 },
-              }
-            )
+                {
+                  metadata: {
+                    is_shippo_rate: true,
+                    ...optionRate,
+                    shippo_binpack: this.binPackResults_,
+                  },
+                }
+              )
+            })
+        ).then(async (customShippingOption) => {
+          const parcelId =
+            customShippingOption[0].metadata.shippo_binpack[0].object_id
+
+          const parcelName =
+            customShippingOption[0].metadata.shippo_binpack[0].name
+
+          const csoIds = [...Array(customShippingOption.length).keys()].map(
+            (e) => customShippingOption[e].id
+          )
+
+          await this.cartService_.setMetadata(cartId, "shippo", {
+            parcel_templace_id: parcelId,
+            parcel_template_name: parcelName,
+            custom_shipping_options: csoIds,
           })
-        )
+          return customShippingOption
+        })
       })
       .catch((e) => {
         console.error(e)
