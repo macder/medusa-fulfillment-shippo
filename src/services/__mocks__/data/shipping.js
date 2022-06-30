@@ -5,11 +5,21 @@ import { mockLiveRate, mockServiceGroup } from "./shippo-api"
 
 // **WIP**
 export const mockShippingOption = ({ variant = "default" }) => {
+  const id = `shippo-fulfillment-${faker.database.mongodbObjectId()}`
+
   const data = {
     default: {},
-    service_group: {
-      id: `shippo-fulfillment-${faker.database.mongodbObjectId()}`,
-      ...mockServiceGroup(),
+    live_rate: {
+      id,
+      ...mockServiceGroup("LIVE_RATE"),
+    },
+    flat_rate: {
+      id,
+      ...mockServiceGroup("FLAT_RATE"),
+    },
+    free: {
+      id,
+      ...mockServiceGroup("FREE_SHIPPING"),
     },
   }
 
