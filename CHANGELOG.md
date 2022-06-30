@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.10.0] (2022-06-30)
+
+Added
+
+*   New endpoint to retrieve bin packing result data [#102](https://github.com/macder/medusa-fulfillment-shippo/issues/102)
+
+Changed
+
+*   **BREAKING**: Moved bin packing result data [#101](https://github.com/macder/medusa-fulfillment-shippo/issues/101)
+
 ## \[0.9.0] (2022-06-29)
 
 Added

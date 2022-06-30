@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker"
-import BinPackerService from "../bin-packer"
+import ShippoPackerService from "../shippo-packer"
 
 import {
   makeArrayOf,
@@ -7,21 +7,21 @@ import {
   mockParcelTemplate,
 } from "../__mocks__/data"
 
-describe("BinPackerClientService", () => {
+describe("ShippoPackerService", () => {
   beforeAll(async () => {
     jest.clearAllMocks()
   })
 
   test("if bins_ property is declared", () => {
-    const binPackerService = new BinPackerService({}, {})
-    const result = binPackerService.bins_
+    const shippoPackerService = new ShippoPackerService({}, {})
+    const result = shippoPackerService.bins_
 
     expect(Array.isArray(result)).toBe(true)
   })
 
   test("if items_ property is declared", () => {
-    const binPackerService = new BinPackerService({}, {})
-    const result = binPackerService.items_
+    const shippoPackerService = new ShippoPackerService({}, {})
+    const result = shippoPackerService.items_
 
     expect(Array.isArray(result)).toBe(true)
   })
@@ -33,10 +33,10 @@ describe("BinPackerClientService", () => {
 
     const templateCount = faker.datatype.number({ min: 1, max: 6 })
     const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
-    const binPackerService = new BinPackerService({}, {})
-    binPackerService.setBins_(parcelTemplates)
+    const shippoPackerService = new ShippoPackerService({}, {})
+    shippoPackerService.setBins_(parcelTemplates)
 
-    const result = binPackerService.bins_
+    const result = shippoPackerService.bins_
 
     it("sets bins_ property", () => {
       expect(result.length).toBeGreaterThan(0)
@@ -56,10 +56,10 @@ describe("BinPackerClientService", () => {
 
     const itemCount = faker.datatype.number({ min: 1, max: 4 })
     const lineItems = makeArrayOf(mockLineItem, itemCount)
-    const binPackerService = new BinPackerService({}, {})
-    binPackerService.setItems_(lineItems)
+    const shippoPackerService = new ShippoPackerService({}, {})
+    shippoPackerService.setItems_(lineItems)
 
-    const result = binPackerService.items_
+    const result = shippoPackerService.items_
 
     it("sets bins_ property", () => {
       expect(result.length).toBeGreaterThan(0)
@@ -77,11 +77,14 @@ describe("BinPackerClientService", () => {
     const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
     const lineItems = makeArrayOf(mockLineItem, itemCount)
 
-    const binPackerService = new BinPackerService({}, {})
+    const shippoPackerService = new ShippoPackerService({}, {})
 
     // WIP
     it("", async () => {
-      const result = await binPackerService.packBins(lineItems, parcelTemplates)
+      const result = await shippoPackerService.packBins(
+        lineItems,
+        parcelTemplates
+      )
     })
   })
 })

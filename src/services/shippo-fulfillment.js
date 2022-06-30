@@ -7,12 +7,13 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   constructor(
     {
-      binPackerService,
+      shippoPackerService,
       cartService,
       customShippingOptionService,
       customShippingOptionRepository,
       shippingProfileService,
       manager,
+      orderService,
       totalsService,
       shippoClientService,
     },
@@ -20,8 +21,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   ) {
     super()
 
-    /** @private @const {BinPackerService_} */
-    this.binPackerService_ = binPackerService
+    /** @private @const {ShippoPackerService_} */
+    this.shippoPackerService_ = shippoPackerService
 
     /** @private @const {CartService} */
     this.cartService_ = cartService
@@ -37,6 +38,9 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {Manager} */
     this.manager_ = manager
+
+    /** @private @const {OrderService} */
+    this.orderService_ = orderService
 
     /** @private @const {ShippoClientService} */
     this.shippo_ = shippoClientService
@@ -71,13 +75,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    const parcelName = fromOrder.metadata.shippo_binpack[0].name
+    const parcelName =
+      fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
 
     return await this.shippo_
       .createOrder(await shippoOrder(fromOrder, lineItems, parcelName))
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shippo_parcel_template: fromOrder.metadata.shippo_binpack[0].object_id,
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -111,7 +115,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       .fetchCustomParcelTemplates()
       .then(
         async (parcels) =>
-          await this.binPackerService_.packBins(cart.items, parcels)
+          await this.shippoPackerService_.packBins(cart.items, parcels)
       )
 
     return await this.shippo_
@@ -127,6 +131,18 @@ class ShippoFulfillmentService extends FulfillmentService {
           parcel_template: this.binPackResults_[0]?.object_id,
         }))
       )
+  }
+
+  async retrievePackerResults(order_id) {
+    const order = await this.orderService_.retrieve(order_id)
+
+    if (order.metadata.shippo?.custom_shipping_options) {
+      const cso_id = order.metadata.shippo.custom_shipping_options[0]
+      return await this.customShippingOptionService_
+        .retrieve(cso_id)
+        .then((cso) => cso.metadata.shippo_binpack)
+    }
+    return { error: "This order has no packer data available" }
   }
 
   async updateShippingRates(cartId) {
@@ -145,34 +161,48 @@ class ShippoFulfillmentService extends FulfillmentService {
         }
 
         return await Promise.all(
-          shippingOptions.filter(e => e.data.type === "LIVE_RATE" ).map(async (option) => {
-            const optionRate = rates.find(
-              (rate) => rate.title == option.data.name
-            )
+          shippingOptions
+            .filter((e) => e.data.type === "LIVE_RATE")
+            .map(async (option) => {
+              const optionRate = rates.find(
+                (rate) => rate.title == option.data.name
+              )
 
-            const price = optionRate.amount_local || optionRate.amount
+              const price = optionRate.amount_local || optionRate.amount
 
-            await this.cartService_.setMetadata(
-              cartId,
-              "shippo_binpack",
-              this.binPackResults_
-            )
-
-            return await this.customShippingOptionService_.create(
-              {
-                cart_id: cartId,
-                shipping_option_id: option.id,
-                price: parseInt(parseFloat(price) * 100),
-              },
-              {
-                metadata: {
-                  is_shippo_rate: true,
-                  ...optionRate,
+              return await this.customShippingOptionService_.create(
+                {
+                  cart_id: cartId,
+                  shipping_option_id: option.id,
+                  price: parseInt(parseFloat(price) * 100),
                 },
-              }
-            )
+                {
+                  metadata: {
+                    is_shippo_rate: true,
+                    ...optionRate,
+                    shippo_binpack: this.binPackResults_,
+                  },
+                }
+              )
+            })
+        ).then(async (customShippingOption) => {
+          const parcelId =
+            customShippingOption[0].metadata.shippo_binpack[0].object_id
+
+          const parcelName =
+            customShippingOption[0].metadata.shippo_binpack[0].name
+
+          const csoIds = [...Array(customShippingOption.length).keys()].map(
+            (e) => customShippingOption[e].id
+          )
+
+          await this.cartService_.setMetadata(cartId, "shippo", {
+            parcel_templace_id: parcelId,
+            parcel_template_name: parcelName,
+            custom_shipping_options: csoIds,
           })
-        )
+          return customShippingOption
+        })
       })
       .catch((e) => {
         console.error(e)
