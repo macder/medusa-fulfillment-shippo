@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.10.1] (2022-06-30)
+
+Fixed
+
+*   Edge case where fallback amount for live-rate fails [#109](https://github.com/macder/medusa-fulfillment-shippo/issues/109)
+
 ## \[0.10.0] (2022-06-30)
 
 Added

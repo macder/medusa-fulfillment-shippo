@@ -29,10 +29,13 @@ describe("ShippoFulfillmentService", () => {
       {}
     )
 
-    it("returned fulfillment options as expected", async () => {
+    it("returned an array", async () => {
       const result = await shippoFulfilService.getFulfillmentOptions()
-
       expect(Array.isArray(result)).toBe(true)
+    })
+
+    it("returned array of object that have id and name properties", async () => {
+      const result = await shippoFulfilService.getFulfillmentOptions()
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -133,17 +136,25 @@ describe("ShippoFulfillmentService", () => {
       totalsService,
     })
 
-    it("is an array of correctly formatted objects", async () => {
-      const cart = mockCart({
-        hasAddress: true,
-        hasItems: faker.datatype.number({ min: 1, max: 6 }),
-      })
+    const cart = mockCart({
+      hasAddress: true,
+      hasItems: faker.datatype.number({ min: 1, max: 6 }),
+    })
+
+    it("returned an array", async () => {
       const result = await shippoFulfilService.formatLineItems_(
         cart.items,
         cart
       )
 
       expect(Array.isArray(result)).toBe(true)
+    })
+
+    it("returned array of object with correct property names", async () => {
+      const result = await shippoFulfilService.formatLineItems_(
+        cart.items,
+        cart
+      )
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -220,7 +231,7 @@ describe("ShippoFulfillmentService", () => {
     })
   })
 
-  describe("fetchLiveRates", () => {
+  describe("live-rates", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
@@ -233,7 +244,7 @@ describe("ShippoFulfillmentService", () => {
 
     const mockShippingOptions = (titles) =>
       makeArrayOf(mockShippingOption, titles.length, {
-        variant: "service_group",
+        variant: "live_rate",
       }).map((item, i) => {
         item.data.name = titles[i]
         return item
@@ -269,53 +280,176 @@ describe("ShippoFulfillmentService", () => {
 
     const shippoPackerService = new ShippoPackerService({}, {})
 
-    describe("cart with items and complete address", () => {
+    describe("fetchLiveRates", () => {
+      describe("cart with items and complete address", () => {
+        beforeAll(async () => {
+          jest.clearAllMocks()
+        })
+
+        const cartService = {
+          retrieve: jest.fn(async (cartId, options, totalsConfig) =>
+            mockCart({
+              hasAddress: true,
+              hasItems: faker.datatype.number({ min: 1, max: 3 }),
+            })
+          ),
+        }
+
+        const shippoFulfilService = new ShippoFulfillmentService({
+          shippoPackerService,
+          shippoClientService,
+          shippingProfileService,
+          cartService,
+          totalsService,
+        })
+
+        it("returned array", async () => {
+          const result = await shippoFulfilService.fetchLiveRates()
+          expect(Array.isArray(result)).toBe(true)
+        })
+
+        test("liverate count is equal to shipping option count", async () => {
+          const result = await shippoFulfilService.fetchLiveRates()
+          expect(result.length).toBe(shippingOptions.length)
+        })
+
+        it("live rate objects have correct property names", async () => {
+          const result = await shippoFulfilService.fetchLiveRates()
+
+          expect(result).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                title: expect.any(String),
+                amount: expect.any(String),
+                currency: expect.any(String),
+                amount_local: expect.any(String),
+                currency_local: expect.any(String),
+              }),
+            ])
+          )
+        })
+      })
+    })
+
+    describe("findRate_", () => {
       beforeAll(async () => {
         jest.clearAllMocks()
       })
 
-      const cartService = {
-        retrieve: jest.fn(async (cartId, options, totalsConfig) =>
-          mockCart({
-            hasAddress: true,
-            hasItems: faker.datatype.number({ min: 1, max: 3 }),
-          })
-        ),
-      }
+      const shippoFulfilService = new ShippoFulfillmentService(
+        {
+          shippoClientService,
+        },
+        {}
+      )
 
-      const shippoFulfilService = new ShippoFulfillmentService({
-        shippoPackerService,
+      it("returns rate object that matches shipping option", async () => {
+        shippingOptions.forEach((shippingOption) => {
+          const result = shippoFulfilService.findRate_(
+            shippingOption,
+            liveRates
+          )
+
+          expect(result.title).toBe(shippingOption.data.name)
+        })
+      })
+    })
+  })
+
+  describe("getPrice_", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const shippoClientService = new ShippoClientService({}, {})
+
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
         shippoClientService,
-        shippingProfileService,
-        cartService,
-        totalsService,
-      })
+      },
+      {}
+    )
 
-      it("returned array", async () => {
-        const result = await shippoFulfilService.fetchLiveRates()
-        expect(Array.isArray(result)).toBe(true)
-      })
+    it("returns price from amount * 100", async () => {
+      const rate = {
+        amount: "93.56",
+        amount_local: "",
+      }
+      const result = shippoFulfilService.getPrice_(rate)
 
-      test("liverate count is equal to shipping option count", async () => {
-        const result = await shippoFulfilService.fetchLiveRates()
-        expect(result.length).toBe(shippingOptions.length)
-      })
+      expect(result).toBe(9356)
+    })
 
-      it("live rate objects have correct property names", async () => {
-        const result = await shippoFulfilService.fetchLiveRates()
+    it("returns price from amount_local * 100", async () => {
+      const rate = {
+        amount: "93.56",
+        amount_local: "41.8",
+      }
+      const result = shippoFulfilService.getPrice_(rate)
 
-        expect(result).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              title: expect.any(String),
-              amount: expect.any(String),
-              currency: expect.any(String),
-              amount_local: expect.any(String),
-              currency_local: expect.any(String),
-            }),
-          ])
-        )
-      })
+      expect(result).toBe(4180)
+    })
+  })
+
+  describe("findShippingOptionTypes_", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const cart = mockCart({
+      hasAddress: true,
+      hasItems: faker.datatype.number({ min: 1, max: 6 }),
+    })
+
+    const shippingOptions = faker.helpers.shuffle(
+      makeArrayOf(mockShippingOption, 5, { variant: "live_rate" }).concat(
+        makeArrayOf(mockShippingOption, 5, { variant: "flat_rate" }),
+        makeArrayOf(mockShippingOption, 5, { variant: "free" })
+      )
+    )
+
+    const shippingProfileService = {
+      fetchCartOptions: jest.fn(async (cart) => shippingOptions),
+    }
+
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+      shippingProfileService,
+    })
+
+    it("returns only LIVE_RATE shipping option types", async () => {
+      const result = await shippoFulfilService.findShippingOptionTypes_(
+        "LIVE_RATE",
+        cart
+      )
+      result.forEach((item) => expect(item.data.type).toBe("LIVE_RATE"))
+    })
+
+    it("returns only FLAT_RATE shipping option types", async () => {
+      const result = await shippoFulfilService.findShippingOptionTypes_(
+        "FLAT_RATE",
+        cart
+      )
+      result.forEach((item) => expect(item.data.type).toBe("FLAT_RATE"))
+    })
+
+    it("returns only FREE_SHIPPING shipping option types", async () => {
+      const result = await shippoFulfilService.findShippingOptionTypes_(
+        "FREE_SHIPPING",
+        cart
+      )
+      result.forEach((item) => expect(item.data.type).toBe("FREE_SHIPPING"))
+    })
+
+    it("returns empty array when shipping option type not found", async () => {
+      const result = await shippoFulfilService.findShippingOptionTypes_(
+        "VOID",
+        cart
+      )
+
+      expect(Array.isArray(result)).toBe(true)
+      expect(result.length).toEqual(0)
     })
   })
 })
