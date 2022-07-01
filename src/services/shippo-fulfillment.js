@@ -170,9 +170,9 @@ class ShippoFulfillmentService extends FulfillmentService {
                 cartId
               )
           )
-        ).then(async (customShippingOption) => {
-          this.setCartMeta_(cartId, customShippingOption)
-          return customShippingOption
+        ).then(async (customShippingOptions) => {
+          this.setCartMeta_(cartId, customShippingOptions)
+          return customShippingOptions
         })
       })
       .catch((e) => {
@@ -262,15 +262,15 @@ class ShippoFulfillmentService extends FulfillmentService {
     })
   }
 
-  async setCartMeta_(cartId, customShippingOption) {
+  async setCartMeta_(cartId, customShippingOptions) {
     const parcelId =
-      customShippingOption[0].metadata.shippo_binpack[0].object_id
+      customShippingOptions[0].metadata.shippo_binpack[0].object_id
 
     const parcelName =
-      customShippingOption[0].metadata.shippo_binpack[0].name
+      customShippingOptions[0].metadata.shippo_binpack[0].name
 
-    const csoIds = [...Array(customShippingOption.length).keys()].map(
-      (e) => customShippingOption[e].id
+    const csoIds = [...Array(customShippingOptions.length).keys()].map(
+      (e) => customShippingOptions[e].id
     )
 
     await this.cartService_.setMetadata(cartId, "shippo", {
