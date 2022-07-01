@@ -1,3 +1,4 @@
+import * as matchers from "jest-extended"
 import { faker } from "@faker-js/faker"
 import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
 import ShippoPackerService from "../shippo-packer"
@@ -10,8 +11,11 @@ import {
   mockLineItemTotals,
   mockLiveRate,
   mockShippingOption,
+  mockShippoBinPack,
   mockParcelTemplateResponse,
 } from "../__mocks__/data"
+
+expect.extend(matchers)
 
 describe("ShippoFulfillmentService", () => {
   const totalsService = {
@@ -31,7 +35,7 @@ describe("ShippoFulfillmentService", () => {
 
     it("returned an array", async () => {
       const result = await shippoFulfilService.getFulfillmentOptions()
-      expect(Array.isArray(result)).toBe(true)
+      expect(result).toBeArray()
     })
 
     it("returned array of object that have id and name properties", async () => {
@@ -147,7 +151,7 @@ describe("ShippoFulfillmentService", () => {
         cart
       )
 
-      expect(Array.isArray(result)).toBe(true)
+      expect(result).toBeArray()
     })
 
     it("returned array of object with correct property names", async () => {
@@ -183,7 +187,7 @@ describe("ShippoFulfillmentService", () => {
           cart.items,
           cart
         )
-        expect(result.length).toEqual(itemCount)
+        expect(result).toHaveLength(itemCount)
       }
     })
 
@@ -193,7 +197,7 @@ describe("ShippoFulfillmentService", () => {
         cart.items,
         cart
       )
-      expect(result.length).toEqual(0)
+      expect(result).toHaveLength(0)
     })
   })
 
@@ -305,12 +309,12 @@ describe("ShippoFulfillmentService", () => {
 
         it("returned array", async () => {
           const result = await shippoFulfilService.fetchLiveRates()
-          expect(Array.isArray(result)).toBe(true)
+          expect(result).toBeArray()
         })
 
         test("liverate count is equal to shipping option count", async () => {
           const result = await shippoFulfilService.fetchLiveRates()
-          expect(result.length).toBe(shippingOptions.length)
+          expect(result).toHaveLength(shippingOptions.length)
         })
 
         it("live rate objects have correct property names", async () => {
@@ -448,8 +452,92 @@ describe("ShippoFulfillmentService", () => {
         cart
       )
 
-      expect(Array.isArray(result)).toBe(true)
-      expect(result.length).toEqual(0)
+      expect(result).toBeArray()
+      expect(result).toHaveLength(0)
     })
+  })
+
+  describe("setCartMeta_", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const cartService = {
+      setMetadata: jest.fn(async (cartId, key, value) => {}),
+    }
+
+    const spy = jest.spyOn(cartService, "setMetadata")
+
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+      cartService,
+    })
+
+    test("cartService.setMetadata was called with correct params", async () => {
+      const customShippingOptions = makeArrayOf(mockCustomShippingOption, 2)
+      shippoFulfilService.setCartMeta_("cart_123", customShippingOptions)
+
+      const expectedMetaValue = {
+        parcel_templace_id:
+          customShippingOptions[0].metadata.shippo_binpack[0].object_id,
+        parcel_template_name:
+          customShippingOptions[0].metadata.shippo_binpack[0].name,
+        custom_shipping_options: customShippingOptions.map((e) => e.id),
+      }
+
+      expect(spy).toHaveBeenCalledWith("cart_123", "shippo", expectedMetaValue)
+    })
+  })
+
+  describe("createCustomShippingOption_", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const customShippingOptionService = {
+      create: jest.fn(async (shippingOption, rate, cartId) => {}),
+    }
+
+    const spy = jest.spyOn(customShippingOptionService, "create")
+
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+      customShippingOptionService,
+    })
+
+    shippoFulfilService.binPackResults_ = mockShippoBinPack()
+
+    const shippingOption = mockShippingOption({ variant: "live_rate" })
+    const rate = mockLiveRate()
+
+    const createCustomShippingOtion = async () =>
+      await shippoFulfilService.createCustomShippingOption_(
+        shippingOption,
+        rate,
+        "cart_418"
+      )
+
+    it("called customShippingOptionService.create with correct params", async () => {
+      await createCustomShippingOtion()
+
+      expect(spy).toHaveBeenCalledWith(
+        {
+          cart_id: "cart_418",
+          shipping_option_id: shippingOption.id,
+          price: shippoFulfilService.getPrice_(rate),
+        },
+        {
+          metadata: {
+            is_shippo_rate: true,
+            ...rate,
+            shippo_binpack: shippoFulfilService.binPackResults_,
+          },
+        }
+      )
+    })
+
+    // console.log('*********result: ', JSON.stringify(result, null, 2))
   })
 })
