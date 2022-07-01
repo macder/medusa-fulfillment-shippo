@@ -90,7 +90,7 @@ export const mockServiceGroup = (type) => {
 // **WIP**
 export const mockLiveRate = (isFallback = false) => {
   return {
-    title: faker.random.words(faker.datatype.number({ min: 10, max: 12 })), // to match shippingOption.data.name
+    title: faker.random.words(faker.datatype.number({ min: 2, max: 5 })), // to match shippingOption.data.name
     description: "2 - 8 days",
     amount: "40",
     currency: "USD",
