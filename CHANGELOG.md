@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.10.2] (2022-07-01)
+
+Removed test coverage data from npm package [#111](https://github.com/macder/medusa-fulfillment-shippo/issues/111)
+
 ## \[0.10.1] (2022-06-30)
 
 Fixed
