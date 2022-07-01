@@ -232,7 +232,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   getPrice_(rate) {
     // amount_local: calculated || amount: fallback
-    const price = rate.amount_local || rate.amount
+    const price = rate?.amount_local || rate.amount
     return parseInt(parseFloat(price) * 100, 10)
   }
 
