@@ -258,6 +258,7 @@ describe("ShippoFulfillmentService", () => {
       () => faker.random.words(4),
       5
     )
+
     const liveRates = mockLiveRates(liveRateTitles)
     const shippingOptionTitles = faker.helpers.arrayElements(liveRateTitles)
     const shippingOptions = mockShippingOptions(shippingOptionTitles)
@@ -356,6 +357,90 @@ describe("ShippoFulfillmentService", () => {
 
           expect(result.title).toBe(shippingOption.data.name)
         })
+      })
+    })
+
+    // TODO: WIP
+    describe("updateShippingRates", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
+      })
+
+      const cartService = {
+        retrieve: jest.fn(async (cartId, options, totalsConfig) =>
+          mockCart({
+            hasAddress: true,
+            hasItems: faker.datatype.number({ min: 1, max: 3 }),
+          })
+        ),
+        setMetadata: jest.fn(async (cartId, key, value) => {}),
+      }
+
+      const customShippingOptionService = {
+        create: jest.fn(async (shippingOption, rate, cartId) =>
+          mockCustomShippingOption()
+        ),
+        list: jest.fn(async ({ cart_id }) => {
+          return makeArrayOf(mockCustomShippingOption, 4)
+        }),
+      }
+
+      const manager = MockManager
+      const customShippingOptionRepository = MockRepository()
+
+      const shippoFulfilService = new ShippoFulfillmentService({
+        cartService,
+        customShippingOptionService,
+        customShippingOptionRepository,
+        shippoPackerService,
+        shippoClientService,
+        shippingProfileService,
+        totalsService,
+        manager,
+      })
+
+      const result = async () =>
+        await shippoFulfilService.updateShippingRates("cart_123")
+
+      it("cartService.retrieve was called using correct params", async () => {
+        const spy = jest.spyOn(cartService, "retrieve")
+        await result()
+
+        expect(spy).toHaveBeenCalledWith("cart_123", {
+          relations: [
+            "shipping_address",
+            "items",
+            "items.tax_lines",
+            "items.variant",
+            "items.variant.product",
+            "discounts",
+            "region",
+          ],
+        })
+      })
+
+      it("invoked method to retrieve cart's shipping options", async () => {
+        const spy = jest.spyOn(shippingProfileService, "fetchCartOptions")
+        await result()
+
+        expect(spy).toHaveBeenCalled()
+      })
+
+      it("invoked fetch for userparceltemplates", async () => {
+        const spy = jest.spyOn(
+          shippoClientService.client_.userparceltemplates,
+          "list"
+        )
+        await result()
+
+        expect(spy).toHaveBeenCalled()
+      })
+
+      it("invoked fetch for live-rates", async () => {
+        const spy = jest.spyOn(shippoClientService.client_.liverates, "create")
+        await result()
+
+        expect(spy).toHaveBeenCalled()
       })
     })
   })
@@ -537,7 +622,5 @@ describe("ShippoFulfillmentService", () => {
         }
       )
     })
-
-    // console.log('*********result: ', JSON.stringify(result, null, 2))
   })
 })
