@@ -266,12 +266,9 @@ class ShippoFulfillmentService extends FulfillmentService {
     const parcelId =
       customShippingOptions[0].metadata.shippo_binpack[0].object_id
 
-    const parcelName =
-      customShippingOptions[0].metadata.shippo_binpack[0].name
+    const parcelName = customShippingOptions[0].metadata.shippo_binpack[0].name
 
-    const csoIds = [...Array(customShippingOptions.length).keys()].map(
-      (e) => customShippingOptions[e].id
-    )
+    const csoIds = customShippingOptions.map(e => e.id)
 
     await this.cartService_.setMetadata(cartId, "shippo", {
       parcel_templace_id: parcelId,
