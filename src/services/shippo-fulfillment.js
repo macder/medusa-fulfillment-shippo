@@ -98,6 +98,10 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
 
+  async createReturn(fromData) {
+    return Promise.resolve({})
+  }
+
   async fetchLiveRates(cartId) {
     const cart = await this.retrieveCart_(cartId)
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
