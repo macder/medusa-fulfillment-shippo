@@ -1,6 +1,6 @@
 {
   "name": "medusa-fulfillment-shippo",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Shippo fulfillment provider for medusa",
   "author": "Maciej Derulski",
   "license": "MIT",
