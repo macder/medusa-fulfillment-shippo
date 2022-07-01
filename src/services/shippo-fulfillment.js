@@ -152,7 +152,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     const customShippingOptions = await this.customShippingOptionService_
       .list({ cart_id: cartId })
       .then(async (cartCustomShippingOptions) => {
-        if (cartCustomShippingOptions.length) {
+        if (cartCustomShippingOptions.length > 0) {
           await this.removeCustomShippingOptions_(cartCustomShippingOptions)
         }
 
@@ -268,7 +268,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     const parcelName = customShippingOptions[0].metadata.shippo_binpack[0].name
 
-    const csoIds = customShippingOptions.map(e => e.id)
+    const csoIds = customShippingOptions.map((e) => e.id)
 
     await this.cartService_.setMetadata(cartId, "shippo", {
       parcel_templace_id: parcelId,
