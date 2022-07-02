@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker"
 import { makeArrayOf } from "./data-utils"
 
 import { mockLiveRate, mockServiceGroup } from "./shippo-api"
+import { mockShippoBinPack } from "./packer"
 
 // **WIP**
 export const mockShippingOption = ({ variant = "default" }) => {
@@ -63,15 +64,11 @@ export const mockCustomShippingOption = () => {
     shipping_option_id: `so_${faker.database.mongodbObjectId()}`,
     cart_id: `cart_${faker.database.mongodbObjectId()}`,
     metadata: {
-      title: " Priority Shipping Canada",
-      amount: "31.21",
-      currency: "CAD",
-      description: "Next day",
-      amount_local: "31.21",
-      currency_local: "CAD",
-      estimated_days: 1,
-      is_shippo_rate: faker.datatype.boolean(),
+      ...mockLiveRate(),
+      is_shippo_rate: true,
       parcel_template: faker.database.mongodbObjectId(),
+
+      shippo_binpack: makeArrayOf(mockShippoBinPack, 2),
     },
   }
 }

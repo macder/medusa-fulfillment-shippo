@@ -13,3 +13,4 @@ __data__
 __tests__
 __mocks__
 coverage
+/.circleci
