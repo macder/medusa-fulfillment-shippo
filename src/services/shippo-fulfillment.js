@@ -98,7 +98,14 @@ class ShippoFulfillmentService extends FulfillmentService {
     return data.type === "LIVE_RATE"
   }
 
-  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
+  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
+    throw new MedusaError(
+      MedusaError.Types.UNEXPECTED_STATE,
+      "The customer would like to know the price before making a choice. " +
+      "Try POST /store/shipping-options/:cart_id/shippo/rates " +
+      "See README.md"
+    )
+  }
 
   async createReturn(fromData) {
     return Promise.resolve({})
