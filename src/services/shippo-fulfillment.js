@@ -101,10 +101,11 @@ class ShippoFulfillmentService extends FulfillmentService {
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     // derp...
     throw new MedusaError(
-      MedusaError.Types.UNEXPECTED_STATE,
+      MedusaError.Types.NOT_ALLOWED,
       "The customer would like to know the price before making a choice. " +
       "Try POST /store/shipping-options/:cart_id/shippo/rates " +
-      "See README.md"
+      "See README.md",
+      MedusaError.Codes.CART_INCOMPATIBLE_STATE
     )
   }
 
