@@ -165,7 +165,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
         return await Promise.all(
           shippingOptions.map(async (shippingOption) => {
-
             const liveRate = this.findRate_(shippingOption, rates) ?? null
 
             const price = liveRate
