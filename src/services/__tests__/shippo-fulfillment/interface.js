@@ -19,7 +19,6 @@ expect.extend(matchers)
 
 describe("ShippoFulfillmentService", () => {
   describe("interface", () => {
-
     /** **************************
     
       getFulfillmentOptions
@@ -98,7 +97,9 @@ describe("ShippoFulfillmentService", () => {
       )
 
       it("returned true", async () => {
-        const result = await shippoFulfilService.validateOption({ test: "test" })
+        const result = await shippoFulfilService.validateOption({
+          test: "test",
+        })
         expect(result).toEqual(true)
       })
     })
@@ -118,7 +119,9 @@ describe("ShippoFulfillmentService", () => {
         shippoClientService,
       })
       it("returns true when live-rate", async () => {
-        expect(shippoFulfilService.canCalculate({ type: "LIVE_RATE" })).toBe(true)
+        expect(shippoFulfilService.canCalculate({ type: "LIVE_RATE" })).toBe(
+          true
+        )
       })
       it("returns false when free", async () => {
         expect(shippoFulfilService.canCalculate({ type: "FREE" })).toBe(false)
@@ -141,9 +144,7 @@ describe("ShippoFulfillmentService", () => {
         jest.clearAllMocks()
       })
 
-      it("", () => {
-
-      })
+      it("", () => {})
     })
 
     /** **************************
@@ -156,9 +157,7 @@ describe("ShippoFulfillmentService", () => {
         jest.clearAllMocks()
       })
 
-      it("", () => {
-
-      })
+      it("", () => {})
     })
 
     /** **************************
@@ -178,7 +177,9 @@ describe("ShippoFulfillmentService", () => {
 
       it("returns resolved promise", async () => {
         expect.assertions(1)
-        await expect(shippoFulfilService.cancelFulfillment()).resolves.toEqual({})
+        await expect(shippoFulfilService.cancelFulfillment()).resolves.toEqual(
+          {}
+        )
       })
     })
   })
