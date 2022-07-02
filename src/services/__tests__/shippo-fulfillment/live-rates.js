@@ -18,7 +18,6 @@ import {
 expect.extend(matchers)
 
 describe("ShippoFulfillmentService", () => {
-
   describe("live-rates", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -163,7 +162,8 @@ describe("ShippoFulfillmentService", () => {
       updateShippingRates
     
     ****************************/
-    describe("updateShippingRates", () => { // TODO: WIP
+    describe("updateShippingRates", () => {
+      // TODO: WIP
       beforeAll(async () => {
         jest.clearAllMocks()
       })
@@ -364,7 +364,7 @@ describe("ShippoFulfillmentService", () => {
       })
 
       const customShippingOptionService = {
-        create: jest.fn(async (shippingOption, rate, cartId) => { }),
+        create: jest.fn(async (shippingOption, rate, cartId) => {}),
       }
 
       const spy = jest.spyOn(customShippingOptionService, "create")
@@ -383,8 +383,9 @@ describe("ShippoFulfillmentService", () => {
       const createCustomShippingOtion = async () =>
         await shippoFulfilService.createCustomShippingOption_(
           shippingOption,
-          rate,
-          "cart_418"
+          shippoFulfilService.getPrice_(rate),
+          "cart_418",
+          rate
         )
 
       it("called customShippingOptionService.create with correct params", async () => {
@@ -418,7 +419,7 @@ describe("ShippoFulfillmentService", () => {
       })
 
       const cartService = {
-        setMetadata: jest.fn(async (cartId, key, value) => { }),
+        setMetadata: jest.fn(async (cartId, key, value) => {}),
       }
 
       const spy = jest.spyOn(cartService, "setMetadata")
@@ -441,7 +442,11 @@ describe("ShippoFulfillmentService", () => {
           custom_shipping_options: customShippingOptions.map((e) => e.id),
         }
 
-        expect(spy).toHaveBeenCalledWith("cart_123", "shippo", expectedMetaValue)
+        expect(spy).toHaveBeenCalledWith(
+          "cart_123",
+          "shippo",
+          expectedMetaValue
+        )
       })
     })
   })
