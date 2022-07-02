@@ -87,6 +87,15 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
+    lineItems.forEach((item) => {
+      if (item.quantity < 1) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `${item.title} quantity: ${item.quantity}`
+        )
+      }
+    })
+
     const parcelName =
       fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
 
