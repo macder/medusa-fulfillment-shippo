@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.10.3] (2022-07-01)
+
+Fixed
+
+*   Major bug - updating rates removes carts shipping options that are not live-rates [#121](https://github.com/macder/medusa-fulfillment-shippo/issues/121)
+
 ## \[0.10.2] (2022-07-01)
 
 Removed test coverage data from npm package [#111](https://github.com/macder/medusa-fulfillment-shippo/issues/111)
