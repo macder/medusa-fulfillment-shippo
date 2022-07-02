@@ -162,22 +162,32 @@ class ShippoFulfillmentService extends FulfillmentService {
           await this.removeCustomShippingOptions_(cartCustomShippingOptions)
         }
 
-        const shippingOptions = await this.findShippingOptionTypes_(
-          "LIVE_RATE",
-          cart
-        )
+        const shippingOptions =
+          await this.shippingProfileService_.fetchCartOptions(cart)
 
         return await Promise.all(
-          shippingOptions.map(
-            async (shippingOption) =>
-              await this.createCustomShippingOption_(
-                shippingOption,
-                this.findRate_(shippingOption, rates),
-                cartId
-              )
-          )
+          shippingOptions.map(async (shippingOption) => {
+            const liveRate = this.findRate_(shippingOption, rates) ?? null
+
+            const price = liveRate
+              ? this.getPrice_(liveRate)
+              : shippingOption.amount
+
+            return await this.createCustomShippingOption_(
+              shippingOption,
+              price,
+              cartId,
+              liveRate
+            )
+          })
         ).then(async (customShippingOptions) => {
-          this.setCartMeta_(cartId, customShippingOptions)
+          this.setCartMeta_(
+            cartId,
+            customShippingOptions.filter(
+              (cso) => cso?.metadata?.is_shippo_rate ?? false
+            )
+          )
+
           return customShippingOptions
         })
       })
@@ -188,17 +198,17 @@ class ShippoFulfillmentService extends FulfillmentService {
     return customShippingOptions
   }
 
-  async createCustomShippingOption_(shippingOption, rate, cartId) {
+  async createCustomShippingOption_(shippingOption, price, cartId, liveRate) {
     return await this.customShippingOptionService_.create(
       {
         cart_id: cartId,
         shipping_option_id: shippingOption.id,
-        price: this.getPrice_(rate),
+        price,
       },
       {
-        metadata: {
+        metadata: liveRate && {
           is_shippo_rate: true,
-          ...rate,
+          ...liveRate,
           shippo_binpack: this.binPackResults_,
         },
       }
@@ -246,12 +256,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     const customShippingOptionRepo = await this.manager_.getCustomRepository(
       this.customShippingOptionRepository_
     )
-
-    await customShippingOptionRepo.remove(
-      cartCustomShippingOptions.filter(
-        (option) => option.metadata.is_shippo_rate
-      )
-    )
+    await customShippingOptionRepo.remove(cartCustomShippingOptions)
   }
 
   async retrieveCart_(id) {

@@ -3,10 +3,7 @@ import { faker } from "@faker-js/faker"
 import ShippoPackerService from "../../shippo-packer"
 import ShippoClientService from "../../shippo-client"
 import ShippoFulfillmentService from "../../shippo-fulfillment"
-import {
-  mockCart,
-  mockLineItemTotals,
-} from "../../__mocks__/data"
+import { mockCart, mockLineItemTotals } from "../../__mocks__/data"
 
 expect.extend(matchers)
 
