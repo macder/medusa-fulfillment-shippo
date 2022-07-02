@@ -65,6 +65,16 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
+    if(optionData.type === "LIVE_RATE" && cart?.id) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Cannot use live rate option before requesting rate. " +
+        "Try POST /store/shipping-options/:cart_id/shippo/rates. " +
+        "See README.md",
+        MedusaError.Codes.CART_INCOMPATIBLE_STATE
+      )
+    }
+
     return {
       ...data,
     }
