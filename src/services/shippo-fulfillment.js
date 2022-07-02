@@ -99,6 +99,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
+    // derp...
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
       "The customer would like to know the price before making a choice. " +
