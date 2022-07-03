@@ -63,6 +63,16 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
+    if(optionData.type === "LIVE_RATE" && cart?.id) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Cannot use live rate option before requesting rate. " +
+        "Try POST /store/shipping-options/:cart_id/shippo/rates. " +
+        "See README.md",
+        MedusaError.Codes.CART_INCOMPATIBLE_STATE
+      )
+    }
+
     return {
       ...data,
     }
@@ -75,6 +85,15 @@ class ShippoFulfillmentService extends FulfillmentService {
     fulfillment
   ) {
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
+    lineItems.forEach((item) => {
+      if (item.quantity < 1) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `${item.title} quantity: ${item.quantity}`
+        )
+      }
+    })
+
     const parcelName =
       fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
 
@@ -96,7 +115,16 @@ class ShippoFulfillmentService extends FulfillmentService {
     return data.type === "LIVE_RATE"
   }
 
-  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {}
+  async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
+    // derp...
+    throw new MedusaError(
+      MedusaError.Types.NOT_ALLOWED,
+      "The customer would like to know the price before making a choice. " +
+      "Try POST /store/shipping-options/:cart_id/shippo/rates " +
+      "See README.md",
+      MedusaError.Codes.CART_INCOMPATIBLE_STATE
+    )
+  }
 
   async createReturn(fromData) {
     return Promise.resolve({})
