@@ -55,9 +55,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    const shippingOptions = await this.shippo_.retrieveFulfillmentOptions()
-    const returnOptions = this.setReturnOptions_(shippingOptions)
-    return shippingOptions.concat(returnOptions)
+    return await this.shippo_.retrieveFulfillmentOptions()
   }
 
   async validateOption(data) {
@@ -314,17 +312,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       parcel_template_name: parcelName,
       custom_shipping_options: csoIds,
     })
-  }
-
-  setReturnOptions_(fulfillmentOptions) {
-    return fulfillmentOptions
-      .filter(option => !option?.type)
-      .map(option => {
-        return {
-          ...option,
-          is_return: true
-        }
-      })
   }
 }
 

@@ -10,7 +10,7 @@ import {
 const shippo = jest.fn(() => ({
   carrieraccount: {
     list: jest.fn(async () =>
-      mockCarrierAccountsResponse(faker.datatype.number({ min: 10, max: 30 }))
+      mockCarrierAccountsResponse(faker.datatype.number({ min: 20, max: 50 }))
     ),
   },
   servicegroups: {
