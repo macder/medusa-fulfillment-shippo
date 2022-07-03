@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 Fixed
 
-*   Prevent live-rate option from being added to cart before requesting rates [#125](https://github.com/macder/medusa-fulfillment-shippo/issues/125)
+*   Prevent live-rate option from being added to cart before requesting rates [#124](https://github.com/macder/medusa-fulfillment-shippo/issues/124)
 *   Fulfillment with item of 0 quantity creates shippo order [#128](https://github.com/macder/medusa-fulfillment-shippo/issues/128)
 
 ## \[0.10.3] (2022-07-01)
