@@ -15,8 +15,9 @@ export default async (req, res, next) => {
     const { data } = req.body
 
     if (data.object_state === "VALID" && data.status === "SUCCESS") {
-      // verify the input shippo transaction exists by fetching it from shippo api
-      // and then use the trusted data going forward instead of the input (req.body)...
+      // Verify received input is a real shippo transaction object by fetching it from shippo api.
+      // Then, if it exist, use it as the trusted data going forward instead of the input (req.body)... 
+      // Otherwise respond with a 500 and go back to sleep...
       const transaction = await shippoClientService
         .fetchTransaction(data.object_id)
         .catch((e) => console.error(e))
