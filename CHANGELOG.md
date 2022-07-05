@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.11.0] (2022-07-05)
+
+Added
+
+*   Webhook support for transaction\_created event [#132](https://github.com/macder/medusa-fulfillment-shippo/issues/132)
+
+Changed
+
+*   Parcel template name moved to notes in shippo order [#131](https://github.com/macder/medusa-fulfillment-shippo/issues/131)
+
 ## \[0.10.4] (2022-07-02)
 
 Fixed
