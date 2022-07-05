@@ -375,7 +375,7 @@ The flow at the code level is:
 
 The code is doing its part, follow it and see [`src/api/routes/hooks`](https://github.com/macder/medusa-fulfillment-shippo/tree/main/src/api/routes/hooks) Make sure you do your part, or leave this feature disabled.
 
-Also, send an email to <support@goshippo.com> requesting they add auth to their webhooks. They do require authentication to use their endpoints…
+Send an email to [support@goshippo.com](mailto:support@goshippo.com) requesting they add auth to their webhooks. They do require authentication to use their endpoints…
 
 ### Setup
 
@@ -410,9 +410,11 @@ Receives a Shippo transaction object when a label is purchased
 
 *   Updates fulfillment to “shipped”
 *   Adds tracking number and link to fulfillment
+
+_For orders created with v0.11.0 up:_
 *   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to the fulfillments metadata
 
-**Events emitted:**
+Events
 
 Received POST
 
