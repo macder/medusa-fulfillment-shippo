@@ -60,11 +60,13 @@ class ShippoClientService extends BaseService {
     const transactions = await this.poll_({
       fn: client,
       fnArgs: urlQuery,
-      validate: (result) => result.results[0]?.object_id ?? false,
+      validate: (result) =>
+        result?.results[0]?.object_state === "VALID" &&
+        result?.results[0]?.object_status === "SUCCESS",
       interval: 3000,
       maxAttempts: 5,
     }).then((response) => response.results)
-
+    
     return transactions
   }
 
