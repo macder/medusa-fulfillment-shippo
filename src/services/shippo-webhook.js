@@ -69,7 +69,8 @@ class ShippoWebhookService extends BaseService {
     if (expandedTransaction.is_return) {
       // Pay when scanned return label
       // Some carriers provide this with outgoing label
-      // Need to decide what to do here...
+      // This condition triggers 2 transactions...
+      // Need to decide what to do here
       // i.e. best place for this data
       // Doesnt really belong to this particular fulfillment
     }
