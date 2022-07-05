@@ -66,7 +66,12 @@ export const shippoAddress = async (address, email) => ({
   validate: address.country_code == "us" ?? true,
 })
 
-export const shippoOrder = async (order, lineItems, parcelName) => {
+export const shippoOrder = async (
+  order,
+  fulfillment,
+  lineItems,
+  parcelName
+) => {
   const toAddress = await shippoAddress(order.shipping_address, order.email)
   const currencyCode = order.currency_code.toUpperCase()
   const shippingOptionName = order.shipping_methods[0].shipping_option.name
@@ -81,7 +86,7 @@ export const shippoOrder = async (order, lineItems, parcelName) => {
     placed_at: order.created_at,
     shipping_cost: humanizeAmount(order.shipping_total, currencyCode),
     shipping_cost_currency: currencyCode,
-    shipping_method: `${shippingOptionName} - (${parcelName}) - ${currencyCode}`,
+    shipping_method: `${shippingOptionName} - ${currencyCode}`,
     total_tax: humanizeAmount(order.tax_total, currencyCode),
     total_price: humanizeAmount(order.total, currencyCode),
     subtotal_price: humanizeAmount(order.subtotal, currencyCode),
@@ -89,5 +94,6 @@ export const shippoOrder = async (order, lineItems, parcelName) => {
     line_items: lineItems,
     weight: totalWeight,
     weight_unit: options.weight_unit_type,
+    notes: `Parcel Template: ${parcelName}`,
   }
 }

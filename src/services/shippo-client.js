@@ -50,6 +50,30 @@ class ShippoClientService extends BaseService {
       .then((response) => response.results)
   }
 
+  async fetchOrderTransactions(displayId) {
+    const urlQuery = `?q=${displayId}&expand[]=rate&expand[]=parcel`
+
+    const client = async (urlQuery) => {
+      return await this.client_.transaction.search(urlQuery)
+    }
+
+    const transactions = await this.poll_({
+      fn: client,
+      fnArgs: urlQuery,
+      validate: (result) =>
+        result?.results[0]?.object_state === "VALID" &&
+        result?.results[0]?.object_status === "SUCCESS",
+      interval: 3000,
+      maxAttempts: 5,
+    }).then((response) => response.results)
+    
+    return transactions
+  }
+
+  async fetchTransaction(id) {
+    return await this.client_.transaction.retrieve(id)
+  }
+
   async fetchCustomParcel(id) {
     return await this.client_.userparceltemplates.retrieve(id)
   }
@@ -107,6 +131,25 @@ class ShippoClientService extends BaseService {
 
   setClient_() {
     this.client_ = shippo(this.options_.api_key)
+  }
+
+  async poll_({ fn, fnArgs, validate, interval, maxAttempts }) {
+    let attempts = 0
+
+    const executePoll = async (resolve, reject) => {
+      const result = await fn(fnArgs)
+      attempts++
+
+      if (validate(result)) {
+        return resolve(result)
+      } else if (maxAttempts && attempts === maxAttempts) {
+        return reject(new Error("Exceeded max attempts"))
+      } else {
+        setTimeout(executePoll, interval, resolve, reject)
+      }
+    }
+
+    return new Promise(executePoll)
   }
 }
 

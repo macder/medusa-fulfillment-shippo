@@ -98,9 +98,12 @@ class ShippoFulfillmentService extends FulfillmentService {
       fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
 
     return await this.shippo_
-      .createOrder(await shippoOrder(fromOrder, lineItems, parcelName))
+      .createOrder(
+        await shippoOrder(fromOrder, fulfillment, lineItems, parcelName)
+      )
       .then((response) => ({
         shippo_order_id: response.object_id,
+        shipping_methods: fromOrder.shipping_methods.map((e) => e.id),
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
