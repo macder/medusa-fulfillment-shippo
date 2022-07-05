@@ -1,8 +1,8 @@
 import { Router } from "express"
+import rateLimit from "express-rate-limit"
 import bodyParser from "body-parser"
 import cors from "cors"
 import { getConfigFile } from "medusa-core-utils"
-import normalizeQuery from "@medusajs/medusa/dist/api/middlewares/normalized-query"
 import middlewares from "../../middlewares"
 
 const route = Router()
@@ -12,6 +12,13 @@ export default (app, rootDirectory) => {
   const config = (configModule && configModule.projectConfig) || {}
 
   const storeCors = config.store_cors || ""
+
+  const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
 
   route.use(
     cors({
@@ -25,7 +32,7 @@ export default (app, rootDirectory) => {
 
   route.post(
     "/shippo/transaction",
-    bodyParser.json(),
+    apiLimiter,
     middlewares.wrap(require("./transactions").default)
   )
 
