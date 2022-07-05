@@ -1,8 +1,10 @@
 export default async (req, res, next) => {
   const shippoClientService = req.scope.resolve("shippoClientService")
   const shippoWebhookService = req.scope.resolve("shippoWebhookService")
-  
-  const validToken = await shippoWebhookService.verifyHookSecret(req.query.token)
+
+  const validToken = await shippoWebhookService.verifyHookSecret(
+    req.query.token
+  )
 
   const invalidRequest = () => {
     res.status(500).json()
