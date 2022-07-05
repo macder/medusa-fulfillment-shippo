@@ -53,7 +53,6 @@ class ShippoWebhookService extends BaseService {
       fulfillment.metadata?.transaction_id !== transaction.object_id &&
       !expandedTransaction.is_return
     ) {
-      
       const shippingRateAtCheckout = await this.customShippingOptionService_
         .list({ cart_id: order.cart_id })
         .then((results) =>
