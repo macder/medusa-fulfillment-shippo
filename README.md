@@ -412,7 +412,7 @@ Receives a Shippo transaction object when a label is purchased
 *   Adds tracking number and link to fulfillment
 *   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to the fulfillments metadata
 
-Events emitted:
+**Events emitted:**
 
 Received POST
 
