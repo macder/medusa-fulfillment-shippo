@@ -1,4 +1,7 @@
+import * as matchers from "jest-extended"
 import ShippoClientService from "../shippo-client"
+
+expect.extend(matchers)
 
 describe("ShippoClientService", () => {
   describe("fetchCarriers_", () => {
