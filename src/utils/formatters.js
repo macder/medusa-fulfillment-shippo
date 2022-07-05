@@ -94,7 +94,6 @@ export const shippoOrder = async (
     line_items: lineItems,
     weight: totalWeight,
     weight_unit: options.weight_unit_type,
-    notes: `Parcel Template: 
-      ${parcelName}`,
+    notes: `Parcel Template: ${parcelName}`,
   }
 }
