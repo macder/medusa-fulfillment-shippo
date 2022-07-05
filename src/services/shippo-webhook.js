@@ -57,7 +57,7 @@ class ShippoWebhookService extends BaseService {
           metadata: {
             transaction_id: expandedTransaction.object_id,
             rate: {
-              final: expandedTransaction.rate,
+              settled: expandedTransaction.rate,
               estimated: {},
             },
             label_url: transaction.label_url,
