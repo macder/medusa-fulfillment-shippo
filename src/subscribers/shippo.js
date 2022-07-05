@@ -3,7 +3,7 @@ class ShippoSubscriber {
     this.shippoWebhookService_ = shippoWebhookService
 
     eventBusService.subscribe(
-      "shippo.transaction_created",
+      "shippo.accepted.transaction_created",
       this.handleTransaction
     )
   }

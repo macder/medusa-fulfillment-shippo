@@ -1,12 +1,16 @@
 export default async (req, res, next) => {
   const shippoClientService = req.scope.resolve("shippoClientService")
   const shippoWebhookService = req.scope.resolve("shippoWebhookService")
+  const eventBus = req.scope.resolve("eventBusService")
 
   const validToken = await shippoWebhookService.verifyHookSecret(
     req.query.token
   )
 
+  eventBus.emit("shippo.received.transaction_created", {})
+
   const invalidRequest = () => {
+    eventBus.emit("shippo.rejected.transaction_created", {})
     res.status(500).json()
     return next()
   }
@@ -23,12 +27,12 @@ export default async (req, res, next) => {
         .catch((e) => console.error(e))
 
       if (transaction?.object_state === "VALID") {
-        const eventBus = req.scope.resolve("eventBusService")
-        eventBus.emit("shippo.transaction_created", {
+        eventBus.emit("shippo.accepted.transaction_created", {
           transaction, // the trusted data
         })
 
         res.json("ok")
+        return next()
       }
     }
   }
