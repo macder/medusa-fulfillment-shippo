@@ -24,8 +24,7 @@ export default async (req, res, next) => {
 
       if (transaction?.object_state === "VALID") {
         const eventBus = req.scope.resolve("eventBusService")
-        const eventType = req.body.event
-        eventBus.emit(`shippo.${eventType}`, {
+        eventBus.emit("shippo.transaction_created", {
           transaction, // the trusted data
         })
 
