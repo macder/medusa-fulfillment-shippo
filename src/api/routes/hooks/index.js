@@ -29,11 +29,5 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./transactions").default)
   )
 
-  // route.post(
-  //   "/shippo/track",
-  //   bodyParser.json(),
-  //   middlewares.wrap(require("./track").default)
-  // )
-
   return app
 }
