@@ -42,7 +42,7 @@ class ShippoWebhookService extends BaseService {
 
     // check if this fulfillment is already shipped
     if (
-      fulfillment.metadata.transaction_id !== transaction.object_id &&
+      fulfillment.metadata?.transaction_id !== transaction.object_id &&
       !expandedTransaction.is_return
     ) {
       const shipment = await this.fulfillmentService_.createShipment(
