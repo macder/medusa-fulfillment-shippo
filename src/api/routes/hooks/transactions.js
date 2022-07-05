@@ -31,7 +31,7 @@ export default async (req, res, next) => {
           transaction, // the trusted data
         })
 
-        res.json("ok")
+        res.json("ok, thanks, come again, bye")
         return next()
       }
     }
