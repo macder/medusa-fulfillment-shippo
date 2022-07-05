@@ -411,7 +411,7 @@ Receives a Shippo transaction object when a label is purchased
 *   Updates fulfillment to “shipped”
 *   Adds tracking number and link to fulfillment
 
-_For orders created with v0.11.0 up:_
+*For orders created with v0.11.0 up:*
 *   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to the fulfillments metadata
 
 Events
