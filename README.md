@@ -14,7 +14,7 @@ Creates Shippo orders for new fulfillments.
 
 Retrieves Shippo orders and packing slips for fulfillments
 
-## Table of Contents
+## **Table of Contents**
 
 *   [Getting Started](#getting-started)
 *   [Rates at Checkout](#rates-at-checkout)
@@ -33,11 +33,12 @@ Retrieves Shippo orders and packing slips for fulfillments
     *   [Parcel Packer](#parcel-packer)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
+*   [Webhooks](#webhooks)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
-## Getting started
+## **Getting started**
 
 Install:
 
@@ -51,20 +52,21 @@ Add to medusa-config.js
     options: {
       api_key: SHIPPO_API_KEY,
       weight_unit_type: 'g', // valid values: g, kg, lb, oz
-      dimension_unit_type: 'cm' // valid values: cm, mm, in
+      dimension_unit_type: 'cm', // valid values: cm, mm, in
+      webhook_secret: '' // README section on webhooks before using!
     },
 }
 ```
 
-## Rates at Checkout
+## **Rates at Checkout**
 
 Provide customers with accurate shipping rates at checkout to reduce over and under charges. This plugin implements a first-fit-decreasing bin packing algorithm to choose an appropriate parcel for the items in a cart. Follow this guide to get setup and then optimize.
 
-### Step 1 - Setup Shipping Options in Shippo App
+### **Step 1 - Setup Shipping Options in Shippo App**
 
 Lets assume shipping from Canada to customers in Canada and USA via “Standard” and “Express” options
 
-This would require setting up 4 shipping options in Shippo (<https://apps.goshippo.com/settings/rates-at-checkout>)
+This would require setting up 4 shipping options in Shippo (\<https://apps.goshippo.com/settings/rates-at-checkout>)
 
 1.  Standard Shipping Canada
 2.  Express Shipping Canada
@@ -79,7 +81,7 @@ For example:
 *   Express Shipping USA: *Canada Post XpressPost USA*
 *   *…*
 
-For more in-depth details see <https://support.goshippo.com/hc/en-us/articles/4403207559963>
+For more in-depth details see \<https://support.goshippo.com/hc/en-us/articles/4403207559963>
 
 ### **Step 2 - Assign the Shipping Options to Regions in Medusa**
 
@@ -157,7 +159,7 @@ POST /admin/shipping-options
 
 Repeat above steps for each shipping option.
 
-## Using Rates at Checkout
+## **Using Rates at Checkout**
 
 ### **Get rates for cart**
 
@@ -311,7 +313,7 @@ await shippoFulfillmentService.retrievePackerResults(order_id)
 
 Creating an order fulfillment in admin will create an order in Shippo.
 
-View the orders at <https://apps.goshippo.com/orders>
+View the orders at \<https://apps.goshippo.com/orders>
 
 Retrieve Shippo order for a fulfillment
 
@@ -332,7 +334,7 @@ await client.order.retrieve(shippo_order_id)
 
 Returns `shippo_order` object
 
-## Packing Slips
+## **Packing Slips**
 
 Retrieve Shippo packing slip for a fulfillment
 
@@ -351,7 +353,96 @@ const client = shippoFulfillmentService.useClient
 await client.order.packingslip(shippo_order_id)
 ```
 
-## Shippo Node Client
+## **Webhooks**
+
+### **Disclaimer**
+
+Incoming HTTP requests from Shippo to webhook endpoints lack authentication. Shippo has really dropped the ball on this, a lack of consideration towards the webhook consumers security. No secret token, no signature in the request header, no bearer, nothing.
+
+Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) for webhook routes is highly encouraged and recommended.
+
+You will also need to self generate a token and add it as a url query param. Ya I know… but it's better than nothing and it is encrypted over HTTPS
+
+The flow at the code level is:
+
+1.  Webhook receives POST data
+2.  URL query token is verified
+3.  The request json gets verified by fetching the same object directly from shippo API, following these steps:
+    1.  Request body contains json claiming to be a shippo object. 
+    2.  Ok, but lets fetch this object directly from Shippo's API
+    3.  If the fetch resolves to the object requested, then use that data instead of the untrusted input 
+    4.  Otherwise throw a HTTP 500 and do nothing
+
+The code is doing its part, follow it and see [`src/api/routes/hooks`](https://github.com/macder/medusa-fulfillment-shippo/tree/main/src/api/routes/hooks) Make sure you do your part, or leave this feature disabled.
+
+Also, send an email to <support@goshippo.com> requesting they add auth to their webhooks. They do require authentication to use their endpoints…
+
+### **Setup**
+
+In `.env` add `SHIPPO_WEBHOOK_SECRET=some_secret_string` 
+
+Add to `medusa-config.js`
+
+```plaintext
+const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
+const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
+
+{
+  resolve: `medusa-fulfillment-shippo`,
+  options: {
+    api_key: SHIPPO_API_KEY,
+    webhook_secret: SHIPPO_WEBHOOK_SECRET,
+    weight_unit_type: 'g',
+    dimension_unit_type: 'cm'
+  },
+},
+```
+
+### **Hooks**
+
+Hooks need to be added in [Shippo app settings](https://apps.goshippo.com/settings/api)
+
+#### **transaction\_created:**
+
+`https://server:port/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
+
+Receives a Shippo transaction object when a label is purchased
+
+*   Updates fulfillment to “shipped”
+*   Adds tracking number and link to fulfillment
+*   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to the fulfillments metadata
+
+Events emitted:
+
+Received POST
+
+`shippo.received.transaction_created`
+
+Accepted POST as valid
+
+`shippo.accepted.transaction_created`
+
+Rejected POST request
+
+`shippo.rejected.transaction_created`
+
+#### **transaction\_updated:**
+
+*under development*
+
+#### **track\_updated:**
+
+*under development*
+
+#### **batch\_purchased:**
+
+*under development*
+
+#### **batch\_created:**
+
+*under development*
+
+## **Shippo Node Client**
 
 This plugin is using a forked version of the official shippo-node-client. 
 
@@ -382,13 +473,13 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 
 [Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
 
-## Limitations
+## **Limitations**
 
-Currently, this plugin does not support returns/exchanges, customs declarations, webhooks.
+Currently, this plugin does not support returns/exchanges and customs declarations,
 
 These are currently under development for future releases.
 
-## Resources
+## **Resources**
 
 Medusa Docs\
 https://docs.medusajs.com/
