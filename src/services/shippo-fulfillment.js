@@ -26,11 +26,11 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {CartService} */
     this.cartService_ = cartService
 
-    /** @private @const {CustomShippingOptionRepository} */
-    this.customShippingOptionRepository_ = customShippingOptionRepository
+    // /** @private @const {CustomShippingOptionRepository} */
+    // this.customShippingOptionRepository_ = customShippingOptionRepository
 
-    /** @private @const {CustomShippingOptionService} */
-    this.customShippingOptionService_ = customShippingOptionService
+    // /** @private @const {CustomShippingOptionService} */
+    // this.customShippingOptionService_ = customShippingOptionService
 
     /** @private @const {Manager} */
     this.manager_ = manager
@@ -38,8 +38,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {OrderService} */
     this.orderService_ = orderService
 
-    /** @private @const {PricingService} */
-    this.pricingService_ = pricingService
+    // /** @private @const {PricingService} */
+    // this.pricingService_ = pricingService
 
     /** @private @const {ShippingOptionService} */
     this.shippingOptionService_ = shippingOptionService
@@ -143,12 +143,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     console.log("*******************************calculatePrice: ", cart)
 
-    if (!this.rates_) {
-      this.test()
-    }
-
-    console.log(this.rates_)
-
     throw "dev lock"
 
     // return 5000
@@ -166,77 +160,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     return Promise.resolve({})
   }
 
-  // async fetchLiveRates(cartId) {
-  //   const cart = await this.retrieveCart_(cartId)
-  //   const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
-  //     cart
-  //   )
-
-  //   /** **************************************************************** */
-  //   // IS ADDRESS COMPLETE?
-
-  //   if (!cart.email) {
-  //     // console.log("missing email")
-  //     return shippingOptions
-  //   }
-
-  //   const requiredFields = [
-  //     "first_name",
-  //     "last_name",
-  //     "address_1",
-  //     "city",
-  //     "country_code",
-  //     // "province",
-  //     "postal_code",
-  //     // "phone",
-  //   ]
-  //   const emptyFields = requiredFields.filter(
-  //     (field) => !cart.shipping_address[field]
-  //   )
-
-  //   if (emptyFields.length > 0) {
-  //     return shippingOptions
-  //   }
-
-  //   // console.log(cart.shipping_address)
-
-  //   /** ******************************************************************* */
-
-  //   // CART HAS ITEMS?
-
-  //   if (cart.items.length === 0) {
-  //     // console.log("cart is empty")
-  //     return shippingOptions
-  //   }
-
-  //   /** ****************************************************************** */
-
-  //   // CART HAS EMAIL, ADDRESS, AND ITEMS
-
-  //   const toAddress = await shippoAddress(cart.shipping_address, cart.email)
-
-  //   const lineItems = await this.formatLineItems_(cart.items, cart)
-
-  //   this.binPackResults_ = await this.shippo_
-  //     .fetchCustomParcelTemplates()
-  //     .then(
-  //       async (parcels) =>
-  //         await this.shippoPackerService_.packBins(cart.items, parcels)
-  //     )
-
-  //   const rates = await this.shippo_.fetchLiveRates(
-  //     shippingOptions,
-  //     toAddress,
-  //     lineItems,
-  //     this.binPackResults_[0]?.object_id
-  //   )
-
-  //   return shippingOptions.map((so) => {
-  //     const soRate = rates.find((rate) => rate.title === so.data.name && true)
-  //     const price = soRate ? this.getPrice_(soRate) : so.amount
-  //     return { ...so, amount: price }
-  //   })
-  // }
 
   async retrievePackerResults(order_id) {
     const order = await this.orderService_.retrieve(order_id)
@@ -250,9 +173,9 @@ class ShippoFulfillmentService extends FulfillmentService {
     return { error: "This order has no packer data available" }
   }
 
-  async updateShippingRates(cartId) {
-    const cart = await this.retrieveCart_(cartId)
-    const rates = await this.fetchLiveRates(cartId)
+  // async updateShippingRates(cartId) {
+    // const cart = await this.retrieveCart_(cartId)
+    // const rates = await this.fetchLiveRates(cartId)
 
     // const customShippingOptions = await this.customShippingOptionService_
     //   .list({ cart_id: cartId })
@@ -295,24 +218,24 @@ class ShippoFulfillmentService extends FulfillmentService {
     //   })
 
     // return customShippingOptions
-  }
+  // }
 
-  async createCustomShippingOption_(shippingOption, price, cartId, liveRate) {
-    return await this.customShippingOptionService_.create(
-      {
-        cart_id: cartId,
-        shipping_option_id: shippingOption.id,
-        price,
-      },
-      {
-        metadata: liveRate && {
-          is_shippo_rate: true,
-          ...liveRate,
-          shippo_binpack: this.binPackResults_,
-        },
-      }
-    )
-  }
+  // async createCustomShippingOption_(shippingOption, price, cartId, liveRate) {
+  //   return await this.customShippingOptionService_.create(
+  //     {
+  //       cart_id: cartId,
+  //       shipping_option_id: shippingOption.id,
+  //       price,
+  //     },
+  //     {
+  //       metadata: liveRate && {
+  //         is_shippo_rate: true,
+  //         ...liveRate,
+  //         shippo_binpack: this.binPackResults_,
+  //       },
+  //     }
+  //   )
+  // }
 
   async findShippingOptionTypes_(type, cart) {
     return await this.shippingProfileService_
@@ -322,10 +245,6 @@ class ShippoFulfillmentService extends FulfillmentService {
           (shippingOption) => shippingOption.data.type === type
         )
       )
-  }
-
-  findRate_(shippingOption, rates) {
-    return rates.find((rate) => rate.title == shippingOption.data.name)
   }
 
   async formatLineItems_(items, order) {
@@ -345,18 +264,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  getPrice_(rate) {
-    // amount_local: calculated || amount: fallback
-    const price = rate?.amount_local || rate.amount
-    return parseInt(parseFloat(price) * 100, 10)
-  }
-
-  async removeCustomShippingOptions_(cartCustomShippingOptions) {
-    const customShippingOptionRepo = await this.manager_.getCustomRepository(
-      this.customShippingOptionRepository_
-    )
-    await customShippingOptionRepo.remove(cartCustomShippingOptions)
-  }
+  // async removeCustomShippingOptions_(cartCustomShippingOptions) {
+  //   const customShippingOptionRepo = await this.manager_.getCustomRepository(
+  //     this.customShippingOptionRepository_
+  //   )
+  //   await customShippingOptionRepo.remove(cartCustomShippingOptions)
+  // }
 
   async retrieveCart_(id) {
     return await this.cartService_.retrieve(id, {
@@ -372,20 +285,20 @@ class ShippoFulfillmentService extends FulfillmentService {
     })
   }
 
-  async setCartMeta_(cartId, customShippingOptions) {
-    const parcelId =
-      customShippingOptions[0].metadata.shippo_binpack[0].object_id
+  // async setCartMeta_(cartId, customShippingOptions) {
+  //   const parcelId =
+  //     customShippingOptions[0].metadata.shippo_binpack[0].object_id
 
-    const parcelName = customShippingOptions[0].metadata.shippo_binpack[0].name
+  //   const parcelName = customShippingOptions[0].metadata.shippo_binpack[0].name
 
-    const csoIds = customShippingOptions.map((e) => e.id)
+  //   const csoIds = customShippingOptions.map((e) => e.id)
 
-    await this.cartService_.setMetadata(cartId, "shippo", {
-      parcel_templace_id: parcelId,
-      parcel_template_name: parcelName,
-      custom_shipping_options: csoIds,
-    })
-  }
+  //   await this.cartService_.setMetadata(cartId, "shippo", {
+  //     parcel_templace_id: parcelId,
+  //     parcel_template_name: parcelName,
+  //     custom_shipping_options: csoIds,
+  //   })
+  // }
 }
 
 export default ShippoFulfillmentService
