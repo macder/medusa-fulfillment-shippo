@@ -74,7 +74,7 @@ class ShippoRatesService extends BaseService {
   }
 
   findRate_(shippingOption, rates) {
-    return rates.find((rate) => rate.title == shippingOption.data.name)
+    return rates.find((rate) => rate.title === shippingOption.data.name)
   }
 
   async formatLineItems_(cart) {
@@ -146,7 +146,7 @@ class ShippoRatesService extends BaseService {
     ]
 
     const emptyFields = requiredFields.filter((field) => !address[field])
-    
+
     return emptyFields.length < 1
   }
 }
