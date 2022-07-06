@@ -34,8 +34,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @public @const {} */
     this.useClient = this.shippo_.getClient()
-
-    this.binPackResults_ = []
   }
 
   async getFulfillmentOptions() {
