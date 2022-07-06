@@ -27,6 +27,7 @@ class ShippoRatesService extends BaseService {
     this.totalsService_ = totalsService
   }
 
+  // retrieve cart's shipping options that include price amount for live-rates
   async retrieveShippingOptions(cart) {
     const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
       cart
@@ -35,17 +36,7 @@ class ShippoRatesService extends BaseService {
     const requiresRates = await this.requiresRates_(shippingOptions)
 
     if (cartIsReady && requiresRates) {
-      const fulfillmentOptions = shippingOptions.map(so => so.data)
-      const args = await this.getRequestParams_(fulfillmentOptions, cart)
-
-      const rates = await this.fetchRates_(args)
-
-      // TODO: Remove live-rate options if api request fails
-      // Perhaps polling is appropriate, i.e 3 max attempt at 1sec intervals
-
-      return shippingOptions.map((so) =>
-        this.setRate_(so, this.findRate_(so, rates))
-      )
+      return await this.applyRates_(shippingOptions, cart)
     }
     return shippingOptions
   }
@@ -54,6 +45,30 @@ class ShippoRatesService extends BaseService {
     const args = await this.getRequestParams_([fulfillmentOption], cart)
     const rates = await this.fetchRates_(args)
     return this.getPrice_(rates[0])
+  }
+
+  async retrieveRawRates(cart) {
+    const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
+      cart
+    )
+    const fulfillmentOptions = shippingOptions.map((so) => so.data)
+    const args = await this.getRequestParams_(fulfillmentOptions, cart)
+
+    return await this.fetchRates_(args)
+  }
+
+  async applyRates_(shippingOptions, cart) {
+    const fulfillmentOptions = shippingOptions.map((so) => so.data)
+    const args = await this.getRequestParams_(fulfillmentOptions, cart)
+
+    const rates = await this.fetchRates_(args)
+
+    // TODO: Remove live-rate options if api request fails
+    // Perhaps polling is appropriate, i.e 3 max attempt at 1sec intervals
+
+    return shippingOptions.map((so) =>
+      this.setRate_(so, this.findRate_(so, rates))
+    )
   }
 
   async fetchRates_(args) {

@@ -1,10 +1,21 @@
 export default async (req, res, next) => {
   const { cart_id } = req.params
-  const shippoFulfillmentService = req.scope.resolve("shippoFulfillmentService")
+  const cartService = req.scope.resolve("cartService")
+  const shippoRatesService = req.scope.resolve("shippoRatesService")
 
-  res.json(
-    await shippoFulfillmentService
-      .fetchLiveRates(cart_id)
-      .then((response) => response)
-  )
+  const cart = await cartService.retrieve(cart_id, {
+    relations: [
+      "shipping_address",
+      "items",
+      "items.tax_lines",
+      "items.variant",
+      "items.variant.product",
+      "discounts",
+      "region",
+    ],
+  })
+
+  const rates = await shippoRatesService.retrieveRawRates(cart)
+
+  res.json(rates)
 }
