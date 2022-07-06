@@ -8,8 +8,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   constructor(
     {
       cartService,
-      customShippingOptionRepository,
-      customShippingOptionService,
       manager,
       orderService,
       pricingService,
@@ -25,12 +23,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {CartService} */
     this.cartService_ = cartService
-
-    // /** @private @const {CustomShippingOptionRepository} */
-    // this.customShippingOptionRepository_ = customShippingOptionRepository
-
-    // /** @private @const {CustomShippingOptionService} */
-    // this.customShippingOptionService_ = customShippingOptionService
 
     /** @private @const {Manager} */
     this.manager_ = manager
@@ -87,9 +79,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     // if (optionData.type === "LIVE_RATE" && cart?.id) {
     //   throw new MedusaError(
     //     MedusaError.Types.NOT_ALLOWED,
-    //     "Cannot use live rate option before requesting rate. " +
-    //       "Try POST /store/shipping-options/:cart_id/shippo/rates. " +
-    //       "See README.md",
+    //     ""
     //     MedusaError.Codes.CART_INCOMPATIBLE_STATE
     //   )
     // }
@@ -141,19 +131,12 @@ class ShippoFulfillmentService extends FulfillmentService {
 
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    console.log("*******************************calculatePrice: ", cart)
+    console.log('=============fulfillmentOption: ', JSON.stringify(fulfillmentOption, null, 2))
+    console.log('=============fulfillmentData: ', JSON.stringify(fulfillmentData, null, 2))
+    console.log('=============cart: ', JSON.stringify(cart, null, 2))
 
-    throw "dev lock"
+    throw "dev"
 
-    // return 5000
-    // derp...
-    // throw new MedusaError(
-    //   MedusaError.Types.NOT_ALLOWED,
-    //   "The customer would like to know the price before making a choice. " +
-    //     "Try POST /store/shipping-options/:cart_id/shippo/rates " +
-    //     "See README.md",
-    //   MedusaError.Codes.CART_INCOMPATIBLE_STATE
-    // )
   }
 
   async createReturn(fromData) {
@@ -172,70 +155,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     }
     return { error: "This order has no packer data available" }
   }
-
-  // async updateShippingRates(cartId) {
-    // const cart = await this.retrieveCart_(cartId)
-    // const rates = await this.fetchLiveRates(cartId)
-
-    // const customShippingOptions = await this.customShippingOptionService_
-    //   .list({ cart_id: cartId })
-    //   .then(async (cartCustomShippingOptions) => {
-    //     if (cartCustomShippingOptions.length > 0) {
-    //       await this.removeCustomShippingOptions_(cartCustomShippingOptions)
-    //     }
-
-    //     const shippingOptions =
-    //       await this.shippingProfileService_.fetchCartOptions(cart)
-
-    //     return await Promise.all(
-    //       shippingOptions.map(async (shippingOption) => {
-    //         const liveRate = this.findRate_(shippingOption, rates) ?? null
-
-    //         const price = liveRate
-    //           ? this.getPrice_(liveRate)
-    //           : shippingOption.amount
-
-    //         return await this.createCustomShippingOption_(
-    //           shippingOption,
-    //           price,
-    //           cartId,
-    //           liveRate
-    //         )
-    //       })
-    //     ).then(async (customShippingOptions) => {
-    //       this.setCartMeta_(
-    //         cartId,
-    //         customShippingOptions.filter(
-    //           (cso) => cso?.metadata?.is_shippo_rate ?? false
-    //         )
-    //       )
-
-    //       return customShippingOptions
-    //     })
-    //   })
-    //   .catch((e) => {
-    //     console.error(e)
-    //   })
-
-    // return customShippingOptions
-  // }
-
-  // async createCustomShippingOption_(shippingOption, price, cartId, liveRate) {
-  //   return await this.customShippingOptionService_.create(
-  //     {
-  //       cart_id: cartId,
-  //       shipping_option_id: shippingOption.id,
-  //       price,
-  //     },
-  //     {
-  //       metadata: liveRate && {
-  //         is_shippo_rate: true,
-  //         ...liveRate,
-  //         shippo_binpack: this.binPackResults_,
-  //       },
-  //     }
-  //   )
-  // }
 
   async findShippingOptionTypes_(type, cart) {
     return await this.shippingProfileService_
@@ -264,13 +183,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  // async removeCustomShippingOptions_(cartCustomShippingOptions) {
-  //   const customShippingOptionRepo = await this.manager_.getCustomRepository(
-  //     this.customShippingOptionRepository_
-  //   )
-  //   await customShippingOptionRepo.remove(cartCustomShippingOptions)
-  // }
-
   async retrieveCart_(id) {
     return await this.cartService_.retrieve(id, {
       relations: [
@@ -284,21 +196,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       ],
     })
   }
-
-  // async setCartMeta_(cartId, customShippingOptions) {
-  //   const parcelId =
-  //     customShippingOptions[0].metadata.shippo_binpack[0].object_id
-
-  //   const parcelName = customShippingOptions[0].metadata.shippo_binpack[0].name
-
-  //   const csoIds = customShippingOptions.map((e) => e.id)
-
-  //   await this.cartService_.setMetadata(cartId, "shippo", {
-  //     parcel_templace_id: parcelId,
-  //     parcel_template_name: parcelName,
-  //     custom_shipping_options: csoIds,
-  //   })
-  // }
 }
 
 export default ShippoFulfillmentService

@@ -26,19 +26,14 @@ class ShippoRatesService extends BaseService {
     this.totalsService_ = totalsService
   }
 
-  async requestRates(cart) {
-    const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
-      cart
-    )
-
+  async decorateRates(shippingOptions, cart) {
     const toAddress = await this.formatShippingAddress_(cart)
 
     if (!toAddress || cart.items.length === 0) {
       return shippingOptions
     }
 
-    const lineItems = await this.formatLineItems_(cart.items, cart)
-
+    const lineItems = await this.formatLineItems_(cart)
     const packer = await this.packBins_(cart.items)
 
     const rates = await this.shippo_
@@ -53,7 +48,6 @@ class ShippoRatesService extends BaseService {
     return shippingOptions.map((so) => {
       const rate = this.findRate_(so, rates)
       const price = rate ? this.getPrice_(rate) : so.amount
-
       return { ...so, amount: price }
     })
   }
@@ -62,27 +56,23 @@ class ShippoRatesService extends BaseService {
     return rates.find((rate) => rate.title == shippingOption.data.name)
   }
 
-  async formatLineItems_(items, order) {
+  async formatLineItems_(cart) {
     return await Promise.all(
-      items.map(
+      cart.items.map(
         async (item) =>
           await this.totalsService_
-            .getLineItemTotals(item, order)
+            .getLineItemTotals(item, cart)
             .then((totals) =>
-              shippoLineItem(
-                item,
-                totals.unit_price,
-                order.region.currency_code
-              )
+              shippoLineItem(item, totals.unit_price, cart.region.currency_code)
             )
       )
     )
   }
 
   async formatShippingAddress_(cart) {
-    if(!cart.email){
+    if (!cart.email) {
       return false
-    } 
+    }
 
     const requiredFields = [
       "first_name",

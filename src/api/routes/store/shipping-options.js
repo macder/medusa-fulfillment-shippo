@@ -21,12 +21,15 @@ export default async (req, res, next) => {
     ],
   })
 
-  const options = await shippoRatesService.requestRates(cart)
+  const shippingOptions = await shippoRatesService.decorateRates(
+    await shippingProfileService.fetchCartOptions(cart),
+    cart
+  )
 
   // const options = await shippingProfileService.fetchCartOptions(cart)
   //   .then(option => option.map(so => ({ ...so, amount: 10000})))
 
-  const data = await pricingService.setShippingOptionPrices(options, {
+  const data = await pricingService.setShippingOptionPrices(shippingOptions, {
     cart_id,
   })
 
