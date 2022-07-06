@@ -78,17 +78,17 @@ class ShippoClientService extends BaseService {
     return await this.client_.userparceltemplates.retrieve(id)
   }
 
-  async fetchLiveRates(shippingOptions, toAddress, lineItems, parcel) {
+  async fetchLiveRates({ options, to_address, line_items, parcel_template_id }) {
     return await this.client_.liverates
       .create({
-        address_to: toAddress,
-        line_items: lineItems,
-        parcel: parcel,
+        address_to: to_address,
+        line_items: line_items,
+        parcel: parcel_template_id,
       })
       .then((response) =>
         response.results.filter((item) =>
-          shippingOptions.find(
-            (option) => option.data.name === item.title && true
+          options.find(
+            (option) => option.name === item.title && true
           )
         )
       )

@@ -7,8 +7,6 @@ export default async (req, res, next) => {
 
   const pricingService = req.scope.resolve("pricingService")
 
-  const shippingProfileService = req.scope.resolve("shippingProfileService")
-
   const cart = await cartService.retrieve(cart_id, {
     relations: [
       "shipping_address",
@@ -21,19 +19,10 @@ export default async (req, res, next) => {
     ],
   })
 
-  const shippingOptions = await shippoRatesService.decorateRates(
-    await shippingProfileService.fetchCartOptions(cart),
-    cart
-  )
-
-  // const options = await shippingProfileService.fetchCartOptions(cart)
-  //   .then(option => option.map(so => ({ ...so, amount: 10000})))
-
+  const shippingOptions = await shippoRatesService.retrieveShippingOptions(cart)
   const data = await pricingService.setShippingOptionPrices(shippingOptions, {
     cart_id,
   })
 
   res.json({ shipping_options: data })
-
-  // res.json("Hi!")
 }

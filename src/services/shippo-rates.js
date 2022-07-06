@@ -1,4 +1,5 @@
 import { BaseService } from "medusa-interfaces"
+import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem } from "../utils/formatters"
 
 class ShippoRatesService extends BaseService {
@@ -26,30 +27,50 @@ class ShippoRatesService extends BaseService {
     this.totalsService_ = totalsService
   }
 
-  async decorateRates(shippingOptions, cart) {
-    const toAddress = await this.formatShippingAddress_(cart)
+  async retrieveShippingOptions(cart) {
+    const shippingOptions = await this.shippingProfileService_.fetchCartOptions(
+      cart
+    )
+    const cartIsReady = await this.isCartReady_(cart)
+    const requiresRates = await this.requiresRates_(shippingOptions)
 
-    if (!toAddress || cart.items.length === 0) {
-      return shippingOptions
+    if (cartIsReady && requiresRates) {
+      const fulfillmentOptions = shippingOptions.map(so => so.data)
+      const args = await this.getRequestParams_(fulfillmentOptions, cart)
+
+      const rates = await this.fetchRates_(args)
+
+      // TODO: Remove live-rate options if api request fails
+      // Perhaps polling is appropriate, i.e 3 max attempt at 1sec intervals
+
+      return shippingOptions.map((so) =>
+        this.setRate_(so, this.findRate_(so, rates))
+      )
     }
+    return shippingOptions
+  }
 
-    const lineItems = await this.formatLineItems_(cart)
+  async retrievePrice(fulfillmentOption, cart) {
+    const args = await this.getRequestParams_([fulfillmentOption], cart)
+    const rates = await this.fetchRates_(args)
+    return this.getPrice_(rates[0])
+  }
+
+  async fetchRates_(args) {
+    return await this.shippo_
+      .fetchLiveRates(args)
+      .catch((e) => console.error(e))
+  }
+
+  async getRequestParams_(fulfillmentOptions, cart) {
     const packer = await this.packBins_(cart.items)
 
-    const rates = await this.shippo_
-      .fetchLiveRates(
-        shippingOptions,
-        toAddress,
-        lineItems,
-        packer[0]?.object_id
-      )
-      .catch((e) => console.error(e))
-
-    return shippingOptions.map((so) => {
-      const rate = this.findRate_(so, rates)
-      const price = rate ? this.getPrice_(rate) : so.amount
-      return { ...so, amount: price }
-    })
+    return {
+      options: fulfillmentOptions,
+      to_address: await this.formatShippingAddress_(cart),
+      line_items: await this.formatLineItems_(cart),
+      parcel_template_id: packer[0]?.object_id,
+    }
   }
 
   findRate_(shippingOption, rates) {
@@ -69,36 +90,20 @@ class ShippoRatesService extends BaseService {
     )
   }
 
+  async isCartReady_(cart) {
+    if (!cart.email || cart.items.length === 0) {
+      return false
+    }
+    return await this.validateAddress_(cart.shipping_address)
+  }
+
   async formatShippingAddress_(cart) {
-    if (!cart.email) {
-      return false
-    }
-
-    const requiredFields = [
-      "first_name",
-      "last_name",
-      "address_1",
-      "city",
-      "country_code",
-      // "province",
-      "postal_code",
-      // "phone",
-    ]
-
-    const emptyFields = requiredFields.filter(
-      (field) => !cart.shipping_address[field]
-    )
-
-    if (emptyFields.length > 0) {
-      return false
-    }
-
     return await shippoAddress(cart.shipping_address, cart.email)
   }
 
   getPrice_(rate) {
     // amount_local: calculated || amount: fallback
-    const price = rate?.amount_local || rate.amount
+    const price = rate?.amount_local || rate?.amount
     return parseInt(parseFloat(price) * 100, 10)
   }
 
@@ -109,6 +114,40 @@ class ShippoRatesService extends BaseService {
         async (parcels) =>
           await this.shippoPackerService_.packBins(items, parcels)
       )
+  }
+
+  async requiresRates_(shippingOptions) {
+    return !!shippingOptions.find((so) => so.data?.type === "LIVE_RATE") && true
+  }
+
+  setRate_(shippingOption, rate) {
+    const so = shippingOption
+    const price = rate ? this.getPrice_(rate) : so.amount
+
+    if (so.data.type === "LIVE_RATE" && so.price_type === "flat_rate") {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Shippo: '${so.name}' - price_type mismatch | ` +
+          "Expected price_type: calculated | " +
+          "Received price_type: flat_rate. See README.md"
+      )
+    }
+    return { ...so, amount: price }
+  }
+
+  async validateAddress_(address) {
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "address_1",
+      "city",
+      "country_code",
+      "postal_code",
+    ]
+
+    const emptyFields = requiredFields.filter((field) => !address[field])
+    
+    return emptyFields.length < 1
   }
 }
 

@@ -1,6 +1,6 @@
 import { FulfillmentService } from "medusa-interfaces"
 import { MedusaError } from "medusa-core-utils"
-import { shippoAddress, shippoLineItem, shippoOrder } from "../utils/formatters"
+import { shippoLineItem, shippoOrder } from "../utils/formatters"
 
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
@@ -8,13 +8,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   constructor(
     {
       cartService,
-      manager,
       orderService,
-      pricingService,
-      shippingOptionService,
-      shippingProfileService,
       shippoClientService,
-      shippoPackerService,
+      shippoRatesService,
       totalsService,
     },
     options
@@ -24,26 +20,14 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {CartService} */
     this.cartService_ = cartService
 
-    /** @private @const {Manager} */
-    this.manager_ = manager
-
     /** @private @const {OrderService} */
     this.orderService_ = orderService
-
-    // /** @private @const {PricingService} */
-    // this.pricingService_ = pricingService
-
-    /** @private @const {ShippingOptionService} */
-    this.shippingOptionService_ = shippingOptionService
-
-    /** @private @const {ShippingProfileService} */
-    this.shippingProfileService_ = shippingProfileService
 
     /** @private @const {ShippoClientService} */
     this.shippo_ = shippoClientService
 
-    /** @private @const {ShippoPackerService_} */
-    this.shippoPackerService_ = shippoPackerService
+    /** @private @const {ShippoRatesService} */
+    this.shippoRatesService_ = shippoRatesService
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
@@ -63,27 +47,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
-    console.log(
-      "*******validateFulfillmentData: optionData",
-      JSON.stringify(optionData, null, 2)
-    )
-    console.log(
-      "*******validateFulfillmentData: data",
-      JSON.stringify(data, null, 2)
-    )
-    console.log(
-      "*******validateFulfillmentData: cart",
-      JSON.stringify(cart, null, 2)
-    )
-
-    // if (optionData.type === "LIVE_RATE" && cart?.id) {
-    //   throw new MedusaError(
-    //     MedusaError.Types.NOT_ALLOWED,
-    //     ""
-    //     MedusaError.Codes.CART_INCOMPATIBLE_STATE
-    //   )
-    // }
-
     return {
       ...data,
     }
@@ -129,20 +92,15 @@ class ShippoFulfillmentService extends FulfillmentService {
     return data.type === "LIVE_RATE"
   }
 
-
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    console.log('=============fulfillmentOption: ', JSON.stringify(fulfillmentOption, null, 2))
-    console.log('=============fulfillmentData: ', JSON.stringify(fulfillmentData, null, 2))
-    console.log('=============cart: ', JSON.stringify(cart, null, 2))
-
-    throw "dev"
-
+    // thanks, but the cart is missing the shipping_address relation...
+    cart = await this.retrieveCart_(cart.id)
+    return await this.shippoRatesService_.retrievePrice(fulfillmentOption, cart)
   }
 
   async createReturn(fromData) {
     return Promise.resolve({})
   }
-
 
   async retrievePackerResults(order_id) {
     const order = await this.orderService_.retrieve(order_id)
@@ -154,16 +112,6 @@ class ShippoFulfillmentService extends FulfillmentService {
         .then((cso) => cso.metadata.shippo_binpack)
     }
     return { error: "This order has no packer data available" }
-  }
-
-  async findShippingOptionTypes_(type, cart) {
-    return await this.shippingProfileService_
-      .fetchCartOptions(cart)
-      .then((cartShippingOptions) =>
-        cartShippingOptions.filter(
-          (shippingOption) => shippingOption.data.type === type
-        )
-      )
   }
 
   async formatLineItems_(items, order) {
