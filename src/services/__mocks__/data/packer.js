@@ -39,7 +39,7 @@ export const mockPackerOutput = () => {
 
 // WIP
 export const mockShippoBinPack = () => {
-  const parcelTemplate = mockParcelTemplate()
+  const parcelTemplate = makeArrayOf(mockParcelTemplate, 2)
 
   return {
     ...parcelTemplate,

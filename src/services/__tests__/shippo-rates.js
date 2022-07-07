@@ -221,7 +221,7 @@ describe("ShippoRatesService", () => {
     })
   })
 
-  describe("getPrice_", () => {
+  describe("getPrice", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
@@ -233,7 +233,7 @@ describe("ShippoRatesService", () => {
         amount: "93.56",
         amount_local: "",
       }
-      const result = shippoRatesService.getPrice_(rate)
+      const result = shippoRatesService.getPrice(rate)
 
       expect(result).toBe(9356)
     })
@@ -243,7 +243,7 @@ describe("ShippoRatesService", () => {
         amount: "93.56",
         amount_local: "41.8",
       }
-      const result = shippoRatesService.getPrice_(rate)
+      const result = shippoRatesService.getPrice(rate)
 
       expect(result).toBe(4180)
     })
