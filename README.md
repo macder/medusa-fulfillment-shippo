@@ -360,9 +360,9 @@ await client.order.packingslip(shippo_order_id)
 
 ### Disclaimer
 
-Incoming HTTP requests from Shippo to webhook endpoints lack authentication. Shippo has really dropped the ball on this, a lack of consideration towards the webhook consumers security. No secret token, no signature in the request header, no bearer, nothing.
+Incoming HTTP requests from Shippo to webhook endpoints lack authentication. No secret token, no signature in the request header, no bearer, nothing.
 
-Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) for webhook routes is highly encouraged and recommended.
+Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) for webhook routes is highly encouraged and recommended. There are also intermediary third party services such as pipedream and hookdeck that can be used to relay requests.
 
 You will also need to self generate a token and add it as a url query param. Ya I know… but it's better than nothing and it is encrypted over HTTPS
 
