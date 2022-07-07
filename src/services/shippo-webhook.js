@@ -5,7 +5,6 @@ import { getConfigFile } from "medusa-core-utils"
 class ShippoWebhookService extends BaseService {
   constructor(
     {
-      customShippingOptionService,
       fulfillmentService,
       orderService,
       shippoClientService,
@@ -15,9 +14,6 @@ class ShippoWebhookService extends BaseService {
     super()
 
     this.setConfig_(options)
-
-    /** @private @const {CustomShippingOptionService} */
-    this.customShippingOptionService_ = customShippingOptionService
 
     /** @private @const {OrderService} */
     this.fulfillmentService_ = fulfillmentService
@@ -53,18 +49,6 @@ class ShippoWebhookService extends BaseService {
       fulfillment.metadata?.transaction_id !== transaction.object_id &&
       !expandedTransaction.is_return
     ) {
-      const shippingRateAtCheckout = await this.customShippingOptionService_
-        .list({ cart_id: order.cart_id })
-        .then((results) =>
-          results
-            .filter((cso) =>
-              order.shipping_methods.find(
-                (sm) => sm.shipping_option.id === cso.shipping_option_id
-              )
-            )
-            .map(({ metadata: { shippo_binpack, ...metadata } }) => metadata)
-        )
-
       await this.fulfillmentService_.createShipment(
         fulfillment.id,
         [
@@ -78,7 +62,7 @@ class ShippoWebhookService extends BaseService {
             transaction_id: expandedTransaction.object_id,
             rate: {
               settled: expandedTransaction.rate,
-              estimated: shippingRateAtCheckout[0],
+              // estimated: shippingRateAtCheckout[0],
             },
             label_url: transaction.label_url,
           },
