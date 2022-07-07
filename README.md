@@ -128,7 +128,7 @@ Shipping option's have a `price_type` that is either `flat_rate` or `calculated`
 
 Here is why:
 
-https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90
+https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90?plain=1
 
 ## Optimizing Rates at Checkout
 
