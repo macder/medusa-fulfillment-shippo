@@ -94,10 +94,22 @@ class ShippoRatesService extends BaseService {
     }
   }
 
+  async packBins(items) {
+    const packed = await this.shippo_
+      .fetchCustomParcelTemplates()
+      .then(
+        async (parcels) =>
+          await this.shippoPackerService_.packBins(items, parcels)
+      )
+    this.packerResult_ = packed
+    return packed
+  }
+
   findRate_(shippingOption, rates) {
     return rates.find((rate) => rate.title === shippingOption.data.name)
   }
 
+  // TODO: duplicated code - find a place for this
   async formatLineItems_(cart) {
     return await Promise.all(
       cart.items.map(
@@ -124,18 +136,6 @@ class ShippoRatesService extends BaseService {
 
   async formatShippingAddress_(cart) {
     return await shippoAddress(cart.shipping_address, cart.email)
-  }
-
-  async packBins(items) {
-    console.log("sadfasdfSADFASDFSDFASDFSDF")
-    const packed = await this.shippo_
-      .fetchCustomParcelTemplates()
-      .then(
-        async (parcels) =>
-          await this.shippoPackerService_.packBins(items, parcels)
-      )
-    this.packerResult_ = packed
-    return packed
   }
 
   getPrice_(rate) {
