@@ -91,8 +91,8 @@ describe("ShippoRatesService", () => {
 
       const result = await shippoRatesService.retrieveShippingOptions(cart)
 
-      result.forEach(result => {
-        if(result.data.type === "LIVE_RATE"){
+      result.forEach((result) => {
+        if (result.data.type === "LIVE_RATE") {
           expect(result.amount).toBeNumber()
         }
       })

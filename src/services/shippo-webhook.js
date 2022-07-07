@@ -4,11 +4,7 @@ import { getConfigFile } from "medusa-core-utils"
 
 class ShippoWebhookService extends BaseService {
   constructor(
-    {
-      fulfillmentService,
-      orderService,
-      shippoClientService,
-    },
+    { fulfillmentService, orderService, shippoClientService },
     options
   ) {
     super()
