@@ -94,6 +94,8 @@ Create shipping options for regions as usual
 
 ## Using Rates at Checkout
 
+As of v0.12.0, the CustomShippingOptionService is no longer used, in favour of decorators. This introduced some significant improvements along with breaking changes. This was likely the final breaking change to this feature.
+
 ### Retrieving Shipping Options with Rates
 
 [Retrieve shipping options for cart](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) as usual and if any are setup for live-rates they will have a rate.
