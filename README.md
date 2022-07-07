@@ -89,7 +89,7 @@ For more in-depth details see https://support.goshippo.com/hc/en-us/articles/440
 
 Create shipping options for regions as usual
 
-See here for common issue
+[See here for common issue](#help-adding-a-shipping-method-to-cart-throws-an-error)
 
 
 ## Using Rates at Checkout
@@ -125,7 +125,7 @@ The rate is applied to the shipping method.
 POST /carts/:id/shipping-methods
 ```
 
-#### Help, adding a shipping method to cart throws an error
+### Help, adding a shipping method to cart throws an error
 
 Shipping option's have a `price_type` that is either `flat_rate` or `calculated`. If the shipping option was created with [Medusa Admin](https://github.com/medusajs/admin) then it was set as`flat_rate`.
 
