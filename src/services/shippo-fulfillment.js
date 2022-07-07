@@ -40,16 +40,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     return await this.shippo_.retrieveFulfillmentOptions()
   }
 
-  async validateOption(data) {
-    return true
-  }
-
-  async validateFulfillmentData(optionData, data, cart) {
-    return {
-      ...data,
-    }
-  }
-
   async createFulfillment(
     methodData,
     fulfillmentItems,
@@ -93,11 +83,40 @@ class ShippoFulfillmentService extends FulfillmentService {
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     // thanks, but the cart is missing the shipping_address relation...
     cart = await this.retrieveCart_(cart.id)
-    return await this.shippoRatesService_.retrievePrice(fulfillmentOption, cart)
+    const price = await this.shippoRatesService_.retrievePrice(
+      fulfillmentOption,
+      cart,
+      fulfillmentData.parcel_template.id
+    )
+    return price
   }
 
   async createReturn(fromData) {
     return Promise.resolve({})
+  }
+
+  async validateOption(data) {
+    return true
+  }
+
+  async validateFulfillmentData(optionData, data, cart) {
+    const parcel = await this.shippoRatesService_
+      .packBins(cart.items)
+      .then((result) => ({
+        parcel_template: {
+          id: result[0].object_id,
+          name: result[0].name,
+        },
+      }))
+
+    // TODO: decide and figure out where to store packer results
+    // It used to live in the cso meta data...
+    // /admin/orders/:id/shippo/packer depends on this data :/
+
+    return {
+      ...data,
+      ...parcel,
+    }
   }
 
   async retrievePackerResults(order_id) {

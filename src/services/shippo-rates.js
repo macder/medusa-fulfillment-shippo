@@ -41,8 +41,12 @@ class ShippoRatesService extends BaseService {
     return shippingOptions
   }
 
-  async retrievePrice(fulfillmentOption, cart) {
-    const args = await this.getRequestParams_([fulfillmentOption], cart)
+  async retrievePrice(fulfillmentOption, cart, parcelId) {
+    const args = await this.getRequestParams_(
+      [fulfillmentOption],
+      cart,
+      parcelId
+    )
     const rates = await this.fetchRates_(args)
     return this.getPrice_(rates[0])
   }
@@ -63,7 +67,7 @@ class ShippoRatesService extends BaseService {
 
     const rates = await this.fetchRates_(args)
 
-    // TODO: Remove live-rate options if api request fails
+    // TODO: use fallback price or remove if api request fails
     // Perhaps polling is appropriate, i.e 3 max attempt at 1sec intervals
 
     return shippingOptions.map((so) =>
@@ -77,14 +81,16 @@ class ShippoRatesService extends BaseService {
       .catch((e) => console.error(e))
   }
 
-  async getRequestParams_(fulfillmentOptions, cart) {
-    const packer = await this.packBins_(cart.items)
+  async getRequestParams_(fulfillmentOptions, cart, parcelTemplate = null) {
+    const parcelId =
+      parcelTemplate ??
+      (await this.packBins(cart.items).then((result) => result[0].object_id))
 
     return {
       options: fulfillmentOptions,
       to_address: await this.formatShippingAddress_(cart),
       line_items: await this.formatLineItems_(cart),
-      parcel_template_id: packer[0]?.object_id,
+      parcel_template_id: parcelId,
     }
   }
 
@@ -105,6 +111,10 @@ class ShippoRatesService extends BaseService {
     )
   }
 
+  getPackerResult() {
+    return this.packerResult_
+  }
+
   async isCartReady_(cart) {
     if (!cart.email || cart.items.length === 0) {
       return false
@@ -116,19 +126,22 @@ class ShippoRatesService extends BaseService {
     return await shippoAddress(cart.shipping_address, cart.email)
   }
 
-  getPrice_(rate) {
-    // amount_local: calculated || amount: fallback
-    const price = rate?.amount_local || rate?.amount
-    return parseInt(parseFloat(price) * 100, 10)
-  }
-
-  async packBins_(items) {
-    return await this.shippo_
+  async packBins(items) {
+    console.log("sadfasdfSADFASDFSDFASDFSDF")
+    const packed = await this.shippo_
       .fetchCustomParcelTemplates()
       .then(
         async (parcels) =>
           await this.shippoPackerService_.packBins(items, parcels)
       )
+    this.packerResult_ = packed
+    return packed
+  }
+
+  getPrice_(rate) {
+    // amount_local: calculated || amount: fallback
+    const price = rate?.amount_local || rate?.amount
+    return parseInt(parseFloat(price) * 100, 10)
   }
 
   async requiresRates_(shippingOptions) {
