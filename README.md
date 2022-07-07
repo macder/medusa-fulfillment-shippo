@@ -356,6 +356,7 @@ await client.order.packingslip(shippo_order_id)
 ```
 
 ## Webhooks
+> Note: This section is WIP
 
 ### Disclaimer
 
@@ -418,8 +419,11 @@ Processing shippo.rejected.transaction_created which has 0 subscribers
 ```
 This is the expected behaviour because the data could not be verified. Since it is a sample, when the plugin tried to verify the transaction by requesting the same object directly from shippo api, it did not exist. It will NOT use input data beyond making the verification, so it gets rejected.
 
+### How to test:
 
-#### transaction\_created
+Documentation WIP...
+
+### transaction\_created
 
 `https://server:port/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
@@ -445,19 +449,19 @@ Rejected POST request
 
 `shippo.rejected.transaction_created`
 
-#### transaction\_updated
+### transaction\_updated
 
 *under development*
 
-#### track\_updated
+### track\_updated
 
 *under development*
 
-#### batch\_purchased
+### batch\_purchased
 
 *under development*
 
-#### batch\_created
+### batch\_created
 
 *under development*
 
