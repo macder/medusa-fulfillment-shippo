@@ -87,7 +87,10 @@ For more in-depth details see https://support.goshippo.com/hc/en-us/articles/440
 
 ### Assign Shipping Options to Regions in Medusa
 
-> **NOTE:** If using [Medusa Admin](https://github.com/medusajs/admin) there is a [bug](https://github.com/medusajs/admin/issues/597) that prevents creating \`price\_type: calculated\` shipping options for regions.
+Create shipping options for regions as usual
+
+See here for common issue
+
 
 ## Using Rates at Checkout
 
@@ -126,9 +129,21 @@ POST /carts/:id/shipping-methods
 
 Shipping option's have a `price_type` that is either `flat_rate` or `calculated`. If the shipping option was created with [Medusa Admin](https://github.com/medusajs/admin) then it was set as`flat_rate`.
 
-Here is why:
+[But why?](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90) 
 
-https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90?plain=1
+Did you notice [line 85](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L85)
+
+Medusa Admin has not yet matured, so this is an implementation detail that will eventually get fixed
+
+For now, either add calculated shipping options via api, or you can edit the culprit line to:
+
+```javascript=
+price_type: (options[optionIndex].type === "LIVE_RATE") 
+    ? "calculated" 
+    : "flat_rate",
+```
+
+Or whatever works for you...
 
 ## Optimizing Rates at Checkout
 
