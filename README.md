@@ -198,6 +198,7 @@ Sample response:
 ```
 
 ### Set rates for cart
+LEGACY
 
 Update the price of any “live-rate” shipping option available to the cart. This will use the carts shipping options as templates to create new or update existing custom shipping options via [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService). They will become available when requesting a carts shipping options. Useful right before it's time to show the customer their shipping options, i.e during checkout after submitting a shipping address.
 
