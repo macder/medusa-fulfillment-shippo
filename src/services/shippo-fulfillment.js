@@ -56,8 +56,8 @@ class ShippoFulfillmentService extends FulfillmentService {
       }
     })
 
-    const parcelName =
-      fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A"
+    const parcelName = methodData.parcel_template.name ?? "Package Name N/A" // >= 0.12.0
+    // fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A" // =< 0.11.0
 
     return await this.shippo_
       .createOrder(
@@ -65,7 +65,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       )
       .then((response) => ({
         shippo_order_id: response.object_id,
-        shipping_methods: fromOrder.shipping_methods.map((e) => e.id),
+        // shipping_methods: fromOrder.shipping_methods.map((e) => e.id), // =< 0.11.0
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
