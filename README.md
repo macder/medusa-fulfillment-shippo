@@ -4,6 +4,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
 
+>:information_source: Requires Medusa 1.3.3^
+
 Adds Shippo as a fulfillment provider in Medusa Commerce.
 
 Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
@@ -196,6 +198,7 @@ Sample response:
 ```
 
 ### Set rates for cart
+LEGACY
 
 Update the price of any “live-rate” shipping option available to the cart. This will use the carts shipping options as templates to create new or update existing custom shipping options via [CustomShippingOptionService](https://docs.medusajs.com/references/services/classes/CustomShippingOptionService). They will become available when requesting a carts shipping options. Useful right before it's time to show the customer their shipping options, i.e during checkout after submitting a shipping address.
 
@@ -354,12 +357,13 @@ await client.order.packingslip(shippo_order_id)
 ```
 
 ## Webhooks
+>Note: This section is WIP
 
 ### Disclaimer
 
-Incoming HTTP requests from Shippo to webhook endpoints lack authentication. Shippo has really dropped the ball on this, a lack of consideration towards the webhook consumers security. No secret token, no signature in the request header, no bearer, nothing.
+Incoming HTTP requests from Shippo to webhook endpoints lack authentication. No secret token, no signature in the request header, no bearer, nothing.
 
-Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) for webhook routes is highly encouraged and recommended.
+Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) for webhook routes is highly encouraged and recommended. There are also intermediary third party services such as pipedream and hookdeck that can be used to relay requests.
 
 You will also need to self generate a token and add it as a url query param. Ya I know… but it's better than nothing and it is encrypted over HTTPS
 
@@ -402,7 +406,26 @@ const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
 
 Hooks need to be added in [Shippo app settings](https://apps.goshippo.com/settings/api)
 
-#### transaction\_created
+Then send a sample. If everything is good you will see this in console:
+
+```plaintext
+Processing shippo.received.transaction_created which has 0 subscribers
+ [Error: Item not found] {
+   type: 'ShippoNotFoundError',
+   code: undefined,
+   detail: '{"detail": "Not found"}',
+   path: '/transactions/[some_random_id]',
+   statusCode: 404
+ }
+Processing shippo.rejected.transaction_created which has 0 subscribers
+```
+This is the expected behaviour because the data could not be verified. Since it is a sample, when the plugin tried to verify the transaction by requesting the same object directly from shippo api, it did not exist. It will NOT use input data beyond making the verification, so it gets rejected.
+
+### How to test
+
+Documentation WIP...
+
+### transaction\_created
 
 `https://server:port/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
@@ -428,19 +451,19 @@ Rejected POST request
 
 `shippo.rejected.transaction_created`
 
-#### transaction\_updated
+### transaction\_updated
 
 *under development*
 
-#### track\_updated
+### track\_updated
 
 *under development*
 
-#### batch\_purchased
+### batch\_purchased
 
 *under development*
 
-#### batch\_created
+### batch\_created
 
 *under development*
 

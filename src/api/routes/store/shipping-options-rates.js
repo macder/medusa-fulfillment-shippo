@@ -1,6 +1,10 @@
 export default async (req, res, next) => {
-  const { cart_id } = req.params
-  const shippoFulfillmentService = req.scope.resolve("shippoFulfillmentService")
+  console.warn(
+    "Shippo - POST request received at obsolete endpoint /store/shipping-options/:cart_id/shippo/rates. See README.md"
+  )
 
-  res.json(await shippoFulfillmentService.updateShippingRates(cart_id))
+  res.json({
+    error:
+      "Obsolete Endpoint: please use GET /store/shipping-options/:cart_id - see README.md",
+  })
 }

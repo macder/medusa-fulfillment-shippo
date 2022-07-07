@@ -94,7 +94,7 @@ export const mockLiveRate = (isFallback = false) => {
     description: "2 - 8 days",
     amount: "40",
     currency: "USD",
-    amount_local: "",
+    amount_local: "20",
     currency_local: "",
     estimated_days: 0,
   }
