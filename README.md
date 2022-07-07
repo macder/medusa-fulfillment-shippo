@@ -24,7 +24,7 @@ Retrieves Shippo orders and packing slips for fulfillments
         1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
         2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
     *   [Usage](#using-rates-at-checkout)
-        1.  [Get rates for cart](#get-rates-for-cart)
+        1.  [Retrieving Shipping Options with Rates](#retrieving-shipping-options-with-rates)
         2.  [Set rates for cart](#set-rates-for-cart)
         3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
     *   [Optimizing](#optimizing-rates-at-checkout)
@@ -91,7 +91,6 @@ Create shipping options for regions as usual
 
 [See here for common issue](#help-adding-a-shipping-method-to-cart-throws-an-error)
 
-
 ## Using Rates at Checkout
 
 As of v0.12.0, the CustomShippingOptionService is no longer used, in favour of decorators. This introduced some significant improvements along with breaking changes. This was likely the final breaking change to this feature.
@@ -116,10 +115,9 @@ await shippoRatesService.retrieveShippingOptions(cart_id)
 
 Retrieving only decorates the shipping options with rates for display purposes. Each retrieval will fetch rates from shippo's api and re-decorate the options. They have no relation to the rate and are stateless templates for creating shipping methods.
 
-The rate is applied to the shipping method.
+### Add Shipping Method to Cart
 
-[Add a shipping method to the Cart.
-](https://docs.medusajs.com/api/store/cart/add-a-shipping-method)
+[API reference](https://docs.medusajs.com/api/store/cart/add-a-shipping-method)
 
 **HTTP:**
 
@@ -131,7 +129,7 @@ POST /carts/:id/shipping-methods
 
 Shipping option's have a `price_type` that is either `flat_rate` or `calculated`. If the shipping option was created with [Medusa Admin](https://github.com/medusajs/admin) then it was set as`flat_rate`.
 
-[But why?](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90) 
+[But why?](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90)
 
 Did you notice [line 85](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L85)
 
@@ -179,7 +177,6 @@ In your medusa store, make sure products have correct values for length, width, 
 Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
-
 
 ## Orders
 
