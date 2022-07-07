@@ -122,6 +122,14 @@ The rate is applied to the shipping method.
 POST /carts/:id/shipping-methods
 ```
 
+#### Help, adding a shipping method to cart throws an error
+
+Shipping option's have a `price_type` that is either `flat_rate` or `calculated`. If the shipping option was created with [Medusa Admin](https://github.com/medusajs/admin) then it was set as`flat_rate`.
+
+Here is why:
+
+https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90
+
 ## Optimizing Rates at Checkout
 
 Estimating an accurate shipping cost for a cart with multiple items of various dimensions is a challenging problem. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel template, regardless if all items fit when calculating rates.
@@ -155,21 +163,6 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-## Parcel Packer
-
-If an order's shipping method rate was calculated at checkout, the output data from bin packing can be retrieved.
-
-**HTTP:**
-
-```plaintext
-GET /admin/orders/:id/shippo/packer
-```
-
-**Service:**
-
-```javascript
-await shippoFulfillmentService.retrievePackerResults(order_id)
-```
 
 ## Orders
 
