@@ -404,6 +404,21 @@ const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
 
 Hooks need to be added in [Shippo app settings](https://apps.goshippo.com/settings/api)
 
+Then send a sample. If everything is good you will see this in console:
+```
+Processing shippo.received.transaction_created which has 0 subscribers
+ [Error: Item not found] {
+   type: 'ShippoNotFoundError',
+   code: undefined,
+   detail: '{"detail": "Not found"}',
+   path: '/transactions/[some_random_id]',
+   statusCode: 404
+ }
+Processing shippo.rejected.transaction_created which has 0 subscribers
+```
+This is the expected behaviour because the data could not be verified. Since it is a sample, when the plugin tried to verify the transaction by requesting the same object directly from shippo api, it did not exist. It will NOT use input data beyond making the verification, so it gets rejected.
+
+
 #### transaction\_created
 
 `https://server:port/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
