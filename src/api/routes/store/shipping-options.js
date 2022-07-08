@@ -5,6 +5,7 @@ export default async (req, res, next) => {
   const pricingService = req.scope.resolve("pricingService")
 
   const cart = await cartService.retrieve(cart_id, {
+    select: ["subtotal"],
     relations: [
       "shipping_address",
       "items",
