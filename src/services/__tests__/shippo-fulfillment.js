@@ -462,6 +462,7 @@ describe("ShippoFulfillmentService", () => {
       shippoFulfilService.retrieveCart_(2)
 
       expect(spy).toHaveBeenCalledWith(2, {
+        select: ["subtotal"],
         relations: [
           "shipping_address",
           "items",
