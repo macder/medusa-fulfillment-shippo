@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.12.0] (2022-07-08)
+
+Fixed
+
+*   Shipping options fail to load when discount code applied to cart [#146](https://github.com/macder/medusa-fulfillment-shippo/issues/146)
+
 ## \[0.12.0] (2022-07-07)
 
 Added
