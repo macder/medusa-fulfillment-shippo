@@ -1,7 +1,7 @@
 ## medusa-fulfillment-shippo
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)\
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)\
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
 
 > :information\_source: Requires Medusa 1.3.3^
@@ -19,17 +19,16 @@ Fulfillment's create Shippo orders with relations for retrieval
 *   [Getting Started](#getting-started)
 *   [Rates at Checkout](#rates-at-checkout)
     *   Setup
-        *   [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
-        *   [Assign Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
-    *   [During Checkout](#retrieving-shipping-options-with-rates)
+        *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
+        *   [Assign Shipping Options to Regions in Medusa](#assign-shipping-options-to-regions-in-medusa)
+    *   [During Checkout](#during-checkout)
         *   [Set rates for cart](#set-rates-for-cart)
-        *   [Add to Cart](#retrieve-shipping-options-with-rates-for-cart)
+        *   [Add to Cart](#add-to-cart)
+        *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
     *   [Optimizing](#optimizing-rates-at-checkout)
-        1.  [How it works](#how-it-works)
-        2.  [Setup parcel templates](#setup-parcel-templates)
-        3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
-        4.  [Accuracy of Rates](#accuracy-of-rates)
-        5.  [Parcel Packer](#parcel-packer)
+        *   [Setup parcel templates](#setup-parcel-templates)
+        *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
+        *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
 *   [Webhooks](#webhooks)
