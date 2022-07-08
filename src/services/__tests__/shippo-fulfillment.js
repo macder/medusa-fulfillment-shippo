@@ -9,17 +9,26 @@ import {
   makeArrayOf,
   mockCart,
   mockCustomShippingOption,
+  mockLineItem,
   mockLineItemTotals,
   mockLiveRate,
   mockShippingOption,
   mockShippoBinPack,
   mockPackerOutput,
   mockParcelTemplateResponse,
+  mockFulfillmentOption,
 } from "../__mocks__/data"
 
 expect.extend(matchers)
 
 describe("ShippoFulfillmentService", () => {
+  beforeAll(async () => {
+    jest.clearAllMocks()
+  })
+
+  const totalsService = {
+    getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
+  }
   /** **************************
     
       getFulfillmentOptions
@@ -65,26 +74,100 @@ describe("ShippoFulfillmentService", () => {
       jest.clearAllMocks()
     })
 
-    const shippoRatesService = {
-      packBins: jest.fn(async (items) => makeArrayOf(mockShippoBinPack, 1)),
+    const cartService = {
+      retrieve: jest.fn(async (cartId, options, totalsConfig) =>
+        mockCart({ hasAddress: true, hasItems: 1 })
+      ),
     }
 
     const shippoClientService = new ShippoClientService({}, {})
+    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoRatesService = new ShippoRatesService(
+      { shippoClientService, totalsService },
+      {}
+    )
     const shippoFulfilService = new ShippoFulfillmentService(
-      { shippoClientService, shippoRatesService },
+      {
+        shippoClientService,
+        shippoRatesService,
+        shippoPackerService,
+        cartService,
+        totalsService,
+      },
       {}
     )
 
-    it("returned object with correct properties", async () => {
-      const cart = mockCart({ hasAddress: true, hasItems: 1 })
-      const result = await shippoFulfilService.validateFulfillmentData(
-        {},
-        { test: "test" },
-        cart
-      )
+    shippoRatesService.retrieveRawRate = jest.fn(
+      async (fulfillmentOption, cart, parcelId) => mockLiveRate()
+    )
 
-      expect(result).toContainKeys(["test", "parcel_template"])
-      expect(result.parcel_template).toContainKeys(["id", "name"])
+    const cart = mockCart({ hasAddress: false, hasItems: 1 })
+
+    describe("live-rate option", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
+      })
+
+      const getResult = async () =>
+        await shippoFulfilService.validateFulfillmentData(
+          mockFulfillmentOption({ type: "LIVE_RATE" }),
+          { test: "test" },
+          cart
+        )
+
+      it("returned object with correct properties", async () => {
+        const result = await getResult()
+        expect(result).toContainKeys([
+          "rate_at_checkout",
+          "parcel_template",
+          "test",
+        ])
+      })
+
+      it("parcel_template has id and name properties", async () => {
+        const result = await getResult()
+        expect(result.parcel_template).toContainKeys(["id", "name"])
+      })
+
+      test("rate_at_checkout property is an object", async () => {
+        const result = await getResult()
+        expect(result.rate_at_checkout).toBeObject()
+      })
+    })
+
+    describe("normal option", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
+      })
+
+      const fulfillmentOption = mockFulfillmentOption({ type: "" })
+      delete fulfillmentOption.type
+
+      const getResult = async () =>
+        await shippoFulfilService.validateFulfillmentData(
+          fulfillmentOption,
+          { test: "test" },
+          cart
+        )
+
+      test("returned object with correct properties", async () => {
+        const result = await getResult()
+        expect(result).toContainKeys([
+          "rate_at_checkout",
+          "parcel_template",
+          "test",
+        ])
+      })
+
+      it("parcel_template has id and name properties", async () => {
+        const result = await getResult()
+        expect(result.parcel_template).toContainKeys(["id", "name"])
+      })
+
+      test("rate_at_checkout property is null", async () => {
+        const result = await getResult()
+        expect(result.rate_at_checkout).toBeNull()
+      })
     })
   })
 
@@ -156,7 +239,31 @@ describe("ShippoFulfillmentService", () => {
       jest.clearAllMocks()
     })
 
-    it("", () => {})
+    const shippoRatesService = new ShippoRatesService({}, {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService(
+      { shippoClientService, shippoRatesService },
+      {}
+    )
+
+    it("returns a number", async () => {
+      const fulfillmentData = {
+        test: "test",
+        rate_at_checkout: mockLiveRate(),
+        parcel_template: {
+          id: "1010101010",
+          name: "im a name",
+        },
+      }
+
+      const result = await shippoFulfilService.calculatePrice(
+        {},
+        fulfillmentData,
+        {}
+      )
+
+      expect(result).toBeNumber()
+    })
   })
 
   /** **************************
@@ -169,7 +276,45 @@ describe("ShippoFulfillmentService", () => {
       jest.clearAllMocks()
     })
 
-    it("", () => {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+      totalsService,
+    })
+
+    const methodData = {
+      test: "test",
+      rate_at_checkout: mockLiveRate(),
+      parcel_template: {
+        id: "1010101010",
+        name: "im a name",
+      },
+    }
+
+    const fulfillmentItems = makeArrayOf(mockLineItem, 2)
+    const fromOrder = mockCart({ hasAddress: true, hasItems: 2 })
+    fromOrder.currency_code = "usd"
+    fromOrder.shipping_methods = [
+      { shipping_option: mockShippingOption({ variant: "default" }) },
+    ]
+
+    it("returned an object with shippo_order_id prop", async () => {
+      const result = await shippoFulfilService.createFulfillment(
+        methodData,
+        fulfillmentItems,
+        fromOrder
+      )
+      expect(result).toBeObject()
+      expect(result).toContainKey("shippo_order_id")
+    })
+
+    // it("throws when line item quantity < 1", async () => {
+    //   fulfillmentItems[0].quantity = 0
+
+    //   expect(async() => {
+    //     shippoFulfilService.createFulfillment(methodData, fulfillmentItems, fromOrder)
+    //   }).toThrow()
+    // })
   })
 
   /** **************************
@@ -194,6 +339,27 @@ describe("ShippoFulfillmentService", () => {
   })
 
   /** **************************
+    
+      creatReturn
+    
+    *****************************/
+  describe("createReturn", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+    })
+
+    it("returns resolved promise", async () => {
+      expect.assertions(1)
+      await expect(shippoFulfilService.createReturn()).resolves.toEqual({})
+    })
+  })
+
+  /** **************************
   
     formatLineItems_
   
@@ -202,10 +368,6 @@ describe("ShippoFulfillmentService", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
-
-    const totalsService = {
-      getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
-    }
 
     const shippoClientService = new ShippoClientService({}, {})
     const shippoFulfilService = new ShippoFulfillmentService({

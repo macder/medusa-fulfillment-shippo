@@ -10,6 +10,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       cartService,
       orderService,
       shippoClientService,
+      shippoPackerService,
       shippoRatesService,
       totalsService,
     },
@@ -25,6 +26,9 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {ShippoClientService} */
     this.shippo_ = shippoClientService
+
+    /** @private @const {ShippoPackerService} */
+    this.shippoPackerService_ = shippoPackerService
 
     /** @private @const {ShippoRatesService} */
     this.shippoRatesService_ = shippoRatesService
@@ -56,8 +60,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       }
     })
 
-    const parcelName = methodData.parcel_template.name ?? "Package Name N/A" // >= 0.12.0
-    // fromOrder.metadata.shippo?.parcel_template_name ?? "Package Name N/A" // =< 0.11.0
+    const parcelName = methodData.parcel_template.name ?? null
 
     return await this.shippo_
       .createOrder(
@@ -65,7 +68,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       )
       .then((response) => ({
         shippo_order_id: response.object_id,
-        // shipping_methods: fromOrder.shipping_methods.map((e) => e.id), // =< 0.11.0
       }))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
@@ -81,14 +83,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    // thanks, but the cart is missing the shipping_address relation...
-    cart = await this.retrieveCart_(cart.id)
-    const price = await this.shippoRatesService_.retrievePrice(
-      fulfillmentOption,
-      cart,
-      fulfillmentData.parcel_template.id
+    return await this.shippoRatesService_.getPrice(
+      fulfillmentData.rate_at_checkout
     )
-    return price
   }
 
   async createReturn(fromData) {
@@ -100,35 +97,32 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
-    const parcel = await this.shippoRatesService_
-      .packBins(cart.items)
-      .then((result) => ({
-        parcel_template: {
-          id: result[0].object_id,
-          name: result[0].name,
-        },
-      }))
+    const parcel = await this.shippo_
+      .fetchCustomParcelTemplates()
+      .then(
+        async (parcels) =>
+          await this.shippoPackerService_
+            .packBins(cart.items, parcels)
+            .then((pack) => ({ id: pack[0].object_id, name: pack[0].name }))
+      )
 
-    // TODO: decide and figure out where to store packer results
-    // It used to live in the cso meta data...
-    // /admin/orders/:id/shippo/packer depends on this data :/
+    let rate = null
+
+    if (optionData.type === "LIVE_RATE") {
+      // we need the cart with shipping_address relation
+      cart = await this.retrieveCart_(cart.id)
+      rate = await this.shippoRatesService_.retrieveRawRate(
+        optionData,
+        cart,
+        parcel.id
+      )
+    }
 
     return {
       ...data,
-      ...parcel,
+      rate_at_checkout: rate ?? null,
+      parcel_template: parcel,
     }
-  }
-
-  async retrievePackerResults(order_id) {
-    const order = await this.orderService_.retrieve(order_id)
-
-    if (order.metadata.shippo?.custom_shipping_options) {
-      const cso_id = order.metadata.shippo.custom_shipping_options[0]
-      return await this.customShippingOptionService_
-        .retrieve(cso_id)
-        .then((cso) => cso.metadata.shippo_binpack)
-    }
-    return { error: "This order has no packer data available" }
   }
 
   async formatLineItems_(items, order) {

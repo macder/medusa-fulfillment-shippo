@@ -10,7 +10,7 @@ import {
 const shippo = jest.fn(() => ({
   carrieraccount: {
     list: jest.fn(async () =>
-      mockCarrierAccountsResponse(faker.datatype.number({ min: 20, max: 50 }))
+      mockCarrierAccountsResponse(faker.datatype.number({ min: 8, max: 10 }))
     ),
   },
   servicegroups: {
@@ -20,11 +20,14 @@ const shippo = jest.fn(() => ({
   },
   userparceltemplates: {
     list: jest.fn(async () =>
-      mockParcelTemplateResponse(faker.datatype.number({ min: 2, max: 20 }))
+      mockParcelTemplateResponse(faker.datatype.number({ min: 8, max: 20 }))
     ),
   },
   liverates: {
     create: jest.fn(async () => ({ results: makeArrayOf(mockLiveRate, 10) })),
+  },
+  order: {
+    create: jest.fn(async () => ({ object_id: "1010101010" })),
   },
 }))
 
