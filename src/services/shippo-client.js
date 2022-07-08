@@ -66,7 +66,7 @@ class ShippoClientService extends BaseService {
       interval: 3000,
       maxAttempts: 5,
     }).then((response) => response.results)
-    
+
     return transactions
   }
 
@@ -78,18 +78,21 @@ class ShippoClientService extends BaseService {
     return await this.client_.userparceltemplates.retrieve(id)
   }
 
-  async fetchLiveRates(toAddress, lineItems, shippingOptions, parcel) {
+  async fetchLiveRates({
+    options,
+    to_address,
+    line_items,
+    parcel_template_id,
+  }) {
     return await this.client_.liverates
       .create({
-        address_to: toAddress,
-        line_items: lineItems,
-        parcel: parcel,
+        address_to: to_address,
+        line_items: line_items,
+        parcel: parcel_template_id,
       })
       .then((response) =>
         response.results.filter((item) =>
-          shippingOptions.find(
-            (option) => option.data.name === item.title && true
-          )
+          options.find((option) => option.name === item.title && true)
         )
       )
   }

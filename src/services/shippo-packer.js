@@ -10,6 +10,10 @@ class ShippoPackerService extends BaseService {
     super()
   }
 
+  /**
+   * @param  {array} lineItems
+   * @param  {array} parcelTemplates
+   */
   async packBins(lineItems, parcelTemplates) {
     const { Packer } = BP3D
 
@@ -34,6 +38,9 @@ class ShippoPackerService extends BaseService {
     return this.result_(fitBins)
   }
 
+  /**
+   * @param  {} fitBins
+   */
   result_(fitBins) {
     return fitBins.map((bin) => {
       const binItemsVolume = bin.items.map(
@@ -78,6 +85,9 @@ class ShippoPackerService extends BaseService {
     })
   }
 
+  /**
+   * @param  {array} parcelTemplates
+   */
   setBins_(parcelTemplates) {
     const { Bin } = BP3D
 
@@ -93,6 +103,9 @@ class ShippoPackerService extends BaseService {
       )
   }
 
+  /**
+   * @param  {array} lineItems
+   */
   setItems_(lineItems) {
     const { Item } = BP3D
     this.items_ = lineItems

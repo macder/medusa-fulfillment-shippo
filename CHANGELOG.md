@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.12.0] (2022-07-07)
+
+Added
+
+*   Bin packing support for all shipping option types [#125](https://github.com/macder/medusa-fulfillment-shippo/issues/125)
+
+*   Raw live-rate object that determined rate at checkout added to fulfillment data [#144](https://github.com/macder/medusa-fulfillment-shippo/issues/144)
+
+Changed
+
+*   **BREAKING** - New implementation for rates at checkout [#137](https://github.com/macder/medusa-fulfillment-shippo/issues/137)
+*   **BREAKING** - Bin packing data is no longer saved [#141](https://github.com/macder/medusa-fulfillment-shippo/issues/141)
+*   **BREAKING** - Parcel template data used for rate moved from order metadata to fulfillment data
+
+Fixed
+
+*   Rates at checkout not respecting discounts [#105](https://github.com/macder/medusa-fulfillment-shippo/issues/105)
+
+*   Rates at checkout not respecting shipping option conditions [#139](https://github.com/macder/medusa-fulfillment-shippo/issues/139)
+
 ## \[0.11.0] (2022-07-05)
 
 Added
@@ -43,7 +63,7 @@ Added
 
 Changed
 
-*   **BREAKING**: Moved bin packing result data [#101](https://github.com/macder/medusa-fulfillment-shippo/issues/101)
+*   **BREAKING** Moved bin packing result data [#101](https://github.com/macder/medusa-fulfillment-shippo/issues/101)
 
 ## \[0.9.0] (2022-06-29)
 
