@@ -130,7 +130,7 @@ Workaround it, use the REST api directly, or patch the issue for now
 
 Possible interim solution:
 
-```plaintext
+```javascript
 price_type: (options[optionIndex].type === "LIVE_RATE") 
     ? "calculated" 
     : "flat_rate",
