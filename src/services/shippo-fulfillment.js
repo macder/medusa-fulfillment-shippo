@@ -41,7 +41,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    return await this.shippo_.retrieveFulfillmentOptions()
+    const shippingOptions = await this.shippo_.retrieveFulfillmentOptions()
+    const returnOptions = this.makeReturnOptions_(shippingOptions)
+    return shippingOptions.concat(returnOptions)
   }
 
   async createFulfillment(
@@ -140,6 +142,17 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
+  }
+
+  makeReturnOptions_(fulfillmentOptions) {
+    return fulfillmentOptions
+      .filter((option) => !option?.type)
+      .map((option) => {
+        return {
+          ...option,
+          is_return: true,
+        }
+      })
   }
 
   async retrieveCart_(id) {
