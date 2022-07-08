@@ -151,6 +151,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         "items.variant",
         "items.variant.product",
         "discounts",
+        "discounts.rule",
         "region",
       ],
     })

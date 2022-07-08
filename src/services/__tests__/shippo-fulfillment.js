@@ -469,6 +469,7 @@ describe("ShippoFulfillmentService", () => {
           "items.variant",
           "items.variant.product",
           "discounts",
+          "discounts.rule",
           "region",
         ],
       })
