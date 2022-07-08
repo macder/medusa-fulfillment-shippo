@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## \[0.12.0] (2022-07-08)
+## \[0.12.2] (2022-07-08)
+
+Fixed
+
+*   Proper fix for shipping option conditions [#149](https://github.com/macder/medusa-fulfillment-shippo/issues/149)
+
+## \[0.12.1] (2022-07-08)
 
 Fixed
 

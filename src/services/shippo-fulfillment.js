@@ -157,6 +157,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async retrieveCart_(id) {
     return await this.cartService_.retrieve(id, {
+      select: ["subtotal"],
       relations: [
         "shipping_address",
         "items",
