@@ -15,7 +15,7 @@ export default async (req, res, next) => {
     ],
   })
 
-  const rates = await shippoRatesService.retrieveRawRates(cart)
+  const rates = await shippoRatesService.retrieveRawRateList(cart)
 
   res.json(rates)
 }
