@@ -1,38 +1,35 @@
-# medusa-fulfillment-shippo
+## medusa-fulfillment-shippo
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)\
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)\
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
 
 > :information\_source: Requires Medusa 1.3.3^
 
 Shippo fulfillment provider for Medusa Commerce.
 
-Service level fulfillment options from active carriers in Shippo account, available when admin is creating shipping options for regions, profiles, etc.
+Service level and group fulfillment options
 
-Rates at checkout, optimized with a [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
+Rates at checkout optimized with [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
 
-Fulfillments create an order in shippo
-
-Retrieves Shippo orders and packing slips for fulfillments
+Fulfillment's create Shippo orders with relations for retrieval
 
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
 *   [Rates at Checkout](#rates-at-checkout)
-    *   [Setup](#rates-at-checkout)
-        1.  [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
-        2.  [Assign the Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
-    *   [Usage](#using-rates-at-checkout)
-        1.  [Retrieving Shipping Options with Rates](#retrieving-shipping-options-with-rates)
-        2.  [Set rates for cart](#set-rates-for-cart)
-        3.  [Retrieve shipping options with rates for cart](#retrieve-shipping-options-with-rates-for-cart)
+    *   Setup
+        *   [Setup Shipping Options in Shippo App](#step-1---setup-shipping-options-in-shippo-app)
+        *   [Assign Shipping Options to Regions in Medusa](#step-2---assign-the-shipping-options-to-regions-in-medusa)
+    *   [During Checkout](#retrieving-shipping-options-with-rates)
+        *   [Set rates for cart](#set-rates-for-cart)
+        *   [Add to Cart](#retrieve-shipping-options-with-rates-for-cart)
     *   [Optimizing](#optimizing-rates-at-checkout)
         1.  [How it works](#how-it-works)
         2.  [Setup parcel templates](#setup-parcel-templates)
         3.  [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         4.  [Accuracy of Rates](#accuracy-of-rates)
-    *   [Parcel Packer](#parcel-packer)
+        5.  [Parcel Packer](#parcel-packer)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
 *   [Webhooks](#webhooks)
@@ -91,15 +88,9 @@ Create shipping options for regions as usual
 
 [See here for common issue](#help-adding-a-shipping-method-to-cart-throws-an-error)
 
-## Using Rates at Checkout
+### During Checkout
 
-As of v0.12.0, the CustomShippingOptionService is no longer used, in favour of decorators. This introduced some significant improvements along with breaking changes. This was likely the final breaking change to this feature.
-
-### Retrieving Shipping Options with Rates
-
-[Retrieve shipping options for cart](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) as usual and if any are setup for live-rates they will have a rate.
-
-Implementations need to consider rates can only calculate if the cart has items and a complete shipping address.
+[Retrieve shipping options for cart](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) as usual and any `price_type: calculated` options belonging to `provider: shippo` will have `amount: Number`.
 
 **HTTP:**
 
@@ -113,9 +104,11 @@ GET /shipping-options/:cart_id
 await shippoRatesService.retrieveShippingOptions(cart_id)
 ```
 
-Retrieving only decorates the shipping options with rates for display purposes. Each retrieval will fetch rates from shippo's api and re-decorate the options. They have no relation to the rate and are stateless templates for creating shipping methods.
+Implementation needs to consider rates only calculate if cart has items and complete shipping address. Otherwise `price_type: calculated` will have `amount: null`
 
-### Add Shipping Method to Cart
+Retrieving only decorates the shipping options with rates for display purposes. They are stateless objects. Each retrieval will re-fetch rates from shippo's api and re-decorate the options.
+
+### Add to Cart
 
 [API reference](https://docs.medusajs.com/api/store/cart/add-a-shipping-method)
 
@@ -123,44 +116,32 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 
 ```plaintext
 POST /carts/:id/shipping-methods
+ --data '{"option_id":"example_cart_option_id"}'
 ```
 
 ### Help, adding a shipping method to cart throws an error
 
-Shipping option's have a `price_type` that is either `flat_rate` or `calculated`. If the shipping option was created with [Medusa Admin](https://github.com/medusajs/admin) then it was set as`flat_rate`.
+This is an issue with medusa-admin. Examine line 85 [`admin/src/domain/settings/regions/new-shipping.tsx`](https://github.com/medusajs/admin/blob/a33ed20214297ffdbd2383f809dddd4870f5dad9/src/domain/settings/regions/new-shipping.tsx#L85)
 
-[But why?](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L79-L90)
+Options with `price_type: flat_rate` will not pass through [`fulFillmentProviderService.calculatePrice()`](https://docs.medusajs.com/references/services/classes/FulfillmentProviderService#calculateprice)
 
-Did you notice [line 85](https://github.com/medusajs/admin/blob/de512d2b58e51c61e9d88ca5327c93138245ba41/src/domain/settings/regions/new-shipping.tsx#L85)
+medusa-admin is still early phase software.
 
-Medusa Admin has not yet matured, so this is an implementation detail that will eventually get fixed
+Workaround it, use the REST api directly, or patch the issue for now
 
-For now, either add calculated shipping options via api, or you can edit the culprit line to:
+Possible interim solution:
 
-```javascript=
+```plaintext
 price_type: (options[optionIndex].type === "LIVE_RATE") 
     ? "calculated" 
     : "flat_rate",
 ```
 
-Or whatever works for you...
-
 ## Optimizing Rates at Checkout
 
-Estimating an accurate shipping cost for a cart with multiple items of various dimensions is a challenging problem. The classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem) is computationally [NP-hard](https://en.wikipedia.org/wiki/NP-hardness) with a [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) decision. The good news is there are algorithms that solve this to varying degrees. The bad news is the ones with highly optimized results are resource heavy with complex implementations that are beyond the scope of this plugin. If you need highly optimized bin packing find a vendor. Currently, the public [Shippo API](https://goshippo.com/docs/reference) does not provide any bin packing solution. Shippo's live-rates API uses the carts total weight and the default or supplied parcel template, regardless if all items fit when calculating rates.
+Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
 
-**But, this is not a dead-end…**
-
-medusa-fulfillment-shippo uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
-
-### How it works
-
-*   Sorts parcels from smallest to largest
-*   Sorts items from largest to smallest
-    *   Attempts fitting items into smallest parcel the largest item can fit.
-    *   If there are items remaining, try the next parcel size
-    *   If there are no remaining items, use this parcel for shipping rate.
-    *   If all items cannot fit into single parcel, use the default template (*future implementation planned - this is because not all carriers in shippo support single orders with multi parcels*)
+This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
 
 ### Setup parcel templates
 
@@ -223,7 +204,6 @@ await client.order.packingslip(shippo_order_id)
 ```
 
 ## Webhooks
->Note: This section is WIP
 
 > Note: This section is WIP
 
@@ -246,8 +226,6 @@ The flow at the code level is:
     4.  Otherwise throw a HTTP 500 and do nothing
 
 The code is doing its part, follow it and see [`src/api/routes/hooks`](https://github.com/macder/medusa-fulfillment-shippo/tree/main/src/api/routes/hooks) Make sure you do your part, or leave this feature disabled.
-
-Send an email to <support@goshippo.com> requesting they add auth to their webhooks. They do require authentication to use their endpoints…
 
 ### Setup
 
@@ -288,7 +266,7 @@ Processing shippo.received.transaction_created which has 0 subscribers
 Processing shippo.rejected.transaction_created which has 0 subscribers
 ```
 
-This is the expected behaviour because the data could not be verified. Since it is a sample, when the plugin tried to verify the transaction by requesting the same object directly from shippo api, it did not exist. It will NOT use input data beyond making the verification, so it gets rejected.
+This is the expected behaviour because the data could not be verified. Since it is a sample, when the plugin tried to verify the transaction by requesting the same object back directly from shippo api, it did not exist. It will NOT use input data beyond making the verification, so it gets rejected.
 
 ### How to test
 
@@ -305,7 +283,7 @@ Receives a Shippo transaction object when a label is purchased
 
 *For orders created with v0.11.0 up:*
 
-*   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to the fulfillments metadata
+*   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to fulfillment data
 
 Events
 
