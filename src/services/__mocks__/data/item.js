@@ -7,10 +7,10 @@ const mockItemCommon = () => ({
   prod_title: faker.commerce.productName(),
   variant_title: faker.random.words(2),
   dim: {
-    weight: faker.datatype.number({ min: 200, max: 2000 }),
-    length: faker.datatype.number({ min: 20, max: 100 }),
-    width: faker.datatype.number({ min: 20, max: 100 }),
-    height: faker.datatype.number({ min: 20, max: 100 }),
+    weight: faker.datatype.number({ min: 10, max: 20 }),
+    length: faker.datatype.number({ min: 2, max: 10 }),
+    width: faker.datatype.number({ min: 2, max: 10 }),
+    height: faker.datatype.number({ min: 2, max: 10 }),
   },
 })
 
