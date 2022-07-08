@@ -11,6 +11,7 @@ Added
 Changed
 
 *   **BREAKING** - New implementation for rates at checkout [#137](https://github.com/macder/medusa-fulfillment-shippo/issues/137)
+*   **BREAKING** - Bin packing data is no longer saved [#141](https://github.com/macder/medusa-fulfillment-shippo/issues/141)
 
 Fixed
 
