@@ -12,6 +12,7 @@ export default async (req, res, next) => {
       "items.variant",
       "items.variant.product",
       "discounts",
+      "discounts.rule",
       "region",
     ],
   })
