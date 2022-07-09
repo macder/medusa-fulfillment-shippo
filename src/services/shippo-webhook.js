@@ -87,9 +87,9 @@ class ShippoWebhookService extends BaseService {
   }
 
   async retrieveExpandedTransaction_(id, orderDisplayId) {
-    const transaction = await this.shippo_.fetchOrderTransactions(
-      orderDisplayId
-    )
+    const transaction = await this.shippo_.fetchOrderTransactions({
+      displayId: orderDisplayId,
+    })
     return transaction.find(({ object_id }) => object_id === id)
   }
 
