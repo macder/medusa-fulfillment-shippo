@@ -50,7 +50,7 @@ class ShippoClientService extends BaseService {
       .then((response) => response.results)
   }
 
-  async fetchOrderTransactions(displayId) {
+  async fetchOrderTransactions({ displayId }) {
     const urlQuery = `?q=${displayId}&expand[]=rate&expand[]=parcel`
 
     const client = async (urlQuery) => {
@@ -61,11 +61,14 @@ class ShippoClientService extends BaseService {
       fn: client,
       fnArgs: urlQuery,
       validate: (result) =>
-        result?.results[0]?.object_state === "VALID" &&
-        result?.results[0]?.object_status === "SUCCESS",
-      interval: 3000,
-      maxAttempts: 5,
+        (result?.results[0]?.object_state === "VALID" &&
+        result?.results[0]?.object_status === "SUCCESS"),
+      interval: 2500,
+      maxAttempts: 3,
     }).then((response) => response.results)
+      .catch(e => {
+        throw "shippo transactions not found"
+      })
 
     return transactions
   }
@@ -146,7 +149,7 @@ class ShippoClientService extends BaseService {
       if (validate(result)) {
         return resolve(result)
       } else if (maxAttempts && attempts === maxAttempts) {
-        return reject(new Error("Exceeded max attempts"))
+        return reject("Exceeded max attempts")
       } else {
         setTimeout(executePoll, interval, resolve, reject)
       }

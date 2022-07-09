@@ -41,7 +41,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    return await this.shippo_.retrieveFulfillmentOptions()
+    const shippingOptions = await this.shippo_.retrieveFulfillmentOptions()
+    const returnOptions = this.makeReturnOptions_(shippingOptions)
+    return shippingOptions.concat(returnOptions)
   }
 
   async createFulfillment(
@@ -66,9 +68,13 @@ class ShippoFulfillmentService extends FulfillmentService {
       .createOrder(
         await shippoOrder(fromOrder, fulfillment, lineItems, parcelName)
       )
-      .then((response) => ({
-        shippo_order_id: response.object_id,
-      }))
+      .then(async (response) => {
+        const packingSlip = await this.useClient.order.packingslip(response.object_id)
+        return {
+          shippo_order_id: response.object_id,
+          packing_slip: packingSlip.slip_url
+        }
+      })
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
@@ -79,7 +85,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async canCalculate(data) {
-    return data.type === "LIVE_RATE"
+    return (data.type === "LIVE_RATE" || data.supports_return_labels) ?? false
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
@@ -88,8 +94,47 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  async createReturn(fromData) {
-    return Promise.resolve({})
+  async createReturn(returnOrder) {
+    const order = await this.orderService_.retrieve(returnOrder.order_id, {
+      relations: ["fulfillments"],
+    })
+
+    const transaction = await this.shippo_
+      .fetchOrderTransactions({ displayId: order.display_id })
+      .then((transactions) => {
+        const returnTransact = transactions.find((ta) => ta.is_return)
+
+        if (!returnTransact) {
+          throw "shippo return label not found"
+        } else if (returnTransact.object_state !== "VALID") {
+          throw `shippo return label transaction state is ${returnTransact.object_state}`
+        } else if (returnTransact.object_status !== "SUCCESS") {
+          throw `shippo return label transaction status is ${returnTransact.object_status}`
+        } else if (
+          !order.fulfillments.find(
+            (fm) => fm.data.shippo_order_id === returnTransact.order.object_id
+          )
+        ) {
+          throw "fulfillment for shippo order not found"
+        }
+        return returnTransact
+      })
+      .catch((e) => {
+        throw new MedusaError(MedusaError.Types.INVALID_DATA, e)
+      })
+
+    const label = await this.shippo_
+      .fetchTransaction(transaction.object_id)
+      .then((response) => response.label_url)
+
+    const { rate, tracking_url_provider, tracking_number } = transaction
+
+    return {
+      rate,
+      label,
+      tracking_url_provider,
+      tracking_number,
+    }
   }
 
   async validateOption(data) {
@@ -97,6 +142,11 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
+
+    if (optionData.is_return) {
+      return { ...data }
+    }
+
     const parcel = await this.shippo_
       .fetchCustomParcelTemplates()
       .then(
@@ -140,6 +190,17 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
+  }
+
+  makeReturnOptions_(fulfillmentOptions) {
+    return fulfillmentOptions
+      .filter((option) => option.supports_return_labels)
+      .map((option) => {
+        return {
+          ...option,
+          is_return: true,
+        }
+      })
   }
 
   async retrieveCart_(id) {
