@@ -3,6 +3,8 @@ import path from "path"
 import { getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
+// import { mockTransaction } from "./__mocks__/data"
+
 class ShippoClientService extends BaseService {
   constructor({}, options) {
     super()
@@ -50,7 +52,7 @@ class ShippoClientService extends BaseService {
       .then((response) => response.results)
   }
 
-  async fetchOrderTransactions(displayId) {
+  async fetchOrderTransactions({ displayId }) {
     const urlQuery = `?q=${displayId}&expand[]=rate&expand[]=parcel`
 
     const client = async (urlQuery) => {
@@ -61,11 +63,14 @@ class ShippoClientService extends BaseService {
       fn: client,
       fnArgs: urlQuery,
       validate: (result) =>
-        result?.results[0]?.object_state === "VALID" &&
-        result?.results[0]?.object_status === "SUCCESS",
+        (result?.results[0]?.object_state === "VALID" &&
+        result?.results[0]?.object_status === "SUCCESS"),
       interval: 3000,
       maxAttempts: 5,
     }).then((response) => response.results)
+      .catch(e => {
+        throw "shippo transactions for order not found"
+      })
 
     return transactions
   }
@@ -146,7 +151,7 @@ class ShippoClientService extends BaseService {
       if (validate(result)) {
         return resolve(result)
       } else if (maxAttempts && attempts === maxAttempts) {
-        return reject(new Error("Exceeded max attempts"))
+        return reject("Exceeded max attempts")
       } else {
         setTimeout(executePoll, interval, resolve, reject)
       }
