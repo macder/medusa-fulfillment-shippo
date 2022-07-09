@@ -68,9 +68,13 @@ class ShippoFulfillmentService extends FulfillmentService {
       .createOrder(
         await shippoOrder(fromOrder, fulfillment, lineItems, parcelName)
       )
-      .then((response) => ({
-        shippo_order_id: response.object_id,
-      }))
+      .then(async (response) => {
+        const packingSlip = await this.useClient.order.packingslip(response.object_id)
+        return {
+          shippo_order_id: response.object_id,
+          packing_slip: packingSlip.slip_url
+        }
+      })
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
