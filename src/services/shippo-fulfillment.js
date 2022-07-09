@@ -105,7 +105,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         const returnTransact = transactions.find((ta) => ta.is_return)
 
         if (!returnTransact) {
-          throw "shippo return label for order not found"
+          throw "shippo return label not found"
         } else if (returnTransact.object_state !== "VALID") {
           throw `shippo return label transaction state is ${returnTransact.object_state}`
         } else if (returnTransact.object_status !== "SUCCESS") {
@@ -142,7 +142,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
-    
+
     if (optionData.is_return) {
       return { ...data }
     }

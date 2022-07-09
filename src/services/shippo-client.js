@@ -3,8 +3,6 @@ import path from "path"
 import { getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
-// import { mockTransaction } from "./__mocks__/data"
-
 class ShippoClientService extends BaseService {
   constructor({}, options) {
     super()
@@ -65,11 +63,11 @@ class ShippoClientService extends BaseService {
       validate: (result) =>
         (result?.results[0]?.object_state === "VALID" &&
         result?.results[0]?.object_status === "SUCCESS"),
-      interval: 3000,
-      maxAttempts: 5,
+      interval: 2500,
+      maxAttempts: 3,
     }).then((response) => response.results)
       .catch(e => {
-        throw "shippo transactions for order not found"
+        throw "shippo transactions not found"
       })
 
     return transactions
