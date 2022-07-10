@@ -5,6 +5,7 @@ import {
   mockParcelTemplateResponse,
   mockServiceGroup,
   mockLiveRate,
+  mockShippoAddress
 } from "../__mocks__/data"
 
 const shippo = jest.fn(() => ({
@@ -34,6 +35,13 @@ const shippo = jest.fn(() => ({
       created: ""
     }))
   },
+  account: {
+    address: jest.fn(async () => (
+      {
+        results: [mockShippoAddress()]
+      }
+    ))
+  }
 }))
 
 export default shippo
