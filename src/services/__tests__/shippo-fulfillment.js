@@ -286,14 +286,14 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const eventBusService = {
-      emit: jest.fn()
+      emit: jest.fn(),
     }
 
     const shippoClientService = new ShippoClientService({}, {})
     const shippoFulfilService = new ShippoFulfillmentService({
       shippoClientService,
       totalsService,
-      eventBusService
+      eventBusService,
     })
 
     const methodData = {

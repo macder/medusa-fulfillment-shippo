@@ -68,27 +68,29 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     const parcelName = methodData.parcel_template.name ?? null
 
-    const shippoOrder = await this.createShippoOrder_(fromOrder, fromAddress, lineItems, parcelName)
-    .then(response => {
+    const shippoOrder = await this.createShippoOrder_(
+      fromOrder,
+      fromAddress,
+      lineItems,
+      parcelName
+    ).then((response) => {
       this.eventBusService_.emit("shippo.order_created", {
         order_id: fromOrder.id,
         fulfillment_id: fulfillment.id,
         customer_id: fromOrder.customer_id,
-        shippo_order: response 
+        shippo_order: response,
       })
       return response
     })
 
     return {
-      shippo_order_id: shippoOrder.object_id
+      shippo_order_id: shippoOrder.object_id,
     }
   }
 
   async createShippoOrder_(order, fromAddress, lineItems, parcelName) {
     return await this.shippo_
-      .createOrder(
-        await shippoOrder(order, fromAddress, lineItems, parcelName)
-      )
+      .createOrder(await shippoOrder(order, fromAddress, lineItems, parcelName))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
