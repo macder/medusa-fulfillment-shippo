@@ -5,6 +5,7 @@ import {
   mockParcelTemplateResponse,
   mockServiceGroup,
   mockLiveRate,
+  mockShippoAddress,
 } from "../__mocks__/data"
 
 const shippo = jest.fn(() => ({
@@ -31,8 +32,13 @@ const shippo = jest.fn(() => ({
     packingslip: jest.fn(async () => ({
       expires: "",
       slip_url: "https://console.log",
-      created: ""
-    }))
+      created: "",
+    })),
+  },
+  account: {
+    address: jest.fn(async () => ({
+      results: [mockShippoAddress()],
+    })),
   },
 }))
 

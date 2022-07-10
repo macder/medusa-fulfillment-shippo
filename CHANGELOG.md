@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.13.0] (2022-07-10)
+
+Added
+
+*   Emit event after creating shippo order [#156](https://github.com/macder/medusa-fulfillment-shippo/issues/156)
+*   New method to fetch default sender address from shippo [#157](https://github.com/macder/medusa-fulfillment-shippo/issues/157)
+
 ## \[0.12.2] (2022-07-08)
 
 Fixed

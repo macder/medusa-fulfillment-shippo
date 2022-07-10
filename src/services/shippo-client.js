@@ -61,12 +61,13 @@ class ShippoClientService extends BaseService {
       fn: client,
       fnArgs: urlQuery,
       validate: (result) =>
-        (result?.results[0]?.object_state === "VALID" &&
-        result?.results[0]?.object_status === "SUCCESS"),
+        result?.results[0]?.object_state === "VALID" &&
+        result?.results[0]?.object_status === "SUCCESS",
       interval: 2500,
       maxAttempts: 3,
-    }).then((response) => response.results)
-      .catch(e => {
+    })
+      .then((response) => response.results)
+      .catch((e) => {
         throw "shippo transactions not found"
       })
 
@@ -97,6 +98,14 @@ class ShippoClientService extends BaseService {
         response.results.filter((item) =>
           options.find((option) => option.name === item.title && true)
         )
+      )
+  }
+
+  async fetchSenderAddress() {
+    return await this.client_.account
+      .address()
+      .then((response) =>
+        response.results.find((address) => address.is_default_sender === true)
       )
   }
 

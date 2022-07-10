@@ -146,8 +146,7 @@ export const mockTransaction = () => {
       tracking_number: "",
       address_to: "",
       tracking_status: null,
-      tracking_url_provider:
-        "https://tools.usps.com/",
+      tracking_url_provider: "https://tools.usps.com/",
       commercial_invoice_url: null,
       messages: [],
       customs_note: "",
@@ -168,4 +167,27 @@ export const mockTransaction = () => {
       },
     },
   ]
+}
+
+export const mockShippoAddress = () => {
+  return {
+    id: 1111,
+    object_created: "",
+    object_updated: "",
+    name: "",
+    company: "",
+    street1: "",
+    street2: "",
+    street_no: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    phone: "",
+    email: "",
+    is_default_sender: true,
+    is_default_return: true,
+    store_address_id: null,
+    store_platform_names: null,
+  }
 }
