@@ -65,7 +65,7 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 **Event:**
 `shippo.order_created`
 
-```
+```javascript
 {
   order_id: "",
   fulfillment_id: "",
