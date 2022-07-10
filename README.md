@@ -12,11 +12,13 @@ Service level and group fulfillment options
 
 Rates at checkout optimized with [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
 
-Fulfillment's create Shippo orders with relations for retrieval
+Order fulfillment creates shippo order
 
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
+*   [Orders](#orders)
+*   [Packing Slip](#packing-slip)
 *   [Rates at Checkout](#rates-at-checkout)
     *   Setup
         *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
@@ -29,8 +31,6 @@ Fulfillment's create Shippo orders with relations for retrieval
         *   [Setup parcel templates](#setup-parcel-templates)
         *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         *   [Accuracy of Rates](#accuracy-of-rates)
-*   [Orders](#orders)
-*   [Packing Slip](#packing-slip)
 *   [Webhooks](#webhooks)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
@@ -44,7 +44,7 @@ Install:
 
 Add to medusa-config.js
 
-```plaintext
+```javascript
 {
   resolve: `medusa-fulfillment-shippo`,
     options: {
@@ -54,6 +54,60 @@ Add to medusa-config.js
       webhook_secret: '' // README section on webhooks before using!
     },
 }
+```
+
+## Orders
+
+Creating an order fulfillment makes a new order in shippo. An event is emitted with the response data and related internal ids.
+
+[Create a Subscriber](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber) to access the data.
+
+**Event:**
+`shippo.order_created`
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+**HTTP:**
+
+```plaintext
+GET /admin/fulfillments/:id/shippo/order
+```
+
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.retrieve(shippo_order_id)
+```
+
+Returns `shippo_order` object
+
+## **Packing Slips**
+
+Retrieve Shippo packing slip for a fulfillment
+
+**HTTP:**
+
+```plaintext
+GET /admin/fulfillments/:id/shippo/packingslip
+```
+
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.packingslip(shippo_order_id)
 ```
 
 ## Rates at Checkout
@@ -158,50 +212,6 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-## Orders
-
-Creating an order fulfillment in admin will create an order in Shippo.
-
-View the orders at \<https://apps.goshippo.com/orders>
-
-Retrieve Shippo order for a fulfillment
-
-**HTTP:**
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/order
-```
-
-**Service:**
-
-```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
-
-await client.order.retrieve(shippo_order_id)
-```
-
-Returns `shippo_order` object
-
-## **Packing Slips**
-
-Retrieve Shippo packing slip for a fulfillment
-
-**HTTP:**
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/packingslip
-```
-
-**Service:**
-
-```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
-
-await client.order.packingslip(shippo_order_id)
-```
-
 ## Webhooks
 
 > Note: This section is WIP
@@ -232,7 +242,7 @@ In `.env` add `SHIPPO_WEBHOOK_SECRET=some_secret_string` 
 
 Add to `medusa-config.js`
 
-```plaintext
+```javascript
 const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
 const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
 
@@ -253,7 +263,7 @@ Hooks need to be added in [Shippo app settings](https://apps.goshippo.com/settin
 
 Then send a sample. If everything is good you will see this in console:
 
-```plaintext
+```shell
 Processing shippo.received.transaction_created which has 0 subscribers
  [Error: Item not found] {
    type: 'ShippoNotFoundError',
