@@ -214,16 +214,25 @@ describe("ShippoFulfillmentService", () => {
         await shippoFulfilService.canCalculate({ type: "LIVE_RATE" })
       ).toBe(true)
     })
+
+    // it("returns true when supports_return_labels", async () => {
+    //   expect(
+    //     await shippoFulfilService.canCalculate({ supports_return_labels: true })
+    //   ).toBe(true)
+    // })
+
     it("returns false when free", async () => {
       expect(await shippoFulfilService.canCalculate({ type: "FREE" })).toBe(
         false
       )
     })
+
     it("returns false when flat rate", async () => {
       expect(await shippoFulfilService.canCalculate({ type: "FLAT" })).toBe(
         false
       )
     })
+
     it("returns false when type missing", async () => {
       expect(await shippoFulfilService.canCalculate({})).toBe(false)
     })
@@ -276,10 +285,15 @@ describe("ShippoFulfillmentService", () => {
       jest.clearAllMocks()
     })
 
+    const eventBusService = {
+      emit: jest.fn(),
+    }
+
     const shippoClientService = new ShippoClientService({}, {})
     const shippoFulfilService = new ShippoFulfillmentService({
       shippoClientService,
       totalsService,
+      eventBusService,
     })
 
     const methodData = {
@@ -297,12 +311,14 @@ describe("ShippoFulfillmentService", () => {
     fromOrder.shipping_methods = [
       { shipping_option: mockShippingOption({ variant: "default" }) },
     ]
+    const fulfillment = { id: "123" }
 
     it("returned an object with shippo_order_id prop", async () => {
       const result = await shippoFulfilService.createFulfillment(
         methodData,
         fulfillmentItems,
-        fromOrder
+        fromOrder,
+        fulfillment
       )
       expect(result).toBeObject()
       expect(result).toContainKey("shippo_order_id")

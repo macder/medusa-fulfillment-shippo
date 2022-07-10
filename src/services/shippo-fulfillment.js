@@ -8,6 +8,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   constructor(
     {
       cartService,
+      eventBusService,
       orderService,
       shippoClientService,
       shippoPackerService,
@@ -20,6 +21,9 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {CartService} */
     this.cartService_ = cartService
+
+    /** @private @const {EventBusService} */
+    this.eventBusService_ = eventBusService
 
     /** @private @const {OrderService} */
     this.orderService_ = orderService
@@ -50,6 +54,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
+    const fromAddress = await this.shippo_.fetchSenderAddress()
+
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
     lineItems.forEach((item) => {
       if (item.quantity < 1) {
@@ -62,13 +68,29 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     const parcelName = methodData.parcel_template.name ?? null
 
+    const shippoOrder = await this.createShippoOrder_(
+      fromOrder,
+      fromAddress,
+      lineItems,
+      parcelName
+    ).then((response) => {
+      this.eventBusService_.emit("shippo.order_created", {
+        order_id: fromOrder.id,
+        fulfillment_id: fulfillment.id,
+        customer_id: fromOrder.customer_id,
+        shippo_order: response,
+      })
+      return response
+    })
+
+    return {
+      shippo_order_id: shippoOrder.object_id,
+    }
+  }
+
+  async createShippoOrder_(order, fromAddress, lineItems, parcelName) {
     return await this.shippo_
-      .createOrder(
-        await shippoOrder(fromOrder, fulfillment, lineItems, parcelName)
-      )
-      .then((response) => ({
-        shippo_order_id: response.object_id,
-      }))
+      .createOrder(await shippoOrder(order, fromAddress, lineItems, parcelName))
       .catch((e) => {
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
       })
@@ -88,7 +110,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  async createReturn(fromData) {
+  // WIP
+  async createReturn(returnOrder) {
     return Promise.resolve({})
   }
 
@@ -97,6 +120,10 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
+    if (optionData.is_return) {
+      return { ...data }
+    }
+
     const parcel = await this.shippo_
       .fetchCustomParcelTemplates()
       .then(

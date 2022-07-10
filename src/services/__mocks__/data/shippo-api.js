@@ -127,3 +127,67 @@ export const mockParcelTemplateResponse = (count) => {
     results: makeArrayOf(mockParcelTemplate, count),
   }
 }
+
+export const mockTransaction = () => {
+  return [
+    {
+      object_state: "VALID",
+      object_status: "SUCCESS",
+      object_created: "",
+      object_updated: "",
+      object_id: "",
+      object_owner: "",
+      was_test: true,
+      rate: "",
+      pickup_date: null,
+      notification_email_from: false,
+      notification_email_to: false,
+      notification_email_other: "",
+      tracking_number: "",
+      address_to: "",
+      tracking_status: null,
+      tracking_url_provider: "https://tools.usps.com/",
+      commercial_invoice_url: null,
+      messages: [],
+      customs_note: "",
+      submission_note: "",
+      metadata: "",
+      is_return: true,
+      submission_date: "",
+      parcel: "",
+      eta: null,
+      refund_request_date: null,
+      is_user_fraudulent: false,
+      legacy_label_file_type: "PDF",
+      order: {
+        status: "PAID",
+        order_number: "207",
+        id: 93,
+        object_id: "",
+      },
+    },
+  ]
+}
+
+export const mockShippoAddress = () => {
+  return {
+    id: 1111,
+    object_created: "",
+    object_updated: "",
+    name: "",
+    company: "",
+    street1: "",
+    street2: "",
+    street_no: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    phone: "",
+    email: "",
+    is_default_sender: true,
+    is_default_return: true,
+    store_address_id: null,
+    store_platform_names: null,
+  }
+}
