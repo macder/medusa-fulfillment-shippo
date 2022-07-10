@@ -44,7 +44,7 @@ Install:
 
 Add to medusa-config.js
 
-```plaintext
+```javascript
 {
   resolve: `medusa-fulfillment-shippo`,
     options: {
@@ -243,7 +243,7 @@ In `.env` add `SHIPPO_WEBHOOK_SECRET=some_secret_string` 
 
 Add to `medusa-config.js`
 
-```plaintext
+```javascript
 const SHIPPO_API_KEY = process.env.SHIPPO_API_KEY
 const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
 
@@ -264,7 +264,7 @@ Hooks need to be added in [Shippo app settings](https://apps.goshippo.com/settin
 
 Then send a sample. If everything is good you will see this in console:
 
-```plaintext
+```shell
 Processing shippo.received.transaction_created which has 0 subscribers
  [Error: Item not found] {
    type: 'ShippoNotFoundError',
