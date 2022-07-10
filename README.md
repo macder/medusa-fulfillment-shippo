@@ -12,7 +12,7 @@ Service level and group fulfillment options
 
 Rates at checkout optimized with [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
 
-Fulfillment's create Shippo orders with relations for retrieval
+Order fulfillment creates shippo order
 
 ## Table of Contents
 
@@ -160,11 +160,21 @@ Assuming accurate data for product dimensions, weight, and package templates in 
 
 ## Orders
 
-Creating an order fulfillment in admin will create an order in Shippo.
+Creating an order fulfillment will make a new order in shippo. An event is emitted with the response data and related internal ids.
 
-View the orders at \<https://apps.goshippo.com/orders>
+[Create a Subscriber](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber)
 
-Retrieve Shippo order for a fulfillment
+**Event:**
+`shippo.order_created`
+
+```
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
 
 **HTTP:**
 
