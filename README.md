@@ -58,9 +58,9 @@ Add to medusa-config.js
 
 ## Orders
 
-Creating an order fulfillment will make a new order in shippo. An event is emitted with the response data and related internal ids.
+Creating an order fulfillment makes a new order in shippo. An event is emitted with the response data and related internal ids.
 
-[Create a Subscriber](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber)
+[Create a Subscriber](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber) to access the data for any implementation specifics
 
 **Event:**
 `shippo.order_created`
