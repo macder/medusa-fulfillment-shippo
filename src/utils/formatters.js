@@ -68,7 +68,7 @@ export const shippoAddress = async (address, email) => ({
 
 export const shippoOrder = async (
   order,
-  fulfillment,
+  fromAddress,
   lineItems,
   parcelName
 ) => {
@@ -83,6 +83,7 @@ export const shippoOrder = async (
     order_number: order.display_id,
     order_status: "PAID",
     to_address: toAddress,
+    from_address: fromAddress,
     placed_at: order.created_at,
     shipping_cost: humanizeAmount(order.shipping_total, currencyCode),
     shipping_cost_currency: currencyCode,

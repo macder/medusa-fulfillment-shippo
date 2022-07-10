@@ -100,6 +100,14 @@ class ShippoClientService extends BaseService {
       )
   }
 
+  async fetchSenderAddress() {
+    return await this.client_.account.address()
+      .then(response => 
+        response.results.find(address => 
+          address.is_default_sender === true
+        ))
+  }
+
   async findActiveCarriers_(carriers) {
     return carriers.filter((carrier) => carrier.active)
   }
