@@ -17,6 +17,8 @@ Order fulfillment creates shippo order
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
+*   [Orders](#orders)
+*   [Packing Slip](#packing-slip)
 *   [Rates at Checkout](#rates-at-checkout)
     *   Setup
         *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
@@ -29,8 +31,6 @@ Order fulfillment creates shippo order
         *   [Setup parcel templates](#setup-parcel-templates)
         *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         *   [Accuracy of Rates](#accuracy-of-rates)
-*   [Orders](#orders)
-*   [Packing Slip](#packing-slip)
 *   [Webhooks](#webhooks)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
@@ -54,6 +54,60 @@ Add to medusa-config.js
       webhook_secret: '' // README section on webhooks before using!
     },
 }
+```
+
+## Orders
+
+Creating an order fulfillment will make a new order in shippo. An event is emitted with the response data and related internal ids.
+
+[Create a Subscriber](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber)
+
+**Event:**
+`shippo.order_created`
+
+```
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+**HTTP:**
+
+```plaintext
+GET /admin/fulfillments/:id/shippo/order
+```
+
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.retrieve(shippo_order_id)
+```
+
+Returns `shippo_order` object
+
+## **Packing Slips**
+
+Retrieve Shippo packing slip for a fulfillment
+
+**HTTP:**
+
+```plaintext
+GET /admin/fulfillments/:id/shippo/packingslip
+```
+
+**Service:**
+
+```javascript
+const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
+const client = shippoFulfillmentService.useClient
+
+await client.order.packingslip(shippo_order_id)
 ```
 
 ## Rates at Checkout
@@ -158,59 +212,6 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-## Orders
-
-Creating an order fulfillment will make a new order in shippo. An event is emitted with the response data and related internal ids.
-
-[Create a Subscriber](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber)
-
-**Event:**
-`shippo.order_created`
-
-```
-{
-  order_id: "",
-  fulfillment_id: "",
-  customer_id: "",
-  shippo_order: {...}
-}
-```
-
-**HTTP:**
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/order
-```
-
-**Service:**
-
-```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
-
-await client.order.retrieve(shippo_order_id)
-```
-
-Returns `shippo_order` object
-
-## **Packing Slips**
-
-Retrieve Shippo packing slip for a fulfillment
-
-**HTTP:**
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/packingslip
-```
-
-**Service:**
-
-```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
-
-await client.order.packingslip(shippo_order_id)
-```
 
 ## Webhooks
 
