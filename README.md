@@ -212,7 +212,6 @@ Shipping rate estimates are calculated by third parties using data you supply. T
 
 Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
-
 ## Webhooks
 
 > Note: This section is WIP
