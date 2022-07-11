@@ -45,7 +45,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    return await this.shippo_.retrieveFulfillmentOptions()
+    const shippingOptions = await this.shippo_.retrieveFulfillmentOptions()
+    const returnOptions = this.makeReturnOptions_(shippingOptions)
+    return shippingOptions.concat(returnOptions)
   }
 
   async createFulfillment(
@@ -65,16 +67,17 @@ class ShippoFulfillmentService extends FulfillmentService {
         )
       }
     })
-
-    const parcelName = methodData.parcel_template.name ?? null
+    const parcelName = methodData?.parcel_template?.name ?? null
 
     const shippoOrder = await this.createShippoOrder_(
       fromOrder,
       fromAddress,
       lineItems,
       parcelName
-    ).then((response) => {
-      this.eventBusService_.emit("shippo.order_created", {
+    ).then(async (response) => {
+      const eventType = await this.eventType_(fulfillment)
+
+      this.eventBusService_.emit(eventType, {
         order_id: fromOrder.id,
         fulfillment_id: fulfillment.id,
         customer_id: fromOrder.customer_id,
@@ -110,9 +113,67 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  // WIP
   async createReturn(returnOrder) {
-    return Promise.resolve({})
+    const orderId =
+      returnOrder?.swap?.order_id ||
+      returnOrder?.claim_order?.order_id ||
+      returnOrder.order_id
+
+    const order = await this.orderService_.retrieve(orderId, {
+      relations: ["fulfillments"],
+    })
+    const returnLabel = await this.retrieveReturnLabel(order)
+    const eventType = await this.eventType_(returnOrder)
+
+    this.eventBusService_.emit(eventType, {
+      order: returnOrder,
+      transaction: returnLabel,
+    })
+
+    if (returnLabel) {
+      const { rate, tracking_url_provider, tracking_number, label_url } =
+        returnLabel
+
+      return {
+        rate,
+        label_url,
+        tracking_url_provider,
+        tracking_number,
+      }
+    }
+    return {}
+  }
+
+  async retrieveReturnLabel(order) {
+    const transaction = await this.shippo_
+      .fetchOrderTransactions({ displayId: order.display_id })
+      .then((transactions) => {
+        const returnTransact = transactions.find((ta) => ta.is_return)
+
+        if (returnTransact) {
+          // make sure the internal order has a fulfillment related to this transaction
+          const fulfillment = order.fulfillments.find(
+            (fm) => fm.data.shippo_order_id === returnTransact.order.object_id
+          )
+
+          if (fulfillment) {
+            delete returnTransact.address_to // not reversed, confusing...
+            return returnTransact
+          }
+        }
+        return null
+      })
+      .catch((e) => {
+        console.error(e)
+      })
+
+    if (transaction) {
+      // "other one" has eveything except label_url...
+      return await this.shippo_
+        .fetchTransaction(transaction.object_id)
+        .then(({ label_url }) => ({ ...transaction, label_url }))
+    }
+    return Promise.resolve(null)
   }
 
   async validateOption(data) {
@@ -120,7 +181,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
-    if (optionData.is_return) {
+    if (optionData.is_return || !cart?.id) {
       return { ...data }
     }
 
@@ -153,6 +214,18 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async formatLineItems_(items, order) {
+    if (order?.is_claim) {
+      order = await this.orderService_.retrieve(order.order.id, {
+        relations: [
+          "region",
+          "payments",
+          "items",
+          "discounts",
+          "discounts.rule",
+        ],
+      })
+    }
+
     return await Promise.all(
       items.map(
         async (item) =>
@@ -167,6 +240,38 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
+  }
+
+  makeReturnOptions_(fulfillmentOptions) {
+    return fulfillmentOptions
+      .filter((option) => !option?.is_group)
+      .map((option) => {
+        return {
+          ...option,
+          is_return: true,
+        }
+      })
+  }
+
+  async eventType_(orderOrFulfill) {
+    if (orderOrFulfill?.provider_id) {
+      const fulfillment = orderOrFulfill
+      
+      return fulfillment.claim_order_id 
+        ? "shippo.replace_order_created"
+        : "shippo.order_created"
+    }
+
+    const order = orderOrFulfill
+
+    if (!order.swap_id && !order.claim_order_id) {
+      return "shippo.return_requested"
+    } else if (order.swap_id) {
+      return "shippo.swap_created"
+    } else if (order.claim_order_id) {
+      const { claim_order } = order
+      return `shippo.claim_${claim_order.type}_created`
+    }
   }
 
   async retrieveCart_(id) {

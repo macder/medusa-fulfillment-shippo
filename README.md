@@ -14,11 +14,22 @@ Rates at checkout optimized with [first-fit-decreasing (FFD)](https://en.wikiped
 
 Order fulfillment creates shippo order
 
+Returns, exchanges, and claims
+
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
 *   [Orders](#orders)
-*   [Packing Slip](#packing-slip)
+*   [Packing Slips](#packing-slips)
+*   [Returns](#returns)
+    *   [Request](#request)
+*   [Swaps](#swaps)
+    *   [Create](#create)
+    *   [Fulfillment](#fulfillment)
+*   [Claims](#claims)
+    *   [Refund](#refund)
+    *   [Replace](#replace)
+    *   [Fulfillment](#fulfillment-1)
 *   [Rates at Checkout](#rates-at-checkout)
     *   Setup
         *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
@@ -108,6 +119,112 @@ const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillm
 const client = shippoFulfillmentService.useClient
 
 await client.order.packingslip(shippo_order_id)
+```
+
+## Returns
+
+### Request
+
+Invoked when [Request a Return](https://docs.medusajs.com/api/admin/order/request-a-return) `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.return_requested`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+## Swaps
+
+### Create
+
+Invoked when [Create a Swap](https://docs.medusajs.com/api/admin/order/create-a-swap) `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.swap_created`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### Fulfillment
+
+Invoked when [Create a Swap Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) `shipping_option` has `provider: shippo`
+
+Creates an order in shippo.
+
+**Event:**
+`shippo.replace_order_created`
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+## Claims
+
+### Refund
+
+Invoked when [Create a Claim](https://docs.medusajs.com/api/admin/order/create-a-claim) has `type: refund` and `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.claim_refund_created`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### Replace
+
+Invoked when [Create a Claim](https://docs.medusajs.com/api/admin/order/create-a-claim) has `type: replace` and `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.claim_replace_created`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### Fulfillment
+
+Invoked when [Create a Claim Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) `shipping_option` has `provider: shippo`
+
+Creates an order in shippo.
+
+**Event:**
+`shippo.replace_order_created`
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
 ```
 
 ## Rates at Checkout
@@ -357,9 +474,7 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 
 ## Limitations
 
-Currently, this plugin does not support returns/exchanges and customs declarations,
-
-These are currently under development for future releases.
+No support for customs declarations. Planned for future release.
 
 ## Resources
 
