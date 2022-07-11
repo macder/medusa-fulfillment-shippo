@@ -112,8 +112,8 @@ await client.order.packingslip(shippo_order_id)
 
 ## Returns
 
-
 ### Request
+
 Invoked when [Request a Return](https://docs.medusajs.com/api/admin/order/request-a-return) `return_shipping` has `provider: shippo`
 
 Attempts fetching an existing return label from shippo.
@@ -152,9 +152,69 @@ Invoked when [Create a Swap Fulfillment](https://docs.medusajs.com/api/admin/ord
 
 Creates an order in shippo.
 
+**Event:**
+`shippo.replace_order_created`
 
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+## Claims
+
+### Refund
+
+Invoked when [Create a Claim](https://docs.medusajs.com/api/admin/order/create-a-claim) has `type: refund` and `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
 
 **Event:**
+`shippo.claim_refund_created`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### Replace
+
+Invoked when [Create a Claim](https://docs.medusajs.com/api/admin/order/create-a-claim) has `type: replace` and `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.claim_replace_created`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### Fulfillment
+
+Invoked when [Create a Claim Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) `shipping_option` has `provider: shippo`
+
+Creates an order in shippo.
+
+**Event:**
+`shippo.replace_order_created`
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
 
 ## Rates at Checkout
 
