@@ -80,7 +80,7 @@ export const shippoOrder = async (
     .reduce((sum, current) => sum + current, 0)
 
   const orderNumber = order?.type
-    ? `${order.display_id} ${order?.type}`
+    ? `${order.display_id} (${order?.type})`
     : order.display_id
 
   return {
