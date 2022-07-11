@@ -111,7 +111,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     )
   }
 
-  // WIP
   async createReturn(returnOrder) {
     const orderId =
       returnOrder?.swap?.order_id ||
