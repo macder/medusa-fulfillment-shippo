@@ -20,7 +20,7 @@ Returns, exchanges, and claims
 
 *   [Getting Started](#getting-started)
 *   [Orders](#orders)
-*   [Packing Slip](#packing-slip)
+*   [Packing Slips](#packing-slips)
 *   [Returns](#returns)
     *   [Request](#request)
 *   [Swaps](#swaps)
