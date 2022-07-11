@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.14.0] (2022-07-11)
+
+Added
+
+*   Support for returns [#115](https://github.com/macder/medusa-fulfillment-shippo/issues/115), [#151](https://github.com/macder/medusa-fulfillment-shippo/issues/151)
+*   Support for exchanges [#116](https://github.com/macder/medusa-fulfillment-shippo/issues/116), [#151](https://github.com/macder/medusa-fulfillment-shippo/issues/151)
+*   Support for claims [#117](https://github.com/macder/medusa-fulfillment-shippo/issues/117), [#151](https://github.com/macder/medusa-fulfillment-shippo/issues/151)
+
 ## \[0.13.0] (2022-07-10)
 
 Added
