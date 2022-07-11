@@ -74,8 +74,10 @@ class ShippoFulfillmentService extends FulfillmentService {
       fromAddress,
       lineItems,
       parcelName
-    ).then((response) => {
-      this.eventBusService_.emit("shippo.order_created", {
+    ).then(async (response) => {
+      const eventType = await this.eventType_(fulfillment)
+
+      this.eventBusService_.emit(eventType, {
         order_id: fromOrder.id,
         fulfillment_id: fulfillment.id,
         customer_id: fromOrder.customer_id,
@@ -123,7 +125,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     const returnLabel = await this.retrieveReturnLabel(order)
     const eventType = await this.eventType_(returnOrder)
 
-    this.eventBusService_.emit(`shippo.${eventType}`, {
+    this.eventBusService_.emit(eventType, {
       order: returnOrder,
       transaction: returnLabel,
     })
@@ -251,14 +253,25 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
   }
 
-  async eventType_(returnOrder) {
-    if (!returnOrder.swap_id && !returnOrder.claim_order_id) {
-      return "return_requested"
-    } else if (returnOrder.swap_id) {
-      return "swap_requested"
-    } else if (returnOrder.claim_order_id) {
-      const { claim_order } = returnOrder
-      return `claim_${claim_order.type}_created`
+  async eventType_(orderOfFulfill) {
+
+    if (orderOfFulfill?.provider_id) {
+      const fulfillment = orderOfFulfill
+      
+      return fulfillment.claim_order_id 
+        ? "shippo.replace_order_created"
+        : "shippo.order_created"
+    }
+
+    const order = orderOfFulfill
+
+    if (!order.swap_id && !order.claim_order_id) {
+      return "shippo.return_requested"
+    } else if (order.swap_id) {
+      return "shippo.swap_created"
+    } else if (order.claim_order_id) {
+      const { claim_order } = order
+      return `shippo.claim_${claim_order.type}_created`
     }
   }
 

@@ -462,27 +462,27 @@ describe("ShippoFulfillmentService", () => {
       shippoClientService,
     })
 
-    it("returns 'return_requested'", async () => {
+    it("returns 'shippo.return_requested'", async () => {
       const returnOrder = {
         swap_id: null,
         claim_order_id: null,
       }
 
       const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("return_requested")
+      expect(result).toBe("shippo.return_requested")
     })
 
-    it("returns 'swap_requested'", async () => {
+    it("returns 'shippo.swap_created'", async () => {
       const returnOrder = {
         swap_id: "swap_123",
         claim_order_id: null,
       }
 
       const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("swap_requested")
+      expect(result).toBe("shippo.swap_created")
     })
 
-    it("returns 'claim_replace_created'", async () => {
+    it("returns 'shippo.claim_replace_created'", async () => {
       const returnOrder = {
         swap_id: null,
         claim_order_id: "claim_123",
@@ -492,10 +492,10 @@ describe("ShippoFulfillmentService", () => {
       }
 
       const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("claim_replace_created")
+      expect(result).toBe("shippo.claim_replace_created")
     })
 
-    it("returns 'claim_refund_created'", async () => {
+    it("returns 'shippo.claim_refund_created'", async () => {
       const returnOrder = {
         swap_id: null,
         claim_order_id: "claim_123",
@@ -505,7 +505,27 @@ describe("ShippoFulfillmentService", () => {
       }
 
       const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("claim_refund_created")
+      expect(result).toBe("shippo.claim_refund_created")
+    })
+
+    it("returns 'shippo.replace_order_created'", async () => {
+      const fulfillment = {
+        provider_id: "shippo",
+        claim_order_id: "claim_123",
+      }
+
+      const result = await shippoFulfilService.eventType_(fulfillment)
+      expect(result).toBe("shippo.replace_order_created")
+    })
+
+    it("returns 'shippo.order_created'", async () => {
+      const fulfillment = {
+        provider_id: "shippo",
+        claim_order_id: null,
+      }
+
+      const result = await shippoFulfilService.eventType_(fulfillment)
+      expect(result).toBe("shippo.order_created")
     })
   })
 
