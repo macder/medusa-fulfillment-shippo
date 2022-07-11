@@ -244,7 +244,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   makeReturnOptions_(fulfillmentOptions) {
     return (
       fulfillmentOptions
-        // .filter((option) => option.supports_return_labels)
+        .filter((option) => !option?.is_group)
         .map((option) => {
           return {
             ...option,
