@@ -452,6 +452,67 @@ describe("ShippoFulfillmentService", () => {
     })
   })
 
+
+  describe("eventType_", () => {
+
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoFulfilService = new ShippoFulfillmentService({
+      shippoClientService,
+    })
+
+
+    it("returns 'return_requested'", async () => {
+      const returnOrder = {
+        swap_id: null,
+        claim_order_id: null,
+      }
+
+      const result = await shippoFulfilService.eventType_(returnOrder)
+      expect(result).toBe("return_requested")
+    })
+
+    it("returns 'swap_requested'", async () => {
+      const returnOrder = {
+        swap_id: "swap_123",
+        claim_order_id: null,
+      }
+
+      const result = await shippoFulfilService.eventType_(returnOrder)
+      expect(result).toBe("swap_requested")
+    })
+
+    it("returns 'claim_replace_created'", async () => {
+      const returnOrder = {
+        swap_id: null,
+        claim_order_id: "claim_123",
+        claim_order: {
+          type: "replace"
+        }
+      }
+
+      const result = await shippoFulfilService.eventType_(returnOrder)
+      expect(result).toBe("claim_replace_created")
+    })
+
+    it("returns 'claim_refund_created'", async () => {
+      const returnOrder = {
+        swap_id: null,
+        claim_order_id: "claim_123",
+        claim_order: {
+          type: "refund"
+        }
+      }
+
+      const result = await shippoFulfilService.eventType_(returnOrder)
+      expect(result).toBe("claim_refund_created")
+    })
+
+  })
+
   /** **************************
   
     retrieveCart_
