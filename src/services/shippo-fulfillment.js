@@ -186,7 +186,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     }
 
     const parcel = await this.shippo_
-      .fetchCustomParcelTemplates()
+      .fetchUserParcelTemplates()
       .then(
         async (parcels) =>
           await this.shippoPackerService_
@@ -256,8 +256,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   async eventType_(orderOrFulfill) {
     if (orderOrFulfill?.provider_id) {
       const fulfillment = orderOrFulfill
-      
-      return fulfillment.claim_order_id 
+
+      return fulfillment.claim_order_id
         ? "shippo.replace_order_created"
         : "shippo.order_created"
     }

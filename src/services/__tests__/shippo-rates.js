@@ -68,16 +68,23 @@ describe("ShippoRatesService", () => {
     fetchCartOptions: jest.fn((cart) => shippingOptions),
   }
 
-  describe("retrieveShippingOptions", () => {
+  describe("fetchCartOptions", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
+
+    const cartService = {
+      retrieve: jest.fn(async (id) => {
+        return mockCart({ hasAddress: true, hasItems: 1 })
+      }),
+    }
 
     const shippoClientService = new ShippoClientService({}, {})
     shippoClientService.client_ = shippo()
     const shippoPackerService = new ShippoPackerService({}, {})
     const shippoRatesService = new ShippoRatesService(
       {
+        cartService,
         shippingProfileService,
         shippoClientService,
         shippoPackerService,
@@ -87,9 +94,9 @@ describe("ShippoRatesService", () => {
     )
 
     it("returned shipping options that are live-rate have a price", async () => {
-      const cart = mockCart({ hasAddress: true, hasItems: 1 })
+      // const cart = mockCart({ hasAddress: true, hasItems: 1 })
 
-      const result = await shippoRatesService.retrieveShippingOptions(cart)
+      const result = await shippoRatesService.fetchCartOptions("cart_id")
 
       result.forEach((result) => {
         if (result.data.type === "LIVE_RATE") {
@@ -104,26 +111,42 @@ describe("ShippoRatesService", () => {
       jest.clearAllMocks()
     })
 
+    // const cartService = {
+    //   retrieve: jest.fn(
+    //     async (cart_id) => {
+    //       if(cart_id === 'id_noEmail_noAddress_noItems') {
+    //         return mockCart({ hasAddress: false, hasItems: 0 })
+    //       }
+
+    //     }
+    //   )
+    // }
+
     const shippoRatesService = new ShippoRatesService({}, {})
 
     it("returns false when cart is new (no email, no address id, no items)", async () => {
       const cart = mockBlankCart()
-      const result = await shippoRatesService.isCartReady_(cart)
+      shippoRatesService.setCart_(cart)
+
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
     it("returns false when cart only has email", async () => {
       const cart = mockBlankCart()
       cart.email = "test@test.com"
-      const result = await shippoRatesService.isCartReady_(cart)
+      shippoRatesService.setCart_(cart)
+
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
     it("returns false when cart has undecorated shipping_address object", async () => {
       const cart = mockBlankCart()
       cart.shipping_address = mockAddress(false)
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
@@ -131,8 +154,9 @@ describe("ShippoRatesService", () => {
       const cart = mockBlankCart()
       cart.shipping_address = mockAddress(false)
       cart.email = "test@test.com"
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
@@ -140,32 +164,36 @@ describe("ShippoRatesService", () => {
       const cart = mockBlankCart()
       cart.shipping_address = mockAddress()
       cart.email = "test@test.com"
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
     it("returns false when cart has shipping address and line items, but no email", async () => {
       const cart = mockCart({ hasAddress: true, hasItems: false })
       cart.email = null
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
     it("returns false when cart has line items and email, but undecorated address", async () => {
       const cart = mockCart({ hasAddress: false, hasItems: 1 })
       cart.email = "test@test.com"
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
     it("returns false when cart has address and email, but no line items", async () => {
       const cart = mockCart({ hasAddress: true, hasItems: 1 })
       cart.items = []
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
@@ -173,8 +201,9 @@ describe("ShippoRatesService", () => {
       const cart = mockCart({ hasAddress: true, hasItems: 1 })
       cart.shipping_address.first_name = null
       cart.shipping_address.last_name = null
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
@@ -182,15 +211,17 @@ describe("ShippoRatesService", () => {
       const cart = mockCart({ hasAddress: true, hasItems: 1 })
       cart.shipping_address.address_1 = null
       cart.shipping_address.postal_code = null
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeFalse()
     })
 
     it("returns true when cart has line items, email, and address", async () => {
       const cart = mockCart({ hasAddress: true, hasItems: 1 })
+      shippoRatesService.setCart_(cart)
 
-      const result = await shippoRatesService.isCartReady_(cart)
+      const result = await shippoRatesService.isCartReady_()
       expect(result).toBeTrue()
     })
   })
@@ -206,8 +237,9 @@ describe("ShippoRatesService", () => {
       const shippingOptions = makeArrayOf(mockShippingOption, 3, {
         variant: "default",
       })
+      shippoRatesService.setOptions_(shippingOptions)
 
-      const result = await shippoRatesService.requiresRates_(shippingOptions)
+      const result = await shippoRatesService.requiresRates_()
       expect(result).toBeFalse()
     })
 
@@ -216,7 +248,9 @@ describe("ShippoRatesService", () => {
         variant: "default",
       }).concat(makeArrayOf(mockShippingOption, 2, { variant: "live_rate" }))
 
-      const result = await shippoRatesService.requiresRates_(shippingOptions)
+      shippoRatesService.setOptions_(shippingOptions)
+
+      const result = await shippoRatesService.requiresRates_()
       expect(result).toBeTrue()
     })
   })
@@ -246,6 +280,40 @@ describe("ShippoRatesService", () => {
       const result = shippoRatesService.getPrice(rate)
 
       expect(result).toBe(4180)
+    })
+  })
+
+  describe("testest", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    // const cart = mockCart({ hasAddress: true, hasItems: 1 })
+    const cartService = {
+      retrieve: jest.fn(async (id) => {
+        return mockCart({ hasAddress: true, hasItems: 1 })
+      }),
+    }
+
+    const shippoClientService = new ShippoClientService({}, {})
+    shippoClientService.client_ = shippo()
+    const shippoPackerService = new ShippoPackerService({}, {})
+
+    const shippoRatesService = new ShippoRatesService(
+      {
+        cartService,
+        shippingProfileService,
+        shippoClientService,
+        shippoPackerService,
+        totalsService,
+      },
+      {}
+    )
+
+    it("=============================================", async () => {
+      const result = await shippoRatesService.fetchCartOptions("cart_id")
+
+      // console.log('*********result: ', JSON.stringify(result, null, 2))
     })
   })
 })

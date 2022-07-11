@@ -129,7 +129,7 @@ describe("ShippoClientService", () => {
     })
   })
 
-  describe("fetchCustomParcelTemplates", () => {
+  describe("fetchUserParcelTemplates", () => {
     const shippoClientService = new ShippoClientService({}, {})
 
     beforeAll(async () => {
@@ -137,7 +137,7 @@ describe("ShippoClientService", () => {
     })
 
     it("flatens user-parcel-templates reponse to response.results", async () => {
-      const result = await shippoClientService.fetchCustomParcelTemplates()
+      const result = await shippoClientService.fetchUserParcelTemplates()
 
       expect(Array.isArray(result)).toBe(true)
 

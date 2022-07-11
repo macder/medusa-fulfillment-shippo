@@ -43,8 +43,11 @@ class ShippoClientService extends BaseService {
       }))
     )
   }
-
-  async fetchCustomParcelTemplates() {
+  /**
+   * Fetches user-parcel-templates
+   * @return {object[]}
+   */
+  async fetchUserParcelTemplates() {
     return await this.client_.userparceltemplates
       .list()
       .then((response) => response.results)
