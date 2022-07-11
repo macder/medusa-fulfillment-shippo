@@ -67,8 +67,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         )
       }
     })
-
-    const parcelName = methodData.parcel_template.name ?? null
+    const parcelName = methodData?.parcel_template?.name ?? null
 
     const shippoOrder = await this.createShippoOrder_(
       fromOrder,
@@ -114,46 +113,77 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   // WIP
   async createReturn(returnOrder) {
-    const order = await this.orderService_.retrieve(returnOrder.order_id, {
+    const orderId =
+      returnOrder?.swap?.order_id ||
+      returnOrder?.claim_order?.order_id ||
+      returnOrder.order_id
+
+    const order = await this.orderService_.retrieve(orderId, {
       relations: ["fulfillments"],
     })
 
+    const returnLabel = await this.retrieveReturnLabel(order)
+
+    const eventType = () => {
+      if (!returnOrder.swap_id && !returnOrder.claim_order_id) {
+        return "return_requested"
+      } else if (returnOrder.swap_id) {
+        return "swap_requested"
+      } else if (returnOrder.claim_order_id) {
+        const { claim_order } = returnOrder
+        return `claim_${claim_order.type}_created`
+      }
+    }
+
+    this.eventBusService_.emit(`shippo.${eventType()}`, {
+      order: returnOrder,
+      return_transaction: returnLabel,
+    })
+
+    if (returnLabel) {
+      const { rate, tracking_url_provider, tracking_number, label_url } =
+        returnLabel
+
+      return {
+        rate,
+        label_url,
+        tracking_url_provider,
+        tracking_number,
+      }
+    }
+    return {}
+  }
+
+  async retrieveReturnLabel(order) {
     const transaction = await this.shippo_
       .fetchOrderTransactions({ displayId: order.display_id })
       .then((transactions) => {
         const returnTransact = transactions.find((ta) => ta.is_return)
 
-        if (!returnTransact) {
-          throw "shippo return label not found"
-        } else if (returnTransact.object_state !== "VALID") {
-          throw `shippo return label transaction state is ${returnTransact.object_state}`
-        } else if (returnTransact.object_status !== "SUCCESS") {
-          throw `shippo return label transaction status is ${returnTransact.object_status}`
-        } else if (
-          !order.fulfillments.find(
+        if (returnTransact) {
+          // make sure the internal order has a fulfillment related to this transaction
+          const fulfillment = order.fulfillments.find(
             (fm) => fm.data.shippo_order_id === returnTransact.order.object_id
           )
-        ) {
-          throw "fulfillment for shippo order not found"
+
+          if (fulfillment) {
+            delete returnTransact.address_to // not reversed, confusing...
+            return returnTransact
+          }
         }
-        return returnTransact
+        return null
       })
       .catch((e) => {
-        throw new MedusaError(MedusaError.Types.INVALID_DATA, e)
+        console.error(e)
       })
 
-    const label = await this.shippo_
-      .fetchTransaction(transaction.object_id)
-      .then((response) => response.label_url)
-
-    const { rate, tracking_url_provider, tracking_number } = transaction
-
-    return {
-      rate,
-      label,
-      tracking_url_provider,
-      tracking_number,
+    if (transaction) {
+      // "other one" has eveything except label_url...
+      return await this.shippo_
+        .fetchTransaction(transaction.object_id)
+        .then(({ label_url }) => ({ ...transaction, label_url }))
     }
+    return null
   }
 
   async validateOption(data) {
@@ -161,7 +191,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async validateFulfillmentData(optionData, data, cart) {
-    if (optionData.is_return) {
+    if (optionData.is_return || !cart?.id) {
       return { ...data }
     }
 
@@ -194,6 +224,18 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async formatLineItems_(items, order) {
+    if (order?.is_claim) {
+      order = await this.orderService_.retrieve(order.order.id, {
+        relations: [
+          "region",
+          "payments",
+          "items",
+          "discounts",
+          "discounts.rule",
+        ],
+      })
+    }
+
     return await Promise.all(
       items.map(
         async (item) =>
@@ -211,14 +253,16 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   makeReturnOptions_(fulfillmentOptions) {
-    return fulfillmentOptions
-      .filter((option) => option.supports_return_labels)
-      .map((option) => {
-        return {
-          ...option,
-          is_return: true,
-        }
-      })
+    return (
+      fulfillmentOptions
+        // .filter((option) => option.supports_return_labels)
+        .map((option) => {
+          return {
+            ...option,
+            is_return: true,
+          }
+        })
+    )
   }
 
   async retrieveCart_(id) {

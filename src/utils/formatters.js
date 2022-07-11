@@ -79,8 +79,12 @@ export const shippoOrder = async (
     .map((e) => e.weight * e.quantity)
     .reduce((sum, current) => sum + current, 0)
 
+  const orderNumber = order?.type
+    ? `${order.display_id} ${order?.type}`
+    : order.display_id
+
   return {
-    order_number: order.display_id,
+    order_number: orderNumber,
     order_status: "PAID",
     to_address: toAddress,
     from_address: fromAddress,
