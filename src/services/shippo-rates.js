@@ -49,6 +49,7 @@ class ShippoRatesService extends BaseService {
   /**
    * Calls ShippingProfileService.fetchCartOptions and decorates ShippingOption.amount
    * Only decorates live-rate options when cart has shipping address and items
+   * PricingService sets final
    * @param {string} cart_id - cart id to retrieve shipping options
    * @return {array.<ShippingOption>} contextually priced list of available shipping options
    */
