@@ -121,23 +121,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     const order = await this.orderService_.retrieve(orderId, {
       relations: ["fulfillments"],
     })
-
     const returnLabel = await this.retrieveReturnLabel(order)
+    const eventType = await this.eventType_(returnOrder)
 
-    const eventType = () => {
-      if (!returnOrder.swap_id && !returnOrder.claim_order_id) {
-        return "return_requested"
-      } else if (returnOrder.swap_id) {
-        return "swap_requested"
-      } else if (returnOrder.claim_order_id) {
-        const { claim_order } = returnOrder
-        return `claim_${claim_order.type}_created`
-      }
-    }
-
-    this.eventBusService_.emit(`shippo.${eventType()}`, {
+    this.eventBusService_.emit(`shippo.${eventType}`, {
       order: returnOrder,
-      return_transaction: returnLabel,
+      transaction: returnLabel,
     })
 
     if (returnLabel) {
@@ -183,7 +172,7 @@ class ShippoFulfillmentService extends FulfillmentService {
         .fetchTransaction(transaction.object_id)
         .then(({ label_url }) => ({ ...transaction, label_url }))
     }
-    return null
+    return Promise.resolve(null)
   }
 
   async validateOption(data) {
@@ -263,6 +252,17 @@ class ShippoFulfillmentService extends FulfillmentService {
           }
         })
     )
+  }
+
+  async eventType_(returnOrder) {
+    if (!returnOrder.swap_id && !returnOrder.claim_order_id) {
+      return "return_requested"
+    } else if (returnOrder.swap_id) {
+      return "swap_requested"
+    } else if (returnOrder.claim_order_id) {
+      const { claim_order } = returnOrder
+      return `claim_${claim_order.type}_created`
+    }
   }
 
   async retrieveCart_(id) {
