@@ -110,6 +110,52 @@ const client = shippoFulfillmentService.useClient
 await client.order.packingslip(shippo_order_id)
 ```
 
+## Returns
+
+
+### Request
+Invoked when [Request a Return](https://docs.medusajs.com/api/admin/order/request-a-return) `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.return_requested`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+## Swaps
+
+### Create
+
+Invoked when [Create a Swap](https://docs.medusajs.com/api/admin/order/create-a-swap) `return_shipping` has `provider: shippo`
+
+Attempts fetching an existing return label from shippo.
+
+**Event:**
+`shippo.swap_created`
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### Fulfillment
+
+Invoked when [Create a Swap Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) `shipping_option` has `provider: shippo`
+
+Creates an order in shippo.
+
+
+
+**Event:**
+
 ## Rates at Checkout
 
 Provide customers with accurate shipping rates at checkout to reduce over and under charges. This plugin implements a first-fit-decreasing bin packing algorithm to choose an appropriate parcel for the items in a cart. Follow this guide to get setup and then optimize.
