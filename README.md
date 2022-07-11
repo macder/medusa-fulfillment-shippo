@@ -14,11 +14,22 @@ Rates at checkout optimized with [first-fit-decreasing (FFD)](https://en.wikiped
 
 Order fulfillment creates shippo order
 
+Returns, exchanges, and claims
+
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
 *   [Orders](#orders)
 *   [Packing Slip](#packing-slip)
+*   [Returns](#returns)
+    *   [Request](#request)
+*   [Swaps](#swaps)
+    *   [Create](#create)
+    *   [Fulfillment](#fulfillment)
+*   [Claims](#claims)
+    *   [Refund](#refund)
+    *   [Replace](#replace)
+    *   [Fulfillment](#fulfillment-1)
 *   [Rates at Checkout](#rates-at-checkout)
     *   Setup
         *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
@@ -463,9 +474,7 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 
 ## Limitations
 
-Currently, this plugin does not support returns/exchanges and customs declarations,
-
-These are currently under development for future releases.
+No support for customs declarations. Planned for future release.
 
 ## Resources
 
