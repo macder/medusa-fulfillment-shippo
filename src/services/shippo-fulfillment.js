@@ -241,16 +241,14 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   makeReturnOptions_(fulfillmentOptions) {
-    return (
-      fulfillmentOptions
-        .filter((option) => !option?.is_group)
-        .map((option) => {
-          return {
-            ...option,
-            is_return: true,
-          }
-        })
-    )
+    return fulfillmentOptions
+      .filter((option) => !option?.is_group)
+      .map((option) => {
+        return {
+          ...option,
+          is_return: true,
+        }
+      })
   }
 
   async eventType_(returnOrder) {
