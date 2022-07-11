@@ -452,9 +452,7 @@ describe("ShippoFulfillmentService", () => {
     })
   })
 
-
   describe("eventType_", () => {
-
     beforeAll(async () => {
       jest.clearAllMocks()
     })
@@ -463,7 +461,6 @@ describe("ShippoFulfillmentService", () => {
     const shippoFulfilService = new ShippoFulfillmentService({
       shippoClientService,
     })
-
 
     it("returns 'return_requested'", async () => {
       const returnOrder = {
@@ -490,8 +487,8 @@ describe("ShippoFulfillmentService", () => {
         swap_id: null,
         claim_order_id: "claim_123",
         claim_order: {
-          type: "replace"
-        }
+          type: "replace",
+        },
       }
 
       const result = await shippoFulfilService.eventType_(returnOrder)
@@ -503,14 +500,13 @@ describe("ShippoFulfillmentService", () => {
         swap_id: null,
         claim_order_id: "claim_123",
         claim_order: {
-          type: "refund"
-        }
+          type: "refund",
+        },
       }
 
       const result = await shippoFulfilService.eventType_(returnOrder)
       expect(result).toBe("claim_refund_created")
     })
-
   })
 
   /** **************************
