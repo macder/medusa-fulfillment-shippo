@@ -482,6 +482,8 @@ For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend
 
 ## ShippoRatesService
 
+*Stable v0.15.0+*
+
 Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
 
 ### fetchCartOptions()
@@ -525,6 +527,8 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 // OR
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
+
+Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
 
 ## Limitations
 
