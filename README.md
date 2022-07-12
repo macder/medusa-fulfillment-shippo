@@ -478,7 +478,7 @@ Documented Public API is considered as stable 1.0 release candidate
 
 Any public method not documented here may change prior to a 1.0 release
 
-See [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
+For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
 ## ShippoRatesService
 
@@ -493,7 +493,7 @@ Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/re
 `@return {array.<ShippingOption>}`
 
 ```javascript
-await shippoRatesService.fetchCartOptions(cartId)
+const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
 ### fetchCartRates()
@@ -507,7 +507,7 @@ Cart must have items and complete shipping address
 `@return {array.<object>}`
 
 ```javascript
-await shippoRatesService.fetchCartRates(cartId)
+const rates = await shippoRatesService.fetchCartRates(cartId)
 ```
 
 ### fetchOptionRate()
@@ -521,9 +521,9 @@ Cart must have items and complete shipping address
 `@param {string|FulfillmentOption} // so_id or FulfillmentOption`
 
 ```javascript
-await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
+const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 // OR
-await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
+const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
 
 ## Limitations
