@@ -454,7 +454,7 @@ Rejected POST request
 
 # References
 
-Documented Public API is considered as stable 1.0 release candidate
+Documented Public API is considered stable release candidate for 1.0
 
 Any public method not documented here may change prior to a 1.0 release
 
