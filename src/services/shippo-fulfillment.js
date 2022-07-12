@@ -108,9 +108,13 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    return await this.shippoRatesService_.getPrice(
-      fulfillmentData.rate_at_checkout
-    )
+
+    return await this.shippoRatesService_.fetchOptionRate(
+      cart.id,
+      fulfillmentOption,
+    ).then(rate => this.shippoRatesService_.getPrice(rate))
+
+    // return this.shippoRatesService_.getPrice(rate)
   }
 
   async createReturn(returnOrder) {
@@ -191,24 +195,23 @@ class ShippoFulfillmentService extends FulfillmentService {
         async (parcels) =>
           await this.shippoPackerService_
             .packBins(cart.items, parcels)
-            .then((pack) => ({ id: pack[0].object_id, name: pack[0].name }))
+            .then((packed) => ({ id: packed[0].object_id, name: packed[0].name }))
       )
 
-    let rate = null
+    // let rate = null
 
-    if (optionData.type === "LIVE_RATE") {
-      // we need the cart with shipping_address relation
-      cart = await this.retrieveCart_(cart.id)
-      rate = await this.shippoRatesService_.retrieveRawRate(
-        optionData,
-        cart,
-        parcel.id
-      )
-    }
+    // if (optionData.type === "LIVE_RATE") {
+    //   // we need the cart with shipping_address relation
+    //   // cart = await this.retrieveCart_(cart.id)
+    //   rate = await this.shippoRatesService_.fetchOptionRate(
+    //     cart.id,
+    //     optionData,
+    //   )
+    // }
 
     return {
       ...data,
-      rate_at_checkout: rate ?? null,
+      // rate_at_checkout: rate ?? null,
       parcel_template: parcel,
     }
   }

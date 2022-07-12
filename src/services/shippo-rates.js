@@ -119,9 +119,11 @@ class ShippoRatesService extends BaseService {
       parcelTemplate ??
       (await this.packBins_().then((result) => result[0].object_id))
 
+    const toAddress = await shippoAddress(this.cart_.shipping_address, this.cart_.email)
+
     return {
       options: await this.getFulfillmentOptions_(),
-      to_address: await this.formatShippingAddress_(),
+      to_address: toAddress,
       line_items: await this.formatLineItems_(),
       parcel_template_id: parcelId,
     }
@@ -148,9 +150,10 @@ class ShippoRatesService extends BaseService {
   }
 
   async fetchRates_(args) {
+    const { parcel_template_id } = args
     return await this.shippo_
       .fetchLiveRates(args)
-      .catch((e) => console.error(e))
+        .catch((e) => console.error(e))
   }
 
   findRate_(shippingOption, rates) {
@@ -168,10 +171,6 @@ class ShippoRatesService extends BaseService {
             )
       )
     )
-  }
-
-  async formatShippingAddress_() {
-    return await shippoAddress(this.cart_.shipping_address, this.cart_.email)
   }
 
   async getFulfillmentOptions_() {
@@ -220,18 +219,6 @@ class ShippoRatesService extends BaseService {
       !!this.shippingOptions_.find((so) => so.data?.type === "LIVE_RATE") &&
       true
     )
-  }
-
-  // DEPRECATED
-  async retrieveRawRate(fulfillmentOption, cart, parcelId) {
-
-    const args = await this.buildRequestParams_(
-      [fulfillmentOption],
-      cart,
-      parcelId
-    )
-    return await this.fetchRates_(args).then((rate) => rate[0])
-
   }
 
   setCart_(cart) {

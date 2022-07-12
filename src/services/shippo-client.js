@@ -100,7 +100,7 @@ class ShippoClientService extends BaseService {
       .then((response) =>
         response.results.filter((item) =>
           options.find((option) => option.name === item.title && true)
-        )
+        ).map(rate => ({ ...rate, parcel_template_id }))
       )
   }
 
