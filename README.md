@@ -1,4 +1,4 @@
-## medusa-fulfillment-shippo
+# medusa-fulfillment-shippo
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
@@ -471,6 +471,55 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 [Official client](https://github.com/goshippo/shippo-node-client)
 
 [Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
+
+# Service References
+
+Documented Public API is considered as stable 1.0 release candidate
+
+Any public method not documented here may change prior to a 1.0 release
+
+See [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
+
+## ShippoRatesService
+
+### fetchCartOptions()
+
+Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any live-rate `ShippingOption` is contextually priced.
+
+`@param {string} cartId`
+`@return {array.<ShippingOption>}`
+
+```javascript
+await shippoRatesService.fetchCartOptions(cartId)
+```
+
+### fetchCartRates()
+
+Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts available rate-at-checkout shipping options
+
+Cart must have items and complete shipping address
+
+`@param {string} cartId`
+`@return {array.<object>}`
+
+```javascript
+await shippoRatesService.fetchCartRates(cartId)
+```
+
+### fetchOptionRate()
+
+Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
+
+Cart must have items and complete shipping address
+
+`@param {string} cartId`
+`@param {string|FulfillmentOption} // so_id or FulfillmentOption`
+
+```javascript
+await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
+// OR
+await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
+```
 
 ## Limitations
 
