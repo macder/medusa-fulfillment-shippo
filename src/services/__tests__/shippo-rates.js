@@ -287,39 +287,4 @@ describe("ShippoRatesService", () => {
       expect(result).toBe(4180)
     })
   })
-
-  describe("testest", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    // const cart = mockCart({ hasAddress: true, hasItems: 1 })
-    const cartService = {
-      retrieve: jest.fn(async (id) => {
-        return mockCart({ hasAddress: true, hasItems: 1 })
-      }),
-    }
-
-    const shippoClientService = new ShippoClientService({}, {})
-    shippoClientService.client_ = shippo()
-    const shippoPackerService = new ShippoPackerService({}, {})
-
-    const shippoRatesService = new ShippoRatesService(
-      {
-        cartService,
-        shippingProfileService,
-        shippoClientService,
-        shippoPackerService,
-        pricingService,
-        totalsService,
-      },
-      {}
-    )
-
-    it("=============================================", async () => {
-      const result = await shippoRatesService.fetchCartOptions("cart_id")
-
-      // console.log('*********result: ', JSON.stringify(result, null, 2))
-    })
-  })
 })
