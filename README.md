@@ -281,7 +281,7 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 
 ### Add to Cart
 
-[API reference](https://docs.medusajs.com/api/store/cart/add-a-shipping-method)
+[Add a Shipping Method](https://docs.medusajs.com/api/store/cart/add-a-shipping-method) and if  `shipping_option` has `price_type: calculated` the rate will be saved to the `shipping_method`
 
 **HTTP:**
 
@@ -468,7 +468,7 @@ Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fu
 
 ### fetchCartOptions()
 
-Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any live-rate `ShippingOption` is contextually priced.
+Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.
 
 `@param {string} cartId`
 
@@ -480,7 +480,7 @@ const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 
 ### fetchCartRates()
 
-Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts available rate-at-checkout shipping options
+Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
 
 Cart must have items and complete shipping address
 
