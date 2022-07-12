@@ -521,6 +521,7 @@ Packs line items into parcel templates defined in shippo account using a [FFD al
 First array member is best fit, i.e. has lowest vacant volume
 
 `@param {array.<LineItem>} lineItems`
+
 `@return {array.<object>} `
 
 ```javascript
