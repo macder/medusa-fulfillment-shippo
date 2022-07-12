@@ -266,7 +266,7 @@ Create shipping options for regions as usual
 **HTTP:**
 
 ```plaintext
-GET /shipping-options/:cart_id
+GET /store/shipping-options/:cart_id
 ```
 
 **Service:**
@@ -286,7 +286,7 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 **HTTP:**
 
 ```plaintext
-POST /carts/:id/shipping-methods
+POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
@@ -506,6 +506,25 @@ Cart must have items and complete shipping address
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 // OR
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
+```
+
+## ShippoPackerService
+
+*Stable v0.16.0+*
+
+Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
+
+### packBins()
+
+Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
+
+First array member is best fit, i.e. has lowest vacant volume
+
+`@param {array.<LineItem>} lineItems`
+`@return {array.<object>} `
+
+```javascript
+const packed = await shippoPackerService.packBins(lineItems)
 ```
 
 ## Shippo Node Client
