@@ -295,7 +295,7 @@ POST /carts/:id/shipping-methods
 
 ```javascript
 {
-  cart_id: "",  // return order
+  cart_id: "",
   rate: {...}   // shippo live-rate object
 }
 ```
