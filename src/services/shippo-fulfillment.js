@@ -108,9 +108,17 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    return await this.shippoRatesService_.getPrice(
-      fulfillmentData.rate_at_checkout
+    const rate = await this.shippoRatesService_.fetchOptionRate(
+      cart.id,
+      fulfillmentOption
     )
+
+    this.eventBusService_.emit("shippo.calculated_shipping_method", {
+      cart_id: cart.id,
+      rate,
+    })
+
+    return this.shippoRatesService_.getPrice(rate)
   }
 
   async createReturn(returnOrder) {
@@ -185,30 +193,18 @@ class ShippoFulfillmentService extends FulfillmentService {
       return { ...data }
     }
 
-    const parcel = await this.shippo_
-      .fetchCustomParcelTemplates()
-      .then(
-        async (parcels) =>
-          await this.shippoPackerService_
-            .packBins(cart.items, parcels)
-            .then((pack) => ({ id: pack[0].object_id, name: pack[0].name }))
-      )
-
-    let rate = null
-
-    if (optionData.type === "LIVE_RATE") {
-      // we need the cart with shipping_address relation
-      cart = await this.retrieveCart_(cart.id)
-      rate = await this.shippoRatesService_.retrieveRawRate(
-        optionData,
-        cart,
-        parcel.id
-      )
-    }
+    const parcel = await this.shippo_.fetchUserParcelTemplates().then(
+      async (parcels) =>
+        await this.shippoPackerService_
+          .packBins(cart.items, parcels)
+          .then((packed) => ({
+            id: packed[0].object_id,
+            name: packed[0].name,
+          }))
+    )
 
     return {
       ...data,
-      rate_at_checkout: rate ?? null,
       parcel_template: parcel,
     }
   }
@@ -256,8 +252,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   async eventType_(orderOrFulfill) {
     if (orderOrFulfill?.provider_id) {
       const fulfillment = orderOrFulfill
-      
-      return fulfillment.claim_order_id 
+
+      return fulfillment.claim_order_id
         ? "shippo.replace_order_created"
         : "shippo.order_created"
     }

@@ -1,4 +1,4 @@
-## medusa-fulfillment-shippo
+# medusa-fulfillment-shippo
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
@@ -43,6 +43,7 @@ Returns, exchanges, and claims
         *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
+*   [References](#references)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
@@ -271,7 +272,7 @@ GET /shipping-options/:cart_id
 **Service:**
 
 ```javascript
-await shippoRatesService.retrieveShippingOptions(cart_id)
+const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
 Implementation needs to consider rates only calculate if cart has items and complete shipping address. Otherwise `price_type: calculated` will have `amount: null`
@@ -280,13 +281,23 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 
 ### Add to Cart
 
-[API reference](https://docs.medusajs.com/api/store/cart/add-a-shipping-method)
+[Add a Shipping Method](https://docs.medusajs.com/api/store/cart/add-a-shipping-method) and if  `shipping_option` has `price_type: calculated` the rate will be saved to the `shipping_method`
 
 **HTTP:**
 
 ```plaintext
 POST /carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
+```
+
+**Event:**
+`shippo.calculated_shipping_method`
+
+```javascript
+{
+  cart_id: "",
+  rate: {...}   // shippo live-rate object
+}
 ```
 
 ### Help, adding a shipping method to cart throws an error
@@ -440,6 +451,62 @@ Rejected POST request
 ### batch\_created
 
 *under development*
+
+# References
+
+Documented Public API is considered stable release candidate for 1.0
+
+Any public method not documented here may change prior to a 1.0 release
+
+For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
+
+## ShippoRatesService
+
+*Stable v0.15.0+*
+
+Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
+
+### fetchCartOptions()
+
+Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.
+
+`@param {string} cartId`
+
+`@return {array.<ShippingOption>}`
+
+```javascript
+const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
+```
+
+### fetchCartRates()
+
+Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
+
+Cart must have items and complete shipping address
+
+`@param {string} cartId`
+
+`@return {array.<object>}`
+
+```javascript
+const rates = await shippoRatesService.fetchCartRates(cartId)
+```
+
+### fetchOptionRate()
+
+Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
+
+Cart must have items and complete shipping address
+
+`@param {string} cartId`
+
+`@param {string|FulfillmentOption} // so_id or FulfillmentOption`
+
+```javascript
+const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
+// OR
+const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
+```
 
 ## Shippo Node Client
 
