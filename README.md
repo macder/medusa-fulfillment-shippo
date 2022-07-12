@@ -43,6 +43,7 @@ Returns, exchanges, and claims
         *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
+*   [References](#references)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
@@ -271,7 +272,7 @@ GET /shipping-options/:cart_id
 **Service:**
 
 ```javascript
-await shippoRatesService.retrieveShippingOptions(cart_id)
+const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
 Implementation needs to consider rates only calculate if cart has items and complete shipping address. Otherwise `price_type: calculated` will have `amount: null`
@@ -451,38 +452,7 @@ Rejected POST request
 
 *under development*
 
-## Shippo Node Client
-
-This plugin is using a forked version of the official shippo-node-client. 
-
-The fork adds support for the following endpoints:
-
-*   live-rates
-*   service-groups
-*   user-parcel-templates
-*   orders/:id/packingslip
-
-The client is exposed on the `useClient` property
-
-```javascript
-const client = shippoFulfillmentService.useClient
-
-// Forks additional methods
-await client.liverates.create({...parms})
-await client.userparceltemplates.list()
-await client.userparceltemplates.retrieve(id)
-await client.servicegroups.list()
-await client.servicegroups.create({...params})
-...
-```
-
-See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
-
-[Official client](https://github.com/goshippo/shippo-node-client)
-
-[Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
-
-# Service References
+# References
 
 Documented Public API is considered as stable 1.0 release candidate
 
@@ -538,7 +508,36 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
 
-Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
+## Shippo Node Client
+
+This plugin is using a forked version of the official shippo-node-client. 
+
+The fork adds support for the following endpoints:
+
+*   live-rates
+*   service-groups
+*   user-parcel-templates
+*   orders/:id/packingslip
+
+The client is exposed on the `useClient` property
+
+```javascript
+const client = shippoFulfillmentService.useClient
+
+// Forks additional methods
+await client.liverates.create({...parms})
+await client.userparceltemplates.list()
+await client.userparceltemplates.retrieve(id)
+await client.servicegroups.list()
+await client.servicegroups.create({...params})
+...
+```
+
+See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
+
+[Official client](https://github.com/goshippo/shippo-node-client)
+
+[Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
 
 ## Limitations
 
