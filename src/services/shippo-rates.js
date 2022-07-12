@@ -57,7 +57,7 @@ class ShippoRatesService extends BaseService {
     return this.shippingOptions_
   }
 
-  /** 
+  /**
    * Fetch live-rates for cart shipping options
    * @param {string} cartId - cart id to fetch rates for
    * @return {array.<object>} - list of shippo live-rates
@@ -78,11 +78,11 @@ class ShippoRatesService extends BaseService {
     this.setCart_(await this.fetchCart_(cartId))
 
     if (await this.isCartReady_()) {
-      const shippingOption = await this.fetchOptions_()
-        .then(options => (option?.name)
-          ? [options.find(so => so.data.object_id === option.object_id)]
-          : [options.find(so => so.id === option)]
-        )
+      const shippingOption = await this.fetchOptions_().then((options) =>
+        option?.name
+          ? [options.find((so) => so.data.object_id === option.object_id)]
+          : [options.find((so) => so.id === option)]
+      )
 
       this.setOptions_(shippingOption)
       const args = await this.buildRequestParams_()
@@ -119,7 +119,10 @@ class ShippoRatesService extends BaseService {
       parcelTemplate ??
       (await this.packBins_().then((result) => result[0].object_id))
 
-    const toAddress = await shippoAddress(this.cart_.shipping_address, this.cart_.email)
+    const toAddress = await shippoAddress(
+      this.cart_.shipping_address,
+      this.cart_.email
+    )
 
     return {
       options: await this.getFulfillmentOptions_(),
@@ -153,7 +156,7 @@ class ShippoRatesService extends BaseService {
     const { parcel_template_id } = args
     return await this.shippo_
       .fetchLiveRates(args)
-        .catch((e) => console.error(e))
+      .catch((e) => console.error(e))
   }
 
   findRate_(shippingOption, rates) {
@@ -167,7 +170,11 @@ class ShippoRatesService extends BaseService {
           await this.totalsService_
             .getLineItemTotals(item, this.cart_)
             .then((totals) =>
-              shippoLineItem(item, totals.unit_price, this.cart_.region.currency_code)
+              shippoLineItem(
+                item,
+                totals.unit_price,
+                this.cart_.region.currency_code
+              )
             )
       )
     )
@@ -196,7 +203,7 @@ class ShippoRatesService extends BaseService {
   }
 
   /**
-   * 
+   *
    * @param {ShippingOption} option
    * @param {object} rate
    */
@@ -207,8 +214,8 @@ class ShippoRatesService extends BaseService {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `Shippo: '${option.name}' - price_type mismatch | ` +
-        "Expected price_type: calculated | " +
-        "Received price_type: flat_rate. See README.md"
+          "Expected price_type: calculated | " +
+          "Received price_type: flat_rate. See README.md"
       )
     }
     return { ...option, amount: price }
