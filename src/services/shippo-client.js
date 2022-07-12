@@ -43,8 +43,11 @@ class ShippoClientService extends BaseService {
       }))
     )
   }
-
-  async fetchCustomParcelTemplates() {
+  /**
+   * Fetches user-parcel-templates
+   * @return {object[]}
+   */
+  async fetchUserParcelTemplates() {
     return await this.client_.userparceltemplates
       .list()
       .then((response) => response.results)
@@ -95,9 +98,11 @@ class ShippoClientService extends BaseService {
         parcel: parcel_template_id,
       })
       .then((response) =>
-        response.results.filter((item) =>
-          options.find((option) => option.name === item.title && true)
-        )
+        response.results
+          .filter((item) =>
+            options.find((option) => option.name === item.title && true)
+          )
+          .map((rate) => ({ ...rate, parcel_template_id }))
       )
   }
 
