@@ -122,17 +122,13 @@ describe("ShippoFulfillmentService", () => {
 
       it("returned object with correct properties", async () => {
         const result = await getResult()
-        expect(result).toContainKeys([
-          "parcel_template",
-          "test",
-        ])
+        expect(result).toContainKeys(["parcel_template", "test"])
       })
 
       it("parcel_template has id and name properties", async () => {
         const result = await getResult()
         expect(result.parcel_template).toContainKeys(["id", "name"])
       })
-
     })
 
     describe("normal option", () => {
@@ -152,17 +148,13 @@ describe("ShippoFulfillmentService", () => {
 
       test("returned object with correct properties", async () => {
         const result = await getResult()
-        expect(result).toContainKeys([
-          "parcel_template",
-          "test",
-        ])
+        expect(result).toContainKeys(["parcel_template", "test"])
       })
 
       it("parcel_template has id and name properties", async () => {
         const result = await getResult()
         expect(result.parcel_template).toContainKeys(["id", "name"])
       })
-
     })
   })
 
@@ -252,9 +244,9 @@ describe("ShippoFulfillmentService", () => {
             data: {
               ...shippingOption.data,
               object_id: "123",
-              name: "123123"
-            }
-          }
+              name: "123123",
+            },
+          },
         ]
       }),
     }
@@ -262,7 +254,9 @@ describe("ShippoFulfillmentService", () => {
     const shippo = jest.fn(() => ({
       userparceltemplates: {
         list: jest.fn(async () =>
-          mockParcelTemplateResponse(faker.datatype.number({ min: 10, max: 20 }))
+          mockParcelTemplateResponse(
+            faker.datatype.number({ min: 10, max: 20 })
+          )
         ),
       },
       liverates: {
@@ -270,9 +264,9 @@ describe("ShippoFulfillmentService", () => {
           results: [
             {
               ...mockLiveRate(),
-              title: "123123"
-            }
-          ]
+              title: "123123",
+            },
+          ],
         })),
       },
     }))
@@ -280,7 +274,16 @@ describe("ShippoFulfillmentService", () => {
     const shippoClientService = new ShippoClientService({}, {})
     shippoClientService.client_ = shippo()
     const shippoPackerService = new ShippoPackerService({}, {})
-    const shippoRatesService = new ShippoRatesService({ cartService, shippingProfileService, shippoClientService, shippoPackerService, totalsService }, {})
+    const shippoRatesService = new ShippoRatesService(
+      {
+        cartService,
+        shippingProfileService,
+        shippoClientService,
+        shippoPackerService,
+        totalsService,
+      },
+      {}
+    )
     const shippoFulfilService = new ShippoFulfillmentService(
       { cartService, eventBusService, shippoClientService, shippoRatesService },
       {}
@@ -297,7 +300,7 @@ describe("ShippoFulfillmentService", () => {
 
       const fulfillmentOption = {
         ...mockFulfillmentOption({ type: "live_rate" }),
-        object_id: "123"
+        object_id: "123",
       }
 
       const result = await shippoFulfilService.calculatePrice(

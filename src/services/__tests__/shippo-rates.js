@@ -31,7 +31,7 @@ describe("ShippoRatesService", () => {
   }
 
   const pricingService = {
-    setShippingOptionPrices: jest.fn(async options => options)
+    setShippingOptionPrices: jest.fn(async (options) => options),
   }
 
   const mockLiveRates = (titles) =>
