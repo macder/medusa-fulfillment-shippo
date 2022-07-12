@@ -58,7 +58,7 @@ class ShippoRatesService extends BaseService {
   }
 
   /** 
-   * Finds live-rates for cart shipping options
+   * Fetch live-rates for cart shipping options
    * @param {string} cartId - cart id to fetch rates for
    * @return {array.<object>} - list of shippo live-rates
    */
@@ -66,6 +66,30 @@ class ShippoRatesService extends BaseService {
     await this.setProps_(cartId)
     const args = await this.buildRequestParams_()
     return await this.fetchRates_(args)
+  }
+
+  /**
+   * Fetch live-rate for specific option for cart
+   * @param {string} cartId - cart id to fetch rate for
+   * @param {string|FulfillmentOption} option - ShippingOption id or FulfillmentOption
+   * @return {object} shippo live-rate object
+   */
+  async fetchOptionRate(cartId, option) {
+    this.setCart_(await this.fetchCart_(cartId))
+
+    if (await this.isCartReady_()) {
+      const shippingOption = await this.fetchOptions_()
+        .then(options => (option?.name)
+          ? [options.find(so => so.data.object_id === option.object_id)]
+          : [options.find(so => so.id === option)]
+        )
+
+      this.setOptions_(shippingOption)
+      const args = await this.buildRequestParams_()
+      const rate = await this.fetchRates_(args)
+      return rate[0]
+    }
+    return Promise.reject({ error: "cart not ready" })
   }
 
   /**
@@ -77,7 +101,7 @@ class ShippoRatesService extends BaseService {
     // amount_local: calculated || amount: fallback
     const price = rate?.amount_local || rate?.amount
     return parseInt(parseFloat(price) * 100, 10)
-  } 
+  }
 
   async applyRates_() {
     const args = await this.buildRequestParams_()
@@ -122,7 +146,7 @@ class ShippoRatesService extends BaseService {
   async fetchOptions_() {
     return await this.shippingProfileService_.fetchCartOptions(this.cart_)
   }
-  
+
   async fetchRates_(args) {
     return await this.shippo_
       .fetchLiveRates(args)
