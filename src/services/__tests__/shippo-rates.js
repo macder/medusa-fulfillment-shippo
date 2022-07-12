@@ -30,6 +30,10 @@ describe("ShippoRatesService", () => {
     getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
   }
 
+  const pricingService = {
+    setShippingOptionPrices: jest.fn(async options => options)
+  }
+
   const mockLiveRates = (titles) =>
     makeArrayOf(mockLiveRate, titles.length).map((item, i) => ({
       ...item,
@@ -88,6 +92,7 @@ describe("ShippoRatesService", () => {
         shippingProfileService,
         shippoClientService,
         shippoPackerService,
+        pricingService,
         totalsService,
       },
       {}
@@ -305,6 +310,7 @@ describe("ShippoRatesService", () => {
         shippingProfileService,
         shippoClientService,
         shippoPackerService,
+        pricingService,
         totalsService,
       },
       {}

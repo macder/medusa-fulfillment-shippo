@@ -29,6 +29,10 @@ describe("ShippoFulfillmentService", () => {
   const totalsService = {
     getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
   }
+
+  const eventBusService = {
+    emit: jest.fn(),
+  }
   /** **************************
     
       getFulfillmentOptions
@@ -98,6 +102,7 @@ describe("ShippoFulfillmentService", () => {
     )
 
     shippoRatesService.retrieveRawRate = jest.fn(
+      // fetchOptionRate
       async (fulfillmentOption, cart, parcelId) => mockLiveRate()
     )
 
@@ -118,7 +123,6 @@ describe("ShippoFulfillmentService", () => {
       it("returned object with correct properties", async () => {
         const result = await getResult()
         expect(result).toContainKeys([
-          "rate_at_checkout",
           "parcel_template",
           "test",
         ])
@@ -129,10 +133,6 @@ describe("ShippoFulfillmentService", () => {
         expect(result.parcel_template).toContainKeys(["id", "name"])
       })
 
-      test("rate_at_checkout property is an object", async () => {
-        const result = await getResult()
-        expect(result.rate_at_checkout).toBeObject()
-      })
     })
 
     describe("normal option", () => {
@@ -153,7 +153,6 @@ describe("ShippoFulfillmentService", () => {
       test("returned object with correct properties", async () => {
         const result = await getResult()
         expect(result).toContainKeys([
-          "rate_at_checkout",
           "parcel_template",
           "test",
         ])
@@ -164,10 +163,6 @@ describe("ShippoFulfillmentService", () => {
         expect(result.parcel_template).toContainKeys(["id", "name"])
       })
 
-      test("rate_at_checkout property is null", async () => {
-        const result = await getResult()
-        expect(result.rate_at_checkout).toBeNull()
-      })
     })
   })
 
@@ -215,12 +210,6 @@ describe("ShippoFulfillmentService", () => {
       ).toBe(true)
     })
 
-    // it("returns true when supports_return_labels", async () => {
-    //   expect(
-    //     await shippoFulfilService.canCalculate({ supports_return_labels: true })
-    //   ).toBe(true)
-    // })
-
     it("returns false when free", async () => {
       expect(await shippoFulfilService.canCalculate({ type: "FREE" })).toBe(
         false
@@ -248,27 +237,73 @@ describe("ShippoFulfillmentService", () => {
       jest.clearAllMocks()
     })
 
-    const shippoRatesService = new ShippoRatesService({}, {})
+    const cartService = {
+      retrieve: jest.fn(async (cartId, options, totalsConfig) =>
+        mockCart({ hasAddress: true, hasItems: 1 })
+      ),
+    }
+
+    const shippingProfileService = {
+      fetchCartOptions: jest.fn((cart) => {
+        const shippingOption = mockShippingOption({ variant: "live_rate" })
+        return [
+          {
+            ...shippingOption,
+            data: {
+              ...shippingOption.data,
+              object_id: "123",
+              name: "123123"
+            }
+          }
+        ]
+      }),
+    }
+
+    const shippo = jest.fn(() => ({
+      userparceltemplates: {
+        list: jest.fn(async () =>
+          mockParcelTemplateResponse(faker.datatype.number({ min: 10, max: 20 }))
+        ),
+      },
+      liverates: {
+        create: jest.fn(async () => ({
+          results: [
+            {
+              ...mockLiveRate(),
+              title: "123123"
+            }
+          ]
+        })),
+      },
+    }))
+
     const shippoClientService = new ShippoClientService({}, {})
+    shippoClientService.client_ = shippo()
+    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoRatesService = new ShippoRatesService({ cartService, shippingProfileService, shippoClientService, shippoPackerService, totalsService }, {})
     const shippoFulfilService = new ShippoFulfillmentService(
-      { shippoClientService, shippoRatesService },
+      { cartService, eventBusService, shippoClientService, shippoRatesService },
       {}
     )
 
     it("returns a number", async () => {
       const fulfillmentData = {
         test: "test",
-        rate_at_checkout: mockLiveRate(),
         parcel_template: {
           id: "1010101010",
           name: "im a name",
         },
       }
 
+      const fulfillmentOption = {
+        ...mockFulfillmentOption({ type: "live_rate" }),
+        object_id: "123"
+      }
+
       const result = await shippoFulfilService.calculatePrice(
-        {},
+        fulfillmentOption,
         fulfillmentData,
-        {}
+        { id: "123123" }
       )
 
       expect(result).toBeNumber()
@@ -284,10 +319,6 @@ describe("ShippoFulfillmentService", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
-
-    const eventBusService = {
-      emit: jest.fn(),
-    }
 
     const shippoClientService = new ShippoClientService({}, {})
     const shippoFulfilService = new ShippoFulfillmentService({
