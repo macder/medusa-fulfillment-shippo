@@ -289,6 +289,16 @@ POST /carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
+**Event:**
+`shippo.calculated_shipping_method`
+
+```javascript
+{
+  cart_id: "",  // return order
+  rate: {...}   // shippo live-rate object
+}
+```
+
 ### Help, adding a shipping method to cart throws an error
 
 This is an issue with medusa-admin. Examine line 85 [`admin/src/domain/settings/regions/new-shipping.tsx`](https://github.com/medusajs/admin/blob/a33ed20214297ffdbd2383f809dddd4870f5dad9/src/domain/settings/regions/new-shipping.tsx#L85)
