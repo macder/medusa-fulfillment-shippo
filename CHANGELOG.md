@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.15.0] (2022-07-12)
+
+Added
+
+*   ShippoRatesService public API stabilized and documented [#164](https://github.com/macder/medusa-fulfillment-shippo/issues/164)
+*   Emit event for calculated shipping method and pass live-rate object [#169](https://github.com/macder/medusa-fulfillment-shippo/issues/169)
+
 ## \[0.14.0] (2022-07-11)
 
 Added
