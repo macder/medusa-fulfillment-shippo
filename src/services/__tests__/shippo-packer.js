@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import ShippoPackerService from "../shippo-packer"
+import ShippoClientService from "../shippo-client"
 
 import {
   makeArrayOf,
@@ -13,14 +14,22 @@ describe("ShippoPackerService", () => {
   })
 
   test("if bins_ property is declared", () => {
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     const result = shippoPackerService.bins_
 
     expect(Array.isArray(result)).toBe(true)
   })
 
   test("if items_ property is declared", () => {
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     const result = shippoPackerService.items_
 
     expect(Array.isArray(result)).toBe(true)
@@ -33,7 +42,11 @@ describe("ShippoPackerService", () => {
 
     const templateCount = faker.datatype.number({ min: 1, max: 6 })
     const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     shippoPackerService.setBins_(parcelTemplates)
 
     const result = shippoPackerService.bins_
@@ -56,7 +69,11 @@ describe("ShippoPackerService", () => {
 
     const itemCount = faker.datatype.number({ min: 1, max: 4 })
     const lineItems = makeArrayOf(mockLineItem, itemCount)
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     shippoPackerService.setItems_(lineItems)
 
     const result = shippoPackerService.items_
@@ -77,7 +94,11 @@ describe("ShippoPackerService", () => {
     const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
     const lineItems = makeArrayOf(mockLineItem, itemCount)
 
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoClientService = new ShippoClientService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
 
     // WIP
     it("", async () => {

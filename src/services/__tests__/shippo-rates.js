@@ -85,7 +85,10 @@ describe("ShippoRatesService", () => {
 
     const shippoClientService = new ShippoClientService({}, {})
     shippoClientService.client_ = shippo()
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     const shippoRatesService = new ShippoRatesService(
       {
         cartService,

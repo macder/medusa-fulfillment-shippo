@@ -14,43 +14,25 @@ class ShippoClientService extends BaseService {
     this.createOrder = this.createOrder_
   }
 
-  getClient() {
-    return this.client_
-  }
-
-  async composeFulfillmentOptions_() {
-    const shippingOptions = await this.fetchCarriers_().then((carriers) =>
-      this.findActiveCarriers_(carriers).then((activeCarriers) =>
-        this.splitCarriersToServices_(activeCarriers)
+  async fetchLiveRates({
+    options,
+    to_address,
+    line_items,
+    parcel_template_id,
+  }) {
+    return await this.client_.liverates
+      .create({
+        address_to: to_address,
+        line_items: line_items,
+        parcel: parcel_template_id,
+      })
+      .then((response) =>
+        response.results
+          .filter((item) =>
+            options.find((option) => option.name === item.title && true)
+          )
+          .map((rate) => ({ ...rate, parcel_template_id }))
       )
-    )
-    const shippingOptionGroups = await this.fetchServiceGroups_()
-    return [...shippingOptions, ...shippingOptionGroups]
-  }
-
-  async fetchCarriers_() {
-    return await this.client_.carrieraccount
-      .list({ service_levels: true, results: 100 })
-      .then((response) => response.results)
-  }
-
-  async fetchServiceGroups_() {
-    return await this.client_.servicegroups.list().then((groups) =>
-      groups.map((serviceGroup) => ({
-        id: `shippo-fulfillment-${serviceGroup.object_id}`,
-        is_group: true,
-        ...serviceGroup,
-      }))
-    )
-  }
-  /**
-   * Fetches user-parcel-templates
-   * @return {object[]}
-   */
-  async fetchUserParcelTemplates() {
-    return await this.client_.userparceltemplates
-      .list()
-      .then((response) => response.results)
   }
 
   async fetchOrderTransactions({ displayId }) {
@@ -77,35 +59,6 @@ class ShippoClientService extends BaseService {
     return transactions
   }
 
-  async fetchTransaction(id) {
-    return await this.client_.transaction.retrieve(id)
-  }
-
-  async fetchCustomParcel(id) {
-    return await this.client_.userparceltemplates.retrieve(id)
-  }
-
-  async fetchLiveRates({
-    options,
-    to_address,
-    line_items,
-    parcel_template_id,
-  }) {
-    return await this.client_.liverates
-      .create({
-        address_to: to_address,
-        line_items: line_items,
-        parcel: parcel_template_id,
-      })
-      .then((response) =>
-        response.results
-          .filter((item) =>
-            options.find((option) => option.name === item.title && true)
-          )
-          .map((rate) => ({ ...rate, parcel_template_id }))
-      )
-  }
-
   async fetchSenderAddress() {
     return await this.client_.account
       .address()
@@ -114,8 +67,70 @@ class ShippoClientService extends BaseService {
       )
   }
 
+  async fetchTransaction(id) {
+    return await this.client_.transaction.retrieve(id)
+  }
+
+  async fetchUserParcelTemplates() {
+    return await this.client_.userparceltemplates
+      .list()
+      .then((response) => response.results)
+  }
+
+  getClient() {
+    return this.client_
+  }
+
+  async composeFulfillmentOptions_() {
+    const shippingOptions = await this.fetchCarriers_().then((carriers) =>
+      this.findActiveCarriers_(carriers).then((activeCarriers) =>
+        this.splitCarriersToServices_(activeCarriers)
+      )
+    )
+    const shippingOptionGroups = await this.fetchServiceGroups_()
+    return [...shippingOptions, ...shippingOptionGroups]
+  }
+
+  async createOrder_(order) {
+    return await this.client_.order.create(order)
+  }
+
+  async fetchCarriers_() {
+    return await this.client_.carrieraccount
+      .list({ service_levels: true, results: 100 })
+      .then((response) => response.results)
+  }
+
+  async fetchServiceGroups_() {
+    return await this.client_.servicegroups.list().then((groups) =>
+      groups.map((serviceGroup) => ({
+        id: `shippo-fulfillment-${serviceGroup.object_id}`,
+        is_group: true,
+        ...serviceGroup,
+      }))
+    )
+  }
+
   async findActiveCarriers_(carriers) {
     return carriers.filter((carrier) => carrier.active)
+  }
+
+  async poll_({ fn, fnArgs, validate, interval, maxAttempts }) {
+    let attempts = 0
+
+    const executePoll = async (resolve, reject) => {
+      const result = await fn(fnArgs)
+      attempts++
+
+      if (validate(result)) {
+        return resolve(result)
+      } else if (maxAttempts && attempts === maxAttempts) {
+        return reject("Exceeded max attempts")
+      } else {
+        setTimeout(executePoll, interval, resolve, reject)
+      }
+    }
+    return new Promise(executePoll)
   }
 
   async splitCarriersToServices_(carriers) {
@@ -134,10 +149,6 @@ class ShippoClientService extends BaseService {
     )
   }
 
-  async createOrder_(order) {
-    return await this.client_.order.create(order)
-  }
-
   setConfig_(options) {
     if (Object.keys(options).length === 0) {
       const {
@@ -151,25 +162,6 @@ class ShippoClientService extends BaseService {
 
   setClient_() {
     this.client_ = shippo(this.options_.api_key)
-  }
-
-  async poll_({ fn, fnArgs, validate, interval, maxAttempts }) {
-    let attempts = 0
-
-    const executePoll = async (resolve, reject) => {
-      const result = await fn(fnArgs)
-      attempts++
-
-      if (validate(result)) {
-        return resolve(result)
-      } else if (maxAttempts && attempts === maxAttempts) {
-        return reject("Exceeded max attempts")
-      } else {
-        setTimeout(executePoll, interval, resolve, reject)
-      }
-    }
-
-    return new Promise(executePoll)
   }
 }
 

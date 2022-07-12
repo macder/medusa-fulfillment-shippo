@@ -6,16 +6,25 @@ class ShippoPackerService extends BaseService {
   bins_ = []
   items_ = []
 
-  constructor({}, options) {
+  constructor({ shippoClientService }, options) {
     super()
+
+    /** @private @const {ShippoClientService} */
+    this.shippo_ = shippoClientService
   }
 
   /**
-   * @param  {array} lineItems
-   * @param  {array} parcelTemplates
+   * Packs line items into parcel templates defined in shippo account
+   * Return is sorted from least vacant volume.
+   * For more info on data values returned, examine BP3D in npm binpackingjs
+   * https://github.com/olragon/binpackingjs/tree/master/src/3D
+   * @param {array.<LineItem>} lineItems - array of LineItems, eg. cart.items
+   * @return {array.<object>} - array of packed bins, including its items 3D locus
    */
-  async packBins(lineItems, parcelTemplates) {
+  async packBins(lineItems) {
     const { Packer } = BP3D
+
+    const parcelTemplates = await this.shippo_.fetchUserParcelTemplates()
 
     this.setBins_(parcelTemplates)
     this.setItems_(lineItems)

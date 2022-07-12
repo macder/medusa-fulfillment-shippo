@@ -192,12 +192,8 @@ class ShippoRatesService extends BaseService {
   }
 
   async packBins_() {
-    const packed = await this.shippo_
-      .fetchUserParcelTemplates()
-      .then(
-        async (parcels) =>
-          await this.shippoPackerService_.packBins(this.cart_.items, parcels)
-      )
+    const packed = await this.shippoPackerService_.packBins(this.cart_.items)
+
     this.packerResult_ = packed
     return packed
   }

@@ -193,15 +193,12 @@ class ShippoFulfillmentService extends FulfillmentService {
       return { ...data }
     }
 
-    const parcel = await this.shippo_.fetchUserParcelTemplates().then(
-      async (parcels) =>
-        await this.shippoPackerService_
-          .packBins(cart.items, parcels)
-          .then((packed) => ({
-            id: packed[0].object_id,
-            name: packed[0].name,
-          }))
-    )
+    const parcel = await this.shippoPackerService_
+      .packBins(cart.items)
+      .then((packed) => ({
+        id: packed[0].object_id,
+        name: packed[0].name,
+      }))
 
     return {
       ...data,
