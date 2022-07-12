@@ -482,6 +482,8 @@ See [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/c
 
 ## ShippoRatesService
 
+Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
+
 ### fetchCartOptions()
 
 Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any live-rate `ShippingOption` is contextually priced.
