@@ -487,6 +487,7 @@ See [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/c
 Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any live-rate `ShippingOption` is contextually priced.
 
 `@param {string} cartId`
+
 `@return {array.<ShippingOption>}`
 
 ```javascript
@@ -500,6 +501,7 @@ Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/referen
 Cart must have items and complete shipping address
 
 `@param {string} cartId`
+
 `@return {array.<object>}`
 
 ```javascript
@@ -513,6 +515,7 @@ Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at
 Cart must have items and complete shipping address
 
 `@param {string} cartId`
+
 `@param {string|FulfillmentOption} // so_id or FulfillmentOption`
 
 ```javascript
