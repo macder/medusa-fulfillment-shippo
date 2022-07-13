@@ -48,7 +48,7 @@ class ShippoRatesService extends BaseService {
     await this.#setProps(cartId)
 
     const cartIsReady = await this.#isCartReady()
-    const requiresRates = await this.requiresRates_()
+    const requiresRates = await this.#requiresRates()
 
     if (cartIsReady && requiresRates) {
       await this.#applyRates()
@@ -218,7 +218,7 @@ class ShippoRatesService extends BaseService {
     return { ...option, amount: price }
   }
 
-  async requiresRates_() {
+  async #requiresRates() {
     return (
       !!this.shippingOptions_.find((so) => so.data?.type === "LIVE_RATE") &&
       true
