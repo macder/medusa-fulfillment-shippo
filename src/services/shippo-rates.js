@@ -64,8 +64,7 @@ class ShippoRatesService extends BaseService {
    */
   async fetchCartRates(cartId) {
     await this.setProps_(cartId)
-    const args = await this.buildRequestParams_()
-    return await this.fetchRates_(args)
+    return await this.fetchRates_()
   }
 
   /**
@@ -85,8 +84,7 @@ class ShippoRatesService extends BaseService {
       )
 
       this.setOptions_(shippingOption)
-      const args = await this.buildRequestParams_()
-      const rate = await this.fetchRates_(args)
+      const rate = await this.fetchRates_()
       return rate[0]
     }
     return Promise.reject({ error: "cart not ready" })
@@ -98,14 +96,12 @@ class ShippoRatesService extends BaseService {
    * @return {int} the calculated or fallback price
    */
   getPrice(rate) {
-    // amount_local: calculated || amount: fallback
     const price = rate?.amount_local || rate?.amount
     return parseInt(parseFloat(price) * 100, 10)
   }
 
   async applyRates_() {
-    const args = await this.buildRequestParams_()
-    const rates = await this.fetchRates_(args)
+    const rates = await this.fetchRates_()
 
     this.setOptions_(
       this.shippingOptions_.map((so) =>
@@ -125,10 +121,9 @@ class ShippoRatesService extends BaseService {
     )
 
     return {
-      options: await this.getFulfillmentOptions_(),
-      to_address: toAddress,
+      address_to: toAddress,
       line_items: await this.formatLineItems_(),
-      parcel_template_id: parcelId,
+      parcel: parcelId,
     }
   }
 
@@ -152,10 +147,20 @@ class ShippoRatesService extends BaseService {
     return await this.shippingProfileService_.fetchCartOptions(this.cart_)
   }
 
-  async fetchRates_(args) {
-    const { parcel_template_id } = args
+  async fetchRates_() {
+    const params = await this.buildRequestParams_()
+    const { parcel } = params
+    const fulfillmentOptions = await this.getFulfillmentOptions_()
+
     return await this.shippo_
-      .fetchLiveRates(args)
+      .useClient.liverates.create(params)
+      .then((rates) =>
+        rates.results
+          .filter((rate) =>
+            fulfillmentOptions.find((fo) => fo.name === rate.title && true)
+          )
+          .map((rate) => ({ ...rate, parcel }))
+      )
       .catch((e) => console.error(e))
   }
 

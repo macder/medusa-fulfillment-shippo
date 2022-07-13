@@ -1,6 +1,5 @@
 import * as matchers from "jest-extended"
 import { faker } from "@faker-js/faker"
-
 import ShippoPackerService from "../shippo-packer"
 import ShippoClientService from "../shippo-client"
 import ShippoFulfillmentService from "../shippo-fulfillment"
@@ -34,43 +33,6 @@ describe("ShippoRatesService", () => {
     setShippingOptionPrices: jest.fn(async (options) => options),
   }
 
-  const mockLiveRates = (titles) =>
-    makeArrayOf(mockLiveRate, titles.length).map((item, i) => ({
-      ...item,
-      title: titles[i],
-    }))
-
-  const mockShippingOptions = (titles) =>
-    makeArrayOf(mockShippingOption, titles.length, {
-      variant: "live_rate",
-    }).map((item, i) => {
-      item.data.name = titles[i]
-      return item
-    })
-
-  const liveRateTitles = faker.helpers.uniqueArray(
-    () => faker.random.words(4),
-    5
-  )
-
-  const liveRates = mockLiveRates(liveRateTitles)
-  const shippingOptionTitles = faker.helpers.arrayElements(liveRateTitles)
-  const shippingOptions = mockShippingOptions(shippingOptionTitles)
-
-  const shippo = jest.fn(() => ({
-    userparceltemplates: {
-      list: jest.fn(async () =>
-        mockParcelTemplateResponse(faker.datatype.number({ min: 10, max: 20 }))
-      ),
-    },
-    liverates: {
-      create: jest.fn(async () => ({ results: liveRates })),
-    },
-  }))
-
-  const shippingProfileService = {
-    fetchCartOptions: jest.fn((cart) => shippingOptions),
-  }
 
   describe("fetchCartOptions", () => {
     beforeAll(async () => {
@@ -83,8 +45,17 @@ describe("ShippoRatesService", () => {
       }),
     }
 
+    const shippingProfileService = {
+      fetchCartOptions: jest.fn(async (cart) => {
+        const soCalculated = [mockShippingOption({ variant: "live_rate" })]
+        const soFlatRate = [mockShippingOption({ variant: "default" })]
+        soCalculated[0].data.name = "testing 123"
+
+        return soCalculated.concat(soFlatRate)
+      }),
+    }
+
     const shippoClientService = new ShippoClientService({}, {})
-    shippoClientService.client_ = shippo()
     const shippoPackerService = new ShippoPackerService(
       { shippoClientService },
       {}
@@ -102,10 +73,7 @@ describe("ShippoRatesService", () => {
     )
 
     it("returned shipping options that are live-rate have a price", async () => {
-      // const cart = mockCart({ hasAddress: true, hasItems: 1 })
-
       const result = await shippoRatesService.fetchCartOptions("cart_id")
-
       result.forEach((result) => {
         if (result.data.type === "LIVE_RATE") {
           expect(result.amount).toBeNumber()
@@ -118,17 +86,6 @@ describe("ShippoRatesService", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
-
-    // const cartService = {
-    //   retrieve: jest.fn(
-    //     async (cart_id) => {
-    //       if(cart_id === 'id_noEmail_noAddress_noItems') {
-    //         return mockCart({ hasAddress: false, hasItems: 0 })
-    //       }
-
-    //     }
-    //   )
-    // }
 
     const shippoRatesService = new ShippoRatesService({}, {})
 

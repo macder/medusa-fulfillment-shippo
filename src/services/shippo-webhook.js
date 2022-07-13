@@ -37,7 +37,7 @@ class ShippoWebhookService extends BaseService {
 
     const expandedTransaction = await this.retrieveExpandedTransaction_(
       transaction.object_id,
-      orderDisplayId
+      order
     )
 
     // check if this fulfillment is already shipped
@@ -86,10 +86,8 @@ class ShippoWebhookService extends BaseService {
     return string.replace(/[^0-9]/g, "")
   }
 
-  async retrieveExpandedTransaction_(id, orderDisplayId) {
-    const transaction = await this.shippo_.fetchOrderTransactions({
-      displayId: orderDisplayId,
-    })
+  async retrieveExpandedTransaction_(id, order) {
+    const transaction = await this.shippo_.fetchExpandedTransactions(order)
     return transaction.find(({ object_id }) => object_id === id)
   }
 

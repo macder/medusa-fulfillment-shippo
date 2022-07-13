@@ -5,6 +5,8 @@ import { shippoLineItem, shippoOrder } from "../utils/formatters"
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
+  #shippo
+
   constructor(
     {
       cartService,
@@ -29,7 +31,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.orderService_ = orderService
 
     /** @private @const {ShippoClientService} */
-    this.shippo_ = shippoClientService
+    this.#shippo = shippoClientService
 
     /** @private @const {ShippoPackerService} */
     this.shippoPackerService_ = shippoPackerService
@@ -41,13 +43,39 @@ class ShippoFulfillmentService extends FulfillmentService {
     this.totalsService_ = totalsService
 
     /** @public @const {} */
-    this.useClient = this.shippo_.getClient()
+    // this.useClient = this.#shippo.getClient()
   }
 
   async getFulfillmentOptions() {
-    const shippingOptions = await this.shippo_.retrieveFulfillmentOptions()
-    const returnOptions = this.makeReturnOptions_(shippingOptions)
-    return shippingOptions.concat(returnOptions)
+    return await this.#shippo
+      .retrieveServiceOptions()
+      .then(async ({ carriers, groups }) => {
+        const fulfillmentOptions = await this.#findActiveCarriers(carriers)
+          .then((activeCarriers => this.#splitCarriersToServices(activeCarriers)))
+
+        const fulfillmentOptionGroups = groups
+        return [...fulfillmentOptions, ...fulfillmentOptionGroups]
+      })
+  }
+
+  async #findActiveCarriers(carriers) {
+    return carriers.filter((carrier) => carrier.active)
+  }
+
+  async #splitCarriersToServices(carriers) {
+    return carriers.flatMap((carrier) =>
+      carrier.service_levels.map((service_type) => {
+        const { service_levels, ...service } = {
+          ...service_type,
+          id: `shippo-fulfillment-${service_type.token}`,
+          name: `${carrier.carrier_name} ${service_type.name}`,
+          carrier_id: carrier.object_id,
+          is_group: false,
+          ...carrier,
+        }
+        return service
+      })
+    )
   }
 
   async createFulfillment(
@@ -56,7 +84,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     fromOrder,
     fulfillment
   ) {
-    const fromAddress = await this.shippo_.fetchSenderAddress()
+    const fromAddress = await this.#shippo.fetchSenderAddress()
 
     const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
     lineItems.forEach((item) => {
@@ -92,11 +120,12 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async createShippoOrder_(order, fromAddress, lineItems, parcelName) {
-    return await this.shippo_
-      .createOrder(await shippoOrder(order, fromAddress, lineItems, parcelName))
-      .catch((e) => {
-        throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
-      })
+    const client = this.#shippo.getClient()
+    const params = await shippoOrder(order, fromAddress, lineItems, parcelName)
+
+    return await client.order.create(params).catch((e) => {
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+    })
   }
 
   async cancelFulfillment(fulfillment) {
@@ -153,8 +182,8 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async retrieveReturnLabel(order) {
-    const transaction = await this.shippo_
-      .fetchOrderTransactions({ displayId: order.display_id })
+    const transaction = await this.#shippo
+      .fetchExpandedTransactions(order)
       .then((transactions) => {
         const returnTransact = transactions.find((ta) => ta.is_return)
 
@@ -177,8 +206,8 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     if (transaction) {
       // "other one" has eveything except label_url...
-      return await this.shippo_
-        .fetchTransaction(transaction.object_id)
+      return await this.#shippo
+        .useClient.transaction.retrieve(transaction.object_id)
         .then(({ label_url }) => ({ ...transaction, label_url }))
     }
     return Promise.resolve(null)

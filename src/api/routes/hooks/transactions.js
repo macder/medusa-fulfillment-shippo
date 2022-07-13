@@ -26,7 +26,7 @@ export default async (req, res, next) => {
       // Then, if it exist, use it as the trusted data going forward instead of the input (req.body)...
       // Otherwise respond with a 500 and go back to sleep...
       const transaction = await shippoClientService
-        .fetchTransaction(untrustedData.object_id)
+        .useClient.transaction.retrieve(untrustedData.object_id)
         .catch((e) => console.error(e))
 
       if (transaction?.object_state === "VALID") {
