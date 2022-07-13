@@ -44,6 +44,9 @@ Returns, exchanges, and claims
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
 *   [References](#references)
+    *   [ShippoRatesService](#shipporatesservice)
+    *   [ShippoPackerService](#shippopackerservice)
+    *   [ShippoClientService](#shippoclientservice)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
@@ -540,11 +543,11 @@ Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-f
 
 `@return {array.<object>}`
 
-Fetches the `Order` transactions from shippo 
+Fetches the `Order` transactions from shippo
 
-More useful data than [`api.goshippo.com/transactions` ](https://goshippo.com/docs/reference#transactions)
+More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/docs/reference#transactions)
 
- `rate`, `parcel`, `address_to`, `order` + other fields are expanded, AND includes `is_return`
+`rate`, `parcel`, `address_to`, `order` + other fields are expanded, AND includes `is_return`
 
 ```javascript
 await shippoClientService.fetchExpandedTransactions(order)
@@ -565,7 +568,6 @@ await shippoClientService.fetchSenderAddress()
 `@return {array.<object>}`
 
 Fetches all custom parcel templates from shippo account
-
 
 ```javascript
 await shippoClientService.fetchUserParcelTemplates()
@@ -592,9 +594,6 @@ Generic polling method. Useful for [Asynchronous API Response Handling](https://
 `interval` milliseconds between executions
 
 `maxAttempts` ...
-
-
-
 
 ## Shippo Node Client
 
