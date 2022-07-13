@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.16.0] (2022-07-13)
+
+Added
+
+*   ShippoClientService public API stabilized and documented [#165](https://github.com/macder/medusa-fulfillment-shippo/issues/165)
+*   ShippoPackerService public API stabilized and documented [#166](https://github.com/macder/medusa-fulfillment-shippo/issues/166)
+
+Fixed
+
+*   Type error in webhook [#155](https://github.com/macder/medusa-fulfillment-shippo/issues/155)
+
 ## \[0.15.0] (2022-07-12)
 
 Added
