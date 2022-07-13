@@ -99,7 +99,7 @@ GET /admin/fulfillments/:id/shippo/order
 
 ```javascript
 const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
+const client = shippoClientService.useClient
 
 await client.order.retrieve(shippo_order_id)
 ```
@@ -120,7 +120,7 @@ GET /admin/fulfillments/:id/shippo/packingslip
 
 ```javascript
 const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
+const client = shippoClientService.useClient
 
 await client.order.packingslip(shippo_order_id)
 ```
@@ -575,13 +575,15 @@ await shippoClientService.fetchUserParcelTemplates()
 
 ### poll()
 
-`@param {function} fn`
+`@param {object} obj`
 
-`@param {function} validate`
+`@param {obj.function} fn`
 
-`@param {number} interval`
+`@param {obj.function} validate`
 
-`@param {number} maxAttempts`
+`@param {obj.number} interval`
+
+`@param {obj.number} maxAttempts`
 
 `@return {Promise}`
 
@@ -595,6 +597,15 @@ Generic polling method. Useful for [Asynchronous API Response Handling](https://
 
 `maxAttempts` ...
 
+```javascript
+await shippoClientService.poll({
+  fn: async () => await fetchAsyncEndpoint(params),
+  validate: (result) => result === "foo bar",
+  interval: 2500,
+  maxAttempts: 3,
+})
+```
+
 ## Shippo Node Client
 
 This plugin is using a forked version of the official shippo-node-client. 
@@ -605,11 +616,13 @@ The fork adds support for the following endpoints:
 *   service-groups
 *   user-parcel-templates
 *   orders/:id/packingslip
+*   ...
+*   Doc is WIP
 
-The client is exposed on the `useClient` property
+The client is exposed on the `useClient` property of `shippoClientService`
 
 ```javascript
-const client = shippoFulfillmentService.useClient
+const client = shippoClientService.useClient
 
 // Forks additional methods
 await client.liverates.create({...parms})
