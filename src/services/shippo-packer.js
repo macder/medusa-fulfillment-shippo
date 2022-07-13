@@ -26,8 +26,8 @@ class ShippoPackerService extends BaseService {
 
     const parcelTemplates = await this.shippo_.fetchUserParcelTemplates()
 
-    this.setBins_(parcelTemplates)
-    this.setItems_(lineItems)
+    this.#setBins(parcelTemplates)
+    this.#setItems(lineItems)
     const fitBins = []
 
     this.bins_.forEach((bin) => {
@@ -44,19 +44,19 @@ class ShippoPackerService extends BaseService {
         fitBins.push(packer.bins[0])
       }
     })
-    return this.result_(fitBins)
+    return this.#result(fitBins)
   }
 
   /**
    * @param  {} fitBins
    */
-  result_(fitBins) {
+  #result(fitBins) {
     return fitBins.map((bin) => {
       const binItemsVolume = bin.items.map(
         (item) =>
-          this.reduceFactor_(item.width) *
-          this.reduceFactor_(item.height) *
-          this.reduceFactor_(item.depth)
+          this.#reduceFactor(item.width) *
+          this.#reduceFactor(item.height) *
+          this.#reduceFactor(item.depth)
       )
 
       const totalItemVolume = binItemsVolume.reduce((a, b) => a + b, 0)
@@ -66,15 +66,15 @@ class ShippoPackerService extends BaseService {
           title: item.name.title,
           product_id: item.name.product_id,
           variant_id: item.name.variant_id,
-          length: this.reduceFactor_(item.depth),
-          width: this.reduceFactor_(item.width),
-          height: this.reduceFactor_(item.height),
-          weight: this.reduceFactor_(item.weight),
-          volume: this.calculateVolume_(item),
+          length: this.#reduceFactor(item.depth),
+          width: this.#reduceFactor(item.width),
+          height: this.#reduceFactor(item.height),
+          weight: this.#reduceFactor(item.weight),
+          volume: this.#calculateVolume(item),
           locus: {
             allowed_rotation: item.allowedRotation,
             rotation_type: item.rotationType,
-            position: item.position.map((e) => this.reduceFactor_(e)),
+            position: item.position.map((e) => this.#reduceFactor(e)),
           },
         }
       })
@@ -94,16 +94,13 @@ class ShippoPackerService extends BaseService {
     })
   }
 
-  /**
-   * @param  {array} parcelTemplates
-   */
-  setBins_(parcelTemplates) {
+  #setBins(parcelTemplates) {
     const { Bin } = BP3D
 
     this.bins_ = parcelTemplates
       .map(({ object_owner, object_created, object_updated, ...bin }) => ({
         ...bin,
-        volume: this.calculateVolume_(bin),
+        volume: this.#calculateVolume(bin),
       }))
       .sort((a, b) => a.volume - b.volume)
       .map(
@@ -112,14 +109,11 @@ class ShippoPackerService extends BaseService {
       )
   }
 
-  /**
-   * @param  {array} lineItems
-   */
-  setItems_(lineItems) {
+  #setItems(lineItems) {
     const { Item } = BP3D
     this.items_ = lineItems
       .flatMap((item) =>
-        item.quantity > 1 ? this.splitItem_(item) : productLineItem(item)
+        item.quantity > 1 ? this.#splitItem(item) : productLineItem(item)
       )
       .map(
         (item) =>
@@ -137,19 +131,19 @@ class ShippoPackerService extends BaseService {
       )
   }
 
-  calculateVolume_({ length, depth, width, height }) {
+  #calculateVolume({ length, depth, width, height }) {
     return length
       ? length * width * height
-      : this.reduceFactor_(depth) *
-          this.reduceFactor_(width) *
-          this.reduceFactor_(height)
+      : this.#reduceFactor(depth) *
+          this.#reduceFactor(width) *
+          this.#reduceFactor(height)
   }
 
-  reduceFactor_(num) {
+  #reduceFactor(num) {
     return num / 100000
   }
 
-  splitItem_(item) {
+  #splitItem(item) {
     return [...Array(item.quantity).keys()].map(() => productLineItem(item))
   }
 }

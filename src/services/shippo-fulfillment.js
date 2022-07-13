@@ -41,99 +41,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
-
-    /** @public @const {} */
-    // this.useClient = this.#shippo.getClient()
-  }
-
-  async getFulfillmentOptions() {
-    return await this.#shippo
-      .retrieveServiceOptions()
-      .then(async ({ carriers, groups }) => {
-        const fulfillmentOptions = await this.#findActiveCarriers(carriers)
-          .then((activeCarriers => this.#splitCarriersToServices(activeCarriers)))
-
-        const fulfillmentOptionGroups = groups
-        return [...fulfillmentOptions, ...fulfillmentOptionGroups]
-      })
-  }
-
-  async #findActiveCarriers(carriers) {
-    return carriers.filter((carrier) => carrier.active)
-  }
-
-  async #splitCarriersToServices(carriers) {
-    return carriers.flatMap((carrier) =>
-      carrier.service_levels.map((service_type) => {
-        const { service_levels, ...service } = {
-          ...service_type,
-          id: `shippo-fulfillment-${service_type.token}`,
-          name: `${carrier.carrier_name} ${service_type.name}`,
-          carrier_id: carrier.object_id,
-          is_group: false,
-          ...carrier,
-        }
-        return service
-      })
-    )
-  }
-
-  async createFulfillment(
-    methodData,
-    fulfillmentItems,
-    fromOrder,
-    fulfillment
-  ) {
-    const fromAddress = await this.#shippo.fetchSenderAddress()
-
-    const lineItems = await this.formatLineItems_(fulfillmentItems, fromOrder)
-    lineItems.forEach((item) => {
-      if (item.quantity < 1) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `${item.title} quantity: ${item.quantity}`
-        )
-      }
-    })
-    const parcelName = methodData?.parcel_template?.name ?? null
-
-    const shippoOrder = await this.createShippoOrder_(
-      fromOrder,
-      fromAddress,
-      lineItems,
-      parcelName
-    ).then(async (response) => {
-      const eventType = await this.eventType_(fulfillment)
-
-      this.eventBusService_.emit(eventType, {
-        order_id: fromOrder.id,
-        fulfillment_id: fulfillment.id,
-        customer_id: fromOrder.customer_id,
-        shippo_order: response,
-      })
-      return response
-    })
-
-    return {
-      shippo_order_id: shippoOrder.object_id,
-    }
-  }
-
-  async createShippoOrder_(order, fromAddress, lineItems, parcelName) {
-    const client = this.#shippo.getClient()
-    const params = await shippoOrder(order, fromAddress, lineItems, parcelName)
-
-    return await client.order.create(params).catch((e) => {
-      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
-    })
-  }
-
-  async cancelFulfillment(fulfillment) {
-    return Promise.resolve({})
-  }
-
-  async canCalculate(data) {
-    return data.type === "LIVE_RATE"
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
@@ -150,6 +57,55 @@ class ShippoFulfillmentService extends FulfillmentService {
     return this.shippoRatesService_.getPrice(rate)
   }
 
+  async canCalculate(data) {
+    return data.type === "LIVE_RATE"
+  }
+
+  async cancelFulfillment(fulfillment) {
+    return Promise.resolve({})
+  }
+
+  async createFulfillment(
+    methodData,
+    fulfillmentItems,
+    fromOrder,
+    fulfillment
+  ) {
+    const fromAddress = await this.#shippo.fetchSenderAddress()
+
+    const lineItems = await this.#formatLineItems(fulfillmentItems, fromOrder)
+    lineItems.forEach((item) => {
+      if (item.quantity < 1) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `${item.title} quantity: ${item.quantity}`
+        )
+      }
+    })
+    const parcelName = methodData?.parcel_template?.name ?? null
+
+    const shippoOrder = await this.#createShippoOrder(
+      fromOrder,
+      fromAddress,
+      lineItems,
+      parcelName
+    ).then(async (response) => {
+      const eventType = await this.#eventType(fulfillment)
+
+      this.eventBusService_.emit(eventType, {
+        order_id: fromOrder.id,
+        fulfillment_id: fulfillment.id,
+        customer_id: fromOrder.customer_id,
+        shippo_order: response,
+      })
+      return response
+    })
+
+    return {
+      shippo_order_id: shippoOrder.object_id,
+    }
+  }
+
   async createReturn(returnOrder) {
     const orderId =
       returnOrder?.swap?.order_id ||
@@ -159,8 +115,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     const order = await this.orderService_.retrieve(orderId, {
       relations: ["fulfillments"],
     })
-    const returnLabel = await this.retrieveReturnLabel(order)
-    const eventType = await this.eventType_(returnOrder)
+    const returnLabel = await this.#retrieveReturnLabel(order)
+    const eventType = await this.#eventType(returnOrder)
 
     this.eventBusService_.emit(eventType, {
       order: returnOrder,
@@ -181,7 +137,104 @@ class ShippoFulfillmentService extends FulfillmentService {
     return {}
   }
 
-  async retrieveReturnLabel(order) {
+  async getFulfillmentOptions() {
+    return await this.#shippo
+      .retrieveServiceOptions()
+      .then(async ({ carriers, groups }) => {
+        const fulfillmentOptions = await this.#findActiveCarriers(carriers)
+          .then((activeCarriers => this.#splitCarriersToServices(activeCarriers)))
+
+        const fulfillmentOptionGroups = groups
+        return [...fulfillmentOptions, ...fulfillmentOptionGroups]
+      })
+  }
+
+  async validateFulfillmentData(optionData, data, cart) {
+    if (optionData.is_return || !cart?.id) {
+      return { ...data }
+    }
+
+    const parcel = await this.shippoPackerService_
+      .packBins(cart.items)
+      .then((packed) => ({
+        id: packed[0].object_id,
+        name: packed[0].name,
+      }))
+
+    return {
+      ...data,
+      parcel_template: parcel,
+    }
+  }
+
+  async validateOption(data) {
+    return true
+  }
+
+  async #createShippoOrder(order, fromAddress, lineItems, parcelName) {
+    const client = this.#shippo.getClient()
+    const params = await shippoOrder(order, fromAddress, lineItems, parcelName)
+
+    return await client.order.create(params).catch((e) => {
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
+    })
+  }
+
+  async #eventType(orderOrFulfill) {
+    if (orderOrFulfill?.provider_id) {
+      const fulfillment = orderOrFulfill
+
+      return fulfillment.claim_order_id
+        ? "shippo.replace_order_created"
+        : "shippo.order_created"
+    }
+
+    const order = orderOrFulfill
+
+    if (!order.swap_id && !order.claim_order_id) {
+      return "shippo.return_requested"
+    } else if (order.swap_id) {
+      return "shippo.swap_created"
+    } else if (order.claim_order_id) {
+      const { claim_order } = order
+      return `shippo.claim_${claim_order.type}_created`
+    }
+  }
+
+  async #findActiveCarriers(carriers) {
+    return carriers.filter((carrier) => carrier.active)
+  }
+
+  async #formatLineItems(items, order) {
+    if (order?.is_claim) {
+      order = await this.orderService_.retrieve(order.order.id, {
+        relations: [
+          "region",
+          "payments",
+          "items",
+          "discounts",
+          "discounts.rule",
+        ],
+      })
+    }
+
+    return await Promise.all(
+      items.map(
+        async (item) =>
+          await this.totalsService_
+            .getLineItemTotals(item, order)
+            .then((totals) =>
+              shippoLineItem(
+                item,
+                totals.unit_price,
+                order.region.currency_code
+              )
+            )
+      )
+    )
+  }
+
+  async #retrieveReturnLabel(order) {
     const transaction = await this.#shippo
       .fetchExpandedTransactions(order)
       .then((transactions) => {
@@ -213,103 +266,21 @@ class ShippoFulfillmentService extends FulfillmentService {
     return Promise.resolve(null)
   }
 
-  async validateOption(data) {
-    return true
-  }
 
-  async validateFulfillmentData(optionData, data, cart) {
-    if (optionData.is_return || !cart?.id) {
-      return { ...data }
-    }
-
-    const parcel = await this.shippoPackerService_
-      .packBins(cart.items)
-      .then((packed) => ({
-        id: packed[0].object_id,
-        name: packed[0].name,
-      }))
-
-    return {
-      ...data,
-      parcel_template: parcel,
-    }
-  }
-
-  async formatLineItems_(items, order) {
-    if (order?.is_claim) {
-      order = await this.orderService_.retrieve(order.order.id, {
-        relations: [
-          "region",
-          "payments",
-          "items",
-          "discounts",
-          "discounts.rule",
-        ],
-      })
-    }
-
-    return await Promise.all(
-      items.map(
-        async (item) =>
-          await this.totalsService_
-            .getLineItemTotals(item, order)
-            .then((totals) =>
-              shippoLineItem(
-                item,
-                totals.unit_price,
-                order.region.currency_code
-              )
-            )
-      )
-    )
-  }
-
-  makeReturnOptions_(fulfillmentOptions) {
-    return fulfillmentOptions
-      .filter((option) => !option?.is_group)
-      .map((option) => {
-        return {
-          ...option,
-          is_return: true,
+  async #splitCarriersToServices(carriers) {
+    return carriers.flatMap((carrier) =>
+      carrier.service_levels.map((service_type) => {
+        const { service_levels, ...service } = {
+          ...service_type,
+          id: `shippo-fulfillment-${service_type.token}`,
+          name: `${carrier.carrier_name} ${service_type.name}`,
+          carrier_id: carrier.object_id,
+          is_group: false,
+          ...carrier,
         }
+        return service
       })
-  }
-
-  async eventType_(orderOrFulfill) {
-    if (orderOrFulfill?.provider_id) {
-      const fulfillment = orderOrFulfill
-
-      return fulfillment.claim_order_id
-        ? "shippo.replace_order_created"
-        : "shippo.order_created"
-    }
-
-    const order = orderOrFulfill
-
-    if (!order.swap_id && !order.claim_order_id) {
-      return "shippo.return_requested"
-    } else if (order.swap_id) {
-      return "shippo.swap_created"
-    } else if (order.claim_order_id) {
-      const { claim_order } = order
-      return `shippo.claim_${claim_order.type}_created`
-    }
-  }
-
-  async retrieveCart_(id) {
-    return await this.cartService_.retrieve(id, {
-      select: ["subtotal"],
-      relations: [
-        "shipping_address",
-        "items",
-        "items.tax_lines",
-        "items.variant",
-        "items.variant.product",
-        "discounts",
-        "discounts.rule",
-        "region",
-      ],
-    })
+    )
   }
 }
 
