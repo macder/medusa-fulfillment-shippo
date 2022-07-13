@@ -25,7 +25,11 @@ const shippo = jest.fn(() => ({
     ),
   },
   liverates: {
-    create: jest.fn(async () => ({ results: makeArrayOf(mockLiveRate, 10) })),
+    create: jest.fn(async () => {
+      const liveRates = { results: makeArrayOf(mockLiveRate, 3) }
+      liveRates.results[1].title = "testing 123"
+      return liveRates
+    }),
   },
   order: {
     create: jest.fn(async () => ({ object_id: "1010101010" })),

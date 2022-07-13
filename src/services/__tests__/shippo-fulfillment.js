@@ -85,7 +85,10 @@ describe("ShippoFulfillmentService", () => {
     }
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     const shippoRatesService = new ShippoRatesService(
       { shippoClientService, totalsService },
       {}
@@ -99,11 +102,6 @@ describe("ShippoFulfillmentService", () => {
         totalsService,
       },
       {}
-    )
-
-    shippoRatesService.retrieveRawRate = jest.fn(
-      // fetchOptionRate
-      async (fulfillmentOption, cart, parcelId) => mockLiveRate()
     )
 
     const cart = mockCart({ hasAddress: false, hasItems: 1 })
@@ -273,7 +271,10 @@ describe("ShippoFulfillmentService", () => {
 
     const shippoClientService = new ShippoClientService({}, {})
     shippoClientService.client_ = shippo()
-    const shippoPackerService = new ShippoPackerService({}, {})
+    const shippoPackerService = new ShippoPackerService(
+      { shippoClientService },
+      {}
+    )
     const shippoRatesService = new ShippoRatesService(
       {
         cartService,
@@ -357,14 +358,6 @@ describe("ShippoFulfillmentService", () => {
       expect(result).toBeObject()
       expect(result).toContainKey("shippo_order_id")
     })
-
-    // it("throws when line item quantity < 1", async () => {
-    //   fulfillmentItems[0].quantity = 0
-
-    //   expect(async() => {
-    //     shippoFulfilService.createFulfillment(methodData, fulfillmentItems, fromOrder)
-    //   }).toThrow()
-    // })
   })
 
   /** **************************
@@ -408,199 +401,4 @@ describe("ShippoFulfillmentService", () => {
   //     await expect(shippoFulfilService.createReturn()).resolves.toEqual({})
   //   })
   // })
-
-  /** **************************
-  
-    formatLineItems_
-  
-  *****************************/
-  describe("formatLineItems_", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-      totalsService,
-    })
-
-    const cart = mockCart({
-      hasAddress: true,
-      hasItems: faker.datatype.number({ min: 1, max: 6 }),
-    })
-
-    it("returned an array", async () => {
-      const result = await shippoFulfilService.formatLineItems_(
-        cart.items,
-        cart
-      )
-
-      expect(result).toBeArray()
-    })
-
-    it("returned array of object with correct property names", async () => {
-      const result = await shippoFulfilService.formatLineItems_(
-        cart.items,
-        cart
-      )
-
-      expect(result).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            title: expect.any(String),
-            variant_title: expect.any(String),
-            quantity: expect.any(Number),
-            total_price: expect.any(String),
-            currency: expect.any(String),
-            sku: expect.any(String),
-            weight: expect.any(String),
-            weight_unit: expect.any(String),
-            manufacture_country: expect.any(String),
-          }),
-        ])
-      )
-    })
-
-    it("returns the same ammount of line items as cart items", async () => {
-      const loopCount = faker.datatype.number({ min: 3, max: 6 })
-
-      for (let i = 0; i < loopCount; i++) {
-        const itemCount = faker.datatype.number({ min: 1, max: 100 })
-        const cart = mockCart({ hasAddress: true, hasItems: itemCount })
-        const result = await shippoFulfilService.formatLineItems_(
-          cart.items,
-          cart
-        )
-        expect(result).toHaveLength(itemCount)
-      }
-    })
-
-    it("returns empty array if cart has no items", async () => {
-      const cart = mockCart({ hasAddress: true })
-      const result = await shippoFulfilService.formatLineItems_(
-        cart.items,
-        cart
-      )
-      expect(result).toHaveLength(0)
-    })
-  })
-
-  describe("eventType_", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-    })
-
-    it("returns 'shippo.return_requested'", async () => {
-      const returnOrder = {
-        swap_id: null,
-        claim_order_id: null,
-      }
-
-      const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("shippo.return_requested")
-    })
-
-    it("returns 'shippo.swap_created'", async () => {
-      const returnOrder = {
-        swap_id: "swap_123",
-        claim_order_id: null,
-      }
-
-      const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("shippo.swap_created")
-    })
-
-    it("returns 'shippo.claim_replace_created'", async () => {
-      const returnOrder = {
-        swap_id: null,
-        claim_order_id: "claim_123",
-        claim_order: {
-          type: "replace",
-        },
-      }
-
-      const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("shippo.claim_replace_created")
-    })
-
-    it("returns 'shippo.claim_refund_created'", async () => {
-      const returnOrder = {
-        swap_id: null,
-        claim_order_id: "claim_123",
-        claim_order: {
-          type: "refund",
-        },
-      }
-
-      const result = await shippoFulfilService.eventType_(returnOrder)
-      expect(result).toBe("shippo.claim_refund_created")
-    })
-
-    it("returns 'shippo.replace_order_created'", async () => {
-      const fulfillment = {
-        provider_id: "shippo",
-        claim_order_id: "claim_123",
-      }
-
-      const result = await shippoFulfilService.eventType_(fulfillment)
-      expect(result).toBe("shippo.replace_order_created")
-    })
-
-    it("returns 'shippo.order_created'", async () => {
-      const fulfillment = {
-        provider_id: "shippo",
-        claim_order_id: null,
-      }
-
-      const result = await shippoFulfilService.eventType_(fulfillment)
-      expect(result).toBe("shippo.order_created")
-    })
-  })
-
-  /** **************************
-  
-    retrieveCart_
-  
-  *****************************/
-  describe("retrieveCart_", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    const cartService = {
-      retrieve: jest.fn(async (cartId, options, totalsConfig) => mockCart({})),
-    }
-
-    const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-      cartService,
-    })
-
-    const spy = jest.spyOn(cartService, "retrieve")
-
-    it("called cartService.retrieve with correct params", async () => {
-      shippoFulfilService.retrieveCart_(2)
-
-      expect(spy).toHaveBeenCalledWith(2, {
-        select: ["subtotal"],
-        relations: [
-          "shipping_address",
-          "items",
-          "items.tax_lines",
-          "items.variant",
-          "items.variant.product",
-          "discounts",
-          "discounts.rule",
-          "region",
-        ],
-      })
-    })
-  })
 })

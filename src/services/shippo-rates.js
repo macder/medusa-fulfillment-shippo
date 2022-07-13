@@ -45,15 +45,15 @@ class ShippoRatesService extends BaseService {
    * @return {array.<ShippingOption>} contextually priced list of available shipping options
    */
   async fetchCartOptions(cartId) {
-    await this.setProps_(cartId)
+    await this.#setProps(cartId)
 
-    const cartIsReady = await this.isCartReady_()
-    const requiresRates = await this.requiresRates_()
+    const cartIsReady = await this.#isCartReady()
+    const requiresRates = await this.#requiresRates()
 
     if (cartIsReady && requiresRates) {
-      await this.applyRates_()
+      await this.#applyRates()
     }
-    await this.setOptionPrices_()
+    await this.#setOptionPrices()
     return this.shippingOptions_
   }
 
@@ -63,9 +63,8 @@ class ShippoRatesService extends BaseService {
    * @return {array.<object>} - list of shippo live-rates
    */
   async fetchCartRates(cartId) {
-    await this.setProps_(cartId)
-    const args = await this.buildRequestParams_()
-    return await this.fetchRates_(args)
+    await this.#setProps(cartId)
+    return await this.#fetchRates()
   }
 
   /**
@@ -75,18 +74,17 @@ class ShippoRatesService extends BaseService {
    * @return {object} shippo live-rate object
    */
   async fetchOptionRate(cartId, option) {
-    this.setCart_(await this.fetchCart_(cartId))
+    this.#setCart(await this.#fetchCart(cartId))
 
-    if (await this.isCartReady_()) {
-      const shippingOption = await this.fetchOptions_().then((options) =>
+    if (await this.#isCartReady()) {
+      const shippingOption = await this.#fetchOptions().then((options) =>
         option?.name
           ? [options.find((so) => so.data.object_id === option.object_id)]
           : [options.find((so) => so.id === option)]
       )
 
-      this.setOptions_(shippingOption)
-      const args = await this.buildRequestParams_()
-      const rate = await this.fetchRates_(args)
+      this.#setOptions(shippingOption)
+      const rate = await this.#fetchRates()
       return rate[0]
     }
     return Promise.reject({ error: "cart not ready" })
@@ -98,26 +96,24 @@ class ShippoRatesService extends BaseService {
    * @return {int} the calculated or fallback price
    */
   getPrice(rate) {
-    // amount_local: calculated || amount: fallback
     const price = rate?.amount_local || rate?.amount
     return parseInt(parseFloat(price) * 100, 10)
   }
 
-  async applyRates_() {
-    const args = await this.buildRequestParams_()
-    const rates = await this.fetchRates_(args)
+  async #applyRates() {
+    const rates = await this.#fetchRates()
 
-    this.setOptions_(
+    this.#setOptions(
       this.shippingOptions_.map((so) =>
-        this.putRate_(so, this.findRate_(so, rates))
+        this.#putRate(so, this.#findRate(so, rates))
       )
     )
   }
 
-  async buildRequestParams_(parcelTemplate = null) {
+  async #buildRequestParams(parcelTemplate = null) {
     const parcelId =
       parcelTemplate ??
-      (await this.packBins_().then((result) => result[0].object_id))
+      (await this.#packBins().then((result) => result[0].object_id))
 
     const toAddress = await shippoAddress(
       this.cart_.shipping_address,
@@ -125,14 +121,13 @@ class ShippoRatesService extends BaseService {
     )
 
     return {
-      options: await this.getFulfillmentOptions_(),
-      to_address: toAddress,
-      line_items: await this.formatLineItems_(),
-      parcel_template_id: parcelId,
+      address_to: toAddress,
+      line_items: await this.#formatLineItems(),
+      parcel: parcelId,
     }
   }
 
-  async fetchCart_(cartId) {
+  async #fetchCart(cartId) {
     return await this.cartService_.retrieve(cartId, {
       select: ["subtotal"],
       relations: [
@@ -148,22 +143,32 @@ class ShippoRatesService extends BaseService {
     })
   }
 
-  async fetchOptions_() {
+  async #fetchOptions() {
     return await this.shippingProfileService_.fetchCartOptions(this.cart_)
   }
 
-  async fetchRates_(args) {
-    const { parcel_template_id } = args
-    return await this.shippo_
-      .fetchLiveRates(args)
+  async #fetchRates() {
+    const params = await this.#buildRequestParams()
+    const { parcel } = params
+    const fulfillmentOptions = this.shippingOptions_.map((so) => so.data)
+
+    return await this.shippo_.useClient.liverates
+      .create(params)
+      .then((rates) =>
+        rates.results
+          .filter((rate) =>
+            fulfillmentOptions.find((fo) => fo.name === rate.title && true)
+          )
+          .map((rate) => ({ ...rate, parcel }))
+      )
       .catch((e) => console.error(e))
   }
 
-  findRate_(shippingOption, rates) {
+  #findRate(shippingOption, rates) {
     return rates.find((rate) => rate.title === shippingOption.data.name)
   }
 
-  async formatLineItems_() {
+  async #formatLineItems() {
     return await Promise.all(
       this.cart_.items.map(
         async (item) =>
@@ -180,24 +185,16 @@ class ShippoRatesService extends BaseService {
     )
   }
 
-  async getFulfillmentOptions_() {
-    return this.shippingOptions_.map((so) => so.data)
-  }
-
-  async isCartReady_() {
+  async #isCartReady() {
     if (!this.cart_.email || this.cart_.items.length === 0) {
       return false
     }
-    return await this.validateAddress_()
+    return await this.#validateAddress()
   }
 
-  async packBins_() {
-    const packed = await this.shippo_
-      .fetchUserParcelTemplates()
-      .then(
-        async (parcels) =>
-          await this.shippoPackerService_.packBins(this.cart_.items, parcels)
-      )
+  async #packBins() {
+    const packed = await this.shippoPackerService_.packBins(this.cart_.items)
+
     this.packerResult_ = packed
     return packed
   }
@@ -207,7 +204,7 @@ class ShippoRatesService extends BaseService {
    * @param {ShippingOption} option
    * @param {object} rate
    */
-  putRate_(option, rate) {
+  #putRate(option, rate) {
     const price = rate ? this.getPrice(rate) : option.amount
 
     if (option.data.type === "LIVE_RATE" && option.price_type === "flat_rate") {
@@ -221,22 +218,22 @@ class ShippoRatesService extends BaseService {
     return { ...option, amount: price }
   }
 
-  async requiresRates_() {
+  async #requiresRates() {
     return (
       !!this.shippingOptions_.find((so) => so.data?.type === "LIVE_RATE") &&
       true
     )
   }
 
-  setCart_(cart) {
+  #setCart(cart) {
     this.cart_ = cart
   }
 
-  setOptions_(options) {
+  #setOptions(options) {
     this.shippingOptions_ = options
   }
 
-  async setOptionPrices_() {
+  async #setOptionPrices() {
     const options = await this.pricingService_.setShippingOptionPrices(
       this.shippingOptions_,
       {
@@ -244,15 +241,15 @@ class ShippoRatesService extends BaseService {
       }
     )
 
-    this.setOptions_(options)
+    this.#setOptions(options)
   }
 
-  async setProps_(cartId) {
-    this.setCart_(await this.fetchCart_(cartId))
-    this.setOptions_(await this.fetchOptions_())
+  async #setProps(cartId) {
+    this.#setCart(await this.#fetchCart(cartId))
+    this.#setOptions(await this.#fetchOptions())
   }
 
-  async validateAddress_() {
+  async #validateAddress() {
     const address = this.cart_.shipping_address
     const requiredFields = [
       "first_name",

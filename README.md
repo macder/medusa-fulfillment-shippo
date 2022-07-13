@@ -44,6 +44,9 @@ Returns, exchanges, and claims
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
 *   [References](#references)
+    *   [ShippoRatesService](#shipporatesservice)
+    *   [ShippoPackerService](#shippopackerservice)
+    *   [ShippoClientService](#shippoclientservice)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
@@ -96,7 +99,7 @@ GET /admin/fulfillments/:id/shippo/order
 
 ```javascript
 const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
+const client = shippoClientService.useClient
 
 await client.order.retrieve(shippo_order_id)
 ```
@@ -117,7 +120,7 @@ GET /admin/fulfillments/:id/shippo/packingslip
 
 ```javascript
 const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoFulfillmentService.useClient
+const client = shippoClientService.useClient
 
 await client.order.packingslip(shippo_order_id)
 ```
@@ -266,7 +269,7 @@ Create shipping options for regions as usual
 **HTTP:**
 
 ```plaintext
-GET /shipping-options/:cart_id
+GET /store/shipping-options/:cart_id
 ```
 
 **Service:**
@@ -286,7 +289,7 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 **HTTP:**
 
 ```plaintext
-POST /carts/:id/shipping-methods
+POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
@@ -508,6 +511,101 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
 
+## ShippoPackerService
+
+*Stable v0.16.0+*
+
+Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
+
+### packBins()
+
+Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
+
+First array member is best fit, i.e. has lowest vacant volume
+
+`@param {array.<LineItem>} lineItems`
+
+`@return {array.<object>} `
+
+```javascript
+const packed = await shippoPackerService.packBins(lineItems)
+```
+
+## ShippoClientService
+
+*Stable v0.16.0+*
+
+Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
+
+### fetchExpandedTransactions()
+
+`@param {Order} order`
+
+`@return {array.<object>}`
+
+Fetches the `Order` transactions from shippo
+
+More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/docs/reference#transactions)
+
+`rate`, `parcel`, `address_to`, `order` + other fields are expanded, AND includes `is_return`
+
+```javascript
+await shippoClientService.fetchExpandedTransactions(order)
+```
+
+### fetchSenderAddress()
+
+`@return {Object}`
+
+Fetches the shippo account's default sender address
+
+```javascript
+await shippoClientService.fetchSenderAddress()
+```
+
+### fetchUserParcelTemplates()
+
+`@return {array.<object>}`
+
+Fetches all custom parcel templates from shippo account
+
+```javascript
+await shippoClientService.fetchUserParcelTemplates()
+```
+
+### poll()
+
+`@param {object} obj`
+
+`@param {obj.function} fn`
+
+`@param {obj.function} validate`
+
+`@param {obj.number} interval`
+
+`@param {obj.number} maxAttempts`
+
+`@return {Promise}`
+
+Generic polling method. Useful for [Asynchronous API Response Handling](https://goshippo.com/docs/async/)
+
+`fn` must be callable that returns some result
+
+`validate` must be a callable that returns a bool from testing result data. i.e. method that validates whether desired result achieved, or keep polling
+
+`interval` milliseconds between executions
+
+`maxAttempts` ...
+
+```javascript
+await shippoClientService.poll({
+  fn: async () => await fetchAsyncEndpoint(params),
+  validate: (result) => result === "foo bar",
+  interval: 2500,
+  maxAttempts: 3,
+})
+```
+
 ## Shippo Node Client
 
 This plugin is using a forked version of the official shippo-node-client. 
@@ -518,11 +616,13 @@ The fork adds support for the following endpoints:
 *   service-groups
 *   user-parcel-templates
 *   orders/:id/packingslip
+*   ...
+*   Doc is WIP
 
-The client is exposed on the `useClient` property
+The client is exposed on the `useClient` property of `shippoClientService`
 
 ```javascript
-const client = shippoFulfillmentService.useClient
+const client = shippoClientService.useClient
 
 // Forks additional methods
 await client.liverates.create({...parms})
