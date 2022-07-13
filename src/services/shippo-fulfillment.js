@@ -138,15 +138,16 @@ class ShippoFulfillmentService extends FulfillmentService {
   }
 
   async getFulfillmentOptions() {
-    return await this.#shippo
+    const fulfillmentOptions = await this.#shippo
       .retrieveServiceOptions()
       .then(async ({ carriers, groups }) => {
         const options = await this.#findActiveCarriers(carriers).then(
           (activeCarriers) => this.#splitCarriersToServices(activeCarriers)
         )
-
         return [...options, ...groups]
       })
+    const returnOptions = this.#makeReturnOptions(fulfillmentOptions)
+    return fulfillmentOptions.concat(returnOptions)
   }
 
   async validateFulfillmentData(optionData, data, cart) {
@@ -232,6 +233,17 @@ class ShippoFulfillmentService extends FulfillmentService {
             )
       )
     )
+  }
+
+  #makeReturnOptions(fulfillmentOptions) {
+    return fulfillmentOptions
+      .filter((option) => !option?.is_group)
+      .map((option) => {
+        return {
+          ...option,
+          is_return: true,
+        }
+      })
   }
 
   async #retrieveReturnLabel(order) {
