@@ -152,8 +152,8 @@ class ShippoRatesService extends BaseService {
     const { parcel } = params
     const fulfillmentOptions = this.shippingOptions_.map((so) => so.data)
 
-    return await this.shippo_
-      .useClient.liverates.create(params)
+    return await this.shippo_.useClient.liverates
+      .create(params)
       .then((rates) =>
         rates.results
           .filter((rate) =>

@@ -4,7 +4,6 @@ import ShippoClientService from "../shippo-client"
 expect.extend(matchers)
 
 describe("ShippoClientService", () => {
-
   describe("fetchUserParcelTemplates", () => {
     const shippoClientService = new ShippoClientService({}, {})
 

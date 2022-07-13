@@ -21,7 +21,7 @@ class ShippoClientService extends BaseService {
    * Requests are polled due to async nature of source endpoint.
    * @param {Order} order - order to get transactions for
    * @return {array.<Object>} list of transactions
-   */  
+   */
   async fetchExpandedTransactions(order) {
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
 
@@ -38,9 +38,9 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * Fetches the shippo account's default sender address 
+   * Fetches the shippo account's default sender address
    * @return {Object} address object
-   */  
+   */
   async fetchSenderAddress() {
     return await this.#client.account
       .address()
@@ -62,7 +62,7 @@ class ShippoClientService extends BaseService {
   /**
    * Generic polling
    * @param {function} fn - callable to execute with
-   * @param {function} validate - callable to validate each result, must return bool 
+   * @param {function} validate - callable to validate each result, must return bool
    * @param {number} interval - milliseconds between requests
    * @param {number} maxAttempts - maximum attempts
    * @return {function.<promise>} - resulting promise
@@ -87,7 +87,7 @@ class ShippoClientService extends BaseService {
 
   /**
    * Gets an instance of "shippo-node-client"
-   * Also accessible via the more convenient public prop "useClient" 
+   * Also accessible via the more convenient public prop "useClient"
    * @return {object} address object
    */
   getClient() {
@@ -114,7 +114,7 @@ class ShippoClientService extends BaseService {
   async #fulfillmentOptions() {
     return {
       carriers: await this.#fetchCarriers(),
-      groups: await this.#fetchServiceGroups()
+      groups: await this.#fetchServiceGroups(),
     }
   }
 

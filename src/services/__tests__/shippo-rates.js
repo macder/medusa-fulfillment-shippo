@@ -33,7 +33,6 @@ describe("ShippoRatesService", () => {
     setShippingOptionPrices: jest.fn(async (options) => options),
   }
 
-
   describe("fetchCartOptions", () => {
     beforeAll(async () => {
       jest.clearAllMocks()

@@ -141,9 +141,10 @@ class ShippoFulfillmentService extends FulfillmentService {
     return await this.#shippo
       .retrieveServiceOptions()
       .then(async ({ carriers, groups }) => {
-        const options = await this.#findActiveCarriers(carriers)
-          .then((activeCarriers => this.#splitCarriersToServices(activeCarriers)))
-          
+        const options = await this.#findActiveCarriers(carriers).then(
+          (activeCarriers) => this.#splitCarriersToServices(activeCarriers)
+        )
+
         return [...options, ...groups]
       })
   }
@@ -258,13 +259,12 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     if (transaction) {
       // "other one" has eveything except label_url...
-      return await this.#shippo
-        .useClient.transaction.retrieve(transaction.object_id)
+      return await this.#shippo.useClient.transaction
+        .retrieve(transaction.object_id)
         .then(({ label_url }) => ({ ...transaction, label_url }))
     }
     return Promise.resolve(null)
   }
-
 
   async #splitCarriersToServices(carriers) {
     return carriers.flatMap((carrier) =>
