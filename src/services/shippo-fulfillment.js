@@ -141,11 +141,10 @@ class ShippoFulfillmentService extends FulfillmentService {
     return await this.#shippo
       .retrieveServiceOptions()
       .then(async ({ carriers, groups }) => {
-        const fulfillmentOptions = await this.#findActiveCarriers(carriers)
+        const options = await this.#findActiveCarriers(carriers)
           .then((activeCarriers => this.#splitCarriersToServices(activeCarriers)))
-
-        const fulfillmentOptionGroups = groups
-        return [...fulfillmentOptions, ...fulfillmentOptionGroups]
+          
+        return [...options, ...groups]
       })
   }
 
