@@ -583,7 +583,7 @@ await shippoClientService.fetchUserParcelTemplates()
 
 `@return {Promise}`
 
-Generic polling method. Useful for async response endpoints, eg. [Asynchronous API Response Handling](https://goshippo.com/docs/async/)
+Generic polling method. Useful for [Asynchronous API Response Handling](https://goshippo.com/docs/async/)
 
 `fn` must be callable that returns some result
 
