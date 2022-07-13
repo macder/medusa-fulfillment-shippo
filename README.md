@@ -528,6 +528,74 @@ First array member is best fit, i.e. has lowest vacant volume
 const packed = await shippoPackerService.packBins(lineItems)
 ```
 
+## ShippoClientService
+
+*Stable v0.16.0+*
+
+Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
+
+### fetchExpandedTransactions()
+
+`@param {Order} order`
+
+`@return {array.<object>}`
+
+Fetches the `Order` transactions from shippo 
+
+More useful data than [`api.goshippo.com/transactions` ](https://goshippo.com/docs/reference#transactions)
+
+ `rate`, `parcel`, `address_to`, `order` + other fields are expanded, AND includes `is_return`
+
+```javascript
+await shippoClientService.fetchExpandedTransactions(order)
+```
+
+### fetchSenderAddress()
+
+`@return {Object}`
+
+Fetches the shippo account's default sender address
+
+```javascript
+await shippoClientService.fetchSenderAddress()
+```
+
+### fetchUserParcelTemplates()
+
+`@return {array.<object>}`
+
+Fetches all custom parcel templates from shippo account
+
+
+```javascript
+await shippoClientService.fetchUserParcelTemplates()
+```
+
+### poll()
+
+`@param {function} fn`
+
+`@param {function} validate`
+
+`@param {number} interval`
+
+`@param {number} maxAttempts`
+
+`@return {Promise}`
+
+Generic polling method. Useful for async response endpoints, eg. [Asynchronous API Response Handling](https://goshippo.com/docs/async/)
+
+`fn` must be callable that returns some result
+
+`validate` must be a callable that returns a bool from testing result data. i.e. method that validates whether desired result achieved, or keep polling
+
+`interval` milliseconds between executions
+
+`maxAttempts` ...
+
+
+
+
 ## Shippo Node Client
 
 This plugin is using a forked version of the official shippo-node-client. 
