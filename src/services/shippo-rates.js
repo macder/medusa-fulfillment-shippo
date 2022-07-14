@@ -36,6 +36,36 @@ class ShippoRatesService extends BaseService {
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
+
+    // this.shippingProfileService_.addDecorator(
+    //   () => {
+    //     console.log('=======================fetchCartOptions')
+    //     // fetchCartOptions()
+    //     return {
+    //       // fetchCartOptions: () => ({test: "test"})
+    //     }
+    //   }
+    // )
+    this.decorateShippingOptions()
+    
+  }
+
+  async decorateShippingOptions() {
+
+    // await this.shippingProfileService_.runDecorators_(this.shippingProfileService_)
+
+    // const profile = 
+    //   await this.shippingProfileService_.retrieve(
+    //     "sp_01G4XYT7B4WHQ39FF0KFQP0Q0B",
+    //     {
+    //       // relations: ["shipping_options"]
+    //     }
+    //   )
+
+    // console.log('*********profile: ', JSON.stringify(profile, null, 2))
+    // await this.shippingProfileService_.decorate(profile, ["id", "shipping_options"], ["shipping_options"])
+
+    // console.log('************************************************************************************')
   }
 
   /**
