@@ -1,21 +1,12 @@
 import * as matchers from "jest-extended"
-import { faker } from "@faker-js/faker"
 import ShippoPackerService from "../shippo-packer"
 import ShippoClientService from "../shippo-client"
-import ShippoFulfillmentService from "../shippo-fulfillment"
 import ShippoRatesService from "../shippo-rates"
 
 import {
-  mockAddress,
-  makeArrayOf,
-  mockBlankCart,
   mockCart,
-  mockCustomShippingOption,
   mockLineItemTotals,
-  mockLiveRate,
   mockShippingOption,
-  mockShippoBinPack,
-  mockParcelTemplateResponse,
 } from "../__mocks__/data"
 
 expect.extend(matchers)
