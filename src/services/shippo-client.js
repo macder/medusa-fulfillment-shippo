@@ -1,13 +1,17 @@
 import { BaseService } from "medusa-interfaces"
 import path from "path"
-import { getConfigFile } from "medusa-core-utils"
+import { getConfigFile, MedusaError } from "medusa-core-utils"
 import shippo from "shippo"
 
 class ShippoClientService extends BaseService {
   #client
+  #fulfillmentService
 
-  constructor({}, options) {
+  constructor({ fulfillmentService }, options) {
     super()
+
+    /** @private @const {FulfillmentService} */
+    this.#fulfillmentService = fulfillmentService
 
     this.#setConfig(options)
     this.#setClient()
@@ -35,6 +39,26 @@ class ShippoClientService extends BaseService {
     }).then((response) => response.results)
 
     return transactions
+  }
+
+  /**
+   * Fetches the fulfillment's packing slip from shippo
+   * @param {string} fulfillmentId - fulfillment id for packing slip
+   * @return {Object} packing slip
+   */
+  async fetchPackingSlip(fulfillmentId) {
+    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
+    return await this.#client.order.packingslip(shippoOrderId)
+  }
+
+  /**
+   * Fetches the fullfillment's shippo order
+   * @param {string} fulfillmentId - fulfillment id for order
+   * @return {Object} shippo order
+   */
+  async fetchOrder(fulfillmentId) {
+    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
+    return await this.#client.order.retrieve(shippoOrderId) 
   }
 
   /**
@@ -116,6 +140,23 @@ class ShippoClientService extends BaseService {
       carriers: await this.#fetchCarriers(),
       groups: await this.#fetchServiceGroups(),
     }
+  }
+
+  async #retrieveShippoOrderId(fulfillmentId) {
+    const fullfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
+
+    if (!fullfillment.data?.shippo_order_id) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Shippo order not found for fulfillment with id: ${fulfillmentId}`
+      )
+    }
+
+    const {
+      data: { shippo_order_id },
+    } = fullfillment
+
+    return shippo_order_id
   }
 
   #setConfig(options) {
