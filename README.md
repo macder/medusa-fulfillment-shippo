@@ -89,6 +89,8 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 }
 ```
 
+### Retrieve
+
 **HTTP:**
 
 ```plaintext
@@ -98,10 +100,7 @@ GET /admin/fulfillments/:id/shippo/order
 **Service:**
 
 ```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoClientService.useClient
-
-await client.order.retrieve(shippo_order_id)
+await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
 Returns `shippo_order` object
@@ -119,10 +118,7 @@ GET /admin/fulfillments/:id/shippo/packingslip
 **Service:**
 
 ```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoClientService.useClient
-
-await client.order.packingslip(shippo_order_id)
+await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
 ## Returns
@@ -551,6 +547,30 @@ More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/doc
 
 ```javascript
 await shippoClientService.fetchExpandedTransactions(order)
+```
+
+### fetchOrder()
+
+`@param {string} fulfillmentId`
+
+`@return {Object}`
+
+Fetches order from shippo for the `Fulfillment`
+
+```javascript
+await shippoClientService.fetchOrder(fulfillmentId)
+```
+
+### fetchPackingSlip()
+
+`@param {string} fulfillmentId`
+
+`@return {Object}`
+
+Fetches packing slip from shippo for the `Fulfillment`
+
+```javascript
+await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
 ### fetchSenderAddress()
