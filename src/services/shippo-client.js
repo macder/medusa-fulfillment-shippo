@@ -42,16 +42,6 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * Fetches the fulfillment's packing slip from shippo
-   * @param {string} fulfillmentId - fulfillment id for packing slip
-   * @return {Object} packing slip
-   */
-  async fetchPackingSlip(fulfillmentId) {
-    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
-    return await this.#client.order.packingslip(shippoOrderId)
-  }
-
-  /**
    * Fetches the fullfillment's shippo order
    * @param {string} fulfillmentId - fulfillment id for order
    * @return {Object} shippo order
@@ -59,6 +49,16 @@ class ShippoClientService extends BaseService {
   async fetchOrder(fulfillmentId) {
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.retrieve(shippoOrderId) 
+  }
+
+  /**
+   * Fetches the fulfillment's packing slip from shippo
+   * @param {string} fulfillmentId - fulfillment id for packing slip
+   * @return {Object} packing slip
+   */
+  async fetchPackingSlip(fulfillmentId) {
+    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
+    return await this.#client.order.packingslip(shippoOrderId)
   }
 
   /**
