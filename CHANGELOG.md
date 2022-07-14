@@ -2,12 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.16.1] (2022-07-14)
+
+Added
+
+*   Missed note in 0.16.0 entry regarding useClient [#168](https://github.com/macder/medusa-fulfillment-shippo/issues/168)
+
 ## \[0.16.0] (2022-07-13)
 
 Added
 
 *   ShippoClientService public API stabilized and documented [#165](https://github.com/macder/medusa-fulfillment-shippo/issues/165)
 *   ShippoPackerService public API stabilized and documented [#166](https://github.com/macder/medusa-fulfillment-shippo/issues/166)
+
+Changed
+
+*   **BREAKING** Moved useClient property from ShippoFulfillmentService to ShippoClientService
 
 Fixed
 
