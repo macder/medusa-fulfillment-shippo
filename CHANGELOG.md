@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.17.0] (2022-07-14)
+
+Added
+
+*   Public method to fetch packing slip for the fulfillment [#174](https://github.com/macder/medusa-fulfillment-shippo/issues/174)
+*   Public method to fetch a fulfillment's shippo order [#175](https://github.com/macder/medusa-fulfillment-shippo/issues/175)
+
 ## \[0.16.1] (2022-07-14)
 
 Added
