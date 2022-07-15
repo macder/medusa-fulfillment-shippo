@@ -10,13 +10,13 @@ Added
 *   Public method to fetch a fulfillment's shippo order [#175](https://github.com/macder/medusa-fulfillment-shippo/issues/175)
 
 Changed
+
 *   Shipping options decorated with rates in loader - eliminates an endpoint override [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
 
 Deprecated
 
 *   Public method ShippoRatesService.fetchCartOptions() will be removed v1.0.0 due to the outcome from [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179). Options are now returned decorated with rates by default from shippingProfileService.fetchCartOptions()
 *   All REST API endpoints are deprecated and will be removed v0.20.0. See the rational and reasoning @ [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
-
 
 ## \[0.16.1] (2022-07-14)
 
