@@ -27,12 +27,6 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./carts-rates").default)
   )
 
-  route.post(
-    "/shipping-options/:cart_id/shippo/rates/",
-    bodyParser.json(),
-    middlewares.wrap(require("./shipping-options-rates").default)
-  )
-
   // all your errors are belong to this
   route.use((err, req, res, next) => {
     if (!res.headersSent) {
