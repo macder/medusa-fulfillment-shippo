@@ -89,19 +89,20 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 }
 ```
 
-**HTTP:**
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/order
-```
+### Retrieve
 
 **Service:**
 
 ```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoClientService.useClient
+await shippoClientService.fetchOrder(fulfillmentId)
+```
 
-await client.order.retrieve(shippo_order_id)
+~~**HTTP:**~~
+
+*Deprecated*
+
+```plaintext
+GET /admin/fulfillments/:id/shippo/order
 ```
 
 Returns `shippo_order` object
@@ -110,19 +111,18 @@ Returns `shippo_order` object
 
 Retrieve Shippo packing slip for a fulfillment
 
-**HTTP:**
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/packingslip
-```
-
 **Service:**
 
 ```javascript
-const { data: { shippo_order_id } } = await fulfillmentService.retrieve(fulfillment_id)
-const client = shippoClientService.useClient
+await shippoClientService.fetchPackingSlip(fulfillmentId)
+```
 
-await client.order.packingslip(shippo_order_id)
+~~**HTTP:**~~
+
+*Deprecated*
+
+```plaintext
+GET /admin/fulfillments/:id/shippo/packingslip
 ```
 
 ## Returns
@@ -275,7 +275,14 @@ GET /store/shipping-options/:cart_id
 **Service:**
 
 ```javascript
-const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
+// DEPRECATED - use shippingProfileService instead
+// const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
+```
+
+Use [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
+
+```javascript
+const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
 ```
 
 Implementation needs to consider rates only calculate if cart has items and complete shipping address. Otherwise `price_type: calculated` will have `amount: null`
@@ -469,18 +476,6 @@ For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend
 
 Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
 
-### fetchCartOptions()
-
-Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.
-
-`@param {string} cartId`
-
-`@return {array.<ShippingOption>}`
-
-```javascript
-const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
-```
-
 ### fetchCartRates()
 
 Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
@@ -509,6 +504,22 @@ Cart must have items and complete shipping address
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 // OR
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
+```
+
+### ~~fetchCartOptions()~~
+
+*Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
+
+Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
+
+~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
+
+`@param {string} cartId`
+
+`@return {array.<ShippingOption>}`
+
+```javascript
+const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
 ## ShippoPackerService
@@ -551,6 +562,30 @@ More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/doc
 
 ```javascript
 await shippoClientService.fetchExpandedTransactions(order)
+```
+
+### fetchOrder()
+
+`@param {string} fulfillmentId`
+
+`@return {Object}`
+
+Fetches order from shippo for the `Fulfillment`
+
+```javascript
+await shippoClientService.fetchOrder(fulfillmentId)
+```
+
+### fetchPackingSlip()
+
+`@param {string} fulfillmentId`
+
+`@return {Object}`
+
+Fetches packing slip from shippo for the `Fulfillment`
+
+```javascript
+await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
 ### fetchSenderAddress()
