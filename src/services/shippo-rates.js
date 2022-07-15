@@ -39,21 +39,12 @@ class ShippoRatesService extends BaseService {
   }
 
   /**
-   * Calls ShippingProfileService.fetchCartOptions and decorates ShippingOption.amount
-   * Only decorates live-rate options when cart has shipping address and items
+   * @deprecated since 0.17.0 use shippingProfileService.fetchCartOptions instead
    * @param {string} cartId - cart id to fetch shipping options for
    * @return {array.<ShippingOption>} contextually priced list of available shipping options
    */
   async fetchCartOptions(cartId) {
     await this.#setProps(cartId)
-
-    const cartIsReady = await this.#isCartReady()
-    const requiresRates = await this.#requiresRates()
-
-    if (cartIsReady && requiresRates) {
-      await this.#applyRates()
-    }
-    await this.#setOptionPrices()
     return this.shippingOptions_
   }
 
@@ -246,7 +237,9 @@ class ShippoRatesService extends BaseService {
 
   async #setProps(cartId) {
     this.#setCart(await this.#fetchCart(cartId))
+    // if (!this.shippingOptions_?.length) {
     this.#setOptions(await this.#fetchOptions())
+    // }
   }
 
   async #validateAddress() {
@@ -263,6 +256,20 @@ class ShippoRatesService extends BaseService {
     const emptyFields = requiredFields.filter((field) => !address[field])
 
     return emptyFields.length < 1
+  }
+
+  async decorateOptions(cartId, options) {
+    this.#setCart(await this.#fetchCart(cartId))
+    this.#setOptions(options)
+
+    const cartIsReady = await this.#isCartReady()
+    const requiresRates = await this.#requiresRates()
+
+    if (cartIsReady && requiresRates) {
+      await this.#applyRates()
+    }
+    await this.#setOptionPrices()
+    return this.shippingOptions_
   }
 }
 
