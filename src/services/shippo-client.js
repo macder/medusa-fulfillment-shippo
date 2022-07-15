@@ -62,16 +62,6 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * Fetches the fullfillment's shippo order
-   * @param {string} fulfillmentId - fulfillment id for order
-   * @return {Object} shippo order
-   */
-  async fetchOrder(fulfillmentId) {
-    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
-    return await this.#client.order.retrieve(shippoOrderId)
-  }
-
-  /**
    * Fetches the shippo account's default sender address
    * @return {Object} address object
    */
