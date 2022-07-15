@@ -97,7 +97,7 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
-\~~**HTTP:**~~
+~~**HTTP:**~~
 
 *Deprecated*
 
@@ -117,7 +117,7 @@ Retrieve Shippo packing slip for a fulfillment
 await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
-\~~**HTTP:**~~
+~~**HTTP:**~~
 
 *Deprecated*
 
@@ -512,7 +512,7 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.dat
 
 Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
 
-\~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
+~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
 
 `@param {string} cartId`
 
