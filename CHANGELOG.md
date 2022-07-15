@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## \[0.17.0]
+## \[0.17.0] (2022-07-15)
 
 Added
 
