@@ -58,7 +58,7 @@ class ShippoClientService extends BaseService {
    */
   async fetchOrder(fulfillmentId) {
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
-    return await this.#client.order.retrieve(shippoOrderId) 
+    return await this.#client.order.retrieve(shippoOrderId)
   }
 
   /**

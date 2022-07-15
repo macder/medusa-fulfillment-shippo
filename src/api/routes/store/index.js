@@ -33,12 +33,6 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./shipping-options-rates").default)
   )
 
-  // route.get(
-  //   "/shipping-options/:cart_id",
-  //   bodyParser.json(),
-  //   middlewares.wrap(require("./shipping-options").default)
-  // )
-
   // all your errors are belong to this
   route.use((err, req, res, next) => {
     if (!res.headersSent) {
