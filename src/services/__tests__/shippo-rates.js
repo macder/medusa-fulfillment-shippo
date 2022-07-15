@@ -86,7 +86,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is number", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNumber()
@@ -108,7 +111,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
@@ -129,7 +135,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
@@ -152,7 +161,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
@@ -174,7 +186,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
@@ -197,7 +212,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
@@ -218,7 +236,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
@@ -240,7 +261,10 @@ describe("ShippoRatesService", () => {
       const shippoRatesService = getShippoRatesService(cartService)
 
       test("calculated options prop.amount is null", async () => {
-        const result = await shippoRatesService.fetchCartOptions("cart_id")
+        const result = await shippoRatesService.decorateOptions(
+          "cart_id",
+          mockCartShippingOptions()
+        )
         result.forEach((result) => {
           if (result.data.type === "LIVE_RATE") {
             expect(result.amount).toBeNull()
