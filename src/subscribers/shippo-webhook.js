@@ -1,33 +1,87 @@
 class ShippoSubscriber {
-  constructor({ eventBusService, shippoWebhookService }) {
-    this.shippoWebhookService_ = shippoWebhookService
+  #eventBusService
+  #orderService
+  #shippoTransactionService
 
-    eventBusService.subscribe(
+  constructor({ eventBusService, orderService, shippoTransactionService }) {
+    /** @private @const {EventBusService} */
+    this.#eventBusService = eventBusService
+
+    /** @private @const {OrderService} */
+    this.#orderService = orderService
+
+    /** @private @const {ShippoTransactionService} */
+    this.#shippoTransactionService = shippoTransactionService
+
+    this.#eventBusService.subscribe(
       "shippo.accepted.transaction_created",
       this.handleTransactionCreated
     )
 
-    eventBusService.subscribe(
+    this.#eventBusService.subscribe(
       "shippo.accepted.transaction_updated",
       this.handleTransactionUpdated
-    )
-
-    eventBusService.subscribe(
-      "shippo.transaction_created.shipment",
-      this.handleTest
     )
   }
 
   handleTransactionCreated = async ({ transaction }) => {
-    return this.shippoWebhookService_.handleTransactionCreated(transaction)
+    const order = await this.#shippoTransactionService.findOrder(transaction)
+    const fulfillment = await this.#shippoTransactionService.findFulfillment(
+      transaction
+    )
+
+    const expandedTransaction =
+      await this.#shippoTransactionService.fetchExtended(transaction)
+
+    if (!fulfillment.shipped_at) {
+      await this.#orderService
+        .createShipment(order.id, fulfillment.id, [
+          {
+            tracking_number: expandedTransaction.tracking_number,
+            url: expandedTransaction.tracking_url_provider,
+          },
+        ])
+        .then((order) => {
+          const { label_url } = transaction
+          this.#eventBusService.emit("shippo.transaction_created.shipment", {
+            order_id: order.id,
+            fulfillment_id: fulfillment.id,
+            transaction: {
+              ...expandedTransaction,
+              label_url,
+            },
+          })
+        })
+    }
+
+    if (expandedTransaction?.is_return) {
+      this.#eventBusService.emit("shippo.transaction_created.return_label", {
+        order_id: order.id,
+        transaction: expandedTransaction,
+      })
+    }
   }
 
   handleTransactionUpdated = async ({ transaction }) => {
-    return this.shippoWebhookService_.handleTransactionUpdated(transaction)
-  }
+    const order = await this.#shippoTransactionService.findOrder(transaction)
 
-  handleTest = async (data) => {
-    console.log("*********data: ", JSON.stringify(data, null, 2))
+    const fulfillment = await this.#shippoTransactionService.findFulfillment(
+      transaction
+    )
+
+    const expandedTransaction =
+      await this.#shippoTransactionService.fetchExtended(transaction)
+
+    const { label_url } = transaction
+
+    this.#eventBusService.emit("shippo.transaction_updated.payload", {
+      order_id: order.id,
+      fulfillment_id: fulfillment.id,
+      transaction: {
+        ...expandedTransaction,
+        label_url,
+      },
+    })
   }
 }
 
