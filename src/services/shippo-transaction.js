@@ -42,7 +42,7 @@ class ShippoTransactionService extends BaseService {
       ({ object_id }) => object_id === this.#transaction.object_id
     )
   }
-  
+
   /**
    * Finds the fulfillment associated with the transaction
    * @param {string|object} transaction - shippo transaction id or object

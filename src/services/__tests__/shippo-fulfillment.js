@@ -35,8 +35,8 @@ describe("ShippoFulfillmentService", () => {
     options: {
       api_key: "123123",
       webhook_secret: "123123",
-      weight_unit_type: 'g',
-      dimension_unit_type: 'cm'
+      weight_unit_type: "g",
+      dimension_unit_type: "cm",
     },
   }
   /** **************************
@@ -197,9 +197,12 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-    }, options)
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
+        shippoClientService,
+      },
+      options
+    )
     it("returns true when live-rate", async () => {
       expect(
         await shippoFulfilService.canCalculate({ type: "LIVE_RATE" })
@@ -331,11 +334,14 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-      totalsService,
-      eventBusService,
-    }, options)
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
+        shippoClientService,
+        totalsService,
+        eventBusService,
+      },
+      options
+    )
 
     const methodData = {
       test: "test",
@@ -377,9 +383,12 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-    }, options)
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
+        shippoClientService,
+      },
+      options
+    )
 
     it("returns resolved promise", async () => {
       expect.assertions(1)
