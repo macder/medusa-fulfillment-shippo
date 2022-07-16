@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.18.0] (2022-07-16)
+
+Added
+
+*   transaction\_updated webhook [#133](https://github.com/macder/medusa-fulfillment-shippo/issues/133)
+*   ShippoTransactionService [#185](https://github.com/macder/medusa-fulfillment-shippo/issues/185)
+*   Stabilized transaction\_created webhook [#190](https://github.com/macder/medusa-fulfillment-shippo/issues/190)
+
+Removed
+
+*   ShippoWebhookService [#184](https://github.com/macder/medusa-fulfillment-shippo/issues/184)
+
+Fixed
+
+*   Proper fix for transaction\_created webhook type error [#155](https://github.com/macder/medusa-fulfillment-shippo/issues/155)
+*   transaction\_created webhook not updating status to shipped [#155](https://github.com/macder/medusa-fulfillment-shippo/issues/155)
+
 ## \[0.17.0] (2022-07-15)
 
 Added
