@@ -681,6 +681,31 @@ Finds the `Order` that has a `Fulfillment` with this transaction
 await shippoTransactionService.findOrder(transaction)
 ```
 
+## Event List
+
+| Event Name | Description | Payload |
+| --- | --- | --- |
+| `shippo.order_created` | Triggered when a new fulfillment creates an order in Shippo | 
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+ |
+| `shippo.return_requested` | Triggered when a return is requested | Text |
+| `shippo.swap_created` | Text | Text |
+| `shippo.replace_order_created` | Text | Text |
+| `shippo.claim_refund_created` | Text | Text |
+| `shippo.claim_replace_created` | Text | Text |
+| `shippo.replace_order_created` |   |   |
+| `shippo.transaction_created.shipment` |   |   |
+| `shippo.transaction_created.return_label` |   |   |
+| `shippo.transaction_updated` |   |   |
+
 ## Shippo Node Client
 
 This plugin is using a forked version of the official shippo-node-client. 
