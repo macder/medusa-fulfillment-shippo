@@ -43,7 +43,7 @@ Returns, exchanges, and claims
         *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
-*   [References](#references)
+*   [API Reference](#references)
     *   [ShippoRatesService](#shipporatesservice)
     *   [ShippoPackerService](#shippopackerservice)
     *   [ShippoClientService](#shippoclientservice)
@@ -275,13 +275,6 @@ GET /store/shipping-options/:cart_id
 **Service:**
 
 ```javascript
-// DEPRECATED - use shippingProfileService instead
-// const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
-```
-
-Use [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
-
-```javascript
 const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
 ```
 
@@ -298,16 +291,6 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 ```plaintext
 POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
-```
-
-**Event:**
-`shippo.calculated_shipping_method`
-
-```javascript
-{
-  cart_id: "",
-  rate: {...}   // shippo live-rate object
-}
 ```
 
 ### Help, adding a shipping method to cart throws an error

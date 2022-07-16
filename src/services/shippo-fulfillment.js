@@ -1,5 +1,6 @@
 import { FulfillmentService } from "medusa-interfaces"
-import { MedusaError } from "medusa-core-utils"
+import path from "path"
+import { getConfigFile, MedusaError } from "medusa-core-utils"
 import { shippoLineItem, shippoOrder } from "../utils/formatters"
 
 class ShippoFulfillmentService extends FulfillmentService {
@@ -20,6 +21,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     options
   ) {
     super()
+
+    this.#setConfig(options)
 
     /** @private @const {CartService} */
     this.cartService_ = cartService
@@ -48,11 +51,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       cart.id,
       fulfillmentOption
     )
-
-    this.eventBusService_.emit("shippo.calculated_shipping_method", {
-      cart_id: cart.id,
-      rate,
-    })
 
     return this.shippoRatesService_.getPrice(rate)
   }
@@ -172,6 +170,12 @@ class ShippoFulfillmentService extends FulfillmentService {
     return true
   }
 
+  async verifyHookSecret(token) {
+    return this.options_.webhook_secret
+      ? this.options_.webhook_secret === token
+      : false
+  }
+
   async #createShippoOrder(order, fromAddress, lineItems, parcelName) {
     const client = this.#shippo.getClient()
     const params = await shippoOrder(order, fromAddress, lineItems, parcelName)
@@ -246,6 +250,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
   }
 
+  // TODO: move to shippoClientService? or a new shippoReturnService?
   async #retrieveReturnLabel(order) {
     const transaction = await this.#shippo
       .fetchExpandedTransactions(order)
@@ -292,6 +297,17 @@ class ShippoFulfillmentService extends FulfillmentService {
         return service
       })
     )
+  }
+
+  #setConfig(options) {
+    if (Object.keys(options).length === 0) {
+      const {
+        configModule: { projectConfig },
+      } = getConfigFile(path.resolve("."), "medusa-config")
+      this.options_ = projectConfig
+    } else {
+      this.options_ = options
+    }
   }
 }
 
