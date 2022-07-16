@@ -745,9 +745,9 @@ If return `ShippingMethod` has `provider: shippo` it attempts to find an existin
 
 ### `shippo.replace_order_created`
 
-Triggered when a [Swap Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) or [Claim Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) is created.
+Triggered when a [swap](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) or [claim](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) fulfillment is created.
 
-If the `ShippingMethod` has `provider: shippo` a shippo is created
+If the `ShippingMethod` has `provider: shippo` a shippo order is created
 
 #### Payload
 ```javascript
@@ -759,8 +759,77 @@ If the `ShippingMethod` has `provider: shippo` a shippo is created
 }
 ```
 
-`shippo.claim_refund_created`
-`shippo.order_created`
+### `shippo.claim_refund_created`
+
+Triggered when a `type: refund` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
+
+If return `ShippingMethod` has `provider: shippo`, it attempts to find an existing return label in shippo
+
+#### Payload
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.claim_replace_created`
+
+Triggered when a `type: replace` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
+
+If return `ShippingMethod` has `provider: shippo`, it attempts to find an existing return label in shippo
+
+
+#### Payload
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.transaction_created.shipment`
+
+Triggered when the `transaction_created` webhook updates a `Fulfillment` status to `shipped`
+
+#### Payload
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  transaction: {...}
+}
+```
+
+### `shippo.transaction_created.return_label`
+
+Triggered when the `transaction_created` webhook receives a return label transaction
+
+#### Payload
+
+```javascript
+{
+  order_id: "",
+  transaction: {...}
+}
+```
+
+### `shippo.transaction_updated.payload`
+
+Triggered when the `transaction_updated` webhook receives an updated transaction
+
+#### Payload
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  transaction: {...}
+}
+```
 
 
 ## Shippo Node Client
