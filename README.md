@@ -635,6 +635,10 @@ const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 
 ## `ShippoTransactionService`
 
+Provides a layer to simpify relating `Order` and `Fulfillment` with shippo transactions.
+
+[Transactions](https://goshippo.com/docs/reference#transactions) are shippo objects created when a label is purchased
+
 *Stable v0.18.0+*
 
 Defined in: [`src/services/shippo-transaction.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-transaction.js)
@@ -685,7 +689,13 @@ Finds the `Order` that has a `Fulfillment` with this transaction
 await shippoTransactionService.findOrder(transaction)
 ```
 
-## Event List
+## Events
+
+List of all events, their triggers, and expected payload for handlers
+
+[Subscribe to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber) to perform additional operations
+
+These events only emit if the action pertains to `provider: shippo`
 
 ### `shippo.order_created`
 
@@ -701,12 +711,50 @@ Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/cre
 }
 ```
 
+### `shippo.return_requested` 
 
+Triggered when a [return is requested](https://docs.medusajs.com/api/admin/order/request-a-return)
 
+If the return `ShippingMethod` has `provider: shippo` it attempts to find an existing return label in shippo.
 
-`shippo.return_requested` 
-`shippo.swap_created`
-`shippo.replace_order_created`
+#### Payload
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.swap_created`
+
+Triggered when a [swap is created](https://docs.medusajs.com/api/admin/order/create-a-swap) 
+
+If return `ShippingMethod` has `provider: shippo` it attempts to find an existing return label in shippo.
+
+#### Payload
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.replace_order_created`
+
+Triggered when a [Swap Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) or [Claim Fulfillment](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) is created.
+
+If the `ShippingMethod` has `provider: shippo` a shippo is created
+
+#### Payload
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
 `shippo.claim_refund_created`
 `shippo.order_created`
 
