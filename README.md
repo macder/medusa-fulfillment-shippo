@@ -20,7 +20,7 @@ Supports returns, exchanges, and claims.
 
 [Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
 
-Access data from actions by subscribing to events. The plugin does not make assumptions or save data arbitrarily. It passes it through the eventbus instead.
+Access data from actions by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead.
 
 ## Table of Contents
 
