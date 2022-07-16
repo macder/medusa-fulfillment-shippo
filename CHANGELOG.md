@@ -12,12 +12,12 @@ Added
 
 Removed
 
-*   ShippoWebhookService [#184](https://github.com/macder/medusa-fulfillment-shippo/issues/184)
+*   ShippoWebhookService [#186](https://github.com/macder/medusa-fulfillment-shippo/issues/186)
 
 Fixed
 
 *   Proper fix for transaction\_created webhook type error [#155](https://github.com/macder/medusa-fulfillment-shippo/issues/155)
-*   transaction\_created webhook not updating status to shipped [#155](https://github.com/macder/medusa-fulfillment-shippo/issues/155)
+*   transaction\_created webhook not updating status to shipped [#184](https://github.com/macder/medusa-fulfillment-shippo/issues/184)
 
 ## \[0.17.0] (2022-07-15)
 
