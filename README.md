@@ -44,10 +44,6 @@ Access data from actions by [subscribing to events](https://docs.medusajs.com/ad
         *   [Set rates for cart](#set-rates-for-cart)
         *   [Add to Cart](#add-to-carlst)
         *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
-    *   [Optimizing](#optimizing-rates-at-checkout)
-        *   [Setup parcel templates](#setup-parcel-templates)
-        *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
-        *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
 *   [API Reference](#api-reference)
 *   *   [ShippoClientService](#shippoclientservice)
@@ -55,6 +51,10 @@ Access data from actions by [subscribing to events](https://docs.medusajs.com/ad
     *   [ShippoRatesService](#shipporatesservice)
     *   [ShippoTransactionService](#shippotransactionservice)
 *   [Shippo Node Client](#shippo-node-client)
+*   [Optimizing Rates at Checkout](#optimizing-rates-at-checkout)
+    *   [Setup parcel templates](#setup-parcel-templates)
+    *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
+    *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -317,28 +317,6 @@ price_type: (options[optionIndex].type === "LIVE_RATE")
     ? "calculated" 
     : "flat_rate",
 ```
-
-## Optimizing Rates at Checkout
-
-Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
-
-This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
-
-### Setup parcel templates
-
-Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
-
-To get most optimal results, it is recommended to create package templates for all your shipping boxes.
-
-### Verify product dimensions and weight
-
-In your medusa store, make sure products have correct values for length, width, height, weight
-
-### Accuracy of Rates
-
-Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
-
-Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
 ## Webhooks
 
@@ -735,6 +713,28 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 [Official client](https://github.com/goshippo/shippo-node-client)
 
 [Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
+
+## Optimizing Rates at Checkout
+
+Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
+
+This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
+
+### Setup parcel templates
+
+Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
+
+To get most optimal results, it is recommended to create package templates for all your shipping boxes.
+
+### Verify product dimensions and weight
+
+In your medusa store, make sure products have correct values for length, width, height, weight
+
+### Accuracy of Rates
+
+Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
+
+Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
 ## Limitations
 
