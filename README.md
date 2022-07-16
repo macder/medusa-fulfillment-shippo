@@ -451,6 +451,8 @@ For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend
 
 ## `ShippoClientService`
 
+Provides a layer to simplify retrieving data from shippo API. i.e. methods that do the leg work to get data specific to orders, fulfillments, etc.
+
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
