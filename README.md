@@ -447,13 +447,13 @@ Any public method not documented here may change prior to a 1.0 release
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-## ShippoClientService
+## `ShippoClientService`
 
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
 
-### useClient
+### `useClient`
 
 `@property`
 
@@ -468,7 +468,7 @@ const order = client.order.retrieve(id)
 // see shippo-node-client docs for methods
 ```
 
-### fetchExpandedTransactions()
+### `fetchExpandedTransactions()`
 
 `@param {Order} order`
 
@@ -484,7 +484,7 @@ More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/doc
 await shippoClientService.fetchExpandedTransactions(order)
 ```
 
-### fetchOrder()
+### `fetchOrder()`
 
 `@param {string} fulfillmentId`
 
@@ -496,7 +496,7 @@ Fetches order from shippo for the `Fulfillment`
 await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
-### fetchPackingSlip()
+### `fetchPackingSlip()`
 
 `@param {string} fulfillmentId`
 
@@ -508,7 +508,7 @@ Fetches packing slip from shippo for the `Fulfillment`
 await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
-### fetchSenderAddress()
+### `fetchSenderAddress()`
 
 `@return {Object}`
 
@@ -518,7 +518,7 @@ Fetches the shippo account's default sender address
 await shippoClientService.fetchSenderAddress()
 ```
 
-### fetchUserParcelTemplates()
+### `fetchUserParcelTemplates()`
 
 `@return {array.<object>}`
 
@@ -528,7 +528,7 @@ Fetches all custom parcel templates from shippo account
 await shippoClientService.fetchUserParcelTemplates()
 ```
 
-### poll()
+### `poll()`
 
 `@param {object} obj`
 
@@ -561,13 +561,13 @@ await shippoClientService.poll({
 })
 ```
 
-## ShippoPackerService
+## `ShippoPackerService`
 
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
 
-### packBins()
+### `packBins()`
 
 Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
 
@@ -581,13 +581,13 @@ First array member is best fit, i.e. has lowest vacant volume
 const packed = await shippoPackerService.packBins(lineItems)
 ```
 
-## ShippoRatesService
+## `ShippoRatesService`
 
 *Stable v0.15.0+*
 
 Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
 
-### fetchCartRates()
+### `fetchCartRates()`
 
 Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
 
@@ -601,7 +601,7 @@ Cart must have items and complete shipping address
 const rates = await shippoRatesService.fetchCartRates(cartId)
 ```
 
-### fetchOptionRate()
+### `fetchOptionRate()`
 
 Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
 
@@ -617,7 +617,7 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
 
-### ~~fetchCartOptions()~~
+### ~~`fetchCartOptions()`~~
 
 *Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
 
@@ -633,9 +633,13 @@ Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/refe
 const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
-## ShippoTransactionService
+## `ShippoTransactionService`
 
-### fetch()
+*Stable v0.18.0+*
+
+Defined in: [`src/services/shippo-transaction.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-transaction.js)
+
+### `fetch()`
 
 Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 
@@ -645,7 +649,7 @@ Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 await shippoTransactionService.fetch(transactionId)
 ```
 
-### fetchExtended()
+### `fetchExtended()`
 
 Fetches transaction object with additional and expanded fields
 
@@ -657,7 +661,7 @@ Fetches transaction object with additional and expanded fields
 await shippoTransactionService.fetchExtended(transaction)
 ```
 
-### findFulfillment()
+### `findFulfillment()`
 
 Finds the `Fulfillment` for the transaction
 
@@ -669,7 +673,7 @@ Finds the `Fulfillment` for the transaction
 await shippoTransactionService.findFulfillment(transaction)
 ```
 
-### findOrder()
+### `findOrder()`
 
 Finds the `Order` that has a `Fulfillment` with this transaction
 
@@ -683,9 +687,11 @@ await shippoTransactionService.findOrder(transaction)
 
 ## Event List
 
-| Event Name | Description | Payload |
-| --- | --- | --- |
-| `shippo.order_created` | Triggered when a new fulfillment creates an order in Shippo | 
+### `shippo.order_created`
+
+Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/create-a-fulfillment) creates a shippo order.
+
+#### Payload
 ```javascript
 {
   order_id: "",
@@ -695,16 +701,15 @@ await shippoTransactionService.findOrder(transaction)
 }
 ```
 
- |
-| `shippo.return_requested` | Triggered when a return is requested | Text |
-| `shippo.swap_created` | Text | Text |
-| `shippo.replace_order_created` | Text | Text |
-| `shippo.claim_refund_created` | Text | Text |
-| `shippo.claim_replace_created` | Text | Text |
-| `shippo.replace_order_created` |   |   |
-| `shippo.transaction_created.shipment` |   |   |
-| `shippo.transaction_created.return_label` |   |   |
-| `shippo.transaction_updated` |   |   |
+
+
+
+`shippo.return_requested` 
+`shippo.swap_created`
+`shippo.replace_order_created`
+`shippo.claim_refund_created`
+`shippo.order_created`
+
 
 ## Shippo Node Client
 
