@@ -49,11 +49,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       fulfillmentOption
     )
 
-    this.eventBusService_.emit("shippo.calculated_shipping_method", {
-      cart_id: cart.id,
-      rate,
-    })
-
     return this.shippoRatesService_.getPrice(rate)
   }
 
@@ -246,6 +241,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
   }
 
+  // TODO: move to shippoClientService? or a new shippoReturnService?
   async #retrieveReturnLabel(order) {
     const transaction = await this.#shippo
       .fetchExpandedTransactions(order)
