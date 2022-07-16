@@ -413,7 +413,7 @@ Receives shippo transaction object when label purchased
 *   Updates fulfillment to “shipped”
 *   Adds tracking number and link to fulfillment
 
-**Events**
+**Events:**
 
 `shippo.transaction_created.shipment`
 
@@ -442,7 +442,7 @@ Receives shippo transaction object when label purchased
 
 Receives shippo transaction object when transaction updated
 
-**Event**
+**Event:**
 
 `shippo.transaction_updated.payload`
 
