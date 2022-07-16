@@ -53,10 +53,7 @@ Actions that produce data emit [events](#events). The plugin does not make assum
     *   [ShippoTransactionService](#shippotransactionservice)
 *   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
-*   [Optimizing Rates at Checkout](#optimizing-rates-at-checkout)
-    *   [Setup parcel templates](#setup-parcel-templates)
-    *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
-    *   [Accuracy of Rates](#accuracy-of-rates)
+*   [Shipping Rates](#shipping-rates)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -270,6 +267,16 @@ For more in-depth details see https://support.goshippo.com/hc/en-us/articles/440
 Create shipping options for regions as usual
 
 [See here for common issue](#help-adding-a-shipping-method-to-cart-throws-an-error)
+
+### Setup parcel templates
+
+Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
+
+To get most optimal results, it is recommended to create package templates for all your shipping boxes.
+
+### Verify product dimensions and weight
+
+In your medusa store, make sure products have correct values for length, width, height, weight
 
 ### During Checkout
 
@@ -865,21 +872,12 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 
 [Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
 
-## Optimizing Rates at Checkout
+## Shipping Rates
 
 Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
 
 This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
 
-### Setup parcel templates
-
-Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
-
-To get most optimal results, it is recommended to create package templates for all your shipping boxes.
-
-### Verify product dimensions and weight
-
-In your medusa store, make sure products have correct values for length, width, height, weight
 
 ### Accuracy of Rates
 
