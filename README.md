@@ -16,6 +16,8 @@ Order fulfillment creates shippo order
 
 Returns, exchanges, and claims
 
+Implement the details your own way using [methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
+
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
