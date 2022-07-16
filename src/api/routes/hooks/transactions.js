@@ -6,17 +6,22 @@ export default async (req, res, next) => {
   const validToken = await shippoWebhookService.verifyHookSecret(
     req.query.token
   )
-
-  eventBus.emit("shippo.received.transaction_created", {})
+  const event = req.headers["x-shippo-event"]
+  // eventBus.emit(`shippo.received.${event}`, {})
 
   const invalidRequest = () => {
-    eventBus.emit("shippo.rejected.transaction_created", {})
+    eventBus.emit(`shippo.rejected.${event}`, {})
     res.status(500).json()
     return next()
   }
 
   if (validToken) {
     const untrustedData = req.body.data
+
+    console.log(
+      "*********untrustedData: ",
+      JSON.stringify(untrustedData, null, 2)
+    )
 
     if (
       untrustedData.object_state === "VALID" &&
@@ -30,11 +35,11 @@ export default async (req, res, next) => {
         .catch((e) => console.error(e))
 
       if (transaction?.object_state === "VALID") {
-        eventBus.emit("shippo.accepted.transaction_created", {
+        eventBus.emit(`shippo.accepted.${event}`, {
           transaction, // the trusted data
         })
 
-        res.json("ok, thanks, come again, bye")
+        res.json({})
         return next()
       }
     }
