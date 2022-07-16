@@ -20,16 +20,29 @@ class ShippoTransactionService extends BaseService {
   }
 
   /**
-   * Finds the order associated with the transaction
-   * @param {string|object} transaction - shippo transaction id or object
-   * @return {Order} The order related to this transaction
+   * Fetch a transaction
+   * Shorthand for client.transaction.retrieve(id)
+   * @param {string} id - shippo transaction id
+   * @return {object} The transaction
    */
-  async findOrder(transaction) {
-    this.#setTransaction(await this.#resolveType(transaction))
-    const orderDisplayId = await this.#parseOrderDisplayId()
-    return await this.#retrieveOrderByDisplayId(orderDisplayId)
+  async fetch(id) {
+    return await this.#client.transaction.retrieve(id)
   }
 
+  /**
+   * Fetch the extended version of a transaction
+   * @param {string|object} transaction - shippo transaction id or object
+   * @return {object} The extended transaction
+   */
+  async fetchExtended(transaction) {
+    const order = await this.findOrder(transaction)
+    const transactions = await this.#shippo.fetchExpandedTransactions(order)
+
+    return transactions.find(
+      ({ object_id }) => object_id === this.#transaction.object_id
+    )
+  }
+  
   /**
    * Finds the fulfillment associated with the transaction
    * @param {string|object} transaction - shippo transaction id or object
@@ -45,17 +58,14 @@ class ShippoTransactionService extends BaseService {
   }
 
   /**
-   * Fetch the extended version of a transaction
+   * Finds the order associated with the transaction
    * @param {string|object} transaction - shippo transaction id or object
-   * @return {object} The extended transaction
+   * @return {Order} The order related to this transaction
    */
-  async fetchExtended(transaction) {
-    const order = await this.findOrder(transaction)
-    const transactions = await this.#shippo.fetchExpandedTransactions(order)
-
-    return transactions.find(
-      ({ object_id }) => object_id === this.#transaction.object_id
-    )
+  async findOrder(transaction) {
+    this.#setTransaction(await this.#resolveType(transaction))
+    const orderDisplayId = await this.#parseOrderDisplayId()
+    return await this.#retrieveOrderByDisplayId(orderDisplayId)
   }
 
   async #parseOrderDisplayId() {
