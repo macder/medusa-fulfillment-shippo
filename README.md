@@ -8,13 +8,19 @@
 
 Shippo fulfillment provider for Medusa Commerce.
 
-Service level and group fulfillment options
+Provides fulfillment options using carrier service levels and user created service groups that can be used to create shipping options for profiles and regions.
 
-Rates at checkout optimized with [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
+Rates at checkout optimized with a [first-fit-decreasing (FFD)](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) bin packing algorithm.
 
-Order fulfillment creates shippo order
+Fulfillments create orders in shippo.
 
-Returns, exchanges, and claims
+Supports returns, exchanges, and claims.
+
+### Implement the details your own way
+
+[Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
+
+Access data from actions by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead.
 
 ## Table of Contents
 
@@ -36,7 +42,7 @@ Returns, exchanges, and claims
         *   [Assign Shipping Options to Regions in Medusa](#assign-shipping-options-to-regions-in-medusa)
     *   [During Checkout](#during-checkout)
         *   [Set rates for cart](#set-rates-for-cart)
-        *   [Add to Cart](#add-to-cart)
+        *   [Add to Cart](#add-to-carlst)
         *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
     *   [Optimizing](#optimizing-rates-at-checkout)
         *   [Setup parcel templates](#setup-parcel-templates)
@@ -44,9 +50,10 @@ Returns, exchanges, and claims
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
 *   [API Reference](#api-reference)
-    *   [ShippoRatesService](#shipporatesservice)
+*   *   [ShippoClientService](#shippoclientservice)
     *   [ShippoPackerService](#shippopackerservice)
-    *   [ShippoClientService](#shippoclientservice)
+    *   [ShippoRatesService](#shipporatesservice)
+    *   [ShippoTransactionService](#shippotransactionservice)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
@@ -686,7 +693,7 @@ await shippoTransactionService.findFulfillment(transaction)
 
 ### findOrder()
 
-Finds the `Order` for the transaction
+Finds the `Order` that has a `Fulfillment` with this transaction
 
 `@param {string|object} transaction id or object`
 

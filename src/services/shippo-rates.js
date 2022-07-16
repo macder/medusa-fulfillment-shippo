@@ -237,7 +237,9 @@ class ShippoRatesService extends BaseService {
 
   async #setProps(cartId) {
     this.#setCart(await this.#fetchCart(cartId))
+    // if (!this.shippingOptions_?.length) {
     this.#setOptions(await this.#fetchOptions())
+    // }
   }
 
   async #validateAddress() {
