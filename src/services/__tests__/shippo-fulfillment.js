@@ -1,6 +1,5 @@
 import * as matchers from "jest-extended"
 import { faker } from "@faker-js/faker"
-import { MockRepository, MockManager, IdMap } from "medusa-test-utils"
 import ShippoPackerService from "../shippo-packer"
 import ShippoClientService from "../shippo-client"
 import ShippoFulfillmentService from "../shippo-fulfillment"
@@ -8,13 +7,10 @@ import ShippoRatesService from "../shippo-rates"
 import {
   makeArrayOf,
   mockCart,
-  mockCustomShippingOption,
   mockLineItem,
   mockLineItemTotals,
   mockLiveRate,
   mockShippingOption,
-  mockShippoBinPack,
-  mockPackerOutput,
   mockParcelTemplateResponse,
   mockFulfillmentOption,
 } from "../__mocks__/data"
@@ -33,6 +29,16 @@ describe("ShippoFulfillmentService", () => {
   const eventBusService = {
     emit: jest.fn(),
   }
+
+  const options = {
+    resolve: `medusa-fulfillment-shippo`,
+    options: {
+      api_key: "123123",
+      webhook_secret: "123123",
+      weight_unit_type: "g",
+      dimension_unit_type: "cm",
+    },
+  }
   /** **************************
     
       getFulfillmentOptions
@@ -46,7 +52,7 @@ describe("ShippoFulfillmentService", () => {
     const shippoClientService = new ShippoClientService({}, {})
     const shippoFulfilService = new ShippoFulfillmentService(
       { shippoClientService },
-      {}
+      options
     )
 
     it("returned an array", async () => {
@@ -101,7 +107,7 @@ describe("ShippoFulfillmentService", () => {
         cartService,
         totalsService,
       },
-      {}
+      options
     )
 
     const cart = mockCart({ hasAddress: false, hasItems: 1 })
@@ -169,7 +175,7 @@ describe("ShippoFulfillmentService", () => {
     const shippoClientService = new ShippoClientService({}, {})
     const shippoFulfilService = new ShippoFulfillmentService(
       { shippoClientService },
-      {}
+      options
     )
 
     it("returned true", async () => {
@@ -191,9 +197,12 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-    })
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
+        shippoClientService,
+      },
+      options
+    )
     it("returns true when live-rate", async () => {
       expect(
         await shippoFulfilService.canCalculate({ type: "LIVE_RATE" })
@@ -287,7 +296,7 @@ describe("ShippoFulfillmentService", () => {
     )
     const shippoFulfilService = new ShippoFulfillmentService(
       { cartService, eventBusService, shippoClientService, shippoRatesService },
-      {}
+      options
     )
 
     it("returns a number", async () => {
@@ -325,11 +334,14 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-      totalsService,
-      eventBusService,
-    })
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
+        shippoClientService,
+        totalsService,
+        eventBusService,
+      },
+      options
+    )
 
     const methodData = {
       test: "test",
@@ -371,9 +383,12 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const shippoClientService = new ShippoClientService({}, {})
-    const shippoFulfilService = new ShippoFulfillmentService({
-      shippoClientService,
-    })
+    const shippoFulfilService = new ShippoFulfillmentService(
+      {
+        shippoClientService,
+      },
+      options
+    )
 
     it("returns resolved promise", async () => {
       expect.assertions(1)

@@ -36,12 +36,6 @@ export default (app, rootDirectory) => {
     middlewares.wrap(require("./fulfillment-packingslip").default)
   )
 
-  route.get(
-    "/orders/:order_id/shippo/packer",
-    authenticate(),
-    middlewares.wrap(require("./orders-packer").default)
-  )
-
   // all your errors are belong to this
   route.use((err, req, res, next) => {
     if (!res.headersSent) {

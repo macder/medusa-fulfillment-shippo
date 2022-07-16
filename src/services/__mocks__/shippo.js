@@ -33,11 +33,12 @@ const shippo = jest.fn(() => ({
   },
   order: {
     create: jest.fn(async () => ({ object_id: "1010101010" })),
-    packingslip: jest.fn(async () => ({
+    packingslip: jest.fn(async (id) => ({
       expires: "",
       slip_url: "https://console.log",
       created: "",
     })),
+    retrieve: jest.fn(async () => ({ object_id: "order_id_123" })),
   },
   account: {
     address: jest.fn(async () => ({
