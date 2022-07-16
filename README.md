@@ -693,7 +693,7 @@ await shippoTransactionService.findFulfillment(transaction)
 
 ### findOrder()
 
-Finds the `Order` for the transaction
+Finds the `Order` that has a `Fulfillment` with this transaction
 
 `@param {string|object} transaction id or object`
 
