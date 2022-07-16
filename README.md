@@ -43,7 +43,7 @@ Returns, exchanges, and claims
         *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
         *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
-*   [API Reference](#references)
+*   [API Reference](#api-reference)
     *   [ShippoRatesService](#shipporatesservice)
     *   [ShippoPackerService](#shippopackerservice)
     *   [ShippoClientService](#shippoclientservice)
@@ -445,7 +445,7 @@ Rejected POST request
 
 *under development*
 
-# References
+# API Reference
 
 Documented Public API is considered stable release candidate for 1.0
 
@@ -453,83 +453,26 @@ Any public method not documented here may change prior to a 1.0 release
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-## ShippoRatesService
-
-*Stable v0.15.0+*
-
-Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
-
-### fetchCartRates()
-
-Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
-
-Cart must have items and complete shipping address
-
-`@param {string} cartId`
-
-`@return {array.<object>}`
-
-```javascript
-const rates = await shippoRatesService.fetchCartRates(cartId)
-```
-
-### fetchOptionRate()
-
-Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
-
-Cart must have items and complete shipping address
-
-`@param {string} cartId`
-
-`@param {string|FulfillmentOption} // so_id or FulfillmentOption`
-
-```javascript
-const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
-// OR
-const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
-```
-
-### ~~fetchCartOptions()~~
-
-*Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
-
-Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
-
-~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
-
-`@param {string} cartId`
-
-`@return {array.<ShippingOption>}`
-
-```javascript
-const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
-```
-
-## ShippoPackerService
-
-*Stable v0.16.0+*
-
-Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
-
-### packBins()
-
-Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
-
-First array member is best fit, i.e. has lowest vacant volume
-
-`@param {array.<LineItem>} lineItems`
-
-`@return {array.<object>} `
-
-```javascript
-const packed = await shippoPackerService.packBins(lineItems)
-```
-
 ## ShippoClientService
 
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
+
+### useClient
+
+`@property`
+
+An instance of `shippo-node-client` ([forked](#shippo-node-client))
+
+```javascript
+const client = shippoClientService.useClient
+
+//eg.
+const order = client.order.retrieve(id)
+...
+// see shippo-node-client docs for methods
+```
 
 ### fetchExpandedTransactions()
 
@@ -623,6 +566,128 @@ await shippoClientService.poll({
   maxAttempts: 3,
 })
 ```
+
+## ShippoPackerService
+
+*Stable v0.16.0+*
+
+Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
+
+### packBins()
+
+Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
+
+First array member is best fit, i.e. has lowest vacant volume
+
+`@param {array.<LineItem>} lineItems`
+
+`@return {array.<object>} `
+
+```javascript
+const packed = await shippoPackerService.packBins(lineItems)
+```
+
+## ShippoRatesService
+
+*Stable v0.15.0+*
+
+Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
+
+### fetchCartRates()
+
+Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
+
+Cart must have items and complete shipping address
+
+`@param {string} cartId`
+
+`@return {array.<object>}`
+
+```javascript
+const rates = await shippoRatesService.fetchCartRates(cartId)
+```
+
+### fetchOptionRate()
+
+Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
+
+Cart must have items and complete shipping address
+
+`@param {string} cartId`
+
+`@param {string|FulfillmentOption} // so_id or FulfillmentOption`
+
+```javascript
+const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
+// OR
+const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
+```
+
+### ~~fetchCartOptions()~~
+
+*Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
+
+Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
+
+~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
+
+`@param {string} cartId`
+
+`@return {array.<ShippingOption>}`
+
+```javascript
+const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
+```
+
+## ShippoTransactionService
+
+### fetch()
+
+Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
+
+`@param {string} id`
+
+```javascript
+await shippoTransactionService.fetch(transactionId)
+```
+
+
+### fetchExtended()
+
+Fetches transaction object with additional and expanded fields
+
+`@param {string|object} transaction id or object`
+
+`@return {object}`
+
+```javascript
+await shippoTransactionService.fetchExtended(transaction)
+```
+
+### findFulfillment()
+
+Finds the `Fulfillment` for the transaction
+
+`@param {string|object} transaction id or object` 
+
+`@return {Fulfillment}`
+
+```javascript
+await shippoTransactionService.findFulfillment(transaction)
+```
+
+### findOrder()
+
+Finds the `Order` for the transaction
+
+`@param {string|object} transaction id or object` 
+
+`@return {Order}`
+
+```javascript
+await shippoTransactionService.findOrder(transaction)
+```
+
 
 ## Shippo Node Client
 
