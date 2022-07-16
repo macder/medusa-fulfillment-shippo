@@ -28,21 +28,7 @@ class ShippoTransactionService extends BaseService {
   async fetch(id) {
     return await this.#client.transaction.retrieve(id)
   }
-s
-  /**
-   * Fetch the extended version of a transaction
-   * @param {string|object} transaction - shippo transaction id or object
-   * @return {object} The extended transaction
-   */
-  async fetchExtended(transaction) {
-    const order = await this.findOrder(transaction)
-    const transactions = await this.#shippo.fetchExpandedTransactions(order)
 
-    return transactions.find(
-      ({ object_id }) => object_id === this.#transaction.object_id
-    )
-  }
-  
   /**
    * Fetch the extended version of a transaction
    * @param {string|object} transaction - shippo transaction id or object
