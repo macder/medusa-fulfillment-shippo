@@ -341,7 +341,7 @@ Assuming accurate data for product dimensions, weight, and package templates in 
 
 Incoming HTTP requests from Shippo to webhook endpoints lack authentication. No secret token, no signature in the request header, no bearer, nothing.
 
-Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) for webhook routes is highly encouraged and recommended. There are also intermediary third party services such as pipedream and hookdeck that can be used to relay requests.
+Before enabling webhooks, understand the risks of an open and insecure HTTP endpoint that consumes data, and how to mitigate this. Please DO NOT use this without SSL/TLS. [Whitelisting shippo IP's](https://groups.google.com/g/shippo-api-announce/c/1A6m6Snvypk) is a good idea. There are also intermediary third party services such as pipedream and hookdeck that can be used to relay requests.
 
 You will also need to self generate a token and add it as a url query param. Ya I know… but it's better than nothing and it is encrypted over HTTPS
 
@@ -404,46 +404,51 @@ Documentation WIP...
 
 ### transaction\_created
 
-`https://server:port/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
+**Endpoint:**
+`/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
-Receives a Shippo transaction object when a label is purchased
+Receives shippo transaction object when label purchased
 
 *   Updates fulfillment to “shipped”
 *   Adds tracking number and link to fulfillment
 
-*For orders created with v0.11.0 up:*
+**Events**
+`shippo.transaction_created.shipment`
 
-*   Adds label url, settled rate, estimated rate (if shipping method was calculated at checkout), and transaction ID to fulfillment data
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  transaction: {...}
+}
+```
 
-Events
+`shippo.transaction_created.return_label`
 
-Received POST
-
-`shippo.received.transaction_created`
-
-Accepted POST as valid
-
-`shippo.accepted.transaction_created`
-
-Rejected POST request
-
-`shippo.rejected.transaction_created`
+```javascript
+{
+  order_id: "",
+  transaction: {...}
+}
+```
 
 ### transaction\_updated
 
-*under development*
+**Endpoint:**
+`/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
-### track\_updated
+Receives shippo transaction object when transaction updated
 
-*under development*
+**Event**
+`shippo.transaction_updated.payload`
 
-### batch\_purchased
-
-*under development*
-
-### batch\_created
-
-*under development*
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  transaction: {...}
+}
+```
 
 # API Reference
 
@@ -651,7 +656,6 @@ Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 await shippoTransactionService.fetch(transactionId)
 ```
 
-
 ### fetchExtended()
 
 Fetches transaction object with additional and expanded fields
@@ -668,7 +672,7 @@ await shippoTransactionService.fetchExtended(transaction)
 
 Finds the `Fulfillment` for the transaction
 
-`@param {string|object} transaction id or object` 
+`@param {string|object} transaction id or object`
 
 `@return {Fulfillment}`
 
@@ -680,14 +684,13 @@ await shippoTransactionService.findFulfillment(transaction)
 
 Finds the `Order` for the transaction
 
-`@param {string|object} transaction id or object` 
+`@param {string|object} transaction id or object`
 
 `@return {Order}`
 
 ```javascript
 await shippoTransactionService.findOrder(transaction)
 ```
-
 
 ## Shippo Node Client
 
