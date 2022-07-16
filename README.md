@@ -16,7 +16,7 @@ Fulfillments create orders in shippo.
 
 Supports returns, exchanges, and claims.
 
-### Implement the details your own way
+**Implement the details your own way**
 
 [Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
 
