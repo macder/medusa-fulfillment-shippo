@@ -20,7 +20,8 @@ Supports returns, exchanges, and claims.
 
 [Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
 
-Access data from actions by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead.
+Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads from actions to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
+
 
 ## Table of Contents
 
@@ -46,10 +47,11 @@ Access data from actions by [subscribing to events](https://docs.medusajs.com/ad
         *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
 *   [Webhooks](#webhooks)
 *   [API Reference](#api-reference)
-*   *   [ShippoClientService](#shippoclientservice)
+    *   [ShippoClientService](#shippoclientservice)
     *   [ShippoPackerService](#shippopackerservice)
     *   [ShippoRatesService](#shipporatesservice)
     *   [ShippoTransactionService](#shippotransactionservice)
+*   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Optimizing Rates at Checkout](#optimizing-rates-at-checkout)
     *   [Setup parcel templates](#setup-parcel-templates)
