@@ -405,6 +405,7 @@ Documentation WIP...
 ### transaction\_created
 
 **Endpoint:**
+
 `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
 Receives shippo transaction object when label purchased
@@ -413,6 +414,7 @@ Receives shippo transaction object when label purchased
 *   Adds tracking number and link to fulfillment
 
 **Events**
+
 `shippo.transaction_created.shipment`
 
 ```javascript
@@ -435,11 +437,13 @@ Receives shippo transaction object when label purchased
 ### transaction\_updated
 
 **Endpoint:**
+
 `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
 Receives shippo transaction object when transaction updated
 
 **Event**
+
 `shippo.transaction_updated.payload`
 
 ```javascript
