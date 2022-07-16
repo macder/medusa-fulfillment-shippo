@@ -3,22 +3,35 @@ import path from "path"
 import { getConfigFile } from "medusa-core-utils"
 
 class ShippoWebhookService extends BaseService {
+  #eventBusService
+  #orderService
+  #shippo
+  #shippoTransactionService
+
   constructor(
-    { fulfillmentService, orderService, shippoClientService },
+    {
+      eventBusService,
+      orderService,
+      shippoClientService,
+      shippoTransactionService,
+    },
     options
   ) {
     super()
 
-    this.setConfig_(options)
+    this.#setConfig(options)
+
+    /** @private @const {EventBusService} */
+    this.#eventBusService = eventBusService
 
     /** @private @const {OrderService} */
-    this.fulfillmentService_ = fulfillmentService
-
-    /** @private @const {OrderService} */
-    this.orderService_ = orderService
+    this.#orderService = orderService
 
     /** @private @const {ShippoClientService} */
-    this.shippo_ = shippoClientService
+    this.#shippo = shippoClientService
+
+    /** @private @const {ShippoTransactionService} */
+    this.#shippoTransactionService = shippoTransactionService
   }
 
   async verifyHookSecret(token) {
@@ -27,80 +40,71 @@ class ShippoWebhookService extends BaseService {
       : false
   }
 
+  async handleTransactionUpdated(transaction) {
+    const order = await this.#shippoTransactionService.findOrder(transaction)
+
+    const fulfillment = await this.#shippoTransactionService.findFulfillment(
+      transaction
+    )
+
+    const expandedTransaction =
+      await this.#shippoTransactionService.fetchExtended(transaction)
+
+    const { label_url } = transaction
+
+    this.#eventBusService.emit("shippo.transaction_updated.payload", {
+      order_id: order.id,
+      fulfillment_id: fulfillment.id,
+      transaction: {
+        ...expandedTransaction,
+        label_url,
+      },
+    })
+  }
+
   async handleTransactionCreated(transaction) {
-    const orderDisplayId = await this.parseOrderDisplayId_(transaction.metadata)
-    const order = await this.retrieveOrderByDisplayId_(orderDisplayId)
-    const fulfillment = await this.findFulfillmentForTransaction_(
-      transaction,
-      order
-    )
+    const order = await this.#shippoTransactionService.findOrder(transaction)
 
-    const expandedTransaction = await this.retrieveExpandedTransaction_(
-      transaction.object_id,
-      order
+    const fulfillment = await this.#shippoTransactionService.findFulfillment(
+      transaction
     )
+    // console.log('*********fulfillment: ', JSON.stringify(fulfillment, null, 2))
 
-    // check if this fulfillment is already shipped
-    if (
-      fulfillment.metadata?.transaction_id !== transaction.object_id &&
-      !expandedTransaction.is_return
-    ) {
-      await this.fulfillmentService_.createShipment(
-        fulfillment.id,
-        [
+    const expandedTransaction =
+      await this.#shippoTransactionService.fetchExtended(transaction)
+
+    if (!fulfillment.shipped_at) {
+      await this.#orderService
+        .createShipment(order.id, fulfillment.id, [
           {
             tracking_number: expandedTransaction.tracking_number,
             url: expandedTransaction.tracking_url_provider,
           },
-        ],
-        {
-          metadata: {
-            transaction_id: expandedTransaction.object_id,
-            rate: {
-              settled: expandedTransaction.rate,
-              // estimated: shippingRateAtCheckout[0],
+        ])
+        .then((order) => {
+          const { label_url } = transaction
+          this.#eventBusService.emit("shippo.transaction_created.shipment", {
+            order_id: order.id,
+            fulfillment_id: fulfillment.id,
+            transaction: {
+              ...expandedTransaction,
+              label_url,
             },
-            label_url: transaction.label_url,
-          },
-        }
-      )
+          })
+        })
     }
 
-    if (expandedTransaction.is_return) {
-      // Pay when scanned return label
-      // Some carriers provide this with outgoing label
-      // This condition triggers 2 transactions...
-      // Need to decide what to do here
-      // i.e. best place for this data
-      // Doesnt really belong to this particular fulfillment
+    if (expandedTransaction?.is_return) {
+      this.#eventBusService.emit("shippo.transaction_created.return_label", {
+        order_id: order.id,
+        transaction: expandedTransaction,
+      })
     }
   }
 
-  async findFulfillmentForTransaction_(transaction, order) {
-    return order.fulfillments.find(
-      ({ data: { shippo_order_id } }) => shippo_order_id === transaction.order
-    )
-  }
+  async handleTransactionUpdated(transaction) {}
 
-  async parseOrderDisplayId_(string) {
-    return string.replace(/[^0-9]/g, "")
-  }
-
-  async retrieveExpandedTransaction_(id, order) {
-    const transaction = await this.shippo_.fetchExpandedTransactions(order)
-    return transaction.find(({ object_id }) => object_id === id)
-  }
-
-  async retrieveOrderByDisplayId_(id) {
-    return await this.orderService_
-      .list(
-        { display_id: id },
-        { relations: ["fulfillments", "shipping_methods"] }
-      )
-      .then((item) => item[0])
-  }
-
-  setConfig_(options) {
+  #setConfig(options) {
     if (Object.keys(options).length === 0) {
       const {
         configModule: { projectConfig },
