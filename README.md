@@ -6,8 +6,6 @@
 
 > :information\_source: Requires Medusa 1.3.3^
 
-> Notice: [**REST API deprecation and removal**](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
-
 Shippo fulfillment provider for Medusa Commerce.
 
 Provides fulfillment options using carrier service levels and user created service groups that can be used to create shipping options for profiles and regions.
@@ -23,6 +21,8 @@ Supports returns, exchanges, and claims.
 [Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
 
 Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
+
+> Notice: [**REST API deprecation and removal**](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
 
 ## Table of Contents
 
