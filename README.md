@@ -18,9 +18,9 @@ Supports returns, exchanges, and claims.
 
 **Implement the details your own way**
 
-[Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
+*   [Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
 
-Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
+*   Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
 
 > Notice: [**REST API deprecation and removal**](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
 
