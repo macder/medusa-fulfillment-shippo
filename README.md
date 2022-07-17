@@ -787,7 +787,6 @@ Triggered when a `type: replace` [claim is created](https://docs.medusajs.com/ap
 
 If return `ShippingMethod` has `provider: shippo`, it attempts to find an existing return label in shippo
 
-
 #### Payload
 
 ```javascript
@@ -877,7 +876,6 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
 
 This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
-
 
 ### Accuracy of Rates
 
