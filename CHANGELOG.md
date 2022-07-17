@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## Unreleased
 
 Added
 
@@ -16,7 +16,6 @@ Removed
 Changed
 
 *   Move remaining transaction related logic from shippoFulfillmentProvider to shippoTransactionService [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
-
 
 ## \[0.18.2] (2022-07-16)
 
