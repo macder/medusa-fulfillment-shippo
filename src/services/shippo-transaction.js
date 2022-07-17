@@ -2,6 +2,7 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
+  #order
   #orderService
   #shippo
   #transaction
@@ -41,6 +42,23 @@ class ShippoTransactionService extends BaseService {
     return transactions.find(
       ({ object_id }) => object_id === this.#transaction.object_id
     )
+  }
+
+  async pollExtended(transaction) {
+    const poller = this.#shippo.poll
+    const fetch = async () => await this.fetchExtended(transaction)
+
+    const validator = () => (response) => {
+      return response?.object_state === "VALID" ||
+        response?.object_status === "SUCCESS"
+    }
+    return await poller({
+      fn: fetch,
+      validate: validator(),
+      interval: 3500,
+      maxAttempts: 3
+    })
+    .catch(e => { console.log(e) })
   }
 
   /**

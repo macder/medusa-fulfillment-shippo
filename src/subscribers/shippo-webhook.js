@@ -31,9 +31,9 @@ class ShippoSubscriber {
     )
 
     const expandedTransaction =
-      await this.#shippoTransactionService.fetchExtended(transaction)
+      await this.#shippoTransactionService.pollExtended(transaction)
 
-    if (!fulfillment.shipped_at) {
+    if (!fulfillment.shipped_at && !expandedTransaction?.is_return) {
       await this.#orderService
         .createShipment(order.id, fulfillment.id, [
           {
