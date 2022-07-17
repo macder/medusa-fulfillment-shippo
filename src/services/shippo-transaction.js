@@ -37,7 +37,7 @@ class ShippoTransactionService extends BaseService {
    */
   async fetchExtended(transaction) {
     const order = await this.findOrder(transaction)
-    const transactions = await this.#shippo.fetchExpandedTransactions(order)
+    const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
     return transactions.find(
       ({ object_id }) => object_id === this.#transaction.object_id
@@ -49,16 +49,19 @@ class ShippoTransactionService extends BaseService {
     const fetch = async () => await this.fetchExtended(transaction)
 
     const validator = () => (response) => {
-      return response?.object_state === "VALID" ||
+      return (
+        response?.object_state === "VALID" ||
         response?.object_status === "SUCCESS"
+      )
     }
     return await poller({
       fn: fetch,
       validate: validator(),
       interval: 3500,
-      maxAttempts: 3
+      maxAttempts: 3,
+    }).catch((e) => {
+      console.log(e)
     })
-    .catch(e => { console.log(e) })
   }
 
   /**
@@ -83,7 +86,28 @@ class ShippoTransactionService extends BaseService {
   async findOrder(transaction) {
     this.#setTransaction(await this.#resolveType(transaction))
     const orderDisplayId = await this.#parseOrderDisplayId()
+
     return await this.#retrieveOrderByDisplayId(orderDisplayId)
+  }
+
+  /**
+   * @experimental - since 0.19.0
+   * @propsed - for 0.20.0 or later
+   * @param {Order} order
+   * @return {}
+   */
+  async fetchReturnByOrder(order) {
+    const transactions = await this.#shippo.fetchExtendedTransactions(order)
+    const transaction = transactions.find((ta) => ta.is_return)
+
+    if (!transaction) {
+      return Promise.reject("transaction for return label not found")
+    }
+
+    return await this.fetch(transaction.object_id).then(({ label_url }) => ({
+      ...transaction,
+      label_url,
+    }))
   }
 
   async #parseOrderDisplayId() {
@@ -104,6 +128,10 @@ class ShippoTransactionService extends BaseService {
         { relations: ["fulfillments", "shipping_methods"] }
       )
       .then((item) => !!item?.length && item[0])
+  }
+
+  #setOrder(order) {
+    this.#order = order
   }
 
   #setTransaction(transaction) {
