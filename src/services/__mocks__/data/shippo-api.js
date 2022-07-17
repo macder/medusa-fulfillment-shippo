@@ -128,45 +128,94 @@ export const mockParcelTemplateResponse = (count) => {
   }
 }
 
-export const mockTransaction = () => {
-  return [
-    {
+export const mockExtendedTransaction = () => {
+  return {
+    object_state: "VALID",
+    object_status: "SUCCESS",
+    object_created: "",
+    object_updated: "",
+    object_id: "object_id_5555",
+    object_owner: "",
+    was_test: true,
+    rate: "",
+    pickup_date: null,
+    notification_email_from: false,
+    notification_email_to: false,
+    notification_email_other: "",
+    tracking_number: "",
+    address_to: "",
+    tracking_status: null,
+    tracking_url_provider: "https://tools.usps.com/",
+    commercial_invoice_url: null,
+    messages: [],
+    customs_note: "",
+    submission_note: "",
+    metadata: "Order 123",
+    is_return: true,
+    submission_date: "",
+    parcel: "",
+    eta: null,
+    refund_request_date: null,
+    is_user_fraudulent: false,
+    legacy_label_file_type: "PDF",
+    order: {
+      status: "PAID",
+      order_number: "123",
+      id: 93,
+      object_id: "",
+    },
+  }
+}
+
+export const mockTransaction = (id) => {
+  const transaction = {
+    object_id_5555: {
       object_state: "VALID",
-      object_status: "SUCCESS",
+      status: "SUCCESS",
       object_created: "",
       object_updated: "",
-      object_id: "",
+      object_id: "object_id_5555",
       object_owner: "",
-      was_test: true,
+      test: true,
       rate: "",
-      pickup_date: null,
-      notification_email_from: false,
-      notification_email_to: false,
-      notification_email_other: "",
-      tracking_number: "",
-      address_to: "",
-      tracking_status: null,
-      tracking_url_provider: "https://tools.usps.com/",
+      tracking_number: "1ab2c3",
+      tracking_status: "UNKNOWN",
+      eta: null,
+      tracking_url_provider: "https://tools.usps.com",
       commercial_invoice_url: null,
       messages: [],
-      customs_note: "",
-      submission_note: "",
-      metadata: "",
-      is_return: true,
-      submission_date: "",
+      order: "object_id_112233",
+      metadata: "Order 123",
       parcel: "",
-      eta: null,
-      refund_request_date: null,
-      is_user_fraudulent: false,
-      legacy_label_file_type: "PDF",
-      order: {
-        status: "PAID",
-        order_number: "207",
-        id: 93,
-        object_id: "",
+      billing: {
+        payments: [],
       },
     },
-  ]
+    object_id_3210: {
+      object_state: "VALID",
+      status: "SUCCESS",
+      object_created: "",
+      object_updated: "",
+      object_id: "object_id_3210",
+      object_owner: "",
+      test: true,
+      rate: "",
+      tracking_number: "1ab2c3",
+      tracking_status: "UNKNOWN",
+      eta: null,
+      tracking_url_provider: "https://tools.usps.com",
+      commercial_invoice_url: null,
+      messages: [],
+      order: "object_id_11223355",
+      metadata: "Order 456",
+      parcel: "",
+      billing: {
+        payments: [],
+      },
+    },
+  }
+
+  return transaction[id]
 }
 
 export const mockShippoAddress = () => {
