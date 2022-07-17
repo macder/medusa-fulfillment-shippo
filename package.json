@@ -1,6 +1,6 @@
 {
   "name": "medusa-fulfillment-shippo",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Shippo fulfillment provider for medusa",
   "author": "Maciej Derulski",
   "license": "MIT",
@@ -50,7 +50,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^28.1.2",
     "jest-extended": "2.0.0",
-    "medusa-test-utils": "^1.1.33",
     "onchange": "^7.1.0"
   }
 }

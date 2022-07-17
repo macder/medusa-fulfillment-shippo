@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+Added
+
+*   Webhook for track_updated [#197](https://github.com/macder/medusa-fulfillment-shippo/issues/197)
+*   Public methods for retrieving return labels [#198](https://github.com/macder/medusa-fulfillment-shippo/issues/198)
+
+Removed
+
+*   REST API endpoints [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
+
+Changed
+
+*   Move remaining transaction related logic from shippoFulfillmentProvider to shippoTransactionService [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
+
+## \[0.18.2] (2022-07-16)
+
+Added
+
+*   Change log unreleased section for upcoming changes
+*   Documentation for events [#195](https://github.com/macder/medusa-fulfillment-shippo/issues/195)
+*   Misc improvements to README.md
+
 ## \[0.18.1] (2022-07-16)
 
 Added
