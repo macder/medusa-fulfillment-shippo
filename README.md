@@ -16,11 +16,12 @@ Fulfillments create orders in shippo.
 
 Supports returns, exchanges, and claims.
 
-### Implement the details your own way
+**Implement the details your own way**
 
 [Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
 
-Access data from actions by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead.
+Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
+
 
 ## Table of Contents
 
@@ -44,17 +45,15 @@ Access data from actions by [subscribing to events](https://docs.medusajs.com/ad
         *   [Set rates for cart](#set-rates-for-cart)
         *   [Add to Cart](#add-to-carlst)
         *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
-    *   [Optimizing](#optimizing-rates-at-checkout)
-        *   [Setup parcel templates](#setup-parcel-templates)
-        *   [Verify product dimensions and weight](#verify-product-dimensions-and-weight)
-        *   [Accuracy of Rates](#accuracy-of-rates)
 *   [Webhooks](#webhooks)
 *   [API Reference](#api-reference)
-*   *   [ShippoClientService](#shippoclientservice)
+    *   [ShippoClientService](#shippoclientservice)
     *   [ShippoPackerService](#shippopackerservice)
     *   [ShippoRatesService](#shipporatesservice)
     *   [ShippoTransactionService](#shippotransactionservice)
+*   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
+*   [Shipping Rates](#shipping-rates)
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -269,6 +268,16 @@ Create shipping options for regions as usual
 
 [See here for common issue](#help-adding-a-shipping-method-to-cart-throws-an-error)
 
+### Setup parcel templates
+
+Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
+
+To get most optimal results, it is recommended to create package templates for all your shipping boxes.
+
+### Verify product dimensions and weight
+
+In your medusa store, make sure products have correct values for length, width, height, weight
+
 ### During Checkout
 
 [Retrieve shipping options for cart](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) as usual and any `price_type: calculated` options belonging to `provider: shippo` will have `amount: Number`.
@@ -317,28 +326,6 @@ price_type: (options[optionIndex].type === "LIVE_RATE")
     ? "calculated" 
     : "flat_rate",
 ```
-
-## Optimizing Rates at Checkout
-
-Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
-
-This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
-
-### Setup parcel templates
-
-Create package templates in the [Shippo app settings](https://apps.goshippo.com/settings/packages)
-
-To get most optimal results, it is recommended to create package templates for all your shipping boxes.
-
-### Verify product dimensions and weight
-
-In your medusa store, make sure products have correct values for length, width, height, weight
-
-### Accuracy of Rates
-
-Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
-
-Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
 ## Webhooks
 
@@ -469,13 +456,15 @@ Any public method not documented here may change prior to a 1.0 release
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-## ShippoClientService
+## `ShippoClientService`
+
+Provides a layer to simplify retrieving data from shippo API. i.e. methods that do the leg work to get data specific to orders, fulfillments, etc.
 
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
 
-### useClient
+### `useClient`
 
 `@property`
 
@@ -490,7 +479,7 @@ const order = client.order.retrieve(id)
 // see shippo-node-client docs for methods
 ```
 
-### fetchExpandedTransactions()
+### `fetchExpandedTransactions()`
 
 `@param {Order} order`
 
@@ -506,7 +495,7 @@ More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/doc
 await shippoClientService.fetchExpandedTransactions(order)
 ```
 
-### fetchOrder()
+### `fetchOrder()`
 
 `@param {string} fulfillmentId`
 
@@ -518,7 +507,7 @@ Fetches order from shippo for the `Fulfillment`
 await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
-### fetchPackingSlip()
+### `fetchPackingSlip()`
 
 `@param {string} fulfillmentId`
 
@@ -530,7 +519,7 @@ Fetches packing slip from shippo for the `Fulfillment`
 await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
-### fetchSenderAddress()
+### `fetchSenderAddress()`
 
 `@return {Object}`
 
@@ -540,7 +529,7 @@ Fetches the shippo account's default sender address
 await shippoClientService.fetchSenderAddress()
 ```
 
-### fetchUserParcelTemplates()
+### `fetchUserParcelTemplates()`
 
 `@return {array.<object>}`
 
@@ -550,7 +539,7 @@ Fetches all custom parcel templates from shippo account
 await shippoClientService.fetchUserParcelTemplates()
 ```
 
-### poll()
+### `poll()`
 
 `@param {object} obj`
 
@@ -583,13 +572,13 @@ await shippoClientService.poll({
 })
 ```
 
-## ShippoPackerService
+## `ShippoPackerService`
 
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
 
-### packBins()
+### `packBins()`
 
 Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
 
@@ -603,13 +592,13 @@ First array member is best fit, i.e. has lowest vacant volume
 const packed = await shippoPackerService.packBins(lineItems)
 ```
 
-## ShippoRatesService
+## `ShippoRatesService`
 
 *Stable v0.15.0+*
 
 Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
 
-### fetchCartRates()
+### `fetchCartRates()`
 
 Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
 
@@ -623,7 +612,7 @@ Cart must have items and complete shipping address
 const rates = await shippoRatesService.fetchCartRates(cartId)
 ```
 
-### fetchOptionRate()
+### `fetchOptionRate()`
 
 Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
 
@@ -639,7 +628,7 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
 
-### ~~fetchCartOptions()~~
+### ~~`fetchCartOptions()`~~
 
 *Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
 
@@ -655,9 +644,17 @@ Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/refe
 const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
-## ShippoTransactionService
+## `ShippoTransactionService`
 
-### fetch()
+Provides a layer to simpify relating `Order` and `Fulfillment` with shippo transactions.
+
+[Transactions](https://goshippo.com/docs/reference#transactions) are shippo objects created when a label is purchased
+
+*Stable v0.18.0+*
+
+Defined in: [`src/services/shippo-transaction.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-transaction.js)
+
+### `fetch()`
 
 Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 
@@ -667,7 +664,7 @@ Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 await shippoTransactionService.fetch(transactionId)
 ```
 
-### fetchExtended()
+### `fetchExtended()`
 
 Fetches transaction object with additional and expanded fields
 
@@ -679,7 +676,7 @@ Fetches transaction object with additional and expanded fields
 await shippoTransactionService.fetchExtended(transaction)
 ```
 
-### findFulfillment()
+### `findFulfillment()`
 
 Finds the `Fulfillment` for the transaction
 
@@ -691,7 +688,7 @@ Finds the `Fulfillment` for the transaction
 await shippoTransactionService.findFulfillment(transaction)
 ```
 
-### findOrder()
+### `findOrder()`
 
 Finds the `Order` that has a `Fulfillment` with this transaction
 
@@ -702,6 +699,144 @@ Finds the `Order` that has a `Fulfillment` with this transaction
 ```javascript
 await shippoTransactionService.findOrder(transaction)
 ```
+
+## Events
+
+List of all events, their triggers, and expected payload for handlers
+
+[Subscribe to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber) to perform additional operations
+
+These events only emit if the action pertains to `provider: shippo`
+
+### `shippo.order_created`
+
+Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/create-a-fulfillment) creates a shippo order.
+
+#### Payload
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+### `shippo.return_requested` 
+
+Triggered when a [return is requested](https://docs.medusajs.com/api/admin/order/request-a-return)
+
+If the return `ShippingMethod` has `provider: shippo` it attempts to find an existing return label in shippo.
+
+#### Payload
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.swap_created`
+
+Triggered when a [swap is created](https://docs.medusajs.com/api/admin/order/create-a-swap) 
+
+If return `ShippingMethod` has `provider: shippo` it attempts to find an existing return label in shippo.
+
+#### Payload
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.replace_order_created`
+
+Triggered when a [swap](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) or [claim](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) fulfillment is created.
+
+If the `ShippingMethod` has `provider: shippo` a shippo order is created
+
+#### Payload
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  customer_id: "",
+  shippo_order: {...}
+}
+```
+
+### `shippo.claim_refund_created`
+
+Triggered when a `type: refund` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
+
+If return `ShippingMethod` has `provider: shippo`, it attempts to find an existing return label in shippo
+
+#### Payload
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.claim_replace_created`
+
+Triggered when a `type: replace` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
+
+If return `ShippingMethod` has `provider: shippo`, it attempts to find an existing return label in shippo
+
+#### Payload
+
+```javascript
+{
+  order: {...}, // return order
+  transaction: {...} // shippo transaction for return label OR null
+}
+```
+
+### `shippo.transaction_created.shipment`
+
+Triggered when the `transaction_created` webhook updates a `Fulfillment` status to `shipped`
+
+#### Payload
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  transaction: {...}
+}
+```
+
+### `shippo.transaction_created.return_label`
+
+Triggered when the `transaction_created` webhook receives a return label transaction
+
+#### Payload
+
+```javascript
+{
+  order_id: "",
+  transaction: {...}
+}
+```
+
+### `shippo.transaction_updated.payload`
+
+Triggered when the `transaction_updated` webhook receives an updated transaction
+
+#### Payload
+
+```javascript
+{
+  order_id: "",
+  fulfillment_id: "",
+  transaction: {...}
+}
+```
+
 
 ## Shippo Node Client
 
@@ -735,6 +870,18 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 [Official client](https://github.com/goshippo/shippo-node-client)
 
 [Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
+
+## Shipping Rates
+
+Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
+
+This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
+
+### Accuracy of Rates
+
+Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
+
+Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
 
 ## Limitations
 
