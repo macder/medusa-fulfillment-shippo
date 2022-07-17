@@ -6,16 +6,28 @@ All notable changes to this project will be documented in this file.
 
 Added
 
-*   Webhook for track_updated [#197](https://github.com/macder/medusa-fulfillment-shippo/issues/197)
+*   Webhook for track\_updated [#197](https://github.com/macder/medusa-fulfillment-shippo/issues/197)
 *   Public methods for retrieving return labels [#198](https://github.com/macder/medusa-fulfillment-shippo/issues/198)
 
 Removed
 
 *   REST API endpoints [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
 
+## \[0.19.0] (2022-07-17)
+
+Added
+
+*   Experimental method to retrieve transaction for return label [#202](https://github.com/macder/medusa-fulfillment-shippo/issues/202)
+*   Polling method for fetching extended transaction [#204](https://github.com/macder/medusa-fulfillment-shippo/issues/204) - see also [#201](https://github.com/macder/medusa-fulfillment-shippo/issues/201)
+
 Changed
 
 *   Move remaining transaction related logic from shippoFulfillmentProvider to shippoTransactionService [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
+*   Fetching extended transaction no longer polls by default [#201](https://github.com/macder/medusa-fulfillment-shippo/issues/201) - see also [#204](https://github.com/macder/medusa-fulfillment-shippo/issues/204)
+
+Fixed
+
+*   Return-label event for transaction\_created webhook  [#200](https://github.com/macder/medusa-fulfillment-shippo/issues/200)
 
 ## \[0.18.2] (2022-07-16)
 

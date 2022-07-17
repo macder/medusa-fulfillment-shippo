@@ -6,16 +6,22 @@ import { shippoLineItem, shippoOrder } from "../utils/formatters"
 class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
+  #eventBusService
+  #orderService
   #shippo
+  #shippoPackerService
+  #shippoRatesService
+  #shippoTransactionService
+  #totalsService
 
   constructor(
     {
-      cartService,
       eventBusService,
       orderService,
       shippoClientService,
       shippoPackerService,
       shippoRatesService,
+      shippoTransactionService,
       totalsService,
     },
     options
@@ -24,35 +30,34 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     this.#setConfig(options)
 
-    /** @private @const {CartService} */
-    this.cartService_ = cartService
-
     /** @private @const {EventBusService} */
-    this.eventBusService_ = eventBusService
+    this.#eventBusService = eventBusService
 
     /** @private @const {OrderService} */
-    this.orderService_ = orderService
+    this.#orderService = orderService
 
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
     /** @private @const {ShippoPackerService} */
-    this.shippoPackerService_ = shippoPackerService
+    this.#shippoPackerService = shippoPackerService
 
     /** @private @const {ShippoRatesService} */
-    this.shippoRatesService_ = shippoRatesService
+    this.#shippoRatesService = shippoRatesService
+
+    /** @private @const {ShippoTransactionService} */
+    this.#shippoTransactionService = shippoTransactionService
 
     /** @private @const {TotalsService} */
-    this.totalsService_ = totalsService
+    this.#totalsService = totalsService
   }
-
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
-    const rate = await this.shippoRatesService_.fetchOptionRate(
+    const rate = await this.#shippoRatesService.fetchOptionRate(
       cart.id,
       fulfillmentOption
     )
 
-    return this.shippoRatesService_.getPrice(rate)
+    return this.#shippoRatesService.getPrice(rate)
   }
 
   async canCalculate(data) {
@@ -90,7 +95,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     ).then(async (response) => {
       const eventType = await this.#eventType(fulfillment)
 
-      this.eventBusService_.emit(eventType, {
+      this.#eventBusService.emit(eventType, {
         order_id: fromOrder.id,
         fulfillment_id: fulfillment.id,
         customer_id: fromOrder.customer_id,
@@ -110,15 +115,21 @@ class ShippoFulfillmentService extends FulfillmentService {
       returnOrder?.claim_order?.order_id ||
       returnOrder.order_id
 
-    const order = await this.orderService_.retrieve(orderId, {
+    const order = await this.#orderService.retrieve(orderId, {
       relations: ["fulfillments"],
     })
-    const returnLabel = await this.#retrieveReturnLabel(order)
+
+    const returnLabel = await this.#shippoTransactionService
+      .fetchReturnByOrder(order)
+      .catch((e) => {
+        console.log(e)
+      })
+
     const eventType = await this.#eventType(returnOrder)
 
-    this.eventBusService_.emit(eventType, {
+    this.#eventBusService.emit(eventType, {
       order: returnOrder,
-      transaction: returnLabel,
+      transaction: returnLabel || null,
     })
 
     if (returnLabel) {
@@ -153,7 +164,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       return { ...data }
     }
 
-    const parcel = await this.shippoPackerService_
+    const parcel = await this.#shippoPackerService
       .packBins(cart.items)
       .then((packed) => ({
         id: packed[0].object_id,
@@ -212,7 +223,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async #formatLineItems(items, order) {
     if (order?.is_claim) {
-      order = await this.orderService_.retrieve(order.order.id, {
+      order = await this.#orderService.retrieve(order.order.id, {
         relations: [
           "region",
           "payments",
@@ -226,7 +237,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     return await Promise.all(
       items.map(
         async (item) =>
-          await this.totalsService_
+          await this.#totalsService
             .getLineItemTotals(item, order)
             .then((totals) =>
               shippoLineItem(
@@ -248,39 +259,6 @@ class ShippoFulfillmentService extends FulfillmentService {
           is_return: true,
         }
       })
-  }
-
-  // TODO: move to shippoClientService? or a new shippoReturnService?
-  async #retrieveReturnLabel(order) {
-    const transaction = await this.#shippo
-      .fetchExpandedTransactions(order)
-      .then((transactions) => {
-        const returnTransact = transactions.find((ta) => ta.is_return)
-
-        if (returnTransact) {
-          // make sure the internal order has a fulfillment related to this transaction
-          const fulfillment = order.fulfillments.find(
-            (fm) => fm.data.shippo_order_id === returnTransact.order.object_id
-          )
-
-          if (fulfillment) {
-            delete returnTransact.address_to // not reversed, confusing...
-            return returnTransact
-          }
-        }
-        return null
-      })
-      .catch((e) => {
-        console.error(e)
-      })
-
-    if (transaction) {
-      // "other one" has eveything except label_url...
-      return await this.#shippo.useClient.transaction
-        .retrieve(transaction.object_id)
-        .then(({ label_url }) => ({ ...transaction, label_url }))
-    }
-    return Promise.resolve(null)
   }
 
   async #splitCarriersToServices(carriers) {

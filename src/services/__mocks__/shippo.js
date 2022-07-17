@@ -6,6 +6,8 @@ import {
   mockServiceGroup,
   mockLiveRate,
   mockShippoAddress,
+  mockTransaction,
+  mockExtendedTransaction,
 } from "../__mocks__/data"
 
 const shippo = jest.fn(() => ({
@@ -44,6 +46,15 @@ const shippo = jest.fn(() => ({
     address: jest.fn(async () => ({
       results: [mockShippoAddress()],
     })),
+  },
+  transaction: {
+    retrieve: jest.fn(async (id) => mockTransaction(id)),
+    search: jest.fn(async (q) => {
+      const transactions = makeArrayOf(mockExtendedTransaction, 1)
+      return {
+        results: transactions,
+      }
+    }),
   },
 }))
 
