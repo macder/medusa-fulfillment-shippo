@@ -17,6 +17,7 @@ class ShippoClientService extends BaseService {
     this.#setClient()
 
     this.useClient = this.getClient()
+    this.fetchExpandedTransactions = this.fetchExtendedTransactions
   }
 
   /**
@@ -26,19 +27,11 @@ class ShippoClientService extends BaseService {
    * @param {Order} order - order to get transactions for
    * @return {array.<Object>} list of transactions
    */
-  async fetchExpandedTransactions(order) {
+  async fetchExtendedTransactions(order) {
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
-
-    const transactions = await this.poll({
-      fn: async () => await this.#client.transaction.search(urlQuery),
-      validate: (result) =>
-        result?.results[0]?.object_state === "VALID" &&
-        result?.results[0]?.object_status === "SUCCESS",
-      interval: 2500,
-      maxAttempts: 3,
-    }).then((response) => response.results)
-
-    return transactions
+    return await this.#client.transaction
+      .search(urlQuery)
+      .then((response) => response.results)
   }
 
   /**
