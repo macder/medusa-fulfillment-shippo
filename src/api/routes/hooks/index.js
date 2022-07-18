@@ -22,5 +22,11 @@ export default (app) => {
     middlewares.wrap(require("./transactions").default)
   )
 
+  route.post(
+    "/shippo/track",
+    apiLimiter,
+    middlewares.wrap(require("./track").default)
+  )
+
   return app
 }
