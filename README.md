@@ -474,7 +474,7 @@ await shippoClientService.fetchExpandedTransactions(order)
 ```
 
 ### `fetchOrder()`
-**Deprecated** - use [`shippoOrderService.fetchByFullfillmentId()`]() instead
+**Deprecated** - use [`shippoOrderService.fetchByFullfillmentId()`](#fetchbyfullfillmentid) instead
 
 `@param {string} fulfillmentId`
 
