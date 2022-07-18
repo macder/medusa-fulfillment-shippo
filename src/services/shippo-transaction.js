@@ -5,7 +5,6 @@ class ShippoTransactionService extends BaseService {
   #orderService
   #shippo
 
-
   constructor({ orderService, shippoClientService }, options) {
     super()
 
@@ -72,8 +71,7 @@ class ShippoTransactionService extends BaseService {
     const order = await this.findOrder(transaction)
 
     return order.fulfillments.find(
-      ({ data: { shippo_order_id } }) =>
-        shippo_order_id === transaction.order
+      ({ data: { shippo_order_id } }) => shippo_order_id === transaction.order
     )
   }
 
@@ -114,8 +112,9 @@ class ShippoTransactionService extends BaseService {
    */
   async isReturn(transactionId) {
     const transaction = await this.fetch(transactionId)
-    return await this.fetchExtended(transaction)
-      .then(response => response.is_return)
+    return await this.fetchExtended(transaction).then(
+      (response) => response.is_return
+    )
   }
 
   async #parseOrderDisplayId(transaction) {
