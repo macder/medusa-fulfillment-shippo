@@ -6,8 +6,10 @@ class ShippoOrderService extends BaseService {
   #shippo
   #shippoTransactionService
 
-
-  constructor({ fulfillmentService, shippoClientService, shippoTransactionService }, options) {
+  constructor(
+    { fulfillmentService, shippoClientService, shippoTransactionService },
+    options
+  ) {
     super()
 
     /** @private @const {FulfillmentService} */
@@ -23,8 +25,8 @@ class ShippoOrderService extends BaseService {
   }
 
   /**
-   * 
-   * @param {string} 
+   *
+   * @param {string}
    * @return {Object}
    */
   async fetch(id) {
@@ -32,54 +34,49 @@ class ShippoOrderService extends BaseService {
   }
 
   /**
-   * 
-   * @param {string} 
+   *
+   * @param {string}
    * @return {Object}
    */
   async fetchByFullfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getId(fulfillmentId)
 
-    return await this.fetch(shippoOrderId)
-      .then(async order => {
-        if (order.transactions.length) {
-          const transactions = await Promise.all(
-            order.transactions.map(async ta => {
-              ta.is_return = await this.#shippoTransactionService.isReturn(ta.object_id)
-              return ta
-            })
-          )
-          order.transactions = transactions
-        }
-        return order
-      })
+    return await this.fetch(shippoOrderId).then(async (order) => {
+      if (order.transactions.length) {
+        const transactions = await Promise.all(
+          order.transactions.map(async (ta) => {
+            ta.is_return = await this.#shippoTransactionService.isReturn(
+              ta.object_id
+            )
+            return ta
+          })
+        )
+        order.transactions = transactions
+      }
+      return order
+    })
   }
 
   /**
-   * 
-   * @param {string} 
+   *
+   * @param {string}
    * @return {Object}
    */
-  async fetchByClaimId() {
-
-  }
+  async fetchByClaimId() {}
 
   /**
-   * 
-   * @param {string} 
+   *
+   * @param {string}
    * @return {Object}
    */
-  async fetchByOrderId() {
-
-  }
+  async fetchByOrderId() {}
 
   /**
-   * 
-   * @param {string} 
+   *
+   * @param {string}
    * @return {Object}
    */
-  async fetchByTransactionId() {
-
-  }
+  async fetchByTransactionId() {}
 
   async #getId(fulfillmentId) {
     const fullfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
@@ -97,7 +94,6 @@ class ShippoOrderService extends BaseService {
 
     return shippo_order_id
   }
-
 }
 
 export default ShippoOrderService
