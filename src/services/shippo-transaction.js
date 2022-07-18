@@ -70,7 +70,6 @@ class ShippoTransactionService extends BaseService {
    * @return {Fulfillment} The fulfillment related to this transaction
    */
   async findFulfillment(transaction) {
-    await this.setTransaction(transaction)
     const order = await this.findOrder(transaction)
 
     return order.fulfillments.find(
@@ -85,7 +84,7 @@ class ShippoTransactionService extends BaseService {
    * @return {Order} The order related to this transaction
    */
   async findOrder(transaction) {
-    await this.setTransaction(transaction)
+    this.#setTransaction(await this.#resolveType(transaction))
     const orderDisplayId = await this.#parseOrderDisplayId()
 
     return await this.#retrieveOrderByDisplayId(orderDisplayId)
@@ -111,17 +110,6 @@ class ShippoTransactionService extends BaseService {
     }))
   }
 
-  /**
-   * Check if transaction is return label
-   * @param {string|object} transaction - shippo transaction id or object
-   * @return {bool}
-   */
-  async isReturn(transaction) {
-  await this.setTransaction(transaction)
-   return await this.fetchExtended(transaction)
-      .then(response => response.is_return)
-  }
-
   async #parseOrderDisplayId() {
     const displayId = this.#transaction.metadata
     return displayId.replace(/[^0-9]/g, "")
@@ -131,7 +119,6 @@ class ShippoTransactionService extends BaseService {
     return transaction?.object_id
       ? transaction
       : await this.#client.transaction.retrieve(transaction)
-
   }
 
   async #retrieveOrderByDisplayId(id) {
@@ -143,35 +130,12 @@ class ShippoTransactionService extends BaseService {
       .then((item) => !!item?.length && item[0])
   }
 
-  getTransaction() {
-    return this.#transaction
+  #setOrder(order) {
+    this.#order = order
   }
 
-  async setTransaction(transactionOrId) {
-    // Warning, this can make u dizzy... 
-    // BUT, it significantly reduces api request rate
-    // probably a better way to do this, another day... BARF
-    // fully unit tested for refactor safety ;)
-    if (!this.#transaction) {
-      this.#transaction = await this.#resolveType(transactionOrId)
-    } else {
-      if (!transactionOrId?.object_id) {
-        const ta_id = transactionOrId
-        if (ta_id !== this.#transaction.object_id) {
-          this.#transaction = await this.fetch(ta_id)
-        }
-      } else {
-        const transaction = transactionOrId
-        if (this.#transaction?.object_id !== transaction.object_id) {
-          this.#transaction = transaction
-        }
-        else if (!this.#transaction?.rate?.object_id) {
-          if (transaction?.rate?.object_id) {
-            this.#transaction = transaction
-          }
-        }
-      }
-    }
+  #setTransaction(transaction) {
+    this.#transaction = transaction
   }
 }
 
