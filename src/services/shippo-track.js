@@ -18,12 +18,6 @@ class ShippoTrackService extends BaseService {
   ) {
     super()
 
-    /** @public @const {String} */
-    this.carrier = ""
-
-    /** @public @const {Array.<TrackingLink>} */
-    this.trackingLinks = []
-
     /** @private @const {FulfillmentService} */
     this.#fulfillmentService = fulfillmentService
 
@@ -40,22 +34,21 @@ class ShippoTrackService extends BaseService {
   }
 
   /**
-   *
-   * @param {string}
-   * @return {Object}
+   * Fetches tracking status
+   * @param {string} carrier - the carrier token name
+   * @param {string} trackingNum - the tracking number
+   * @return {Promise.<Object>} shippo tracking status
    */
   async fetch(carrier, trackingNum) {
     return await this.#client.track.get_status(carrier, trackingNum)
   }
 
   /**
-   *
-   * @param {string}
-   * @return {Object}
+   * Fetches tracking status by Fulfillment ID
+   * @param {string} fulfillmentId - the fulfillment to get tracking links for
+   * @return {Promise.<Object>} shippo tracking status
    */
   async fetchByFulfillmentId(fulfillmentId) {
-    // the crazy part is you need to make 4 consecutive api calls
-    // to get the carrier token name from an order's transaction...
     const transactionId = await this.#shippoOrderService
       .fetchByFullfillmentId(fulfillmentId)
       .then(
@@ -71,7 +64,6 @@ class ShippoTrackService extends BaseService {
       .retrieve(carrierId)
       .then((response) => response.carrier)
 
-    this.#setCarrier(carrier)
     const fullfillment = await this.#fulfillmentService.retrieve(
       fulfillmentId,
       {
@@ -92,14 +84,6 @@ class ShippoTrackService extends BaseService {
       .then(
         async (ta) => await this.#shippoTransactionService.fetchExtended(ta)
       )
-  }
-
-  async #setTrackingLinks(TrackingLinks) {
-    this.TrackingLinks = TrackingLinks
-  }
-
-  async #setCarrier(carrier) {
-    this.carrier = carrier
   }
 
   async registerWebhook(carrier, trackingNumber) {
