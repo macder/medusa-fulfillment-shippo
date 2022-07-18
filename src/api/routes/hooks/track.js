@@ -1,5 +1,6 @@
 export default async (req, res, next) => {
   const shippoClientService = req.scope.resolve("shippoClientService")
+  const shippoTransactionService = req.scope.resolve("shippoTransactionService")
   const shippoFulfillmentService = req.scope.resolve("shippoFulfillmentService")
   const eventBus = req.scope.resolve("eventBusService")
 
@@ -7,6 +8,8 @@ export default async (req, res, next) => {
     req.query.token
   )
   const event = req.headers["x-shippo-event"]
+
+  const isTest = true // TODO - Add to medusa-config.js
 
   const invalidRequest = () => {
     eventBus.emit(`shippo.rejected.${event}`, {})
@@ -16,34 +19,26 @@ export default async (req, res, next) => {
 
   if (validToken) {
     const untrustedData = req.body.data
-    
+
+    if (isTest) {
+      eventBus.emit(`shippo.accepted.${event}`, { untrustedData })
+    }
+
+    if (!isTest) {
+      const transaction = await shippoTransactionService.fetch(
+        untrustedData.transaction
+      )
+
+      if (
+        transaction?.object_state === "VALID" &&
+        transaction?.tracking_number === untrustedData.tracking_number
+      ) {
+        // fetch the track object from shippo and...
+      }
+    }
 
     res.json({})
-
-    
-    // if (
-    //   untrustedData.object_state === "VALID" &&
-    //   untrustedData.status === "SUCCESS"
-    // ) {
-    //   // Verify received input is a real shippo transaction object by fetching it from shippo api.
-    //   // Then, if it exist, use it as the trusted data going forward instead of the input (req.body)...
-    //   // Otherwise respond with a 500 and go back to sleep...
-    //   const transaction = await shippoClientService.useClient.transaction
-    //     .retrieve(untrustedData.object_id)
-    //     .catch((e) => console.error(e))
-
-    //   if (transaction?.object_state === "VALID") {
-    //     eventBus.emit(`shippo.accepted.${event}`, {
-    //       transaction, // the trusted data
-    //     })
-
-    //     res.json({})
-    //     return next()
-    //   }
-    // }
-
-
-
+    return next()
   }
 
   return invalidRequest()
