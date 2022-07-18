@@ -31,8 +31,13 @@ class ShippoOrderService extends BaseService {
     return await this.#client.order.retrieve(id)
   }
 
+  /**
+   * 
+   * @param {string} 
+   * @return {Object}
+   */
   async fetchByFullfillmentId(fulfillmentId) {
-    const shippoOrderId = await this.#getIdByFulfillment(fulfillmentId)
+    const shippoOrderId = await this.#getId(fulfillmentId)
 
     return await this.fetch(shippoOrderId)
       .then(async order => {
@@ -49,19 +54,34 @@ class ShippoOrderService extends BaseService {
       })
   }
 
+  /**
+   * 
+   * @param {string} 
+   * @return {Object}
+   */
   async fetchByClaimId() {
 
   }
 
+  /**
+   * 
+   * @param {string} 
+   * @return {Object}
+   */
   async fetchByOrderId() {
 
   }
 
+  /**
+   * 
+   * @param {string} 
+   * @return {Object}
+   */
   async fetchByTransactionId() {
 
   }
 
-  async #getIdByFulfillment(fulfillmentId) {
+  async #getId(fulfillmentId) {
     const fullfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
 
     if (!fullfillment.data?.shippo_order_id) {
