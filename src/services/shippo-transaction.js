@@ -128,7 +128,7 @@ class ShippoTransactionService extends BaseService {
   }
 
   async #resolveType(transaction) {
-    return transaction.object_id
+    return transaction?.object_id
       ? transaction
       : await this.#client.transaction.retrieve(transaction)
 
@@ -143,10 +143,6 @@ class ShippoTransactionService extends BaseService {
       .then((item) => !!item?.length && item[0])
   }
 
-  #setOrder(order) {
-    this.#order = order
-  }
-
   getTransaction() {
     return this.#transaction
   }
@@ -155,18 +151,18 @@ class ShippoTransactionService extends BaseService {
     // Warning, this can make u dizzy... 
     // BUT, it significantly reduces api request rate
     // probably a better way to do this, another day... BARF
+    // fully unit tested for refactor safety ;)
     if (!this.#transaction) {
       this.#transaction = await this.#resolveType(transactionOrId)
     } else {
       if (!transactionOrId?.object_id) {
         const ta_id = transactionOrId
-
         if (ta_id !== this.#transaction.object_id) {
           this.#transaction = await this.fetch(ta_id)
         }
       } else {
         const transaction = transactionOrId
-        if (!this.#transaction?.object_id !== transaction.object_id) {
+        if (this.#transaction?.object_id !== transaction.object_id) {
           this.#transaction = transaction
         }
         else if (!this.#transaction?.rate?.object_id) {
