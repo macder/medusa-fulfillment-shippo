@@ -9,6 +9,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   #eventBusService
   #orderService
   #shippo
+  #shippoOrderService
   #shippoPackerService
   #shippoRatesService
   #shippoTransactionService
@@ -19,6 +20,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       eventBusService,
       orderService,
       shippoClientService,
+      shippoOrderService,
       shippoPackerService,
       shippoRatesService,
       shippoTransactionService,
@@ -39,6 +41,9 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
+    /** @private @const {ShippoOrderService} */
+    this.#shippoOrderService = shippoOrderService
+
     /** @private @const {ShippoPackerService} */
     this.#shippoPackerService = shippoPackerService
 
@@ -50,7 +55,26 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {TotalsService} */
     this.#totalsService = totalsService
+
+    if (!this.options_?.is_test) {
+      this.sandbox("65159dced15541808b2899e6427c071d")
+    }
+    
   }
+
+  async sandbox(transaction) {
+    const test = await this.#shippoOrderService.fetchByFullfillment("ful_01G87515MMNS6N7C5DQM2AMX1X")
+
+    // mulit ful_01G87515MMNS6N7C5DQM2AMX1X
+
+    // ful_01G87YFJJAGQMXDAKVFHF49VJZ no transact
+
+
+
+    // console.log('*********test: ', JSON.stringify(test, null, 2))
+    
+  }
+
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     const rate = await this.#shippoRatesService.fetchOptionRate(
       cart.id,
