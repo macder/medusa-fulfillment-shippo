@@ -1,8 +1,8 @@
 import { Router } from "express"
 import hooks from "./routes/hooks"
 
-export default (rootDirectory) => {
+export default (rootDirectory, pluginOptions) => {
   const app = Router()
-  hooks(app, rootDirectory)
+  hooks(app, rootDirectory, pluginOptions)
   return app
 }
