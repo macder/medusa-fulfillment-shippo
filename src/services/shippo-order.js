@@ -3,7 +3,6 @@ import { BaseService } from "medusa-interfaces"
 class ShippoOrderService extends BaseService {
   #client
   #fulfillmentService
-  #order
   #shippo
   #shippoTransactionService
 
@@ -28,40 +27,39 @@ class ShippoOrderService extends BaseService {
    * @param {string} 
    * @return {Object}
    */
-  async fetch() {
-
+  async fetch(id) {
+    return await this.#client.order.retrieve(id)
   }
 
-  async fetchByFullfillment(fulfillmentId) {
+  async fetchByFullfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getIdByFulfillment(fulfillmentId)
 
-    return await this.#client.order.retrieve(shippoOrderId)
-      .then(order => {
-
+    return await this.fetch(shippoOrderId)
+      .then(async order => {
         if (order.transactions.length) {
-
-          const transactions = order.transactions.map(async ta => {
-            ta.is_return = await this.#shippoTransactionService.isReturn(ta.object_id)
-
-            console.log("==================", ta.is_return)
-
-            console.log("==================", ta.object_id)
-            
-            // return ta
-
-
-          })
-          // order.transactions = transactions
+          const transactions = await Promise.all(
+            order.transactions.map(async ta => {
+              ta.is_return = await this.#shippoTransactionService.isReturn(ta.object_id)
+              return ta
+            })
+          )
+          order.transactions = transactions
         }
-        
         return order
-
-
       })
   }
 
-  // async #add
+  async fetchByClaimId() {
 
+  }
+
+  async fetchByOrderId() {
+
+  }
+
+  async fetchByTransactionId() {
+
+  }
 
   async #getIdByFulfillment(fulfillmentId) {
     const fullfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
