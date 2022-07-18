@@ -22,8 +22,6 @@ Supports returns, exchanges, and claims.
 
 Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
 
-> Notice: [**REST API deprecation and removal**](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
-
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
@@ -98,40 +96,19 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 
 ### Retrieve
 
-**Service:**
-
 ```javascript
 await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
-~~**HTTP:**~~
-
-*Deprecated*
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/order
-```
-
 Returns `shippo_order` object
 
-## **Packing Slips**
+## Packing Slips
 
 Retrieve Shippo packing slip for a fulfillment
-
-**Service:**
 
 ```javascript
 await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
-
-~~**HTTP:**~~
-
-*Deprecated*
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/packingslip
-```
-
 ## Returns
 
 ### Request
