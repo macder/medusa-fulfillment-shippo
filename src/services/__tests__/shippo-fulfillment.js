@@ -32,6 +32,7 @@ describe("ShippoFulfillmentService", () => {
 
   const options = {
     resolve: `medusa-fulfillment-shippo`,
+    is_test: true,
     options: {
       api_key: "123123",
       webhook_secret: "123123",
