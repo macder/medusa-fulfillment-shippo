@@ -474,6 +474,7 @@ await shippoClientService.fetchExpandedTransactions(order)
 ```
 
 ### `fetchOrder()`
+**Deprecated** - use [`shippoOrderService.fetchByFullfillmentId()`]() instead
 
 `@param {string} fulfillmentId`
 
@@ -550,6 +551,22 @@ await shippoClientService.poll({
 })
 ```
 
+## `ShippoOrderService`
+
+Defined in: [`src/services/shippo-order.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-order.js)
+
+### `fetchByFullfillmentId()`
+
+Fetches a shippo order by `Fulfillment` id
+
+`@param {String} fulfillmentId`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoOrderService.fetchByFullfillmentId(fulfillmentId)
+```
+
 ## `ShippoPackerService`
 
 *Stable v0.16.0+*
@@ -564,7 +581,7 @@ First array member is best fit, i.e. has lowest vacant volume
 
 `@param {array.<LineItem>} lineItems`
 
-`@return {array.<object>} `
+`@return {array.<object>}`
 
 ```javascript
 const packed = await shippoPackerService.packBins(lineItems)
@@ -608,11 +625,9 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.dat
 
 ### ~~`fetchCartOptions()`~~
 
-*Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
+**Deprecated** - use [`ShippingProfileService.fetchCartOptions()`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
 
-Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
-
-~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
+Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.
 
 `@param {string} cartId`
 
