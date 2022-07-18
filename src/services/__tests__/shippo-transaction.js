@@ -12,7 +12,7 @@ describe("shippoTransactionService", () => {
   })
 
   const orderService = {
-    list: jest.fn(async ({ display_id }, { }) => {
+    list: jest.fn(async ({ display_id }, {}) => {
       const orders = {
         123: [
           {
@@ -39,10 +39,8 @@ describe("shippoTransactionService", () => {
 
   const shippoClientService = new ShippoClientService({}, {})
 
-  const newTransactionService = () => new ShippoTransactionService(
-    { orderService, shippoClientService },
-    {}
-  )
+  const newTransactionService = () =>
+    new ShippoTransactionService({ orderService, shippoClientService }, {})
 
   describe("findOrder", () => {
     beforeAll(async () => {
@@ -151,7 +149,6 @@ describe("shippoTransactionService", () => {
   //     })
   //     /*********************************************************** */
 
-
   //     /*********************************************************** */
   //     describe("this.transaction set with simple obj", () => {
   //       const this_transaction = {
@@ -185,7 +182,6 @@ describe("shippoTransactionService", () => {
   //       })
   //     })
   //     /*********************************************************** */
-
 
   //     /*********************************************************** */
   //     describe("this.transaction set with extended obj", () => {
