@@ -39,8 +39,6 @@ class ShippoTransactionService extends BaseService {
     const order = await this.findOrder(transaction)
     const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
-    console.log('*********transactions: ', JSON.stringify(transactions, null, 2))
-
     return transactions.find(
       ({ object_id }) => object_id === transaction.object_id
     )
@@ -76,7 +74,7 @@ class ShippoTransactionService extends BaseService {
 
     return order.fulfillments.find(
       ({ data: { shippo_order_id } }) =>
-        shippo_order_id === this.#transaction.order
+        shippo_order_id === transaction.order
     )
   }
 
@@ -86,9 +84,7 @@ class ShippoTransactionService extends BaseService {
    * @return {Order} The order related to this transaction
    */
   async findOrder(transaction) {
-    this.#setTransaction(await this.#resolveType(transaction))
-    const orderDisplayId = await this.#parseOrderDisplayId()
-
+    const orderDisplayId = await this.#parseOrderDisplayId(transaction)
     return await this.#retrieveOrderByDisplayId(orderDisplayId)
   }
 
@@ -114,17 +110,17 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * Check if transaction is return label
-   * @param {string|object} transaction - shippo transaction id or object
+   * @param {string} transactionId - shippo transaction id
    * @return {bool}
    */
-  async isReturn(transaction) {
-  // await this.setTransaction(transaction)
+  async isReturn(transactionId) {
+    const transaction = await this.fetch(transactionId)
     return await this.fetchExtended(transaction)
       .then(response => response.is_return)
   }
 
-  async #parseOrderDisplayId() {
-    const displayId = this.#transaction.metadata
+  async #parseOrderDisplayId(transaction) {
+    const displayId = transaction.metadata
     return displayId.replace(/[^0-9]/g, "")
   }
 
@@ -141,14 +137,6 @@ class ShippoTransactionService extends BaseService {
         { relations: ["fulfillments", "shipping_methods"] }
       )
       .then((item) => !!item?.length && item[0])
-  }
-
-  #setOrder(order) {
-    this.#order = order
-  }
-
-  #setTransaction(transaction) {
-    this.#transaction = transaction
   }
 }
 
