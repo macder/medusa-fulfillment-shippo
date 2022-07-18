@@ -2,10 +2,9 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
-  #order
   #orderService
   #shippo
-  #transaction
+
 
   constructor({ orderService, shippoClientService }, options) {
     super()
