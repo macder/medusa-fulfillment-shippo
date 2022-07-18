@@ -25,9 +25,9 @@ class ShippoOrderService extends BaseService {
   }
 
   /**
-   *
-   * @param {string}
-   * @return {Object}
+   * Fetches a shippo order by id
+   * @param {string} id - shippo order id
+   * @return {Promise.<Object>} shippo order
    */
   async fetch(id) {
     return await this.#client.order.retrieve(id)
@@ -35,8 +35,8 @@ class ShippoOrderService extends BaseService {
 
   /**
    *
-   * @param {string}
-   * @return {Object}
+   * @param {String}
+   * @return {Promise.<Object>}
    */
   async fetchByFullfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getId(fulfillmentId)
