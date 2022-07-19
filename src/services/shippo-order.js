@@ -22,6 +22,20 @@ class ShippoOrderService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    this.fulfillment = {
+      order: (id) => this.fetchByFulfillmentId
+    }
+
+    // shippoOrderService.fetch
+    // shippoOrderService.fetchBy.fulfillment(id)
+    // shippoOrderService.fetchBy.transaction(id)
+
+    // shippoOrderService.packingSlip.fetch
+    // shippoOrderService.packingSlip.fetchBy.fulfillment(id)
+    // shippoOrderService.packingSlip.fetchBy.transaction(id)
+
+    // instead of having -> fetchPackingSlipByFulfillmentId 
   }
 
   /**
@@ -38,7 +52,7 @@ class ShippoOrderService extends BaseService {
    * @param {String}
    * @return {Promise.<Object>}
    */
-  async fetchByFullfillmentId(fulfillmentId) {
+  async fetchByFulfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getId(fulfillmentId)
 
     return await this.fetch(shippoOrderId).then(async (order) => {
@@ -59,22 +73,31 @@ class ShippoOrderService extends BaseService {
 
   /**
    *
-   * @param {string}
-   * @return {Object}
+   * @param {String}
+   * @return {Promise.<Object>}
+   */
+  async fetchPackingSlipByFulfillmentId(fulfillmentId) {
+
+  }
+
+  /**
+   *
+   * @param {String}
+   * @return {Promise.<Object>}
    */
   async fetchByClaimId() {}
 
   /**
    *
-   * @param {string}
-   * @return {Object}
+   * @param {String}
+   * @return {Promise.<Object>}
    */
   async fetchByOrderId() {}
 
   /**
    *
-   * @param {string}
-   * @return {Object}
+   * @param {String}
+   * @return {Promise.<Object>}
    */
   async fetchByTransactionId() {}
 
