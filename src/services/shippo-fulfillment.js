@@ -306,6 +306,15 @@ class ShippoFulfillmentService extends FulfillmentService {
       this.options_ = options
     }
   }
+
+  getWebhookConfig() {
+    const { webhook_secret, webhook_test_mode } = this.options_
+
+    return {
+      webhook_secret,
+      webhook_test_mode,
+    }
+  }
 }
 
 export default ShippoFulfillmentService
