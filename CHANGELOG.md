@@ -11,6 +11,8 @@ Added
 *   Experimental method to retrieve transaction for return label [#202](https://github.com/macder/medusa-fulfillment-shippo/issues/202)
 *   Boolean method for checking if transaction is a return label [#208](https://github.com/macder/medusa-fulfillment-shippo/issues/208)
 *   ShippoOrderService [#209](https://github.com/macder/medusa-fulfillment-shippo/issues/209)
+*   Standardize method aliasing across all services [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
+*   ShippoTrackService [#211](https://github.com/macder/medusa-fulfillment-shippo/issues/211)
 
 Removed
 
