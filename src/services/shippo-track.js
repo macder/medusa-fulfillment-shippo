@@ -50,7 +50,7 @@ class ShippoTrackService extends BaseService {
    */
   async fetchByFulfillmentId(fulfillmentId) {
     const transactionId = await this.#shippoOrderService
-      .fetchByFullfillmentId(fulfillmentId)
+      .fetchByFulfillmentId(fulfillmentId)
       .then(
         (order) =>
           order.transactions.find(
@@ -89,7 +89,7 @@ class ShippoTrackService extends BaseService {
     return await this.#client.track.create({
       carrier,
       tracking_number: trackingNumber,
-      metadata
+      metadata,
     })
   }
 
