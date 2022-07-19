@@ -9,7 +9,6 @@ class ShippoFulfillmentService extends FulfillmentService {
   #eventBusService
   #orderService
   #shippo
-  #shippoOrderService
   #shippoPackerService
   #shippoRatesService
   #shippoTransactionService
@@ -20,7 +19,6 @@ class ShippoFulfillmentService extends FulfillmentService {
       eventBusService,
       orderService,
       shippoClientService,
-      shippoOrderService,
       shippoPackerService,
       shippoRatesService,
       shippoTransactionService,
