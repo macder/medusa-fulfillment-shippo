@@ -24,12 +24,14 @@ export default (app, rootDirectory, pluginOptions) => {
 
   route.post(
     "/shippo/transaction",
+    middlewares.verifyHook(),
     apiLimiter,
     middlewares.wrap(require("./transactions").default)
   )
 
   route.post(
     "/shippo/track",
+    middlewares.verifyHook(),
     apiLimiter,
     middlewares.wrap(require("./track").default)
   )
