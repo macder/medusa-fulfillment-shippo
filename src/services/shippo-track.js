@@ -71,11 +71,11 @@ class ShippoTrackService extends BaseService {
       }
     )
 
-    const trackingNum = fullfillment.tracking_links.find(
+    const { tracking_number } = fullfillment.tracking_links.find(
       (tl) => tl.tracking_number === transaction.tracking_number
-    ).tracking_number
+    )
 
-    return await this.fetch(carrier, trackingNum)
+    return await this.fetch(carrier, tracking_number)
   }
 
   /**
