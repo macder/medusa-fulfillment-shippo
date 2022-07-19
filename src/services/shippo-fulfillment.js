@@ -41,9 +41,6 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
-    /** @private @const {ShippoOrderService} */
-    this.#shippoOrderService = shippoOrderService
-
     /** @private @const {ShippoPackerService} */
     this.#shippoPackerService = shippoPackerService
 
@@ -55,11 +52,6 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {TotalsService} */
     this.#totalsService = totalsService
-
-    if (!this.options_?.is_test) {
-      this.sandbox("65159dced15541808b2899e6427c071d")
-    }
-    
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
