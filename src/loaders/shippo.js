@@ -7,7 +7,7 @@ export default async (container, options) => {
   
   if (config.webhook_test_mode) {
     console.warn(
-      "\x1b[33m WARNING: medusa-fulfillment-shippo - Webhook test mode enabled: Bypassing req.body validation\x1b[0m"
+      "\x1b[33m WARNING: medusa-fulfillment-shippo - Webhook test mode enabled: Accepting untrusted input from req.body\x1b[0m"
     )
   }
 
