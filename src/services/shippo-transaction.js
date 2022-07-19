@@ -37,6 +37,8 @@ class ShippoTransactionService extends BaseService {
     const order = await this.findOrder(transaction)
     const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
+    console.log('*********transactions: ', JSON.stringify(transactions, null, 2))
+
     return transactions.find(
       ({ object_id }) => object_id === transaction.object_id
     )
