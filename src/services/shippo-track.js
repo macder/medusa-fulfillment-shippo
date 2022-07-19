@@ -78,19 +78,27 @@ class ShippoTrackService extends BaseService {
     return await this.fetch(carrier, trackingNum)
   }
 
+  /**
+   * Register webhook for a tracking status
+   * @param {String} carrier - the carrier token name
+   * @param {String} trackingNum - the tracking number
+   * @param {String} [metadata] - optional metadata string, max 100 characters.
+   * @return {Promise.<Object>} shippo tracking status
+   */
+  async registerWebhook(carrier, trackingNumber, metadata = "") {
+    return await this.#client.track.create({
+      carrier,
+      tracking_number: trackingNumber,
+      metadata
+    })
+  }
+
   async #fetchTransaction(id) {
     return await this.#shippoTransactionService
       .fetch(id)
       .then(
         async (ta) => await this.#shippoTransactionService.fetchExtended(ta)
       )
-  }
-
-  async registerWebhook(carrier, trackingNumber) {
-    return await this.#client.track.create({
-      carrier,
-      tracking_number: trackingNumber,
-    })
   }
 
   async addMetaData() {}

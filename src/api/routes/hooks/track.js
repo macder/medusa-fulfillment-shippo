@@ -1,6 +1,7 @@
 export default async (req, res, next) => {
   const shippoClientService = req.scope.resolve("shippoClientService")
   const shippoTransactionService = req.scope.resolve("shippoTransactionService")
+  const shippoTrackService = req.scope.resolve("shippoTrackService")
   const shippoFulfillmentService = req.scope.resolve("shippoFulfillmentService")
   const eventBus = req.scope.resolve("eventBusService")
 
@@ -20,22 +21,23 @@ export default async (req, res, next) => {
   if (validToken) {
     const untrustedData = req.body.data
 
-    if (isTest) {
-      eventBus.emit(`shippo.accepted.${event}`, { untrustedData })
-    }
-
     if (!isTest) {
       const transaction = await shippoTransactionService.fetch(
         untrustedData.transaction
       )
 
       if (
-        transaction?.object_state === "VALID" &&
-        transaction?.tracking_number === untrustedData.tracking_number
+        transaction?.object_state !== "VALID" ||
+        transaction?.tracking_number !== untrustedData.tracking_number
       ) {
-        // fetch the track object from shippo and...
+        return invalidRequest()
       }
     }
+      const trackingStatus = await shippoTrackService.fetch(untrustedData.carrier, untrustedData.tracking_number)
+
+      eventBus.emit(`shippo.accepted.${event}`, {
+        trackingStatus, // the trusted data
+      })
 
     res.json({})
     return next()
