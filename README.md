@@ -16,13 +16,9 @@ Fulfillments create orders in shippo.
 
 Supports returns, exchanges, and claims.
 
-**Implement the details your own way**
-
-[Methods and wrappers](#api-reference) that simplify interfacing, consuming, and integrating shippo's api with medusa.
+[Suite of services](#api-reference) for rapid custom integration.
 
 Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
-
-> Notice: [**REST API deprecation and removal**](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
 
 ## Table of Contents
 
@@ -49,8 +45,10 @@ Actions that produce data emit [events](#events). The plugin does not make assum
 *   [Webhooks](#webhooks)
 *   [API Reference](#api-reference)
     *   [ShippoClientService](#shippoclientservice)
+    *   [ShippoOrderService](#shippoorderservice)
     *   [ShippoPackerService](#shippopackerservice)
     *   [ShippoRatesService](#shipporatesservice)
+    *   [ShippoTrackService](#shippotrackservice)
     *   [ShippoTransactionService](#shippotransactionservice)
 *   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
@@ -73,7 +71,8 @@ Add to medusa-config.js
       api_key: SHIPPO_API_KEY,
       weight_unit_type: 'g', // valid values: g, kg, lb, oz
       dimension_unit_type: 'cm', // valid values: cm, mm, in
-      webhook_secret: '' // README section on webhooks before using!
+      webhook_secret: '', // README section on webhooks before using!
+      webhook_test_mode: false
     },
 }
 ```
@@ -98,40 +97,19 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 
 ### Retrieve
 
-**Service:**
-
 ```javascript
 await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
-~~**HTTP:**~~
-
-*Deprecated*
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/order
-```
-
 Returns `shippo_order` object
 
-## **Packing Slips**
+## Packing Slips
 
 Retrieve Shippo packing slip for a fulfillment
-
-**Service:**
 
 ```javascript
 await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
-
-~~**HTTP:**~~
-
-*Deprecated*
-
-```plaintext
-GET /admin/fulfillments/:id/shippo/packingslip
-```
-
 ## Returns
 
 ### Request
@@ -449,7 +427,7 @@ Receives shippo transaction object when transaction updated
 }
 ```
 
-# API Reference
+## API Reference
 
 Documented Public API is considered stable release candidate for 1.0
 
@@ -457,7 +435,7 @@ Any public method not documented here may change prior to a 1.0 release
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-## `ShippoClientService`
+### `ShippoClientService`
 
 Provides a layer to simplify retrieving data from shippo API. i.e. methods that do the leg work to get data specific to orders, fulfillments, etc.
 
@@ -465,7 +443,7 @@ Provides a layer to simplify retrieving data from shippo API. i.e. methods that 
 
 Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
 
-### `useClient`
+#### `useClient`
 
 `@property`
 
@@ -480,7 +458,7 @@ const order = client.order.retrieve(id)
 // see shippo-node-client docs for methods
 ```
 
-### `fetchExpandedTransactions()`
+#### `fetchExpandedTransactions()`
 
 `@param {Order} order`
 
@@ -496,7 +474,8 @@ More useful data than [`api.goshippo.com/transactions`](https://goshippo.com/doc
 await shippoClientService.fetchExpandedTransactions(order)
 ```
 
-### `fetchOrder()`
+#### `fetchOrder()`
+**Deprecated** - use [`shippoOrderService.fetchByFullfillmentId()`](#fetchbyfullfillmentid) instead
 
 `@param {string} fulfillmentId`
 
@@ -508,7 +487,7 @@ Fetches order from shippo for the `Fulfillment`
 await shippoClientService.fetchOrder(fulfillmentId)
 ```
 
-### `fetchPackingSlip()`
+#### `fetchPackingSlip()`
 
 `@param {string} fulfillmentId`
 
@@ -520,7 +499,7 @@ Fetches packing slip from shippo for the `Fulfillment`
 await shippoClientService.fetchPackingSlip(fulfillmentId)
 ```
 
-### `fetchSenderAddress()`
+#### `fetchSenderAddress()`
 
 `@return {Object}`
 
@@ -530,7 +509,7 @@ Fetches the shippo account's default sender address
 await shippoClientService.fetchSenderAddress()
 ```
 
-### `fetchUserParcelTemplates()`
+#### `fetchUserParcelTemplates()`
 
 `@return {array.<object>}`
 
@@ -540,7 +519,7 @@ Fetches all custom parcel templates from shippo account
 await shippoClientService.fetchUserParcelTemplates()
 ```
 
-### `poll()`
+#### `poll()`
 
 `@param {object} obj`
 
@@ -573,13 +552,41 @@ await shippoClientService.poll({
 })
 ```
 
-## `ShippoPackerService`
+### `ShippoOrderService`
+
+Defined in: [`src/services/shippo-order.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-order.js)
+
+#### `fetch()`
+
+Fetches a shippo order
+
+`@param {string} id`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoOrderService.fetch(object_id)
+```
+
+#### `fetchByFullfillmentId()`
+
+Fetches a shippo order by `Fulfillment` id
+
+`@param {String} fulfillmentId`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoOrderService.fetchByFullfillmentId(fulfillmentId)
+```
+
+### `ShippoPackerService`
 
 *Stable v0.16.0+*
 
 Defined in: [`src/services/shippo-packer.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-packer.js)
 
-### `packBins()`
+#### `packBins()`
 
 Packs line items into parcel templates defined in shippo account using a [FFD algorithm](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing)
 
@@ -587,19 +594,19 @@ First array member is best fit, i.e. has lowest vacant volume
 
 `@param {array.<LineItem>} lineItems`
 
-`@return {array.<object>} `
+`@return {array.<object>}`
 
 ```javascript
 const packed = await shippoPackerService.packBins(lineItems)
 ```
 
-## `ShippoRatesService`
+### `ShippoRatesService`
 
 *Stable v0.15.0+*
 
 Defined in: [`src/services/shippo-rates.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-rates.js)
 
-### `fetchCartRates()`
+#### `fetchCartRates()`
 
 Fetches an array of [shippo live-rate objects](https://goshippo.com/docs/reference#rates-at-checkout) filtered against the carts `ShippingOptions` that are `price_type: calculated`
 
@@ -613,7 +620,7 @@ Cart must have items and complete shipping address
 const rates = await shippoRatesService.fetchCartRates(cartId)
 ```
 
-### `fetchOptionRate()`
+#### `fetchOptionRate()`
 
 Fetches a [shippo live-rate object](https://goshippo.com/docs/reference#rates-at-checkout) for a specific shipping option available to a cart
 
@@ -629,13 +636,11 @@ const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.id)
 const rate = await shippoRatesService.fetchOptionRate(cartId, shippingOption.data)
 ```
 
-### ~~`fetchCartOptions()`~~
+#### `fetchCartOptions()`
 
-*Deprecated* - see [#179](https://github.com/macder/medusa-fulfillment-shippo/issues/179)
+**Deprecated** - use [`ShippingProfileService.fetchCartOptions()`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
 
-Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) instead
-
-~~Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.~~
+Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/references/services/classes/ShippingProfileService#fetchcartoptions) except if the cart has shipping address and items, any `ShippingOption` with `price_type: calculated` and `provider: shippo` is contextually priced.
 
 `@param {string} cartId`
 
@@ -645,7 +650,37 @@ Use `ShippingProfileService` [fetchCartOptions()](https://docs.medusajs.com/refe
 const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
-## `ShippoTransactionService`
+### `ShippoTrackService`
+
+Defined in: [`src/services/shippo-track.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-track.js)
+
+#### `fetch()`
+
+Fetches a tracking status
+
+`@param {string} carrier - carrier token name` [enums](https://goshippo.com/docs/reference#carriers)
+
+`@param {string} trackingNum`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoTrackService.fetch(carrier, trackingNum)
+```
+
+#### `fetchByFulfillmentId()`
+
+Fetches a tracking status by `Fulfillment` ID
+
+`@param {string} fulfillmentId`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoTrackService.fetchByFulfillmentId(fulfillmentId)
+```
+
+### `ShippoTransactionService`
 
 Provides a layer to simpify relating `Order` and `Fulfillment` with shippo transactions.
 
@@ -655,50 +690,62 @@ Provides a layer to simpify relating `Order` and `Fulfillment` with shippo trans
 
 Defined in: [`src/services/shippo-transaction.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-transaction.js)
 
-### `fetch()`
+#### `fetch()`
 
 Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 
 `@param {string} id`
 
 ```javascript
-await shippoTransactionService.fetch(transactionId)
+await shippoTransactionService.fetch(transaction_id)
 ```
 
-### `fetchExtended()`
+#### `fetchExtended()`
 
 Fetches transaction object with additional and expanded fields
 
-`@param {string|object} transaction id or object`
+`@param {string} transaction id`
 
 `@return {object}`
 
 ```javascript
-await shippoTransactionService.fetchExtended(transaction)
+await shippoTransactionService.fetchExtended(transaction_id)
 ```
 
-### `findFulfillment()`
+#### `findFulfillment()`
 
 Finds the `Fulfillment` for the transaction
 
-`@param {string|object} transaction id or object`
+`@param {string} transaction id`
 
 `@return {Fulfillment}`
 
 ```javascript
-await shippoTransactionService.findFulfillment(transaction)
+await shippoTransactionService.findFulfillment(transaction_id)
 ```
 
-### `findOrder()`
+#### `findOrder()`
 
 Finds the `Order` that has a `Fulfillment` with this transaction
 
-`@param {string|object} transaction id or object`
+`@param {string} transaction id`
 
 `@return {Order}`
 
 ```javascript
-await shippoTransactionService.findOrder(transaction)
+await shippoTransactionService.findOrder(transaction_id)
+```
+
+#### `isReturn()`
+
+Checks if transaction is for a return label
+
+`@param {string} transactionId`
+
+`@return {bool}`
+
+```javascript
+await shippoTransactionService.isReturn(transaction_id)
 ```
 
 ## Events

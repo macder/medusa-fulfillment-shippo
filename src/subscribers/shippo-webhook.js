@@ -22,6 +22,15 @@ class ShippoSubscriber {
       "shippo.accepted.transaction_updated",
       this.handleTransactionUpdated
     )
+
+    this.#eventBusService.subscribe(
+      "shippo.accepted.track_updated",
+      this.handleTrackUpdated
+    )
+  }
+
+  handleTrackUpdated = async (data) => {
+    // this.#eventBusService.emit("shippo.track_updated", {})
   }
 
   handleTransactionCreated = async ({ transaction }) => {

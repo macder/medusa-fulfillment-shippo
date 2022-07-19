@@ -6,12 +6,37 @@ All notable changes to this project will be documented in this file.
 
 Added
 
-*   Webhook for track\_updated [#197](https://github.com/macder/medusa-fulfillment-shippo/issues/197)
 *   Public methods for retrieving return labels [#198](https://github.com/macder/medusa-fulfillment-shippo/issues/198)
+*   Inject is_return field into transaction array members on shippo order object [#206](https://github.com/macder/medusa-fulfillment-shippo/issues/206)
+*   Standardize method aliasing across all services [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
+
+Deprecated
+*   ShippoClientService.fetchOrder() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
+*   ShippoClientService.fetchPackingSlip() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
+
+## \[0.20.0] (2022-07-18)
+
+Added
+
+*   Webhook for track\_updated [#197](https://github.com/macder/medusa-fulfillment-shippo/issues/197)
+*   Boolean method for checking if transaction is a return label [#208](https://github.com/macder/medusa-fulfillment-shippo/issues/208)
+*   ShippoOrderService [#209](https://github.com/macder/medusa-fulfillment-shippo/issues/209)
+*   ShippoTrackService [#211](https://github.com/macder/medusa-fulfillment-shippo/issues/211)
+*   Webhook test mode [#214](https://github.com/macder/medusa-fulfillment-shippo/issues/214)
+
+Changed
+
+*   Moved webhook validation/verification to middleware [#213](https://github.com/macder/medusa-fulfillment-shippo/issues/213)
+
+Deprecated
+
+*   ShippoClientService.fetchOrder() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
 
 Removed
 
 *   REST API endpoints [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
+
+
 
 ## \[0.19.0] (2022-07-17)
 

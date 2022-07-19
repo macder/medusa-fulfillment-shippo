@@ -38,10 +38,9 @@ describe("shippoTransactionService", () => {
   }
 
   const shippoClientService = new ShippoClientService({}, {})
-  const shippoTransactionService = new ShippoTransactionService(
-    { orderService, shippoClientService },
-    {}
-  )
+
+  const newTransactionService = () =>
+    new ShippoTransactionService({ orderService, shippoClientService }, {})
 
   describe("findOrder", () => {
     beforeAll(async () => {
@@ -49,19 +48,16 @@ describe("shippoTransactionService", () => {
     })
 
     it("returns order when arg is transaction object", async () => {
+      const service = newTransactionService()
       const transaction = mockTransaction("object_id_5555")
-      const result = await shippoTransactionService.findOrder(transaction)
-      expect(result).toContainEntry(["display_id", "123"])
-    })
-
-    it("returns order when arg is transaction id", async () => {
-      const result = await shippoTransactionService.findOrder("object_id_5555")
+      const result = await service.findOrder(transaction)
       expect(result).toContainEntry(["display_id", "123"])
     })
 
     it("returns false when order not found", async () => {
+      const service = newTransactionService()
       const transaction = mockTransaction("object_id_3210")
-      const result = await shippoTransactionService.findOrder(transaction)
+      const result = await service.findOrder(transaction)
       expect(result).toBe(false)
     })
   })
@@ -72,15 +68,9 @@ describe("shippoTransactionService", () => {
     })
 
     it("returns a fulfillment when arg is transaction object", async () => {
+      const service = newTransactionService()
       const transaction = mockTransaction("object_id_5555")
-      const result = await shippoTransactionService.findFulfillment(transaction)
-      expect(result).toContainEntry(["id", "ful_321"])
-    })
-
-    it("returns a fulfillment when arg is transaction id", async () => {
-      const result = await shippoTransactionService.findFulfillment(
-        "object_id_5555"
-      )
+      const result = await service.findFulfillment(transaction)
       expect(result).toContainEntry(["id", "ful_321"])
     })
   })
@@ -91,16 +81,9 @@ describe("shippoTransactionService", () => {
     })
 
     it("returned expanded transaction when arg is transaction obj", async () => {
+      const service = newTransactionService()
       const transaction = mockTransaction("object_id_5555")
-      const result = await shippoTransactionService.fetchExtended(transaction)
-      expect(result).toContainEntry(["object_id", "object_id_5555"])
-    })
-
-    it("returned expanded transaction when arg is transaction id", async () => {
-      const transaction = mockTransaction("object_id_5555")
-      const result = await shippoTransactionService.fetchExtended(
-        "object_id_5555"
-      )
+      const result = await service.fetchExtended(transaction)
       expect(result).toContainEntry(["object_id", "object_id_5555"])
     })
   })
@@ -111,7 +94,8 @@ describe("shippoTransactionService", () => {
     })
 
     it("returns a transaction", async () => {
-      const result = await shippoTransactionService.fetch("object_id_5555")
+      const service = newTransactionService()
+      const result = await service.fetch("object_id_5555")
       expect(result).toContainEntry(["object_id", "object_id_5555"])
     })
   })

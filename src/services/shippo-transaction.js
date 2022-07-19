@@ -2,10 +2,8 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
-  #order
   #orderService
   #shippo
-  #transaction
 
   constructor({ orderService, shippoClientService }, options) {
     super()
@@ -40,7 +38,7 @@ class ShippoTransactionService extends BaseService {
     const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
     return transactions.find(
-      ({ object_id }) => object_id === this.#transaction.object_id
+      ({ object_id }) => object_id === transaction.object_id
     )
   }
 
@@ -73,8 +71,7 @@ class ShippoTransactionService extends BaseService {
     const order = await this.findOrder(transaction)
 
     return order.fulfillments.find(
-      ({ data: { shippo_order_id } }) =>
-        shippo_order_id === this.#transaction.order
+      ({ data: { shippo_order_id } }) => shippo_order_id === transaction.order
     )
   }
 
@@ -84,9 +81,7 @@ class ShippoTransactionService extends BaseService {
    * @return {Order} The order related to this transaction
    */
   async findOrder(transaction) {
-    this.#setTransaction(await this.#resolveType(transaction))
-    const orderDisplayId = await this.#parseOrderDisplayId()
-
+    const orderDisplayId = await this.#parseOrderDisplayId(transaction)
     return await this.#retrieveOrderByDisplayId(orderDisplayId)
   }
 
@@ -110,13 +105,25 @@ class ShippoTransactionService extends BaseService {
     }))
   }
 
-  async #parseOrderDisplayId() {
-    const displayId = this.#transaction.metadata
+  /**
+   * Check if transaction is return label
+   * @param {string} transactionId - shippo transaction id
+   * @return {bool}
+   */
+  async isReturn(transactionId) {
+    const transaction = await this.fetch(transactionId)
+    return await this.fetchExtended(transaction).then(
+      (response) => response.is_return
+    )
+  }
+
+  async #parseOrderDisplayId(transaction) {
+    const displayId = transaction.metadata
     return displayId.replace(/[^0-9]/g, "")
   }
 
   async #resolveType(transaction) {
-    return transaction.object_id
+    return transaction?.object_id
       ? transaction
       : await this.#client.transaction.retrieve(transaction)
   }
@@ -128,14 +135,6 @@ class ShippoTransactionService extends BaseService {
         { relations: ["fulfillments", "shipping_methods"] }
       )
       .then((item) => !!item?.length && item[0])
-  }
-
-  #setOrder(order) {
-    this.#order = order
-  }
-
-  #setTransaction(transaction) {
-    this.#transaction = transaction
   }
 }
 
