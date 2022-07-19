@@ -14,6 +14,10 @@ Added
 *   Standardize method aliasing across all services [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
 *   ShippoTrackService [#211](https://github.com/macder/medusa-fulfillment-shippo/issues/211)
 
+Changed
+
+*    Moved webhook validation/verification to middleware [#213](https://github.com/macder/medusa-fulfillment-shippo/issues/213)
+
 Deprecated
 *    ShippoClientService.fetchOrder() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
 *    ShippoClientService.fetchPackingSlip() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)

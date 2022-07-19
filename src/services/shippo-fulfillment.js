@@ -9,11 +9,9 @@ class ShippoFulfillmentService extends FulfillmentService {
   #eventBusService
   #orderService
   #shippo
-  #shippoOrderService
   #shippoPackerService
   #shippoRatesService
   #shippoTransactionService
-  #shippoTrackService
   #totalsService
 
   constructor(
@@ -21,11 +19,9 @@ class ShippoFulfillmentService extends FulfillmentService {
       eventBusService,
       orderService,
       shippoClientService,
-      shippoOrderService,
       shippoPackerService,
       shippoRatesService,
       shippoTransactionService,
-      shippoTrackService,
       totalsService,
     },
     options
@@ -43,31 +39,17 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
-    /** @private @const {ShippoOrderService} */
-    this.#shippoOrderService = shippoOrderService
-
     /** @private @const {ShippoPackerService} */
     this.#shippoPackerService = shippoPackerService
 
     /** @private @const {ShippoRatesService} */
     this.#shippoRatesService = shippoRatesService
 
-    /** @private @const {ShippoTrackService} */
-    this.#shippoTrackService = shippoTrackService
-
     /** @private @const {ShippoTransactionService} */
     this.#shippoTransactionService = shippoTransactionService
 
     /** @private @const {TotalsService} */
     this.#totalsService = totalsService
-
-    if (!this.options_?.is_test) {
-      // this.sandbox()
-    }
-  }
-
-  async sandbox() {
-    
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
@@ -304,6 +286,15 @@ class ShippoFulfillmentService extends FulfillmentService {
       this.options_ = projectConfig
     } else {
       this.options_ = options
+    }
+  }
+
+  getWebhookConfig() {
+    const { webhook_secret, webhook_test_mode } = this.options_
+
+    return {
+      webhook_secret,
+      webhook_test_mode,
     }
   }
 }
