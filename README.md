@@ -69,7 +69,8 @@ Add to medusa-config.js
       api_key: SHIPPO_API_KEY,
       weight_unit_type: 'g', // valid values: g, kg, lb, oz
       dimension_unit_type: 'cm', // valid values: cm, mm, in
-      webhook_secret: '' // README section on webhooks before using!
+      webhook_secret: '', // README section on webhooks before using!
+      webhook_test_mode: false
     },
 }
 ```
@@ -553,6 +554,19 @@ await shippoClientService.poll({
 
 Defined in: [`src/services/shippo-order.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-order.js)
 
+#### `fetch()`
+
+Fetches a shippo order
+
+`@param {string} id`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoOrderService.fetch(object_id)
+```
+
+
 #### `fetchByFullfillmentId()`
 
 Fetches a shippo order by `Fulfillment` id
@@ -635,6 +649,36 @@ Same as [`ShippingProfileService.fetchCartOptions`](https://docs.medusajs.com/re
 const shippingOptions = await shippoRatesService.fetchCartOptions(cartId)
 ```
 
+### `ShippoTrackService`
+
+Defined in: [`src/services/shippo-track.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-track.js)
+
+#### `fetch()`
+
+Fetches a tracking status
+
+`@param {string} carrier - carrier token name` [enums](https://goshippo.com/docs/reference#carriers)
+
+`@param {string} trackingNum`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoTrackService.fetch(carrier, trackingNum)
+```
+
+#### `fetchByFulfillmentId()`
+
+Fetches a tracking status by `Fulfillment` ID
+
+`@param {string} fulfillmentId`
+
+`@return {Promise.<Object>}`
+
+```javascript
+await shippoTrackService.fetchByFulfillmentId(fulfillmentId)
+```
+
 ### `ShippoTransactionService`
 
 Provides a layer to simpify relating `Order` and `Fulfillment` with shippo transactions.
@@ -652,7 +696,7 @@ Shorthand for `shippoClientService.useClient.transaction.retrieve(id)`
 `@param {string} id`
 
 ```javascript
-await shippoTransactionService.fetch(transactionId)
+await shippoTransactionService.fetch(transaction_id)
 ```
 
 #### `fetchExtended()`
@@ -664,7 +708,7 @@ Fetches transaction object with additional and expanded fields
 `@return {object}`
 
 ```javascript
-await shippoTransactionService.fetchExtended(transaction)
+await shippoTransactionService.fetchExtended(transaction_id)
 ```
 
 #### `findFulfillment()`
@@ -676,7 +720,7 @@ Finds the `Fulfillment` for the transaction
 `@return {Fulfillment}`
 
 ```javascript
-await shippoTransactionService.findFulfillment(transaction)
+await shippoTransactionService.findFulfillment(transaction_id)
 ```
 
 #### `findOrder()`
@@ -688,7 +732,19 @@ Finds the `Order` that has a `Fulfillment` with this transaction
 `@return {Order}`
 
 ```javascript
-await shippoTransactionService.findOrder(transaction)
+await shippoTransactionService.findOrder(transaction_id)
+```
+
+#### `isReturn()`
+
+Checks if transaction is for a return label
+
+`@param {string} transactionId`
+
+`@return {bool}`
+
+```javascript
+await shippoTransactionService.isReturn(transaction_id)
 ```
 
 ## Events
