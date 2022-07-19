@@ -2,6 +2,7 @@ export default () => {
   return async (req, res, next) => {
     const eventBus = req.scope.resolve("eventBusService")
     const shippoFulfillment = req.scope.resolve("shippoFulfillmentService")
+    const shippoTrackService = req.scope.resolve("shippoTrackService")
     const shippoTransactionService = req.scope.resolve(
       "shippoTransactionService"
     )
@@ -44,7 +45,7 @@ export default () => {
     }
 
     if (
-      event === "track_update" &&
+      event === "track_updated" &&
       transaction?.tracking_number === untrustedData?.tracking_number
     ) {
       const trackingStatus = await shippoTrackService.fetch(
