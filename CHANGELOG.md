@@ -13,6 +13,7 @@ Added
 *   ShippoOrderService [#209](https://github.com/macder/medusa-fulfillment-shippo/issues/209)
 *   Standardize method aliasing across all services [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
 *   ShippoTrackService [#211](https://github.com/macder/medusa-fulfillment-shippo/issues/211)
+*   Webhook test mode [#214](https://github.com/macder/medusa-fulfillment-shippo/issues/214)
 
 Changed
 
