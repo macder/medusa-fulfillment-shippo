@@ -17,11 +17,11 @@ Added
 
 Changed
 
-*    Moved webhook validation/verification to middleware [#213](https://github.com/macder/medusa-fulfillment-shippo/issues/213)
+*   Moved webhook validation/verification to middleware [#213](https://github.com/macder/medusa-fulfillment-shippo/issues/213)
 
 Deprecated
-*    ShippoClientService.fetchOrder() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
-*    ShippoClientService.fetchPackingSlip() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
+*   ShippoClientService.fetchOrder() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
+*   ShippoClientService.fetchPackingSlip() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
 
 Removed
 

@@ -568,7 +568,6 @@ Fetches a shippo order
 await shippoOrderService.fetch(object_id)
 ```
 
-
 #### `fetchByFullfillmentId()`
 
 Fetches a shippo order by `Fulfillment` id
