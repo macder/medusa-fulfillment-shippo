@@ -5,6 +5,7 @@ class ShippoOrderService extends BaseService {
   #fulfillmentService
   #shippo
   #shippoTransactionService
+  #fetchBy
 
   constructor(
     { fulfillmentService, shippoClientService, shippoTransactionService },
@@ -22,6 +23,10 @@ class ShippoOrderService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    this.#fetchBy = {
+      fullfillment: async (id) => await this.fetchByFulfillmentId(id),
+    }
   }
 
   /**
@@ -31,6 +36,10 @@ class ShippoOrderService extends BaseService {
    */
   async fetch(id) {
     return await this.#client.order.retrieve(id)
+  }
+
+  async fetchBy([entity, id]) {
+    return await this.#fetchBy[entity](id)
   }
 
   /**
@@ -83,7 +92,7 @@ class ShippoOrderService extends BaseService {
    * @param {String}
    * @return {Promise.<Object>}
    */
-  async fetchByReturnId() { }
+  async fetchByReturnId() {}
 
   /**
    *
