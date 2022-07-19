@@ -51,6 +51,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {TotalsService} */
     this.#totalsService = totalsService
   }
+
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     const rate = await this.#shippoRatesService.fetchOptionRate(
       cart.id,
@@ -285,6 +286,15 @@ class ShippoFulfillmentService extends FulfillmentService {
       this.options_ = projectConfig
     } else {
       this.options_ = options
+    }
+  }
+
+  getWebhookConfig() {
+    const { webhook_secret, webhook_test_mode } = this.options_
+
+    return {
+      webhook_secret,
+      webhook_test_mode,
     }
   }
 }
