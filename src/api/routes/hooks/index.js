@@ -1,17 +1,11 @@
 import { Router } from "express"
 import rateLimit from "express-rate-limit"
-import { getConfigFile } from "medusa-core-utils"
 import bodyParser from "body-parser"
 import middlewares from "../../middlewares"
 
 const route = Router()
 
-export default (app, rootDirectory, pluginOptions) => {
-  const { configModule } = getConfigFile(rootDirectory, "medusa-config")
-  const config = (configModule && configModule) || {}
-
-  console.log(pluginOptions)
-
+export default (app) => {
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,

@@ -8,5 +8,4 @@ export default async (req, res, next) => {
   })
 
   res.json({})
-  return next()
 }

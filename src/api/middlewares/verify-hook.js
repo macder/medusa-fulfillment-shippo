@@ -7,10 +7,14 @@ export default () => {
       "shippoTransactionService"
     )
     const config = shippoFulfillment.getWebhookConfig()
-
     const event = req.headers["x-shippo-event"]
     const token = req.query.token
     const untrustedData = req.body.data
+
+    if (config.webhook_test_mode) {
+      req.body = untrustedData
+      return next()
+    }
 
     const invalidRequest = () => {
       eventBus.emit(`shippo.rejected.${event}`, {})
