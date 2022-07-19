@@ -8,7 +8,6 @@ Added
 
 *   Webhook for track\_updated [#197](https://github.com/macder/medusa-fulfillment-shippo/issues/197)
 *   Public methods for retrieving return labels [#198](https://github.com/macder/medusa-fulfillment-shippo/issues/198)
-*   Experimental method to retrieve transaction for return label [#202](https://github.com/macder/medusa-fulfillment-shippo/issues/202)
 *   Inject is_return field into transaction array members on shippo order object [#206](https://github.com/macder/medusa-fulfillment-shippo/issues/206)
 *   Boolean method for checking if transaction is a return label [#208](https://github.com/macder/medusa-fulfillment-shippo/issues/208)
 *   ShippoOrderService [#209](https://github.com/macder/medusa-fulfillment-shippo/issues/209)
