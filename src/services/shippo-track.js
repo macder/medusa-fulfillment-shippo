@@ -2,6 +2,7 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTrackService extends BaseService {
   #client
+  #fetchBy
   #fulfillmentService
   #shippo
   #shippoOrderService
@@ -31,6 +32,10 @@ class ShippoTrackService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    this.#fetchBy = {
+      fullfillment: async (id) => await this.fetchByFulfillmentId(id),
+    }
   }
 
   /**
@@ -41,6 +46,10 @@ class ShippoTrackService extends BaseService {
    */
   async fetch(carrier, trackingNum) {
     return await this.#client.track.get_status(carrier, trackingNum)
+  }
+
+  async fetchBy([entity, id]) {
+    return await this.#fetchBy[entity](id)
   }
 
   /**
