@@ -1,6 +1,3 @@
-// import { NextFunction, Request, Response } from "express"
-// import ShippoFulfillmentProvider from "../../../services/shippo-fulfillment"
-
 export default () => {
   return async (req, res, next) => {
     const eventBus = req.scope.resolve("eventBusService")
