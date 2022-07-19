@@ -31,6 +31,9 @@ class ShippoTrackService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    // shippoTrackService.fetch
+    // shippoTrackService.fetchBy.fulfillment(id)
   }
 
   /**
