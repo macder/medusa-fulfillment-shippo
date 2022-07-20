@@ -544,6 +544,18 @@ await shippoService.transaction.isReturn(object_id)
 const client = shippoService.client 
 ```
 
+### Find
+
+#### `find().for()`
+
+`@experimental`
+
+```javascript
+await shippoService.find("fulfillment").for(["transaction", id])
+
+await shippoService.find("order").for(["transaction", id])
+```
+
 ## Events
 
 List of all events, their triggers, and expected payload for handlers
