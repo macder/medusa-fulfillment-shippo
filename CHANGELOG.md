@@ -2,17 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## \[0.21.0] (2022-07-20)
 
 Added
 
-*   Public methods for retrieving return labels [#198](https://github.com/macder/medusa-fulfillment-shippo/issues/198)
+*   Introduced a stable public interface [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
 *   Inject is_return field into transaction array members on shippo order object [#206](https://github.com/macder/medusa-fulfillment-shippo/issues/206)
-*   Standardize method aliasing across all services [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
 
-Deprecated
-*   ShippoClientService.fetchOrder() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
-*   ShippoClientService.fetchPackingSlip() [#212](https://github.com/macder/medusa-fulfillment-shippo/issues/212)
+Fixed
+
+*   Fetching a transaction can cause error [#226](https://github.com/macder/medusa-fulfillment-shippo/issues/226)
 
 ## \[0.20.0] (2022-07-18)
 
@@ -35,8 +34,6 @@ Deprecated
 Removed
 
 *   REST API endpoints [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
-
-
 
 ## \[0.19.0] (2022-07-17)
 
