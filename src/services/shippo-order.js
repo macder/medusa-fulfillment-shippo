@@ -1,11 +1,11 @@
 import { BaseService } from "medusa-interfaces"
+import { MedusaError } from "medusa-core-utils"
 
 class ShippoOrderService extends BaseService {
   #client
   #fulfillmentService
   #shippo
   #shippoTransactionService
-  #fetchBy
 
   constructor(
     { fulfillmentService, shippoClientService, shippoTransactionService },
@@ -72,7 +72,10 @@ class ShippoOrderService extends BaseService {
    * @param {String}
    * @return {Promise.<Object>}
    */
-  async fetchPackingSlipByFulfillmentId() {}
+  async fetchPackingSlipByFulfillmentId(fulfillmentId) {
+    const shippoOrderId = await this.#getId(fulfillmentId)
+    return await this.fetchPackingSlip(shippoOrderId)
+  }
 
   /**
    *

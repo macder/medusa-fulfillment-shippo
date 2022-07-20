@@ -51,12 +51,33 @@ class ShippoService extends BaseService {
     this.track = this.#track()
     this.transaction = this.#transaction()
 
+    this.find = (needle) => this.#find(needle)
+
     this.fulfillment = this.#fulfillment()
   }
 
   #account() {
     return {
       address: async () => await this.#shippoClient.fetchSenderAddress(),
+    }
+  }
+
+  #find(needle) {
+    const find = {
+      fulfillment: {
+        for: {
+          transaction: async (id) => await this.#shippoTransaction.findFulfillment(id)
+        }
+      },
+      order: {
+        for: {
+          transaction: async (id) => await this.#shippoTransaction.findOrder(id)
+        }
+      }
+    }
+
+    return {
+      for: async ([haystack, id]) => await find[needle].for[haystack](id)
     }
   }
 
@@ -73,7 +94,7 @@ class ShippoService extends BaseService {
 
   #order() {
     const fetchBy = {
-      fullfillment: async (id) =>
+      fulfillment: async (id) =>
         await this.#shippoOrder.fetchByFulfillmentId(id),
     }
 
