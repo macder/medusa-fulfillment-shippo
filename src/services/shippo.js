@@ -56,71 +56,77 @@ class ShippoService extends BaseService {
 
   #account() {
     return {
-      address: async () => await this.#shippoClient.fetchSenderAddress()
+      address: async () => await this.#shippoClient.fetchSenderAddress(),
     }
   }
 
   #fulfillment() {
     const fetchBy = {
-      transaction: async (id) => await this.#shippoTransaction.findFulfillment(id)
+      transaction: async (id) =>
+        await this.#shippoTransaction.findFulfillment(id),
     }
 
     return {
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id)
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
     }
   }
 
   #order() {
     const fetchBy = {
-      fullfillment: async (id) => await this.#shippoOrder.fetchByFulfillmentId(id),
+      fullfillment: async (id) =>
+        await this.#shippoOrder.fetchByFulfillmentId(id),
     }
 
     return {
       fetch: async (id) => await this.#shippoOrder.fetch(id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id)
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
     }
   }
 
   #packer() {
     return {
-      pack: async (items) => await this.#shippoPacker.packBins(items)
+      pack: async (items) => await this.#shippoPacker.packBins(items),
     }
   }
 
   #packingslip() {
     const fetchBy = {
-      fulfillment: async (id) => await this.#shippoOrder.fetchPackingSlipByFulfillmentId(id)
+      fulfillment: async (id) =>
+        await this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
     }
 
     return {
       fetch: async (id) => await this.#shippoOrder.fetchPackingSlip(id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id)   
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
     }
   }
 
   #rates() {
     return {
-      cart: async (cart_id, option) => this.#shippoRates.checkout(cart_id, option)
+      cart: async (cart_id, option) =>
+        this.#shippoRates.checkout(cart_id, option),
     }
   }
 
   #track() {
     const fetchBy = {
-      fullfillment: async (id) => await this.#shippoTrack.fetchByFulfillmentId(id),
+      fullfillment: async (id) =>
+        await this.#shippoTrack.fetchByFulfillmentId(id),
     }
 
     return {
       fetch: async (carrier, trackingNum) =>
         await this.#shippoTrack.fetch(carrier, trackingNum),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id)
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
     }
   }
 
   #transaction() {
     return {
       fetch: async (id) => await this.#shippoTransaction.fetch(id),
-      fetchExtended: async (id) => await this.#shippoTransaction.fetchExtended(id),
-      isReturn: async (id) => await this.#shippoTransaction.isReturn(id)
+      fetchExtended: async (id) =>
+        await this.#shippoTransaction.fetchExtended(id),
+      isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
     }
   }
 }

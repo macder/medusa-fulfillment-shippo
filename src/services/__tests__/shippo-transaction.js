@@ -83,9 +83,7 @@ describe("shippoTransactionService", () => {
     it("returned expanded transaction when arg is transaction id", async () => {
       const transaction = mockTransaction("object_id_5555")
       const service = await newTransactionService()
-      const result = await service.fetchExtended(
-        "object_id_5555"
-      )
+      const result = await service.fetchExtended("object_id_5555")
       expect(result).toContainEntry(["object_id", "object_id_5555"])
     })
   })

@@ -27,7 +27,7 @@ class ShippoTransactionService extends BaseService {
    * @return {object} The transaction
    */
   async fetch(id) {
-    if(this.#transaction?.object_id !== id) {
+    if (this.#transaction?.object_id !== id) {
       this.#transaction = await this.#client.transaction.retrieve(id)
     }
     return this.#transaction
@@ -42,9 +42,7 @@ class ShippoTransactionService extends BaseService {
     const order = await this.findOrder(transactionId)
     const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
-    return transactions.find(
-      ({ object_id }) => object_id === transactionId
-    )
+    return transactions.find(({ object_id }) => object_id === transactionId)
   }
 
   async pollExtended(transaction) {
@@ -76,7 +74,8 @@ class ShippoTransactionService extends BaseService {
     const order = await this.findOrder(transactionId)
 
     return order.fulfillments.find(
-      ({ data: { shippo_order_id } }) => shippo_order_id === this.#transaction.order
+      ({ data: { shippo_order_id } }) =>
+        shippo_order_id === this.#transaction.order
     )
   }
 

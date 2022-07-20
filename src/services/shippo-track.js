@@ -41,8 +41,11 @@ class ShippoTrackService extends BaseService {
    * @return {Promise.<Object>} shippo tracking status
    */
   async fetch(carrier, trackingNum) {
-    return await this.#client.track.get_status(carrier, trackingNum)
-      .catch(e => {console.error(e)})
+    return await this.#client.track
+      .get_status(carrier, trackingNum)
+      .catch((e) => {
+        console.error(e)
+      })
   }
 
   /**
@@ -100,7 +103,8 @@ class ShippoTrackService extends BaseService {
     return await this.#shippoTransactionService
       .fetch(id)
       .then(
-        async (ta) => await this.#shippoTransactionService.fetchExtended(ta.object_id)
+        async (ta) =>
+          await this.#shippoTransactionService.fetchExtended(ta.object_id)
       )
   }
 
