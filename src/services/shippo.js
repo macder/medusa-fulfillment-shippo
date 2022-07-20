@@ -89,7 +89,7 @@ class ShippoService extends BaseService {
 
   #order() {
     const fetchBy = {
-      fullfillment: async (id) =>
+      fulfillment: async (id) =>
         await this.#shippoOrder.fetchByFulfillmentId(id),
     }
 
