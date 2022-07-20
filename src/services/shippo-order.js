@@ -5,6 +5,7 @@ class ShippoOrderService extends BaseService {
   #fulfillmentService
   #shippo
   #shippoTransactionService
+  #fetchBy
 
   constructor(
     { fulfillmentService, shippoClientService, shippoTransactionService },
@@ -62,6 +63,15 @@ class ShippoOrderService extends BaseService {
    * @param {String}
    * @return {Promise.<Object>}
    */
+  async fetchPackingSlip(orderId) {
+    return await this.#client.order.packingslip(orderId)
+  }
+
+  /**
+   *
+   * @param {String}
+   * @return {Promise.<Object>}
+   */
   async fetchPackingSlipByFulfillmentId() {}
 
   /**
@@ -83,7 +93,7 @@ class ShippoOrderService extends BaseService {
    * @param {String}
    * @return {Promise.<Object>}
    */
-  async fetchByReturnId() { }
+  async fetchByReturnId() {}
 
   /**
    *
