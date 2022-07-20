@@ -16,7 +16,7 @@ Fulfillments create orders in shippo.
 
 Supports returns, exchanges, and claims.
 
-[Public interface](#api-reference) for rapid custom integration.
+[Public interface](#public-interface) for rapid custom integration.
 
 [Eventbus payloading](#events) instead of arbitrary data assumption and storage.
 
@@ -35,13 +35,12 @@ Supports returns, exchanges, and claims.
     *   [Replace](#replace)
     *   [Fulfillment](#fulfillment-1)
 *   [Rates at Checkout](#rates-at-checkout)
-    *   Setup
-        *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
-        *   [Assign Shipping Options to Regions in Medusa](#assign-shipping-options-to-regions-in-medusa)
+    *   [Shipping Options in Shippo App](#setup-shipping-options-in-shippo-app)
+    *   [Assign Shipping Options to Regions in Medusa](#assign-shipping-options-to-regions-in-medusa)
     *   [During Checkout](#during-checkout)
-        *   [Set rates for cart](#set-rates-for-cart)
-        *   [Add to Cart](#add-to-carlst)
-        *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
+    *   [Set rates for cart](#set-rates-for-cart)
+    *   [Add to Cart](#add-to-carlst)
+    *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
 *   [Webhooks](#webhooks)
 *   [Public Interface](#public-interface)
     *   [Account](#account)
