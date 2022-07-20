@@ -68,6 +68,11 @@ class ShippoService extends BaseService {
         for: {
           transaction: async (id) => await this.#shippoTransaction.findFulfillment(id)
         }
+      },
+      order: {
+        for: {
+          transaction: async (id) => await this.#shippoTransaction.findOrder(id)
+        }
       }
     }
 
