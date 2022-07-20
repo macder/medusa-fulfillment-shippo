@@ -45,9 +45,9 @@ class ShippoTransactionService extends BaseService {
     return transactions.find(({ object_id }) => object_id === transactionId)
   }
 
-  async pollExtended(transaction) {
+  async pollExtended(transactionId) {
     const poller = this.#shippo.poll
-    const fetch = async () => await this.fetchExtended(transaction)
+    const fetch = async () => await this.fetchExtended(transactionId)
 
     const validator = () => (response) => {
       return (
