@@ -34,13 +34,13 @@ class ShippoSubscriber {
   }
 
   handleTransactionCreated = async ({ transaction }) => {
-    const order = await this.#shippoTransactionService.findOrder(transaction)
+    const order = await this.#shippoTransactionService.findOrder(transaction.object_id)
     const fulfillment = await this.#shippoTransactionService.findFulfillment(
-      transaction
+      transaction.object_id
     )
 
     const expandedTransaction =
-      await this.#shippoTransactionService.pollExtended(transaction)
+      await this.#shippoTransactionService.pollExtended(transaction.object_id)
 
     if (!fulfillment.shipped_at && !expandedTransaction?.is_return) {
       await this.#orderService
@@ -72,14 +72,14 @@ class ShippoSubscriber {
   }
 
   handleTransactionUpdated = async ({ transaction }) => {
-    const order = await this.#shippoTransactionService.findOrder(transaction)
+    const order = await this.#shippoTransactionService.findOrder(transaction.object_id)
 
     const fulfillment = await this.#shippoTransactionService.findFulfillment(
-      transaction
+      transaction.object_id
     )
 
     const expandedTransaction =
-      await this.#shippoTransactionService.fetchExtended(transaction)
+      await this.#shippoTransactionService.fetchExtended(transaction.object_id)
 
     const { label_url } = transaction
 
