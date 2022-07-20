@@ -24,9 +24,14 @@ class ShippoOrderService extends BaseService {
 
     this.#client = this.#shippo.useClient
 
-    this.#fetchBy = {
-      fullfillment: async (id) => await this.fetchByFulfillmentId(id),
-    }
+    // this.#fetchBy = {
+    //   order: {
+    //     fullfillment: async (id) => await this.fetchByFulfillmentId(id),
+    //   },
+    //   packingslip: {
+    //     fulfillment: async (id) => await this.fetchPackingSlipByFulfillmentId(id)
+    //   }
+    // }
   }
 
   /**
@@ -38,9 +43,9 @@ class ShippoOrderService extends BaseService {
     return await this.#client.order.retrieve(id)
   }
 
-  async fetchBy([entity, id]) {
-    return await this.#fetchBy[entity](id)
-  }
+  // async fetchBy(type, [entity, id]) {
+  //   return await this.#fetchBy[type][entity](id)
+  // }
 
   /**
    * Fetches a shippo order by fulfillment ID
@@ -64,6 +69,15 @@ class ShippoOrderService extends BaseService {
       }
       return order
     })
+  }
+
+  /**
+   *
+   * @param {String}
+   * @return {Promise.<Object>}
+   */
+  async fetchPackingSlip(orderId) {
+    return await this.#client.order.packingslip(orderId)
   }
 
   /**
