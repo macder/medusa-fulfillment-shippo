@@ -23,15 +23,6 @@ class ShippoOrderService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
-
-    // this.#fetchBy = {
-    //   order: {
-    //     fullfillment: async (id) => await this.fetchByFulfillmentId(id),
-    //   },
-    //   packingslip: {
-    //     fulfillment: async (id) => await this.fetchPackingSlipByFulfillmentId(id)
-    //   }
-    // }
   }
 
   /**
@@ -42,10 +33,6 @@ class ShippoOrderService extends BaseService {
   async fetch(id) {
     return await this.#client.order.retrieve(id)
   }
-
-  // async fetchBy(type, [entity, id]) {
-  //   return await this.#fetchBy[type][entity](id)
-  // }
 
   /**
    * Fetches a shippo order by fulfillment ID
