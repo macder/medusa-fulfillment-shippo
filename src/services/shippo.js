@@ -105,11 +105,14 @@ class ShippoService extends BaseService {
   }
 
   #track() {
+    const fetchBy = {
+      fullfillment: async (id) => await this.#shippoTrack.fetchByFulfillmentId(id),
+    }
+
     return {
       fetch: async (carrier, trackingNum) =>
         await this.#shippoTrack.fetch(carrier, trackingNum),
-      fetchBy: async ([entity, id]) =>
-        await this.#shippoTrack.fetchBy([entity, id]),
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id)
     }
   }
 

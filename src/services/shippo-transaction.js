@@ -43,7 +43,7 @@ class ShippoTransactionService extends BaseService {
     const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
     return transactions.find(
-      ({ object_id }) => object_id === this.#transaction.object_id
+      ({ object_id }) => object_id === transactionId
     )
   }
 
@@ -118,7 +118,7 @@ class ShippoTransactionService extends BaseService {
    */
   async isReturn(transactionId) {
     const transaction = await this.fetch(transactionId)
-    return await this.fetchExtended(transaction).then(
+    return await this.fetchExtended(transaction.object_id).then(
       (response) => response.is_return
     )
   }
@@ -126,12 +126,6 @@ class ShippoTransactionService extends BaseService {
   async #parseOrderDisplayId(transaction) {
     const displayId = transaction.metadata
     return displayId.replace(/[^0-9]/g, "")
-  }
-
-  async #resolveType(transaction) {
-    return transaction?.object_id
-      ? transaction
-      : await this.#client.transaction.retrieve(transaction)
   }
 
   async #retrieveOrderByDisplayId(id) {

@@ -32,10 +32,6 @@ class ShippoTrackService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
-
-    this.#fetchBy = {
-      fullfillment: async (id) => await this.fetchByFulfillmentId(id),
-    }
   }
 
   /**
@@ -46,10 +42,7 @@ class ShippoTrackService extends BaseService {
    */
   async fetch(carrier, trackingNum) {
     return await this.#client.track.get_status(carrier, trackingNum)
-  }
-
-  async fetchBy([entity, id]) {
-    return await this.#fetchBy[entity](id)
+      .catch(e => {console.error(e)})
   }
 
   /**
@@ -69,6 +62,7 @@ class ShippoTrackService extends BaseService {
 
     const transaction = await this.#fetchTransaction(transactionId)
     const carrierId = transaction.rate.carrier_account
+
     const carrier = await this.#client.carrieraccount
       .retrieve(carrierId)
       .then((response) => response.carrier)
@@ -106,7 +100,7 @@ class ShippoTrackService extends BaseService {
     return await this.#shippoTransactionService
       .fetch(id)
       .then(
-        async (ta) => await this.#shippoTransactionService.fetchExtended(ta)
+        async (ta) => await this.#shippoTransactionService.fetchExtended(ta.object_id)
       )
   }
 
