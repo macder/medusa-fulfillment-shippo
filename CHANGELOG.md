@@ -2,7 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-
 ## \[0.21.0] (2022-07-20)
 
 Added
@@ -35,8 +34,6 @@ Deprecated
 Removed
 
 *   REST API endpoints [#181](https://github.com/macder/medusa-fulfillment-shippo/issues/181)
-
-
 
 ## \[0.19.0] (2022-07-17)
 
