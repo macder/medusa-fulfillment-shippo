@@ -34,7 +34,9 @@ class ShippoSubscriber {
   }
 
   handleTransactionCreated = async ({ transaction }) => {
-    const order = await this.#shippoTransactionService.findOrder(transaction.object_id)
+    const order = await this.#shippoTransactionService.findOrder(
+      transaction.object_id
+    )
     const fulfillment = await this.#shippoTransactionService.findFulfillment(
       transaction.object_id
     )
@@ -72,7 +74,9 @@ class ShippoSubscriber {
   }
 
   handleTransactionUpdated = async ({ transaction }) => {
-    const order = await this.#shippoTransactionService.findOrder(transaction.object_id)
+    const order = await this.#shippoTransactionService.findOrder(
+      transaction.object_id
+    )
 
     const fulfillment = await this.#shippoTransactionService.findFulfillment(
       transaction.object_id

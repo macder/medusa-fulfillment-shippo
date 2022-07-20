@@ -66,18 +66,20 @@ class ShippoService extends BaseService {
     const find = {
       fulfillment: {
         for: {
-          transaction: async (id) => await this.#shippoTransaction.findFulfillment(id)
-        }
+          transaction: async (id) =>
+            await this.#shippoTransaction.findFulfillment(id),
+        },
       },
       order: {
         for: {
-          transaction: async (id) => await this.#shippoTransaction.findOrder(id)
-        }
-      }
+          transaction: async (id) =>
+            await this.#shippoTransaction.findOrder(id),
+        },
+      },
     }
 
     return {
-      for: async ([haystack, id]) => await find[needle].for[haystack](id)
+      for: async ([haystack, id]) => await find[needle].for[haystack](id),
     }
   }
 
