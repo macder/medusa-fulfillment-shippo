@@ -16,9 +16,10 @@ Fulfillments create orders in shippo.
 
 Supports returns, exchanges, and claims.
 
-[Suite of services](#api-reference) for rapid custom integration.
+[Public interface](#api-reference) for rapid custom integration.
 
-Actions that produce data emit [events](#events). The plugin does not make assumptions or save data arbitrarily, it passes it through the eventbus instead. Access payloads to perform additional operations by [subscribing to events](https://docs.medusajs.com/advanced/backend/subscribers/create-subscriber).
+[Eventbus payloading](#events) instead of arbitrary data assumption and storage.
+
 
 ## Table of Contents
 
@@ -43,7 +44,7 @@ Actions that produce data emit [events](#events). The plugin does not make assum
         *   [Add to Cart](#add-to-carlst)
         *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
 *   [Webhooks](#webhooks)
-*   [API Reference](#api-reference)
+*   [Public Interface](#api-reference)
     *   [ShippoClientService](#shippoclientservice)
     *   [ShippoOrderService](#shippoorderservice)
     *   [ShippoPackerService](#shippopackerservice)
@@ -442,13 +443,18 @@ Receives shippo transaction object when transaction updated
 }
 ```
 
-## API Reference
+## Public Interface
 
-Documented Public API is considered stable release candidate for 1.0
+References the declared public interface for client consumption, the [semver](https://semver.org/) "Declared Public API"
 
-Any public method not documented here may change prior to a 1.0 release
+Although there is nothing stopping you from accessing and using public methods behind the interface, be aware that those implementation details can and will change. The purpose of the interface is semver compliant stability. 
+
+### Getting Started
+
+Dependency inject `shippoService` as you would with any other service
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
+
 
 ### Account
 
