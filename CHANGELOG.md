@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.21.1] (2022-07-20)
+
+Added
+
+*   Experimental find.for method chain [#231](https://github.com/macder/medusa-fulfillment-shippo/issues/231)
+
+Fixed
+
+*   Broken chain for order.fetchBy fulfillment [#229](https://github.com/macder/medusa-fulfillment-shippo/issues/229)
+*   packingslip.fetchBy invokes empty method [#230](https://github.com/macder/medusa-fulfillment-shippo/issues/230)
+
 ## \[0.21.0] (2022-07-20)
 
 Added
