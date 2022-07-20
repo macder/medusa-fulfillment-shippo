@@ -98,17 +98,21 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 ### Retrieve
 
 ```javascript
-await shippoClientService.fetchOrder(fulfillmentId)
+await shippoService.order.fetch(object_id)
+
+await shippoService.order.fetchBy(["fulfillment", ful_id]
 ```
 
 Returns `shippo_order` object
 
 ## Packing Slips
 
-Retrieve Shippo packing slip for a fulfillment
+### Retrieve
 
 ```javascript
-await shippoClientService.fetchPackingSlip(fulfillmentId)
+await shippoService.packingslip.fetch(object_id)
+
+await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
 ```
 ## Returns
 
@@ -288,6 +292,8 @@ POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
+
+
 ### Help, adding a shipping method to cart throws an error
 
 This is an issue with medusa-admin. Examine line 85 [`admin/src/domain/settings/regions/new-shipping.tsx`](https://github.com/medusajs/admin/blob/a33ed20214297ffdbd2383f809dddd4870f5dad9/src/domain/settings/regions/new-shipping.tsx#L85)
@@ -305,6 +311,15 @@ price_type: (options[optionIndex].type === "LIVE_RATE")
     ? "calculated" 
     : "flat_rate",
 ```
+
+### Raw rates
+
+```javascript
+await shippoService.rates.cart(cart_id)
+
+await shippoService.rates.cart(cart_id. so_id)
+```
+
 
 ## Webhooks
 
@@ -435,13 +450,103 @@ Any public method not documented here may change prior to a 1.0 release
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-### `ShippoClientService`
+### Account
 
-Provides a layer to simplify retrieving data from shippo API. i.e. methods that do the leg work to get data specific to orders, fulfillments, etc.
+#### `account.address`
 
-*Stable v0.16.0+*
+```javascript
+await shippoService.account.address()
+```
 
-Defined in: [`src/services/shippo-client.js`](https://github.com/macder/medusa-fulfillment-shippo/blob/main/src/services/shippo-client.js)
+### Order
+
+#### `order.fetch`
+
+```javascript
+await shippoService.order.fetch(object_id)
+```
+
+#### `order.fetchBy`
+
+```javascript
+await shippoService.order.fetchBy(["fulfillment", ful_id])
+```
+
+### Packingslip
+
+#### `packingslip.fetch`
+```javascript
+const { object_id } = order
+
+await shippoService.packingslip.fetch(object_id)
+```
+
+#### `packingslip.fetchBy`
+```javascript
+await shippoService.packingslip.fetchBy(["fulfillment", ful_id])
+```
+
+### Rates
+
+#### `rates.cart`
+
+```javascript
+await shippoService.rates.cart(cart_id)
+```
+
+```javascript
+await shippoService.rates.cart(cart_id, shipping_option_id)
+```
+
+### Track
+
+#### `track.fetch`
+
+```javascript
+await shippoService.track.fetch(carrier_enum, track_num)
+```
+
+#### `track.fetchBy`
+
+```javascript
+await shippoService.track.fetchBy(["fulfillment", ful_id])
+```
+
+### Transaction
+
+#### `transaction.fetch`
+
+```javascript
+await shippoService.transaction.fetch(object_id)
+```
+
+#### `transaction.fetchExtended`
+
+```javascript
+await shippoService.transaction.fetchExtended(object_id)
+```
+
+#### `transaction.isReturn`
+
+```javascript
+await shippoService.transaction.isReturn(object_id)
+```
+
+#### shippo-node-client
+
+```javascript
+const client = shippoService.client
+
+```
+
+
+
+
+
+
+
+
+
 
 #### `useClient`
 
