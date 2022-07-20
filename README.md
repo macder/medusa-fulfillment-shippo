@@ -20,7 +20,6 @@ Supports returns, exchanges, and claims.
 
 [Eventbus payloading](#events) instead of arbitrary data assumption and storage.
 
-
 ## Table of Contents
 
 *   [Getting Started](#getting-started)
@@ -44,13 +43,14 @@ Supports returns, exchanges, and claims.
         *   [Add to Cart](#add-to-carlst)
         *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
 *   [Webhooks](#webhooks)
-*   [Public Interface](#api-reference)
-    *   [ShippoClientService](#shippoclientservice)
-    *   [ShippoOrderService](#shippoorderservice)
-    *   [ShippoPackerService](#shippopackerservice)
-    *   [ShippoRatesService](#shipporatesservice)
-    *   [ShippoTrackService](#shippotrackservice)
-    *   [ShippoTransactionService](#shippotransactionservice)
+*   [Public Interface](#public-interface)
+    *   [Account](#account)
+    *   [Order](#order)
+    *   [Packingslip](#packingslip)
+    *   [Rates](#rates)
+    *   [Track](#track)
+    *   [Transaction](#transaction)
+    *   [Client](#client)
 *   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Shipping Rates](#shipping-rates)
@@ -115,6 +115,7 @@ await shippoService.packingslip.fetch(object_id)
 
 await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
 ```
+
 ## Returns
 
 ### Request
@@ -293,8 +294,6 @@ POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
-
-
 ### Help, adding a shipping method to cart throws an error
 
 This is an issue with medusa-admin. Examine line 85 [`admin/src/domain/settings/regions/new-shipping.tsx`](https://github.com/medusajs/admin/blob/a33ed20214297ffdbd2383f809dddd4870f5dad9/src/domain/settings/regions/new-shipping.tsx#L85)
@@ -320,7 +319,6 @@ await shippoService.rates.cart(cart_id)
 
 await shippoService.rates.cart(cart_id. so_id)
 ```
-
 
 ## Webhooks
 
@@ -447,14 +445,13 @@ Receives shippo transaction object when transaction updated
 
 References the declared public interface for client consumption, the [semver](https://semver.org/) "Declared Public API"
 
-Although there is nothing stopping you from accessing and using public methods behind the interface, be aware that those implementation details can and will change. The purpose of the interface is semver compliant stability. 
+Although there is nothing stopping you from accessing and using public methods behind the interface, be aware that those implementation details can and will change. The purpose of the interface is semver compliant stability.
 
 ### Getting Started
 
 Dependency inject `shippoService` as you would with any other service
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
-
 
 ### Account
 
@@ -543,11 +540,10 @@ await shippoService.transaction.isReturn(object_id)
 ### Client
 
 `shippo-node-client` ([forked](#shippo-node-client))
+
 ```javascript
 const client = shippoService.client 
 ```
-
-
 
 ## Events
 
@@ -562,6 +558,7 @@ These events only emit if the action pertains to `provider: shippo`
 Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/create-a-fulfillment) creates a shippo order.
 
 #### Payload
+
 ```javascript
 {
   order_id: "",
@@ -571,13 +568,14 @@ Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/cre
 }
 ```
 
-### `shippo.return_requested` 
+### `shippo.return_requested`
 
 Triggered when a [return is requested](https://docs.medusajs.com/api/admin/order/request-a-return)
 
 If the return `ShippingMethod` has `provider: shippo` it attempts to find an existing return label in shippo.
 
 #### Payload
+
 ```javascript
 {
   order: {...}, // return order
@@ -587,11 +585,12 @@ If the return `ShippingMethod` has `provider: shippo` it attempts to find an exi
 
 ### `shippo.swap_created`
 
-Triggered when a [swap is created](https://docs.medusajs.com/api/admin/order/create-a-swap) 
+Triggered when a [swap is created](https://docs.medusajs.com/api/admin/order/create-a-swap)
 
 If return `ShippingMethod` has `provider: shippo` it attempts to find an existing return label in shippo.
 
 #### Payload
+
 ```javascript
 {
   order: {...}, // return order
@@ -606,6 +605,7 @@ Triggered when a [swap](https://docs.medusajs.com/api/admin/order/create-a-swap-
 If the `ShippingMethod` has `provider: shippo` a shippo order is created
 
 #### Payload
+
 ```javascript
 {
   order_id: "",
@@ -685,7 +685,6 @@ Triggered when the `transaction_updated` webhook receives an updated transaction
   transaction: {...}
 }
 ```
-
 
 ## Shippo Node Client
 
