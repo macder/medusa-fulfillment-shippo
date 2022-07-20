@@ -475,6 +475,7 @@ await shippoService.order.fetchBy(["fulfillment", ful_id])
 ### Packingslip
 
 #### `packingslip.fetch`
+
 ```javascript
 const { object_id } = order
 
@@ -482,6 +483,7 @@ await shippoService.packingslip.fetch(object_id)
 ```
 
 #### `packingslip.fetchBy`
+
 ```javascript
 await shippoService.packingslip.fetchBy(["fulfillment", ful_id])
 ```
