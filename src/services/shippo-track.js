@@ -2,6 +2,7 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTrackService extends BaseService {
   #client
+  #fetchBy
   #fulfillmentService
   #shippo
   #shippoOrderService
@@ -40,7 +41,11 @@ class ShippoTrackService extends BaseService {
    * @return {Promise.<Object>} shippo tracking status
    */
   async fetch(carrier, trackingNum) {
-    return await this.#client.track.get_status(carrier, trackingNum)
+    return await this.#client.track
+      .get_status(carrier, trackingNum)
+      .catch((e) => {
+        console.error(e)
+      })
   }
 
   /**
@@ -60,6 +65,7 @@ class ShippoTrackService extends BaseService {
 
     const transaction = await this.#fetchTransaction(transactionId)
     const carrierId = transaction.rate.carrier_account
+
     const carrier = await this.#client.carrieraccount
       .retrieve(carrierId)
       .then((response) => response.carrier)
@@ -97,7 +103,8 @@ class ShippoTrackService extends BaseService {
     return await this.#shippoTransactionService
       .fetch(id)
       .then(
-        async (ta) => await this.#shippoTransactionService.fetchExtended(ta)
+        async (ta) =>
+          await this.#shippoTransactionService.fetchExtended(ta.object_id)
       )
   }
 

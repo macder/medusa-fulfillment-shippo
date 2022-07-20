@@ -2,8 +2,10 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
+  #fetchBy
   #orderService
   #shippo
+  #transaction
 
   constructor({ orderService, shippoClientService }, options) {
     super()
@@ -25,21 +27,22 @@ class ShippoTransactionService extends BaseService {
    * @return {object} The transaction
    */
   async fetch(id) {
-    return await this.#client.transaction.retrieve(id)
+    if (this.#transaction?.object_id !== id) {
+      this.#transaction = await this.#client.transaction.retrieve(id)
+    }
+    return this.#transaction
   }
 
   /**
    * Fetch the extended version of a transaction
-   * @param {string|object} transaction - shippo transaction id or object
+   * @param {string|object} transaction - shippo transaction id
    * @return {object} The extended transaction
    */
-  async fetchExtended(transaction) {
-    const order = await this.findOrder(transaction)
+  async fetchExtended(transactionId) {
+    const order = await this.findOrder(transactionId)
     const transactions = await this.#shippo.fetchExtendedTransactions(order)
 
-    return transactions.find(
-      ({ object_id }) => object_id === transaction.object_id
-    )
+    return transactions.find(({ object_id }) => object_id === transactionId)
   }
 
   async pollExtended(transaction) {
@@ -64,14 +67,15 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * Finds the fulfillment associated with the transaction
-   * @param {string|object} transaction - shippo transaction id or object
+   * @param {string|object} transaction - shippo transaction
    * @return {Fulfillment} The fulfillment related to this transaction
    */
-  async findFulfillment(transaction) {
-    const order = await this.findOrder(transaction)
+  async findFulfillment(transactionId) {
+    const order = await this.findOrder(transactionId)
 
     return order.fulfillments.find(
-      ({ data: { shippo_order_id } }) => shippo_order_id === transaction.order
+      ({ data: { shippo_order_id } }) =>
+        shippo_order_id === this.#transaction.order
     )
   }
 
@@ -80,7 +84,8 @@ class ShippoTransactionService extends BaseService {
    * @param {string|object} transaction - shippo transaction id or object
    * @return {Order} The order related to this transaction
    */
-  async findOrder(transaction) {
+  async findOrder(transactionId) {
+    const transaction = await this.fetch(transactionId)
     const orderDisplayId = await this.#parseOrderDisplayId(transaction)
     return await this.#retrieveOrderByDisplayId(orderDisplayId)
   }
@@ -112,7 +117,7 @@ class ShippoTransactionService extends BaseService {
    */
   async isReturn(transactionId) {
     const transaction = await this.fetch(transactionId)
-    return await this.fetchExtended(transaction).then(
+    return await this.fetchExtended(transaction.object_id).then(
       (response) => response.is_return
     )
   }
@@ -120,12 +125,6 @@ class ShippoTransactionService extends BaseService {
   async #parseOrderDisplayId(transaction) {
     const displayId = transaction.metadata
     return displayId.replace(/[^0-9]/g, "")
-  }
-
-  async #resolveType(transaction) {
-    return transaction?.object_id
-      ? transaction
-      : await this.#client.transaction.retrieve(transaction)
   }
 
   async #retrieveOrderByDisplayId(id) {
