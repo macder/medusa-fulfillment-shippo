@@ -8,7 +8,7 @@ import {
   mockShippoAddress,
   mockTransaction,
   mockExtendedTransaction,
-} from "../__mocks__/data"
+} from "./data"
 
 const shippo = jest.fn(() => ({
   carrieraccount: {
@@ -40,7 +40,7 @@ const shippo = jest.fn(() => ({
       slip_url: "https://console.log",
       created: "",
     })),
-    retrieve: jest.fn(async () => ({ object_id: "order_id_123" })),
+    retrieve: jest.fn(async (id) => ({ object_id: id })),
   },
   account: {
     address: jest.fn(async () => ({

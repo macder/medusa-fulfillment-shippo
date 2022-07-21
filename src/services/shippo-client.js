@@ -5,6 +5,7 @@ import shippo from "shippo"
 
 class ShippoClientService extends BaseService {
   #client
+
   #fulfillmentService
 
   constructor({ fulfillmentService }, options) {
@@ -21,13 +22,15 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * Fetches an orders transactions from shippo that include
-   * more data than object from /transactions/:id endpoint.
-   * Requests are polled due to async nature of source endpoint.
+   * @deprecated since 0.22.0 -
+   *    use shippoService.transaction.fetch(id, { variant: "extended" })
    * @param {Order} order - order to get transactions for
    * @return {array.<Object>} list of transactions
    */
   async fetchExtendedTransactions(order) {
+    console.log(
+      "\x1b[33m warn\x1b[0m:    shippoClientService.fetchExtendedTransactions deprecated"
+    )
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
     return await this.#client.transaction
       .search(urlQuery)
@@ -35,21 +38,27 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * Fetches the fullfillment's shippo order
+   * @deprecated since 0.22.0 - use shippoService.order.fetchBy(["fulfillment", ful_id])
    * @param {string} fulfillmentId - fulfillment id for order
    * @return {Object} shippo order
    */
   async fetchOrder(fulfillmentId) {
+    console.log(
+      "\x1b[33m warn\x1b[0m:    shippoClientService.fetchOrder deprecated"
+    )
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.retrieve(shippoOrderId)
   }
 
   /**
-   * Fetches the fulfillment's packing slip from shippo
+   * @deprecated since 0.22.0 - use shippoService.packingslip.fetchBy(["fulfillment", ful_id])
    * @param {string} fulfillmentId - fulfillment id for packing slip
    * @return {Object} packing slip
    */
   async fetchPackingSlip(fulfillmentId) {
+    console.log(
+      "\x1b[33m warn\x1b[0m:    shippoClientService.fetchPackingSlip deprecated"
+    )
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.packingslip(shippoOrderId)
   }
@@ -93,11 +102,11 @@ class ShippoClientService extends BaseService {
 
       if (validate(result)) {
         return resolve(result)
-      } else if (maxAttempts && attempts === maxAttempts) {
-        return reject("Exceeded max attempts")
-      } else {
-        setTimeout(executePoll, interval, resolve, reject)
       }
+      if (maxAttempts && attempts === maxAttempts) {
+        return reject("Exceeded max attempts")
+      }
+      setTimeout(executePoll, interval, resolve, reject)
     }
     return new Promise(executePoll)
   }

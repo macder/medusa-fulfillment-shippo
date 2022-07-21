@@ -2,11 +2,17 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoService extends BaseService {
   #client
+
   #shippoClient
+
   #shippoOrder
+
   #shippoPacker
+
   #shippoTrack
+
   #shippoTransaction
+
   #shippoRates
 
   constructor(
@@ -145,9 +151,21 @@ class ShippoService extends BaseService {
   }
 
   #transaction() {
+    const type = {
+      default: async (id) => await this.#shippoTransaction.fetch(id),
+      extended: async (id) => await this.#shippoTransaction.fetchExtended(id),
+    }
+
+    const fetchBy = {
+      order: async (id) =>
+        await this.#shippoTransaction.fetchByOrder(id),
+    }
+
     return {
-      fetch: async (id) => await this.#shippoTransaction.fetch(id),
-      fetchExtended: async (id) =>
+      fetch: async (id, { variant = "default" } = "default") =>
+        await type[variant](id),
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
+      fetchExtended: /* @deprecated */ async (id) =>
         await this.#shippoTransaction.fetchExtended(id),
       isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
     }

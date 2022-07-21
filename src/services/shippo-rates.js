@@ -4,6 +4,7 @@ import { shippoAddress, shippoLineItem } from "../utils/formatters"
 
 class ShippoRatesService extends BaseService {
   cart_ = {}
+
   shippingOptions_ = []
 
   constructor(

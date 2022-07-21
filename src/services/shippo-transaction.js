@@ -2,9 +2,11 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
-  #fetchBy
+
   #orderService
+
   #shippo
+
   #transaction
 
   constructor({ orderService, shippoClientService }, options) {
@@ -33,6 +35,31 @@ class ShippoTransactionService extends BaseService {
     return this.#transaction
   }
 
+  async fetchByOrder(orderId) {
+    const order = await this.#orderService.retrieve(orderId, {
+      relations: ["fulfillments"],
+    })
+
+    return await Promise.all(
+      order.fulfillments
+        .filter((ful) => ful.data?.shippo_order_id)
+        .map(
+          async ({ data: { shippo_order_id } }) =>
+            await this.#client.order
+              .retrieve(shippo_order_id)
+              .then(
+                async ({ transactions }) =>
+                  await Promise.all(
+                    transactions.map(
+                      async (ta) =>
+                        await this.#client.transaction.retrieve(ta.object_id)
+                    )
+                  )
+              )
+        )
+    )
+  }
+
   /**
    * Fetch the extended version of a transaction
    * @param {string|object} transaction - shippo transaction id
@@ -40,7 +67,10 @@ class ShippoTransactionService extends BaseService {
    */
   async fetchExtended(transactionId) {
     const order = await this.findOrder(transactionId)
-    const transactions = await this.#shippo.fetchExtendedTransactions(order)
+    const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
+    const transactions = await this.#client.transaction
+      .search(urlQuery)
+      .then((response) => response.results)
 
     return transactions.find(({ object_id }) => object_id === transactionId)
   }
@@ -49,12 +79,9 @@ class ShippoTransactionService extends BaseService {
     const poller = this.#shippo.poll
     const fetch = async () => await this.fetchExtended(transactionId)
 
-    const validator = () => (response) => {
-      return (
-        response?.object_state === "VALID" ||
-        response?.object_status === "SUCCESS"
-      )
-    }
+    const validator = () => (response) =>
+      response?.object_state === "VALID" ||
+      response?.object_status === "SUCCESS"
     return await poller({
       fn: fetch,
       validate: validator(),

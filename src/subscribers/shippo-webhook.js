@@ -1,6 +1,8 @@
 class ShippoSubscriber {
   #eventBusService
+
   #orderService
+
   #shippoTransactionService
 
   constructor({ eventBusService, orderService, shippoTransactionService }) {
