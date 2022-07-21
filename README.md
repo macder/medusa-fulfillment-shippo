@@ -522,14 +522,9 @@ await shippoService.track.fetchBy(["fulfillment", ful_id])
 
 ```javascript
 await shippoService.transaction.fetch(object_id)
-```
 
-Variant:
-
-```javascript
 await shippoService.transaction.fetch(object_id, { variant: "extended" })
 ```
-
 
 #### `transaction.isReturn`
 
