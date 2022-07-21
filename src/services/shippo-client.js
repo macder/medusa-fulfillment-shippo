@@ -20,36 +20,37 @@ class ShippoClientService extends BaseService {
     this.fetchExpandedTransactions = this.fetchExtendedTransactions
   }
 
-  /**
-   * Fetches an orders transactions from shippo that include
-   * more data than object from /transactions/:id endpoint.
-   * Requests are polled due to async nature of source endpoint.
+  /** ATTENTION - Merge to main disallowed [ADD VER][REPLACE]
+   * @deprecated since ADD VER - use REPLACE
    * @param {Order} order - order to get transactions for
    * @return {array.<Object>} list of transactions
    */
   async fetchExtendedTransactions(order) {
+    console.warn("\x1b[33m warn: shippo.Client.fetchExtendedTransactions deprecated\x1b[0m")
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
     return await this.#client.transaction
       .search(urlQuery)
       .then((response) => response.results)
   }
 
-  /**
-   * Fetches the fullfillment's shippo order
+  /** ATTENTION - Merge to main disallowed [ADD VER] 
+   * @deprecated since ADD VER - use shippoService.order.fetchBy(["fulfillment", ful_id])
    * @param {string} fulfillmentId - fulfillment id for order
    * @return {Object} shippo order
    */
   async fetchOrder(fulfillmentId) {
+    console.warn("\x1b[33m warn: shippo.Client.fetchOrder deprecated\x1b[0m")
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.retrieve(shippoOrderId)
   }
 
-  /**
-   * Fetches the fulfillment's packing slip from shippo
+  /** ATTENTION - Merge to main disallowed [ADD VER]
+   * @deprecated since ADD VER - use shippoService.packingslip.fetchBy(["fulfillment", ful_id])
    * @param {string} fulfillmentId - fulfillment id for packing slip
    * @return {Object} packing slip
    */
   async fetchPackingSlip(fulfillmentId) {
+    console.warn("\x1b[33m warn: shippo.Client.fetchPackingSlip deprecated\x1b[0m")
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.packingslip(shippoOrderId)
   }
