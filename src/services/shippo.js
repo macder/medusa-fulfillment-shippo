@@ -145,7 +145,6 @@ class ShippoService extends BaseService {
   }
 
   #transaction() {
-
     const type = {
       default: async (id) => await this.#shippoTransaction.fetch(id),
       extended: async (id) =>
