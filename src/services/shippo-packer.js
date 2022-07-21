@@ -15,9 +15,6 @@ class ShippoPackerService extends BaseService {
 
   /**
    * Packs line items into parcel templates defined in shippo account
-   * Return is sorted from least vacant volume.
-   * For more info on data values returned, examine BP3D in npm binpackingjs
-   * https://github.com/olragon/binpackingjs/tree/master/src/3D
    * @param {array.<LineItem>} lineItems - array of LineItems, eg. cart.items
    * @return {array.<object>} - array of packed bins, including its items 3D locus
    */
