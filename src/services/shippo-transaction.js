@@ -2,7 +2,6 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
-  #fetchBy
   #orderService
   #shippo
   #transaction
@@ -31,6 +30,31 @@ class ShippoTransactionService extends BaseService {
       this.#transaction = await this.#client.transaction.retrieve(id)
     }
     return this.#transaction
+  }
+
+  async fetchByOrder(orderId) {
+    const order = await this.#orderService.retrieve(orderId, {
+      relations: ["fulfillments"],
+    })
+
+    return await Promise.all(
+      order.fulfillments
+        .filter((ful) => ful.data?.shippo_order_id)
+        .map(
+          async ({ data: { shippo_order_id } }) =>
+            await this.#client.order
+              .retrieve(shippo_order_id)
+              .then(
+                async ({ transactions }) =>
+                  await Promise.all(
+                    transactions.map(
+                      async (ta) =>
+                        await this.#client.transaction.retrieve(ta.object_id)
+                    )
+                  )
+              )
+        )
+    )
   }
 
   /**
