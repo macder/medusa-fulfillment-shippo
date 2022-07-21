@@ -474,6 +474,14 @@ await shippoService.order.fetch(object_id)
 await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
+### Packer
+
+#### `packer.pack`
+
+```javascript
+await shippoService.packer.pack(lineItems)
+```
+
 ### Packingslip
 
 #### `packingslip.fetch`
