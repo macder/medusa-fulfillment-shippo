@@ -13,39 +13,43 @@ describe("ShippoClientService", () => {
       },
     })),
   }
+  /** ************* MOVE TO shippoOrderService ***************************** */
+  /** ************* MOVE TO shippoOrderService ***************************** */
+  /** ************* MOVE TO shippoOrderService ***************************** */
+  // describe("fetchOrder", () => {
+  //   beforeAll(async () => {
+  //     jest.clearAllMocks()
+  //   })
 
-  describe("fetchOrder", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
+  //   const shippoClientService = new ShippoClientService(
+  //     { fulfillmentService },
+  //     {}
+  //   )
 
-    const shippoClientService = new ShippoClientService(
-      { fulfillmentService },
-      {}
-    )
+  //   it("fetches shippo order with correct id", async () => {
+  //     const result = await shippoClientService.fetchOrder("ful_id_123")
+  //     expect(result).toBeObject()
+  //     expect(result).toContainEntry(["object_id", "order_id_123"])
+  //   })
+  // })
 
-    it("fetches shippo order with correct id", async () => {
-      const result = await shippoClientService.fetchOrder("ful_id_123")
-      expect(result).toBeObject()
-      expect(result).toContainEntry(["object_id", "order_id_123"])
-    })
-  })
+  // describe("fetchPackingSlip", () => {
+  //   beforeAll(async () => {
+  //     jest.clearAllMocks()
+  //   })
 
-  describe("fetchPackingSlip", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
+  //   const shippoClientService = new ShippoClientService(
+  //     { fulfillmentService },
+  //     {}
+  //   )
 
-    const shippoClientService = new ShippoClientService(
-      { fulfillmentService },
-      {}
-    )
+  //   it("fetches packing slip", async () => {
+  //     const result = await shippoClientService.fetchPackingSlip("ful_id_123")
+  //     expect(result).toBeObject()
+  //   })
+  // })
 
-    it("fetches packing slip", async () => {
-      const result = await shippoClientService.fetchPackingSlip("ful_id_123")
-      expect(result).toBeObject()
-    })
-  })
+  /** **************************************************************************** */
 
   describe("fetchUserParcelTemplates", () => {
     const shippoClientService = new ShippoClientService({}, {})
