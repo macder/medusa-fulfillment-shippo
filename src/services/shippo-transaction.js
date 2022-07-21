@@ -40,7 +40,10 @@ class ShippoTransactionService extends BaseService {
    */
   async fetchExtended(transactionId) {
     const order = await this.findOrder(transactionId)
-    const transactions = await this.#shippo.fetchExtendedTransactions(order)
+    const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
+    const transactions = await this.#client.transaction
+      .search(urlQuery)
+      .then((response) => response.results)
 
     return transactions.find(({ object_id }) => object_id === transactionId)
   }
