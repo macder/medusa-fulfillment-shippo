@@ -156,9 +156,15 @@ class ShippoService extends BaseService {
       extended: async (id) => await this.#shippoTransaction.fetchExtended(id),
     }
 
+    const fetchBy = {
+      order: async (id) =>
+        await this.#shippoTransaction.fetchByOrder(id),
+    }
+
     return {
       fetch: async (id, { variant = "default" } = "default") =>
         await type[variant](id),
+      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
       fetchExtended: /* @deprecated */ async (id) =>
         await this.#shippoTransaction.fetchExtended(id),
       isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
