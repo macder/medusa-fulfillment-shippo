@@ -35,29 +35,44 @@ class ShippoTransactionService extends BaseService {
     return this.#transaction
   }
 
+  /**
+   * Fetch all transactions related to an {Order}
+   * Shorthand for client.transaction.retrieve(id)
+   * @param {string} orderId - order_id
+   * @return {Promise.<object[]>} The transaction
+   */
   async fetchByOrder(orderId) {
     const order = await this.#orderService.retrieve(orderId, {
       relations: ["fulfillments"],
     })
 
-    return await Promise.all(
+    // TODO - Break this apart?
+    const transactions = await Promise.all(
+      // filter fulfillments with shippo order
       order.fulfillments
         .filter((ful) => ful.data?.shippo_order_id)
+        // map transactions over fulfillments
         .map(
-          async ({ data: { shippo_order_id } }) =>
+          async ({ id, data: { shippo_order_id } }) =>
+          // fetch the fulfillment's shippo order
             await this.#client.order
               .retrieve(shippo_order_id)
               .then(
                 async ({ transactions }) =>
                   await Promise.all(
+                    // map the full transactions over shippoOrder.transactions
                     transactions.map(
                       async (ta) =>
-                        await this.#client.transaction.retrieve(ta.object_id)
+                        await this.#client.transaction
+                          .retrieve(ta.object_id)
+                          // add the fulfillment_id to transaction
+                          .then((ta) => ({ fulfillment_id: id, ...ta }))
                     )
                   )
               )
         )
     )
+    return transactions.flat(1)
   }
 
   /**
