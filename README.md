@@ -495,11 +495,11 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 #### `rates.cart`
 
 ```javascript
-await shippoService.rates.cart(cart_id)
+await shippoService.rates.cart(id)
 ```
 
 ```javascript
-await shippoService.rates.cart(cart_id, shipping_option_id)
+await shippoService.rates.cart(id, shipping_option_id)
 ```
 
 ### Track
