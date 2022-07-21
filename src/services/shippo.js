@@ -157,8 +157,7 @@ class ShippoService extends BaseService {
     }
 
     const fetchBy = {
-      order: async (id) =>
-        await this.#shippoTransaction.fetchByOrder(id),
+      order: async (id) => await this.#shippoTransaction.fetchByOrder(id),
     }
 
     return {
