@@ -43,7 +43,7 @@ class ShippoOrderService extends BaseService {
     const shippoOrderId = await this.#getId(fulfillmentId)
 
     return await this.fetch(shippoOrderId).then(async (order) => {
-      if (order.transactions.length) {
+      if (order?.transactions?.length) {
         const transactions = await Promise.all(
           order.transactions.map(async (ta) => {
             ta.is_return = await this.#shippoTransactionService.isReturn(
