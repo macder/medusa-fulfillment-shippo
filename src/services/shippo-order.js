@@ -3,8 +3,11 @@ import { MedusaError } from "medusa-core-utils"
 
 class ShippoOrderService extends BaseService {
   #client
+
   #fulfillmentService
+
   #shippo
+
   #shippoTransactionService
 
   constructor(

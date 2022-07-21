@@ -1,6 +1,6 @@
 import * as matchers from "jest-extended"
-import ShippoClientService from "../shippo-client"
 import shippo from "shippo"
+import ShippoClientService from "../shippo-client"
 
 expect.extend(matchers)
 

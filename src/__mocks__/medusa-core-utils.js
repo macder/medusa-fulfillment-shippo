@@ -36,6 +36,7 @@ export const MedusaErrorCodes = {
 
 export class MedusaError extends Error {
   static Types = MedusaErrorTypes
+
   static Codes = MedusaErrorCodes
 
   constructor(type, message, code = "null", ...params) {

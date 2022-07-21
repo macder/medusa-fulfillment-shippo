@@ -44,7 +44,7 @@ describe("ShippoFulfillmentService", () => {
     
       getFulfillmentOptions
     
-    ****************************/
+    *************************** */
   describe("getFulfillmentOptions", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -79,7 +79,7 @@ describe("ShippoFulfillmentService", () => {
     
       validateFulfillmentData
     
-    *****************************/
+    **************************** */
   describe("validateFulfillmentData", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -167,7 +167,7 @@ describe("ShippoFulfillmentService", () => {
     
       validateOption
     
-    *****************************/
+    **************************** */
   describe("validateOption", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -191,7 +191,7 @@ describe("ShippoFulfillmentService", () => {
     
       canCalculate
     
-    *****************************/
+    **************************** */
   describe("canCalculate", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -231,7 +231,7 @@ describe("ShippoFulfillmentService", () => {
     
       calculatePrice
     
-    *****************************/
+    **************************** */
   describe("calculatePrice", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -328,7 +328,7 @@ describe("ShippoFulfillmentService", () => {
     
       createFulfillment
     
-    *****************************/
+    **************************** */
   describe("createFulfillment", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -377,7 +377,7 @@ describe("ShippoFulfillmentService", () => {
     
       cancelFulfillment
     
-    *****************************/
+    **************************** */
   describe("cancelFulfillment", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
@@ -401,7 +401,7 @@ describe("ShippoFulfillmentService", () => {
     
       creatReturn
     
-    *****************************/
+    **************************** */
   // describe("createReturn", () => {
   //   beforeAll(async () => {
   //     jest.clearAllMocks()

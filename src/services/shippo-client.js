@@ -5,6 +5,7 @@ import shippo from "shippo"
 
 class ShippoClientService extends BaseService {
   #client
+
   #fulfillmentService
 
   constructor({ fulfillmentService }, options) {
@@ -101,11 +102,11 @@ class ShippoClientService extends BaseService {
 
       if (validate(result)) {
         return resolve(result)
-      } else if (maxAttempts && attempts === maxAttempts) {
-        return reject("Exceeded max attempts")
-      } else {
-        setTimeout(executePoll, interval, resolve, reject)
       }
+      if (maxAttempts && attempts === maxAttempts) {
+        return reject("Exceeded max attempts")
+      }
+      setTimeout(executePoll, interval, resolve, reject)
     }
     return new Promise(executePoll)
   }

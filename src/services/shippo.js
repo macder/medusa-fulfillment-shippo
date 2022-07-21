@@ -2,11 +2,17 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoService extends BaseService {
   #client
+
   #shippoClient
+
   #shippoOrder
+
   #shippoPacker
+
   #shippoTrack
+
   #shippoTransaction
+
   #shippoRates
 
   constructor(

@@ -20,7 +20,7 @@ export const mockPackerItem = () => {
     width: dim.width,
     height: dim.height,
     weight: dim.weight,
-    volume: volume,
+    volume,
     locus: {
       allowed_rotation: [0, 1, 2, 3, 4, 5],
       rotation_type: 0,
@@ -30,12 +30,10 @@ export const mockPackerItem = () => {
 }
 
 // WIP
-export const mockPackerOutput = () => {
-  return {
-    volume: {},
-    items: makeArrayOf(mockPackerItem, 1),
-  }
-}
+export const mockPackerOutput = () => ({
+  volume: {},
+  items: makeArrayOf(mockPackerItem, 1),
+})
 
 // WIP
 export const mockShippoBinPack = () => {

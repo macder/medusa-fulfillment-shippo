@@ -7,7 +7,7 @@ const mockServiceLevel = ({ carrier }) => {
   )
   const token = toSnakeCase(`${carrier} ${serviceName}`)
   return {
-    token: token,
+    token,
     name: serviceName,
     supports_return_labels: false,
   }
@@ -43,62 +43,54 @@ export const mockCarrier = () => {
  * @return {object} - shippo API res:
  * - (/carrier_accounts?service_levels=true&results=[count])
  */
-export const mockCarrierAccountsResponse = (count) => {
-  return {
-    next: null,
-    previous: null,
-    results: makeArrayOf(mockCarrier, count),
-  }
-}
+export const mockCarrierAccountsResponse = (count) => ({
+  next: null,
+  previous: null,
+  results: makeArrayOf(mockCarrier, count),
+})
 
 /** mockServiceGroups
  * @param {int} count - how many?
  * @return {object}
  */
-export const mockServiceGroupLevels = () => {
-  return {
-    account_object_id: faker.database.mongodbObjectId(),
-    service_level_token: toSnakeCase(
-      faker.random.words(faker.datatype.number({ min: 3, max: 6 }))
-    ),
-  }
-}
+export const mockServiceGroupLevels = () => ({
+  account_object_id: faker.database.mongodbObjectId(),
+  service_level_token: toSnakeCase(
+    faker.random.words(faker.datatype.number({ min: 3, max: 6 }))
+  ),
+})
 
 /** mockServiceGroups
  * @param {int} count - how many?
  * @return {object} - shippo API res (/service-groups)
  */
-export const mockServiceGroup = (type) => {
-  return {
-    description: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
-    flat_rate: faker.random.numeric(2),
-    flat_rate_currency: faker.finance.currencyCode(),
-    free_shipping_threshold_currency: null,
-    free_shipping_threshold_min: null,
-    is_active: true,
-    name: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
-    object_id: faker.database.mongodbObjectId(),
-    rate_adjustment: 0,
-    service_levels: makeArrayOf(
-      mockServiceGroupLevels,
-      faker.datatype.number({ min: 1, max: 6 })
-    ),
-    type,
-  }
-}
+export const mockServiceGroup = (type) => ({
+  description: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
+  flat_rate: faker.random.numeric(2),
+  flat_rate_currency: faker.finance.currencyCode(),
+  free_shipping_threshold_currency: null,
+  free_shipping_threshold_min: null,
+  is_active: true,
+  name: faker.random.words(faker.datatype.number({ min: 2, max: 5 })),
+  object_id: faker.database.mongodbObjectId(),
+  rate_adjustment: 0,
+  service_levels: makeArrayOf(
+    mockServiceGroupLevels,
+    faker.datatype.number({ min: 1, max: 6 })
+  ),
+  type,
+})
 
 // **WIP**
-export const mockLiveRate = (isFallback = false) => {
-  return {
-    title: faker.random.words(faker.datatype.number({ min: 2, max: 5 })), // to match shippingOption.data.name
-    description: "2 - 8 days",
-    amount: "40",
-    currency: "USD",
-    amount_local: "32.25",
-    currency_local: "",
-    estimated_days: 0,
-  }
-}
+export const mockLiveRate = (isFallback = false) => ({
+  title: faker.random.words(faker.datatype.number({ min: 2, max: 5 })), // to match shippingOption.data.name
+  description: "2 - 8 days",
+  amount: "40",
+  currency: "USD",
+  amount_local: "32.25",
+  currency_local: "",
+  estimated_days: 0,
+})
 
 /** mockParcelTemplate
  * @return {object}
@@ -122,50 +114,46 @@ export const mockParcelTemplate = () => ({
  * @return {object} - shippo API res:
  * - (/user-parcel-templates)
  */
-export const mockParcelTemplateResponse = (count) => {
-  return {
-    results: makeArrayOf(mockParcelTemplate, count),
-  }
-}
+export const mockParcelTemplateResponse = (count) => ({
+  results: makeArrayOf(mockParcelTemplate, count),
+})
 
-export const mockExtendedTransaction = () => {
-  return {
-    object_state: "VALID",
-    object_status: "SUCCESS",
-    object_created: "",
-    object_updated: "",
-    object_id: "object_id_5555",
-    object_owner: "",
-    was_test: true,
-    rate: "",
-    pickup_date: null,
-    notification_email_from: false,
-    notification_email_to: false,
-    notification_email_other: "",
-    tracking_number: "",
-    address_to: "",
-    tracking_status: null,
-    tracking_url_provider: "https://tools.usps.com/",
-    commercial_invoice_url: null,
-    messages: [],
-    customs_note: "",
-    submission_note: "",
-    metadata: "Order 123",
-    is_return: true,
-    submission_date: "",
-    parcel: "",
-    eta: null,
-    refund_request_date: null,
-    is_user_fraudulent: false,
-    legacy_label_file_type: "PDF",
-    order: {
-      status: "PAID",
-      order_number: "123",
-      id: 93,
-      object_id: "",
-    },
-  }
-}
+export const mockExtendedTransaction = () => ({
+  object_state: "VALID",
+  object_status: "SUCCESS",
+  object_created: "",
+  object_updated: "",
+  object_id: "object_id_5555",
+  object_owner: "",
+  was_test: true,
+  rate: "",
+  pickup_date: null,
+  notification_email_from: false,
+  notification_email_to: false,
+  notification_email_other: "",
+  tracking_number: "",
+  address_to: "",
+  tracking_status: null,
+  tracking_url_provider: "https://tools.usps.com/",
+  commercial_invoice_url: null,
+  messages: [],
+  customs_note: "",
+  submission_note: "",
+  metadata: "Order 123",
+  is_return: true,
+  submission_date: "",
+  parcel: "",
+  eta: null,
+  refund_request_date: null,
+  is_user_fraudulent: false,
+  legacy_label_file_type: "PDF",
+  order: {
+    status: "PAID",
+    order_number: "123",
+    id: 93,
+    object_id: "",
+  },
+})
 
 export const mockTransaction = (id) => {
   const transaction = {
@@ -218,25 +206,23 @@ export const mockTransaction = (id) => {
   return transaction[id]
 }
 
-export const mockShippoAddress = () => {
-  return {
-    id: 1111,
-    object_created: "",
-    object_updated: "",
-    name: "",
-    company: "",
-    street1: "",
-    street2: "",
-    street_no: "",
-    city: "",
-    state: "",
-    zip: "",
-    country: "",
-    phone: "",
-    email: "",
-    is_default_sender: true,
-    is_default_return: true,
-    store_address_id: null,
-    store_platform_names: null,
-  }
-}
+export const mockShippoAddress = () => ({
+  id: 1111,
+  object_created: "",
+  object_updated: "",
+  name: "",
+  company: "",
+  street1: "",
+  street2: "",
+  street_no: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  phone: "",
+  email: "",
+  is_default_sender: true,
+  is_default_return: true,
+  store_address_id: null,
+  store_platform_names: null,
+})

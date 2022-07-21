@@ -8,7 +8,7 @@ import {
   mockShippoAddress,
   mockTransaction,
   mockExtendedTransaction,
-} from "../__mocks__/data"
+} from "./data"
 
 const shippo = jest.fn(() => ({
   carrieraccount: {
