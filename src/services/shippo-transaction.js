@@ -2,13 +2,23 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTransactionService extends BaseService {
   #client
-  #fetchBy
+
+  #fulfillmentService
+
   #orderService
+
   #shippo
+
   #transaction
 
-  constructor({ orderService, shippoClientService }, options) {
+  constructor(
+    { fulfillmentService, orderService, shippoClientService },
+    options
+  ) {
     super()
+
+    /** @private @const {FulfillmentService} */
+    this.#fulfillmentService = fulfillmentService
 
     /** @private @const {OrderService} */
     this.#orderService = orderService
@@ -24,7 +34,7 @@ class ShippoTransactionService extends BaseService {
    * Fetch a transaction
    * Shorthand for client.transaction.retrieve(id)
    * @param {string} id - shippo transaction id
-   * @return {object} The transaction
+   * @return {Promise.<object>} The transaction
    */
   async fetch(id) {
     if (this.#transaction?.object_id !== id) {
@@ -34,27 +44,114 @@ class ShippoTransactionService extends BaseService {
   }
 
   /**
+   * Fetch transactions by fulfillment id
+   * @param {string} id - fulfillment id
+   * @return {Promise.<object[]>} Transactions
+   */
+  async fetchByFulfillment(id) {
+    const {
+      data: { shippo_order_id },
+    } = await this.#fulfillmentService.retrieve(id)
+
+    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
+
+    return await Promise.all(
+      transactions.map(
+        async (ta) => await this.#client.transaction.retrieve(ta.object_id)
+      )
+    )
+  }
+
+  /**
+   * Fetch all transactions related to an {Order}
+   * Shorthand for client.transaction.retrieve(id)
+   * @param {string} orderId - order_id
+   * @return {Promise.<object[]>} The transaction
+   */
+  async fetchByOrder(orderId) {
+    const order = await this.#orderService.retrieve(orderId, {
+      relations: ["fulfillments"],
+    })
+
+    // TODO - Break this apart?
+    const transactions = await Promise.all(
+      // filter fulfillments with shippo order
+      order.fulfillments
+        .filter((ful) => ful.data?.shippo_order_id)
+        // map transactions over fulfillments
+        .map(
+          async ({ id, data: { shippo_order_id } }) =>
+            // fetch the fulfillment's shippo order
+            await this.#client.order.retrieve(shippo_order_id).then(
+              async ({ transactions }) =>
+                await Promise.all(
+                  // map the full transactions over shippoOrder.transactions
+                  transactions.map(
+                    async (ta) =>
+                      await this.#client.transaction
+                        .retrieve(ta.object_id)
+                        // add the fulfillment_id to transaction
+                        .then((ta) => ({ fulfillment_id: id, ...ta }))
+                  )
+                )
+            )
+        )
+    )
+    return transactions.flat(1)
+  }
+
+  /**
    * Fetch the extended version of a transaction
-   * @param {string|object} transaction - shippo transaction id
-   * @return {object} The extended transaction
+   * @param {string} transactionId - shippo transaction id
+   * @return {Promise.<object>} The extended transaction
    */
   async fetchExtended(transactionId) {
     const order = await this.findOrder(transactionId)
-    const transactions = await this.#shippo.fetchExtendedTransactions(order)
+    const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
+    const transactions = await this.#client.transaction
+      .search(urlQuery)
+      .then((response) => response.results)
 
     return transactions.find(({ object_id }) => object_id === transactionId)
+  }
+
+  /**
+   * Fetch extended version of a transaction by order id
+   * @param {string} id - fulfillment id
+   * @return {Promise.<object[]>} list of extended transactions
+   */
+  async fetchExtendedByFulfillment(id) {
+    const {
+      data: { shippo_order_id },
+    } = await this.#fulfillmentService.retrieve(id)
+
+    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
+
+    return await Promise.all(
+      transactions.map(async (ta) => await this.fetchExtended(ta.object_id))
+    )
+  }
+
+  /**
+   * Fetch extended transactions by order id
+   * @param {string} id - order id
+   * @return {Promise.<object[]>} list of extended transactions
+   */
+  async fetchExtendedByOrder(id) {
+    const order = await this.#orderService.retrieve(id)
+    const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
+    return await this.#client.transaction
+      .search(urlQuery)
+      .then((response) => response.results)
   }
 
   async pollExtended(transactionId) {
     const poller = this.#shippo.poll
     const fetch = async () => await this.fetchExtended(transactionId)
 
-    const validator = () => (response) => {
-      return (
-        response?.object_state === "VALID" ||
-        response?.object_status === "SUCCESS"
-      )
-    }
+    const validator = () => (response) =>
+      response?.object_state === "VALID" ||
+      response?.object_status === "SUCCESS"
     return await poller({
       fn: fetch,
       validate: validator(),

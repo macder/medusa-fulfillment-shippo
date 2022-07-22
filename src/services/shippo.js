@@ -2,11 +2,17 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoService extends BaseService {
   #client
+
   #shippoClient
+
   #shippoOrder
+
   #shippoPacker
+
   #shippoTrack
+
   #shippoTransaction
+
   #shippoRates
 
   constructor(
@@ -145,11 +151,35 @@ class ShippoService extends BaseService {
   }
 
   #transaction() {
+    const fetch = {
+      default: async (id) => await this.#shippoTransaction.fetch(id),
+      extended: async (id) => await this.#shippoTransaction.fetchExtended(id),
+    }
+
+    const fetchBy = {
+      order: {
+        default: async (id) => await this.#shippoTransaction.fetchByOrder(id),
+        extended: async (id) =>
+          await this.#shippoTransaction.fetchExtendedByOrder(id),
+      },
+      fulfillment: {
+        default: async (id) =>
+          await this.#shippoTransaction.fetchByFulfillment(id),
+        extended: async (id) =>
+          await this.#shippoTransaction.fetchExtendedByFulfillment(id),
+      },
+    }
+
     return {
-      fetch: async (id) => await this.#shippoTransaction.fetch(id),
+      fetch: async (id, { variant = "default" } = "default") =>
+        await fetch[variant](id),
+      fetchBy: async ([entity, id], { variant = "default" } = "default") =>
+        await fetchBy[entity][variant](id),
+      isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
+
+      /* @deprecated */
       fetchExtended: async (id) =>
         await this.#shippoTransaction.fetchExtended(id),
-      isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
     }
   }
 }

@@ -24,19 +24,13 @@ describe("ShippoRatesService", () => {
     setShippingOptionPrices: jest.fn(async (options) => options),
   }
 
-  const getCartService = (cart) => {
-    return {
-      retrieve: jest.fn(async (id) => {
-        return cart
-      }),
-    }
-  }
+  const getCartService = (cart) => ({
+    retrieve: jest.fn(async (id) => cart),
+  })
 
-  const getShippingProfileService = (cartOptions) => {
-    return {
-      fetchCartOptions: jest.fn(async (cart) => cartOptions),
-    }
-  }
+  const getShippingProfileService = (cartOptions) => ({
+    fetchCartOptions: jest.fn(async (cart) => cartOptions),
+  })
 
   const mockCartShippingOptions = () => {
     const soCalculated = [mockShippingOption({ variant: "live_rate" })]
@@ -56,8 +50,8 @@ describe("ShippoRatesService", () => {
     { shippoClientService },
     {}
   )
-  const getShippoRatesService = (cartService) => {
-    return new ShippoRatesService(
+  const getShippoRatesService = (cartService) =>
+    new ShippoRatesService(
       {
         cartService,
         shippingProfileService,
@@ -68,7 +62,6 @@ describe("ShippoRatesService", () => {
       },
       {}
     )
-  }
 
   describe("fetchCartOptions", () => {
     beforeAll(async () => {

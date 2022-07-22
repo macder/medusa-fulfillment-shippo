@@ -12,7 +12,6 @@ export default async (container, options) => {
   }
 
   const cloned = await shippingProfileService.withTransaction(manager)
-
   shippingProfileService.fetchCartOptions = async (cart) =>
     await cloned
       .fetchCartOptions(cart)

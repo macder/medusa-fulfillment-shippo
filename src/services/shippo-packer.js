@@ -4,6 +4,7 @@ import { productLineItem } from "../utils/formatters"
 
 class ShippoPackerService extends BaseService {
   bins_ = []
+
   items_ = []
 
   constructor({ shippoClientService }, options) {
@@ -15,9 +16,6 @@ class ShippoPackerService extends BaseService {
 
   /**
    * Packs line items into parcel templates defined in shippo account
-   * Return is sorted from least vacant volume.
-   * For more info on data values returned, examine BP3D in npm binpackingjs
-   * https://github.com/olragon/binpackingjs/tree/master/src/3D
    * @param {array.<LineItem>} lineItems - array of LineItems, eg. cart.items
    * @return {array.<object>} - array of packed bins, including its items 3D locus
    */
@@ -61,23 +59,21 @@ class ShippoPackerService extends BaseService {
 
       const totalItemVolume = binItemsVolume.reduce((a, b) => a + b, 0)
       const volumeVacant = bin.name.volume - totalItemVolume
-      const items = bin.items.map((item) => {
-        return {
-          title: item.name.title,
-          product_id: item.name.product_id,
-          variant_id: item.name.variant_id,
-          length: this.#reduceFactor(item.depth),
-          width: this.#reduceFactor(item.width),
-          height: this.#reduceFactor(item.height),
-          weight: this.#reduceFactor(item.weight),
-          volume: this.#calculateVolume(item),
-          locus: {
-            allowed_rotation: item.allowedRotation,
-            rotation_type: item.rotationType,
-            position: item.position.map((e) => this.#reduceFactor(e)),
-          },
-        }
-      })
+      const items = bin.items.map((item) => ({
+        title: item.name.title,
+        product_id: item.name.product_id,
+        variant_id: item.name.variant_id,
+        length: this.#reduceFactor(item.depth),
+        width: this.#reduceFactor(item.width),
+        height: this.#reduceFactor(item.height),
+        weight: this.#reduceFactor(item.weight),
+        volume: this.#calculateVolume(item),
+        locus: {
+          allowed_rotation: item.allowedRotation,
+          rotation_type: item.rotationType,
+          position: item.position.map((e) => this.#reduceFactor(e)),
+        },
+      }))
 
       return {
         ...bin.name,

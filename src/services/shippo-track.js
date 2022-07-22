@@ -2,10 +2,15 @@ import { BaseService } from "medusa-interfaces"
 
 class ShippoTrackService extends BaseService {
   #client
+
   #fetchBy
+
   #fulfillmentService
+
   #shippo
+
   #shippoOrderService
+
   #shippoTransactionService
 
   constructor(

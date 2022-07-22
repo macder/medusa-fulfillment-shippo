@@ -7,11 +7,17 @@ class ShippoFulfillmentService extends FulfillmentService {
   static identifier = "shippo"
 
   #eventBusService
+
   #orderService
+
   #shippo
+
   #shippoPackerService
+
   #shippoRatesService
+
   #shippoTransactionService
+
   #totalsService
 
   constructor(
@@ -210,9 +216,11 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     if (!order.swap_id && !order.claim_order_id) {
       return "shippo.return_requested"
-    } else if (order.swap_id) {
+    }
+    if (order.swap_id) {
       return "shippo.swap_created"
-    } else if (order.claim_order_id) {
+    }
+    if (order.claim_order_id) {
       const { claim_order } = order
       return `shippo.claim_${claim_order.type}_created`
     }
@@ -254,12 +262,10 @@ class ShippoFulfillmentService extends FulfillmentService {
   #makeReturnOptions(fulfillmentOptions) {
     return fulfillmentOptions
       .filter((option) => !option?.is_group)
-      .map((option) => {
-        return {
-          ...option,
-          is_return: true,
-        }
-      })
+      .map((option) => ({
+        ...option,
+        is_return: true,
+      }))
   }
 
   async #splitCarriersToServices(carriers) {
