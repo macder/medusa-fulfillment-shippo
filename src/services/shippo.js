@@ -139,7 +139,7 @@ class ShippoService extends BaseService {
 
   #track() {
     const fetchBy = {
-      fullfillment: async (id) =>
+      fulfillment: async (id) =>
         await this.#shippoTrack.fetchByFulfillmentId(id),
     }
 
