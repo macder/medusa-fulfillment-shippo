@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.22.1] (2022-07-22)
+
+Fixed
+
+*   shippoService.track.fetchBy fulfillment [#239](https://github.com/macder/medusa-fulfillment-shippo/issues/239)
+
 ## \[0.22.0] (2022-07-21)
 
 Added
