@@ -151,22 +151,29 @@ class ShippoService extends BaseService {
   }
 
   #transaction() {
-    const type = {
+    const fetch = {
       default: async (id) => await this.#shippoTransaction.fetch(id),
       extended: async (id) => await this.#shippoTransaction.fetchExtended(id),
     }
 
     const fetchBy = {
-      order: async (id) => await this.#shippoTransaction.fetchByOrder(id),
+      order: {
+        default: async (id) => await this.#shippoTransaction.fetchByOrder(id),
+        extended: async (id) =>
+          await this.#shippoTransaction.fetchExtendedByOrder(id),
+      },
     }
 
     return {
       fetch: async (id, { variant = "default" } = "default") =>
-        await type[variant](id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-      fetchExtended: /* @deprecated */ async (id) =>
-        await this.#shippoTransaction.fetchExtended(id),
+        await fetch[variant](id),
+      fetchBy: async ([entity, id], { variant = "default" } = "default") =>
+        await fetchBy[entity][variant](id),
       isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
+      
+      /* @deprecated */
+      fetchExtended: async (id) =>
+        await this.#shippoTransaction.fetchExtended(id),
     }
   }
 }
