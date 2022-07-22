@@ -566,11 +566,11 @@ const client = shippoService.client
 
 #### `find().for()`
 
-`@experimental`
-
 ```javascript
+// @experimental
 await shippoService.find("fulfillment").for(["transaction", id])
 
+// @experimental
 await shippoService.find("order").for(["transaction", id])
 ```
 
