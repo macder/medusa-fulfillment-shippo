@@ -474,6 +474,14 @@ await shippoService.order.fetch(object_id)
 await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
+### Packer
+
+#### `packer.pack`
+
+```javascript
+await shippoService.packer.pack(lineItems)
+```
+
 ### Packingslip
 
 #### `packingslip.fetch`
@@ -530,6 +538,12 @@ await shippoService.transaction.fetch(object_id, { variant: "extended" })
 
 ```javascript
 await shippoService.transaction.fetchBy(["order", id])
+
+await shippoService.transaction.fetchBy(["order", id], { variant: "extended" })
+
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
 ```
 
 #### `transaction.isReturn`

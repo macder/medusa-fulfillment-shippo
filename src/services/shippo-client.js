@@ -29,7 +29,7 @@ class ShippoClientService extends BaseService {
    */
   async fetchExtendedTransactions(order) {
     console.log(
-      "\x1b[33m warn\x1b[0m:    shippoClientService.fetchExtendedTransactions deprecated"
+      "\x1b[33m warn\x1b[0m:    shippoClientService: fetchExtendedTransactions deprecated"
     )
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
     return await this.#client.transaction
@@ -44,7 +44,7 @@ class ShippoClientService extends BaseService {
    */
   async fetchOrder(fulfillmentId) {
     console.log(
-      "\x1b[33m warn\x1b[0m:    shippoClientService.fetchOrder deprecated"
+      "\x1b[33m warn\x1b[0m:    shippoClientService: fetchOrder deprecated"
     )
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.retrieve(shippoOrderId)
@@ -57,7 +57,7 @@ class ShippoClientService extends BaseService {
    */
   async fetchPackingSlip(fulfillmentId) {
     console.log(
-      "\x1b[33m warn\x1b[0m:    shippoClientService.fetchPackingSlip deprecated"
+      "\x1b[33m warn\x1b[0m:    shippoClientService: fetchPackingSlip deprecated"
     )
     const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
     return await this.#client.order.packingslip(shippoOrderId)

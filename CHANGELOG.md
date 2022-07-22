@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+Unreleased
+
+Added
+
+*   Methods for shippoService.packer [#221](https://github.com/macder/medusa-fulfillment-shippo/issues/221)
+*   Methods for shippoService.transaction [#225](https://github.com/macder/medusa-fulfillment-shippo/issues/225)
+
+Deprecated
+
+*   shippoService.transaction.fetchExtended [#225](https://github.com/macder/medusa-fulfillment-shippo/issues/225)
+
+
 ## \[0.21.1] (2022-07-20)
 
 Added
