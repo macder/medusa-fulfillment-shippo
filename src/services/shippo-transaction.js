@@ -3,14 +3,22 @@ import { BaseService } from "medusa-interfaces"
 class ShippoTransactionService extends BaseService {
   #client
 
+  #fulfillmentService
+
   #orderService
 
   #shippo
 
   #transaction
 
-  constructor({ orderService, shippoClientService }, options) {
+  constructor(
+    { fulfillmentService, orderService, shippoClientService },
+    options
+  ) {
     super()
+
+    /** @private @const {FulfillmentService} */
+    this.#fulfillmentService = fulfillmentService
 
     /** @private @const {OrderService} */
     this.#orderService = orderService
@@ -33,6 +41,25 @@ class ShippoTransactionService extends BaseService {
       this.#transaction = await this.#client.transaction.retrieve(id)
     }
     return this.#transaction
+  }
+
+  /**
+   * Fetch transactions by fulfillment id
+   * @param {string} id - fulfillment id
+   * @return {Promise.<object[]>} Transactions
+   */
+  async fetchByFulfillment(id) {
+    const {
+      data: { shippo_order_id },
+    } = await this.#fulfillmentService.retrieve(id)
+
+    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
+
+    return await Promise.all(
+      transactions.map(
+        async (ta) => await this.#client.transaction.retrieve(ta.object_id)
+      )
+    )
   }
 
   /**
@@ -90,11 +117,28 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * Fetch extended version of a transaction by order id
-   * @param {string} orderId -
-   * @return {Promise.<object[]>} The extended transaction
+   * @param {string} id - fulfillment id
+   * @return {Promise.<object[]>} list of extended transactions
    */
-  async fetchExtendedByOrder(orderId) {
-    const order = await this.#orderService.retrieve(orderId)
+  async fetchExtendedByFulfillment(id) {
+    const {
+      data: { shippo_order_id },
+    } = await this.#fulfillmentService.retrieve(id)
+
+    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
+
+    return await Promise.all(
+      transactions.map(async (ta) => await this.fetchExtended(ta.object_id))
+    )
+  }
+
+  /**
+   * Fetch extended transactions by order id
+   * @param {string} id - order id
+   * @return {Promise.<object[]>} list of extended transactions
+   */
+  async fetchExtendedByOrder(id) {
+    const order = await this.#orderService.retrieve(id)
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
     return await this.#client.transaction
       .search(urlQuery)

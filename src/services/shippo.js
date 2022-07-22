@@ -162,6 +162,12 @@ class ShippoService extends BaseService {
         extended: async (id) =>
           await this.#shippoTransaction.fetchExtendedByOrder(id),
       },
+      fulfillment: {
+        default: async (id) =>
+          await this.#shippoTransaction.fetchByFulfillment(id),
+        extended: async (id) =>
+          await this.#shippoTransaction.fetchExtendedByFulfillment(id),
+      },
     }
 
     return {
@@ -170,7 +176,7 @@ class ShippoService extends BaseService {
       fetchBy: async ([entity, id], { variant = "default" } = "default") =>
         await fetchBy[entity][variant](id),
       isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
-      
+
       /* @deprecated */
       fetchExtended: async (id) =>
         await this.#shippoTransaction.fetchExtended(id),
