@@ -7,7 +7,7 @@ module.exports = {
     },
   },
   plugins: [`eslint-plugin-prettier`],
-  extends: [`eslint:recommended`, `airbnb`, `eslint-config-prettier`],
+  extends: [`eslint:recommended`, `airbnb-base`, `eslint-config-prettier`],
   rules: {
     "prettier/prettier": `error`,
     curly: [2, `all`],
