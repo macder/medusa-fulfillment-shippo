@@ -8,6 +8,7 @@ import {
   mockShippoAddress,
   mockTransaction,
   mockExtendedTransaction,
+  mockTrack,
 } from "./data"
 
 const shippo = jest.fn(() => ({
@@ -15,6 +16,14 @@ const shippo = jest.fn(() => ({
     list: jest.fn(async () =>
       mockCarrierAccountsResponse(faker.datatype.number({ min: 8, max: 10 }))
     ),
+    retrieve: jest.fn(async (id) => {
+      const carriers = {
+        carrier_id_123: {
+          carrier: "usps",
+        },
+      }
+      return carriers[id]
+    }),
   },
   servicegroups: {
     list: jest.fn(async () =>
@@ -40,7 +49,15 @@ const shippo = jest.fn(() => ({
       slip_url: "https://console.log",
       created: "",
     })),
-    retrieve: jest.fn(async (id) => ({ object_id: id })),
+    retrieve: jest.fn(async (id) => ({
+      object_id: id,
+      transactions: [
+        {
+          object_id: "object_id_5555",
+          object_status: "SUCCESS",
+        },
+      ],
+    })),
   },
   account: {
     address: jest.fn(async () => ({
@@ -54,6 +71,21 @@ const shippo = jest.fn(() => ({
       return {
         results: transactions,
       }
+    }),
+  },
+  track: {
+    get_status: jest.fn(async (carrier, num) => {
+      const tracks = {
+        usps: {
+          track_num_1: {
+            ...mockTrack(),
+            tracking_number: num,
+            carrier,
+          },
+        },
+      }
+
+      return tracks[carrier][num]
     }),
   },
 }))
