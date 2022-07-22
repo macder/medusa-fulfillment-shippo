@@ -14,5 +14,3 @@ __tests__
 __mocks__
 coverage
 /.circleci
-sandbox
-sand.js
