@@ -17,3 +17,5 @@ yarn.lock
 __data__
 temp
 coverage
+sandbox
+sand.js
