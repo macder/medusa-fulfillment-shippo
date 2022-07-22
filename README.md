@@ -540,6 +540,10 @@ await shippoService.transaction.fetch(object_id, { variant: "extended" })
 await shippoService.transaction.fetchBy(["order", id])
 
 await shippoService.transaction.fetchBy(["order", id], { variant: "extended" })
+
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
 ```
 
 #### `transaction.isReturn`
