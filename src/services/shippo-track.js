@@ -81,7 +81,6 @@ class ShippoTrackService extends BaseService {
         relations: ["tracking_links"],
       }
     )
-
     const { tracking_number } = fullfillment.tracking_links.find(
       (tl) => tl.tracking_number === transaction.tracking_number
     )
