@@ -110,6 +110,8 @@ Returns `shippo_order` object
 ### Retrieve
 
 ```javascript
+const { object_id } = order
+
 await shippoService.packingslip.fetch(object_id)
 
 await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
