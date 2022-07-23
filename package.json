@@ -11,7 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "binpackingjs": "^3.0.2",
+    "binpackingjs": "2.3.3",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-rate-limit": "^6.4.0",
