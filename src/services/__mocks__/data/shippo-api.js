@@ -120,28 +120,52 @@ export const mockParcelTemplateResponse = (count) => ({
 
 export const mockExtendedTransaction = (id = null) => {
   const transaction = {
-    object_state: "VALID",
-    object_status: "SUCCESS",
-    object_id: "object_id_transaction_123",
-    rate: {
-      carrier_account: "carrier_id_123",
+    123: {
+      object_state: "VALID",
+      object_status: "SUCCESS",
+      object_id: "object_id_transaction_123",
+      rate: {
+        carrier_account: "carrier_id_123",
+      },
+      tracking_number: "track_num_1",
+      address_to: "",
+      tracking_status: null,
+      tracking_url_provider: "https://tools.usps.com/",
+      commercial_invoice_url: null,
+      messages: [],
+      metadata: "Order 123",
+      is_return: false,
+      order: {
+        status: "PAID",
+        order_number: "123",
+        id: 93,
+        object_id: "",
+      },
     },
-    tracking_number: "track_num_1",
-    address_to: "",
-    tracking_status: null,
-    tracking_url_provider: "https://tools.usps.com/",
-    commercial_invoice_url: null,
-    messages: [],
-    metadata: "Order 123",
-    is_return: false,
-    order: {
-      status: "PAID",
-      order_number: "123",
-      id: 93,
-      object_id: "",
+    321: {
+      object_state: "VALID",
+      object_status: "SUCCESS",
+      object_id: "object_id_return",
+      rate: {
+        carrier_account: "carrier_id_123",
+      },
+      tracking_number: "track_num_1",
+      address_to: "",
+      tracking_status: null,
+      tracking_url_provider: "https://tools.usps.com/",
+      commercial_invoice_url: null,
+      messages: [],
+      metadata: "Order 123",
+      is_return: true,
+      order: {
+        status: "PAID",
+        order_number: "123",
+        id: 93,
+        object_id: "",
+      },
     },
   }
-  return transaction
+  return transaction[id]
 }
 
 export const mockTransaction = (id) => {
@@ -168,12 +192,12 @@ export const mockTransaction = (id) => {
         payments: [],
       },
     },
-    object_id_3210: {
+    object_id_return: {
       object_state: "VALID",
       status: "SUCCESS",
       object_created: "",
       object_updated: "",
-      object_id: "object_id_3210",
+      object_id: "object_id_return",
       object_owner: "",
       test: true,
       rate: "",
@@ -183,8 +207,8 @@ export const mockTransaction = (id) => {
       tracking_url_provider: "https://tools.usps.com",
       commercial_invoice_url: null,
       messages: [],
-      order: "object_id_order_12355",
-      metadata: "Order 456",
+      order: "object_id_order_123",
+      metadata: "Order 321",
       parcel: "",
       billing: {
         payments: [],
@@ -206,6 +230,28 @@ export const mockTransaction = (id) => {
       commercial_invoice_url: null,
       messages: [],
       order: "object_id_order_replace_123",
+      metadata: "Order 123",
+      parcel: "",
+      billing: {
+        payments: [],
+      },
+    },
+    object_id_transaction_swap_123: {
+      object_state: "VALID",
+      status: "SUCCESS",
+      object_created: "",
+      object_updated: "",
+      object_id: "object_id_order_swap_123",
+      object_owner: "",
+      test: true,
+      rate: "",
+      tracking_number: "1ab2c3",
+      tracking_status: "UNKNOWN",
+      eta: null,
+      tracking_url_provider: "https://tools.usps.com",
+      commercial_invoice_url: null,
+      messages: [],
+      order: "object_id_order_swap_123",
       metadata: "Order 123",
       parcel: "",
       billing: {
