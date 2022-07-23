@@ -14,7 +14,7 @@ import {
 const shippo = jest.fn(() => ({
   carrieraccount: {
     list: jest.fn(async () =>
-      mockCarrierAccountsResponse(faker.datatype.number({ min: 8, max: 10 }))
+      mockCarrierAccountsResponse(faker.datatype.number({ min: 2, max: 4 }))
     ),
     retrieve: jest.fn(async (id) => {
       const carriers = {
@@ -27,12 +27,12 @@ const shippo = jest.fn(() => ({
   },
   servicegroups: {
     list: jest.fn(async () =>
-      makeArrayOf(mockServiceGroup, faker.datatype.number({ min: 2, max: 10 }))
+      makeArrayOf(mockServiceGroup, faker.datatype.number({ min: 2, max: 4 }))
     ),
   },
   userparceltemplates: {
     list: jest.fn(async () =>
-      mockParcelTemplateResponse(faker.datatype.number({ min: 8, max: 20 }))
+      mockParcelTemplateResponse(faker.datatype.number({ min: 2, max: 4 }))
     ),
   },
   liverates: {
@@ -49,15 +49,30 @@ const shippo = jest.fn(() => ({
       slip_url: "https://console.log",
       created: "",
     })),
-    retrieve: jest.fn(async (id) => ({
-      object_id: id,
-      transactions: [
-        {
-          object_id: "object_id_5555",
-          object_status: "SUCCESS",
+    retrieve: jest.fn(async (id) => {
+      const order = {
+        object_id_order_123: {
+          object_id: id,
+          transactions: [
+            {
+              object_id: "object_id_transaction_123",
+              object_status: "SUCCESS",
+            },
+          ],
         },
-      ],
-    })),
+        object_id_order_replace_123: {
+          object_id: id,
+          transactions: [
+            {
+              object_id: "object_id_transaction_replace_123",
+              object_status: "SUCCESS",
+            },
+          ],
+        },
+      }
+
+      return order[id]
+    }),
   },
   account: {
     address: jest.fn(async () => ({
@@ -67,7 +82,14 @@ const shippo = jest.fn(() => ({
   transaction: {
     retrieve: jest.fn(async (id) => mockTransaction(id)),
     search: jest.fn(async (q) => {
-      const transactions = makeArrayOf(mockExtendedTransaction, 1)
+      // console.log(q, " ", q.replace(/[^0-9]/g, ""))
+
+      // displayId.replace(/[^0-9]/g, "")
+      const transactions = makeArrayOf(mockExtendedTransaction, 2)
+
+      transactions[1].object_id = "object_id_transaction_replace_123"
+
+      // console.log(transactions)
       return {
         results: transactions,
       }
