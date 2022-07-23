@@ -61,7 +61,7 @@ describe("shippoService", () => {
     retrieve: jest.fn(async (id) => ({
       id,
       data: {
-        shippo_order_id: "object_id_112233",
+        shippo_order_id: "object_id_order_123",
       },
       tracking_links: [
         {
@@ -80,7 +80,7 @@ describe("shippoService", () => {
           {
             id: "ful_321",
             data: {
-              shippo_order_id: "object_id_112233",
+              shippo_order_id: "object_id_order_123",
             },
           },
           {
@@ -88,6 +88,19 @@ describe("shippoService", () => {
             data: {},
           },
         ],
+        claims: [
+          {
+            fulfillments: [
+              {
+                id: "ful_321_claim",
+                data: {
+                  shippo_order_id: "object_id_order_replace_123",
+                },
+              },
+            ],
+          },
+        ],
+        swaps: [],
       },
     ],
   }
@@ -193,7 +206,7 @@ describe("shippoService", () => {
     })
 
     test("fetch returns order by id", async () => {
-      const id = "123"
+      const id = "object_id_order_123"
       const result = await shippoService.order.fetch(id)
       expect(result).toContainEntry(["object_id", id])
     })
@@ -298,16 +311,21 @@ describe("shippoService", () => {
     })
 
     test("fetch returns requested default transaction", async () => {
-      const result = await shippoService.transaction.fetch("object_id_5555")
-      expect(result).toContainEntry(["object_id", "object_id_5555"])
+      const result = await shippoService.transaction.fetch(
+        "object_id_transaction_123"
+      )
+      expect(result).toContainEntry(["object_id", "object_id_transaction_123"])
       expect(result).toContainEntry(["rate", ""])
     })
 
     test("fetch returns requested extended transaction", async () => {
-      const result = await shippoService.transaction.fetch("object_id_5555", {
-        variant: "extended",
-      })
-      expect(result).toContainEntry(["object_id", "object_id_5555"])
+      const result = await shippoService.transaction.fetch(
+        "object_id_transaction_123",
+        {
+          variant: "extended",
+        }
+      )
+      expect(result).toContainEntry(["object_id", "object_id_transaction_123"])
       expect(result.rate).toContainEntry(["carrier_account", "carrier_id_123"])
     })
 
@@ -317,7 +335,10 @@ describe("shippoService", () => {
         "ful_321",
       ])
 
-      expect(result[0]).toContainEntry(["object_id", "object_id_5555"])
+      expect(result[0]).toContainEntry([
+        "object_id",
+        "object_id_transaction_123",
+      ])
       expect(result[0]).toContainEntry(["rate", ""])
     })
 
@@ -327,7 +348,10 @@ describe("shippoService", () => {
         { variant: "extended" }
       )
 
-      expect(result[0]).toContainEntry(["object_id", "object_id_5555"])
+      expect(result[0]).toContainEntry([
+        "object_id",
+        "object_id_transaction_123",
+      ])
       expect(result[0].rate).toContainEntry([
         "carrier_account",
         "carrier_id_123",
@@ -337,7 +361,10 @@ describe("shippoService", () => {
     test("fetchBy order returns requested default transaction", async () => {
       const result = await shippoService.transaction.fetchBy(["order", "123"])
 
-      expect(result[0]).toContainEntry(["object_id", "object_id_5555"])
+      expect(result[0]).toContainEntry([
+        "object_id",
+        "object_id_transaction_123",
+      ])
       expect(result[0]).toContainEntry(["rate", ""])
     })
 
@@ -346,11 +373,56 @@ describe("shippoService", () => {
         variant: "extended",
       })
 
-      expect(result[0]).toContainEntry(["object_id", "object_id_5555"])
+      expect(result[0]).toContainEntry([
+        "object_id",
+        "object_id_transaction_123",
+      ])
       expect(result[0].rate).toContainEntry([
         "carrier_account",
         "carrier_id_123",
       ])
+    })
+  })
+  /* ===================================================== */
+
+  /* ===================================================== */
+  describe("find", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+
+    describe("fulfillment", () => {
+      describe("for", () => {
+        describe("transaction", () => {
+          it("finds order.fulfillment", async () => {
+            const id = "object_id_transaction_123"
+            const result = await shippoService
+              .find("fulfillment")
+              .for(["transaction", id])
+
+            expect(result).toContainEntry(["id", "ful_321"])
+          })
+
+          it("finds order.claim.fulfillment", async () => {
+            const id = "object_id_transaction_replace_123"
+            const result = await shippoService
+              .find("fulfillment")
+              .for(["transaction", id])
+
+            expect(result).toContainEntry(["id", "ful_321_claim"])
+            expect(result.data).toContainEntry([
+              "shippo_order_id",
+              "object_id_order_replace_123",
+            ])
+          })
+
+          it("finds order.swap.fulfillment", async () => {
+            // const result = ""
+            // console.log('*********result: ', JSON.stringify(result, null, 2))
+            // expect(result).
+          })
+        })
+      })
     })
   })
   /* ===================================================== */
