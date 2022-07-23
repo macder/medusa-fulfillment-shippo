@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.22.2] (2022-07-22)
+
+Changed
+
+*   fetchBy fulfillment will also find claim and swap fulfillments [#242](https://github.com/macder/medusa-fulfillment-shippo/issues/242)
+
+Fixed
+
+*   Type error for claim replace order in webhook transaction_created [#238](https://github.com/macder/medusa-fulfillment-shippo/issues/238)
+
 ## \[0.22.1] (2022-07-22)
 
 Fixed

@@ -56,10 +56,10 @@ describe("ShippoFulfillmentService", () => {
       options
     )
 
-    it("returned an array", async () => {
-      const result = await shippoFulfilService.getFulfillmentOptions()
-      expect(result).toBeArray()
-    })
+    // it("returned an array", async () => {
+    //   const result = await shippoFulfilService.getFulfillmentOptions()
+    //   expect(result).toBeArray()
+    // })
 
     it("returned array of object that have id and name properties", async () => {
       const result = await shippoFulfilService.getFulfillmentOptions()
@@ -128,10 +128,6 @@ describe("ShippoFulfillmentService", () => {
       it("returned object with correct properties", async () => {
         const result = await getResult()
         expect(result).toContainKeys(["parcel_template", "test"])
-      })
-
-      it("parcel_template has id and name properties", async () => {
-        const result = await getResult()
         expect(result.parcel_template).toContainKeys(["id", "name"])
       })
     })
@@ -262,9 +258,7 @@ describe("ShippoFulfillmentService", () => {
     const shippo = jest.fn(() => ({
       userparceltemplates: {
         list: jest.fn(async () =>
-          mockParcelTemplateResponse(
-            faker.datatype.number({ min: 10, max: 20 })
-          )
+          mockParcelTemplateResponse(faker.datatype.number({ min: 2, max: 4 }))
         ),
       },
       liverates: {

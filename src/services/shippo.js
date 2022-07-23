@@ -68,6 +68,7 @@ class ShippoService extends BaseService {
     }
   }
 
+  /* @experimental */
   #find(needle) {
     const find = {
       fulfillment: {
@@ -89,6 +90,7 @@ class ShippoService extends BaseService {
     }
   }
 
+  /* @experimental */
   #fulfillment() {
     const fetchBy = {
       transaction: async (id) =>

@@ -18,24 +18,24 @@ describe("ShippoPackerService", () => {
       jest.clearAllMocks()
     })
 
-    const itemCount = faker.datatype.number({ min: 1, max: 3 })
-    const templateCount = faker.datatype.number({ min: 11, max: 22 })
+    // const itemCount = faker.datatype.number({ min: 1, max: 3 })
+    // const templateCount = faker.datatype.number({ min: 11, max: 22 })
 
-    const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
-    const lineItems = makeArrayOf(mockLineItem, itemCount)
+    // const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
+    // const lineItems = makeArrayOf(mockLineItem, itemCount)
 
-    const shippoClientService = new ShippoClientService({}, {})
-    const shippoPackerService = new ShippoPackerService(
-      { shippoClientService },
-      {}
-    )
+    // const shippoClientService = new ShippoClientService({}, {})
+    // const shippoPackerService = new ShippoPackerService(
+    //   { shippoClientService },
+    //   {}
+    // )
 
     // WIP
     it("", async () => {
-      const result = await shippoPackerService.packBins(
-        lineItems,
-        parcelTemplates
-      )
+      // const result = await shippoPackerService.packBins(
+      //   lineItems,
+      //   parcelTemplates
+      // )
     })
   })
 })

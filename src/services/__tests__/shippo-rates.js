@@ -277,18 +277,6 @@ describe("ShippoRatesService", () => {
     const cartService = getCartService(cart)
     const shippoRatesService = getShippoRatesService(cartService)
 
-    it("returns array", async () => {
-      const result = await shippoRatesService.fetchCartRates("cart_id")
-      expect(result).toBeArray()
-    })
-
-    test("array members are objects", async () => {
-      const result = await shippoRatesService.fetchCartRates("cart_id")
-      result.forEach((result) => {
-        expect(result).toBeObject()
-      })
-    })
-
     test("rate objects have parcel property", async () => {
       const result = await shippoRatesService.fetchCartRates("cart_id")
       result.forEach((result) => {
@@ -312,14 +300,6 @@ describe("ShippoRatesService", () => {
         const cart = mockCart({ hasAddress: true, hasItems: 1 })
         const cartService = getCartService(cart)
         const shippoRatesService = getShippoRatesService(cartService)
-
-        it("returned an object", async () => {
-          const result = await shippoRatesService.fetchOptionRate(
-            "cart_id",
-            "so_id"
-          )
-          expect(result).toBeObject()
-        })
 
         test("object has parcel prop", async () => {
           const result = await shippoRatesService.fetchOptionRate(
@@ -366,14 +346,6 @@ describe("ShippoRatesService", () => {
         const cart = mockCart({ hasAddress: true, hasItems: 1 })
         const cartService = getCartService(cart)
         const shippoRatesService = getShippoRatesService(cartService)
-
-        it("returned an object", async () => {
-          const result = await shippoRatesService.fetchOptionRate(
-            "cart_id",
-            option
-          )
-          expect(result).toBeObject()
-        })
 
         test("object has parcel prop", async () => {
           const result = await shippoRatesService.fetchOptionRate(
