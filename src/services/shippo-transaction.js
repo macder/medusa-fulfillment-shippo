@@ -164,13 +164,19 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * Finds the fulfillment associated with the transaction
-   * @param {string|object} transaction - shippo transaction
-   * @return {Fulfillment} The fulfillment related to this transaction
+   * @param {string} transactionId - shippo transaction id
+   * @return {Promise.<Fulfillment>} The fulfillment related to this transaction
    */
   async findFulfillment(transactionId) {
     const order = await this.findOrder(transactionId)
+    const { claims, swaps } = order
 
-    return order.fulfillments.find(
+    const fulfillments = order?.fulfillments.concat(
+      [...Array(claims?.length).keys()].flatMap((i) => claims[i]?.fulfillments),
+      [...Array(swaps?.length).keys()].flatMap((i) => swaps[i]?.fulfillments)
+    )
+
+    return fulfillments.find(
       ({ data: { shippo_order_id } }) =>
         shippo_order_id === this.#transaction.order
     )
@@ -194,7 +200,7 @@ class ShippoTransactionService extends BaseService {
    * @return {}
    */
   async fetchReturnByOrder(order) {
-    const transactions = await this.#shippo.fetchExtendedTransactions(order)
+    const transactions = await this.fetchExtendedByOrder(order.id)
     const transaction = transactions.find((ta) => ta.is_return)
 
     if (!transaction) {
@@ -228,7 +234,19 @@ class ShippoTransactionService extends BaseService {
     return await this.#orderService
       .list(
         { display_id: id },
-        { relations: ["fulfillments", "shipping_methods"] }
+        {
+          relations: [
+            "fulfillments",
+            "fulfillments.tracking_links",
+            "shipping_methods",
+            "claims",
+            "claims.fulfillments",
+            "claims.fulfillments.tracking_links",
+            "swaps",
+            "swaps.fulfillments",
+            "swaps.fulfillments.tracking_links",
+          ],
+        }
       )
       .then((item) => !!item?.length && item[0])
   }

@@ -1,11 +1,24 @@
 class ShippoSubscriber {
+  #claimService
+
   #eventBusService
 
   #orderService
 
   #shippoTransactionService
 
-  constructor({ eventBusService, orderService, shippoTransactionService }) {
+  #swapService
+
+  constructor({
+    claimService,
+    eventBusService,
+    orderService,
+    shippoTransactionService,
+    swapService,
+  }) {
+    /** @private @const {ClaimService} */
+    this.#claimService = claimService
+
     /** @private @const {EventBusService} */
     this.#eventBusService = eventBusService
 
@@ -14,6 +27,9 @@ class ShippoSubscriber {
 
     /** @private @const {ShippoTransactionService} */
     this.#shippoTransactionService = shippoTransactionService
+
+    /** @private @const {SwapService} */
+    this.#swapService = swapService
 
     this.#eventBusService.subscribe(
       "shippo.accepted.transaction_created",
@@ -39,6 +55,7 @@ class ShippoSubscriber {
     const order = await this.#shippoTransactionService.findOrder(
       transaction.object_id
     )
+
     const fulfillment = await this.#shippoTransactionService.findFulfillment(
       transaction.object_id
     )
@@ -47,8 +64,23 @@ class ShippoSubscriber {
       await this.#shippoTransactionService.pollExtended(transaction.object_id)
 
     if (!fulfillment.shipped_at && !expandedTransaction?.is_return) {
-      await this.#orderService
-        .createShipment(order.id, fulfillment.id, [
+      const type = (fulfillment?.claim_order_id && {
+        service: this.#claimService,
+        id: fulfillment.claim_order_id,
+        name: "claim_order",
+      }) ||
+        (fulfillment?.swap_id && {
+          service: this.#swapService,
+          id: fulfillment.swap_id,
+          name: "swap",
+        }) || {
+          service: this.#orderService,
+          id: fulfillment.order_id,
+          name: "order",
+        }
+
+      await type.service
+        .createShipment(type.id, fulfillment.id, [
           {
             tracking_number: expandedTransaction.tracking_number,
             url: expandedTransaction.tracking_url_provider,
@@ -57,7 +89,7 @@ class ShippoSubscriber {
         .then((order) => {
           const { label_url } = transaction
           this.#eventBusService.emit("shippo.transaction_created.shipment", {
-            order_id: order.id,
+            [`${[type.name]}_id`]: type.id,
             fulfillment_id: fulfillment.id,
             transaction: {
               ...expandedTransaction,
