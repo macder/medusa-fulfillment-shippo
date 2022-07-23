@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.22.3] (2022-07-23)
+
+Fixed
+
+*   Binpacker not selecting best box [#245](https://github.com/macder/medusa-fulfillment-shippo/issues/245) - (Major Improvement)
+
 ## \[0.22.2] (2022-07-22)
 
 Changed

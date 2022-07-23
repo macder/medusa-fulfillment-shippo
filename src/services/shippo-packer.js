@@ -52,9 +52,9 @@ class ShippoPackerService extends BaseService {
     return fitBins.map((bin) => {
       const binItemsVolume = bin.items.map(
         (item) =>
-          this.#reduceFactor(item.width) *
-          this.#reduceFactor(item.height) *
-          this.#reduceFactor(item.depth)
+          item.width *
+          item.height *
+          item.depth
       )
 
       const totalItemVolume = binItemsVolume.reduce((a, b) => a + b, 0)
@@ -63,15 +63,15 @@ class ShippoPackerService extends BaseService {
         title: item.name.title,
         product_id: item.name.product_id,
         variant_id: item.name.variant_id,
-        length: this.#reduceFactor(item.depth),
-        width: this.#reduceFactor(item.width),
-        height: this.#reduceFactor(item.height),
-        weight: this.#reduceFactor(item.weight),
+        length: item.depth,
+        width: item.width,
+        height: item.height,
+        weight: item.weight,
         volume: this.#calculateVolume(item),
         locus: {
           allowed_rotation: item.allowedRotation,
           rotation_type: item.rotationType,
-          position: item.position.map((e) => this.#reduceFactor(e)),
+          position: item.position.map((e) => (e)),
         },
       }))
 
@@ -130,13 +130,9 @@ class ShippoPackerService extends BaseService {
   #calculateVolume({ length, depth, width, height }) {
     return length
       ? length * width * height
-      : this.#reduceFactor(depth) *
-          this.#reduceFactor(width) *
-          this.#reduceFactor(height)
-  }
-
-  #reduceFactor(num) {
-    return num / 100000
+      : depth *
+          width *
+          height
   }
 
   #splitItem(item) {
