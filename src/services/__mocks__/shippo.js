@@ -69,6 +69,15 @@ const shippo = jest.fn(() => ({
             },
           ],
         },
+        object_id_order_swap_123: {
+          object_id: id,
+          transactions: [
+            {
+              object_id: "object_id_transaction_swap_123",
+              object_status: "SUCCESS",
+            },
+          ],
+        },
       }
 
       return order[id]
@@ -82,14 +91,12 @@ const shippo = jest.fn(() => ({
   transaction: {
     retrieve: jest.fn(async (id) => mockTransaction(id)),
     search: jest.fn(async (q) => {
-      // console.log(q, " ", q.replace(/[^0-9]/g, ""))
-
-      // displayId.replace(/[^0-9]/g, "")
-      const transactions = makeArrayOf(mockExtendedTransaction, 2)
-
+      const id = q.replace(/[^0-9]/g, "")
+      const transactions = makeArrayOf(mockExtendedTransaction, 4, id)
       transactions[1].object_id = "object_id_transaction_replace_123"
+      transactions[2].object_id = "object_id_transaction_swap_123"
+      transactions[3].object_id = "object_id_return"
 
-      // console.log(transactions)
       return {
         results: transactions,
       }
