@@ -18,24 +18,26 @@ describe("ShippoPackerService", () => {
       jest.clearAllMocks()
     })
 
-    // const itemCount = faker.datatype.number({ min: 1, max: 3 })
-    // const templateCount = faker.datatype.number({ min: 11, max: 22 })
-
-    // const parcelTemplates = makeArrayOf(mockParcelTemplate, templateCount)
-    // const lineItems = makeArrayOf(mockLineItem, itemCount)
-
     // const shippoClientService = new ShippoClientService({}, {})
     // const shippoPackerService = new ShippoPackerService(
     //   { shippoClientService },
     //   {}
     // )
 
-    // WIP
+    // shippoPackerService.parcelTemplates = mockUserParcels()
+
     it("", async () => {
       // const result = await shippoPackerService.packBins(
-      //   lineItems,
-      //   parcelTemplates
+      //   lineItems
       // )
+
+      // console.log(result.name, result.packer_output.volume)
+
+      // result.forEach(e => {
+      //   console.log(e.name, e.packer_output.volume)
+      // })
+
+      // console.log('*********result: ', JSON.stringify(result, null, 2))
     })
   })
 })
