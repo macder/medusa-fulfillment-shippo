@@ -222,16 +222,24 @@ describe("shippoService", () => {
       jest.clearAllMocks()
     })
 
-    test("fetch returns order by id", async () => {
-      const id = "object_id_order_123"
-      const result = await shippoService.order.fetch(id)
-      expect(result).toContainEntry(["object_id", id])
+    describe("fetch", () => {
+      describe("id", () => {
+        test("returns", async () => {
+          const id = "object_id_order_123"
+          const result = await shippoService.order.fetch(id)
+          expect(result).toContainEntry(["object_id", id])
+        })
+      })
     })
 
-    test("fetchBy fulfillment returns order", async () => {
-      const id = "ful_321"
-      const result = await shippoService.order.fetchBy(["fulfillment", id])
-      expect(result).toContainKey("object_id")
+    describe("fetchBy", () => {
+      describe("fulfillment", () => {
+        test("returns", async () => {
+          const id = "ful_321"
+          const result = await shippoService.order.fetchBy(["fulfillment", id])
+          expect(result).toContainKey("object_id")
+        })
+      })
     })
   })
   /* ===================================================== */
