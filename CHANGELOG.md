@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+Added
+
+*   Shippo order with fulfillment [#249](https://github.com/macder/medusa-fulfillment-shippo/issues/249)
+*   Shippo packingslip with fulfillment [#252](https://github.com/macder/medusa-fulfillment-shippo/issues/252)
+
+Deprecated
+*   transaction.isReturn() [#zzz](https://github.com/macder/medusa-fulfillment-shippo/issues/zzz)
+
 ## \[0.22.3] (2022-07-23)
 
 Fixed
