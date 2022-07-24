@@ -130,8 +130,9 @@ class ShippoService extends BaseService {
         fulfillment: (id) =>
           this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
       },
-      with() {
-        console.log("packingslip.with")
+      with: {
+        fulfillment: (object_id) =>
+          this.#shippoOrder.findFulfillment(object_id),
       },
     }
     return new ShippoFacade(methods)

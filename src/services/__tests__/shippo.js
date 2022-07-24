@@ -340,6 +340,39 @@ describe("shippoService", () => {
       ])
       expect(result).toContainKey("slip_url")
     })
+
+    describe("with", () => {
+      describe("fulfillment", () => {
+        describe("fetch", () => {
+          test("returns packing slip", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService.packingslip
+              .with(["fulfillment"])
+              .fetch(id)
+            expect(result).toContainKey("slip_url")
+          })
+
+          test("returns prop.fulfillment", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService.packingslip
+              .with(["fulfillment"])
+              .fetch(id)
+            expect(result).toContainKey("fulfillment")
+          })
+
+          test("returns with fulfillment", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService.packingslip
+              .with(["fulfillment"])
+              .fetch(id)
+            expect(result.fulfillment.data).toContainEntry([
+              "shippo_order_id",
+              id,
+            ])
+          })
+        })
+      })
+    })
   })
   /* ===================================================== */
 

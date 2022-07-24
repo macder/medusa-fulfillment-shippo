@@ -16,13 +16,7 @@ class ShippoFacade {
     let result = null
 
     if (this.#with.method) {
-      const parent = await this.#method.fetch(id, config)
-      const child = await this.#with.method(id)
-
-      result = {
-        ...parent,
-        [this.#with.entity]: child,
-      }
+      result = await this.#fetchWith(id, config)
     } else {
       result = await this.#method.fetch(id, config)
     }
@@ -31,8 +25,8 @@ class ShippoFacade {
   }
 
   async fetchBy([entity, id], config) {
-    const response = await this.#method.fetchBy[entity](id, config)
-    return response
+    const result = await this.#method.fetchBy[entity](id, config)
+    return result
   }
 
   with(entity) {
@@ -46,19 +40,31 @@ class ShippoFacade {
     return this
   }
 
-  find() {
-    console.log("facade find")
-    return this
-  }
+  // find() {
+  //   console.log("facade find")
+  //   return this
+  // }
 
-  for() {
-    console.log("facade for")
-    return this
-  }
+  // for() {
+  //   console.log("facade for")
+  //   return this
+  // }
 
-  is() {
-    console.log("facade is")
-    return this
+  // is() {
+  //   console.log("facade is")
+  //   return this
+  // }
+
+  async #fetchWith(id, config) {
+    const parent = await this.#method.fetch(id, config)
+    const child = await this.#with.method(id)
+
+    const result = {
+      ...parent,
+      [this.#with.entity]: child,
+    }
+
+    return result
   }
 
   #setWith(params) {
