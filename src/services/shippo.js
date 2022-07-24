@@ -109,8 +109,9 @@ class ShippoService extends BaseService {
       fetchBy: {
         fulfillment: (id) => this.#shippoOrder.fetchByFulfillmentId(id),
       },
-      with() {
-        console.log("order.with")
+      with: {
+        fulfillment: (object_id) =>
+          this.#shippoOrder.findFulfillment(object_id),
       },
     }
     return new ShippoFacade(methods)

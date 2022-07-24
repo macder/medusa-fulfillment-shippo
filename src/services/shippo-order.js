@@ -6,18 +6,34 @@ class ShippoOrderService extends BaseService {
 
   #fulfillmentService
 
+  #fulfillmentRepo
+
+  #manager
+
   #shippo
 
   #shippoTransactionService
 
   constructor(
-    { fulfillmentService, shippoClientService, shippoTransactionService },
+    {
+      manager,
+      fulfillmentRepository,
+      fulfillmentService,
+      shippoClientService,
+      shippoTransactionService,
+    },
     options
   ) {
     super()
 
+    /** @private @const {FulfillmentRepository} */
+    this.#fulfillmentRepo = fulfillmentRepository
+
     /** @private @const {FulfillmentService} */
     this.#fulfillmentService = fulfillmentService
+
+    /** @private @const {Manager} */
+    this.#manager = manager
 
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
@@ -108,10 +124,40 @@ class ShippoOrderService extends BaseService {
    */
   async fetchByTransactionId() {}
 
-  async #getId(fulfillmentId) {
-    const fullfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
+  /**
+   *
+   * @param {String} orderId - shippo order object_id
+   * @return {Promise.<Object>}
+   */
+  async findFulfillment(orderId) {
+    const fulfillmentRepo = this.#manager.getCustomRepository(
+      this.#fulfillmentRepo
+    )
 
-    if (!fullfillment.data?.shippo_order_id) {
+    const fulfillment = await fulfillmentRepo.find({
+      relations: ["tracking_links"],
+      where: {
+        data: {
+          shippo_order_id: orderId,
+        },
+      },
+    })
+
+    if (!fulfillment.length) {
+      return Promise.reject(
+        new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `Fulfillment for shippo order with id: ${orderId} not found`
+        )
+      )
+    }
+    return fulfillment[0]
+  }
+
+  async #getId(fulfillmentId) {
+    const fulfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
+
+    if (!fulfillment.data?.shippo_order_id) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
         `Shippo order not found for fulfillment with id: ${fulfillmentId}`
@@ -120,7 +166,7 @@ class ShippoOrderService extends BaseService {
 
     const {
       data: { shippo_order_id },
-    } = fullfillment
+    } = fulfillment
 
     return shippo_order_id
   }

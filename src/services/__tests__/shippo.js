@@ -1,3 +1,5 @@
+import { MockManager, MockRepository } from "medusa-test-utils"
+
 import * as matchers from "jest-extended"
 import ShippoService from "../shippo"
 import ShippoClientService from "../shippo-client"
@@ -39,6 +41,31 @@ describe("shippoService", () => {
       return carts[id]
     }),
   }
+
+  const fulfillmentRepository = MockRepository({
+    find: async (config) => {
+      const fulfillments = {
+        object_id_order_123: [
+          {
+            data: {
+              shippo_order_id: "object_id_order_123",
+            },
+            tracking_links: [
+              {
+                tracking_number: "track_num_1",
+              },
+            ],
+          },
+        ],
+      }
+      const {
+        where: {
+          data: { shippo_order_id },
+        },
+      } = config
+      return fulfillments[shippo_order_id]
+    },
+  })
 
   const getShippingProfileService = (cartOptions) => ({
     fetchCartOptions: jest.fn(async (cart) => cartOptions),
@@ -160,7 +187,9 @@ describe("shippoService", () => {
 
   const shippoOrderService = new ShippoOrderService(
     {
+      manager: MockManager,
       fulfillmentService,
+      fulfillmentRepository,
       shippoClientService,
       shippoTransactionService,
     },
@@ -238,6 +267,39 @@ describe("shippoService", () => {
           const id = "ful_321"
           const result = await shippoService.order.fetchBy(["fulfillment", id])
           expect(result).toContainKey("object_id")
+        })
+      })
+    })
+
+    describe("with", () => {
+      describe("fulfillment", () => {
+        describe("fetch", () => {
+          test("returns correct order", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService.order
+              .with(["fulfillment"])
+              .fetch(id)
+            expect(result).toContainEntry(["object_id", id])
+          })
+
+          test("returns with prop.fulfillment", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService.order
+              .with(["fulfillment"])
+              .fetch(id)
+            expect(result).toContainKey("fulfillment")
+          })
+
+          test("returns with fulfillment", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService.order
+              .with(["fulfillment"])
+              .fetch(id)
+            expect(result.fulfillment.data).toContainEntry([
+              "shippo_order_id",
+              id,
+            ])
+          })
         })
       })
     })
