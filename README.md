@@ -475,6 +475,8 @@ await shippoService.account.address()
 
 ```javascript
 await shippoService.order.fetch(object_id)
+
+await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
 #### `order.fetchBy`
