@@ -503,6 +503,14 @@ const { object_id } = order
 await shippoService.packingslip.fetch(object_id)
 ```
 
+#### `packingslip.with.fetch`
+
+```javascript
+const { object_id } = order
+
+await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
+```
+
 #### `packingslip.fetchBy`
 
 ```javascript
