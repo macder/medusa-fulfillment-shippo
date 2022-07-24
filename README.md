@@ -463,7 +463,7 @@ For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend
 
 ### Account
 
-#### `account.address`
+`address`
 
 ```javascript
 await shippoService.account.address()
@@ -471,19 +471,19 @@ await shippoService.account.address()
 
 ### Order
 
-#### `order.fetch()`
+`fetch(id)`
 
 ```javascript
 await shippoService.order.fetch(object_id)
 ```
 
-#### `order.with().fetch()`
+`with([entity]).fetch(id)`
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
-#### `order.fetchBy()`
+`fetchBy([entity])`
 
 ```javascript
 await shippoService.order.fetchBy(["fulfillment", id])
@@ -491,9 +491,10 @@ await shippoService.order.fetchBy(["fulfillment", id])
 
 ### Packer
 
-#### `packer.pack`
+`pack`
 
 ```javascript
+/* @experimental */
 await shippoService.packer.pack(lineItems)
 ```
 
@@ -521,25 +522,27 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ### Rates
 
-#### `rates.cart`
+`cart(id)`
 
 ```javascript
+/* @experimental */
 await shippoService.rates.cart(id)
 ```
 
 ```javascript
+/* @experimental */
 await shippoService.rates.cart(id, shipping_option_id)
 ```
 
 ### Track
 
-#### `track.fetch`
+`fetch()`
 
 ```javascript
 await shippoService.track.fetch(carrier_enum, track_num)
 ```
 
-#### `track.fetchBy`
+`fetchBy([entity])`
 
 ```javascript
 await shippoService.track.fetchBy(["fulfillment", id])
@@ -547,7 +550,7 @@ await shippoService.track.fetchBy(["fulfillment", id])
 
 ### Transaction
 
-#### `transaction.fetch`
+`fetch(id)`
 
 ```javascript
 await shippoService.transaction.fetch(object_id)
@@ -555,7 +558,7 @@ await shippoService.transaction.fetch(object_id)
 await shippoService.transaction.fetch(object_id, { variant: "extended" })
 ```
 
-#### `transaction.fetchBy`
+`fetchBy([entity])`
 
 ```javascript
 await shippoService.transaction.fetchBy(["order", id])
@@ -567,9 +570,10 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
 ```
 
-#### `transaction.isReturn`
+`isReturn`
 
 ```javascript
+/* @experimental */
 await shippoService.transaction.isReturn(object_id)
 ```
 
@@ -583,7 +587,7 @@ const client = shippoService.client
 
 ### Find
 
-#### `find().for()`
+`find(entity).for([entity, id])`
 
 ```javascript
 /* @experimental */
