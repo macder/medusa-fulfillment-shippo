@@ -29,6 +29,13 @@ class ShippoFacade {
     console.log("facade for")
     return this
   }
+
+  /* @deprecated */
+  async isReturn(id) {
+    console.log("deprecated")
+    const response = await this.#method.isReturn(id)
+    return response
+  }
 }
 
 export default ShippoFacade

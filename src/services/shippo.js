@@ -157,36 +157,29 @@ class ShippoService extends BaseService {
   }
 
   #transaction() {
-    const fetch = {
-      default: async (id) => await this.#shippoTransaction.fetch(id),
-      extended: async (id) => await this.#shippoTransaction.fetchExtended(id),
-    }
+    const methods = {
+      fetch: (id, { variant = "default" } = "default") =>
+        ({
+          default: (id) => this.#shippoTransaction.fetch(id),
+          extended: (id) => this.#shippoTransaction.fetchExtended(id),
+        }[variant](id)),
+      fetchBy: {
+        order: (id, { variant = "default" } = "default") =>
+          ({
+            default: (id) => this.#shippoTransaction.fetchByOrder(id),
+            extended: (id) => this.#shippoTransaction.fetchExtendedByOrder(id),
+          }[variant](id)),
 
-    const fetchBy = {
-      order: {
-        default: async (id) => await this.#shippoTransaction.fetchByOrder(id),
-        extended: async (id) =>
-          await this.#shippoTransaction.fetchExtendedByOrder(id),
+        fulfillment: (id, { variant = "default" } = "default") =>
+          ({
+            default: (id) => this.#shippoTransaction.fetchByFulfillment(id),
+            extended: (id) =>
+              this.#shippoTransaction.fetchExtendedByFulfillment(id),
+          }[variant](id)),
       },
-      fulfillment: {
-        default: async (id) =>
-          await this.#shippoTransaction.fetchByFulfillment(id),
-        extended: async (id) =>
-          await this.#shippoTransaction.fetchExtendedByFulfillment(id),
-      },
+      isReturn: (id) => this.#shippoTransaction.isReturn(id),
     }
-
-    return {
-      fetch: async (id, { variant = "default" } = "default") =>
-        await fetch[variant](id),
-      fetchBy: async ([entity, id], { variant = "default" } = "default") =>
-        await fetchBy[entity][variant](id),
-      isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
-
-      /* @deprecated */
-      fetchExtended: async (id) =>
-        await this.#shippoTransaction.fetchExtended(id),
-    }
+    return new ShippoFacade(methods)
   }
 }
 
