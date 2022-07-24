@@ -471,15 +471,19 @@ await shippoService.account.address()
 
 ### Order
 
-#### `order.fetch`
+#### `order.fetch()`
 
 ```javascript
 await shippoService.order.fetch(object_id)
+```
 
+#### `order.with().fetch()`
+
+```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
-#### `order.fetchBy`
+#### `order.fetchBy()`
 
 ```javascript
 await shippoService.order.fetchBy(["fulfillment", id])
@@ -506,8 +510,6 @@ await shippoService.packingslip.fetch(object_id)
 #### `packingslip.with.fetch`
 
 ```javascript
-const { object_id } = order
-
 await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 ```
 
