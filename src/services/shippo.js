@@ -1,4 +1,5 @@
 import { BaseService } from "medusa-interfaces"
+import ShippoFacade from "../facades"
 
 class ShippoService extends BaseService {
   #client
@@ -103,15 +104,16 @@ class ShippoService extends BaseService {
   }
 
   #order() {
-    const fetchBy = {
-      fulfillment: async (id) =>
-        await this.#shippoOrder.fetchByFulfillmentId(id),
+    const methods = {
+      fetch: (id) => this.#shippoOrder.fetch(id),
+      fetchBy: {
+        fulfillment: (id) => this.#shippoOrder.fetchByFulfillmentId(id),
+      },
+      with() {
+        console.log("order.with")
+      },
     }
-
-    return {
-      fetch: async (id) => await this.#shippoOrder.fetch(id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-    }
+    return new ShippoFacade(methods)
   }
 
   #packer() {
@@ -121,15 +123,17 @@ class ShippoService extends BaseService {
   }
 
   #packingslip() {
-    const fetchBy = {
-      fulfillment: async (id) =>
-        await this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
+    const methods = {
+      fetch: (id) => this.#shippoOrder.fetchPackingSlip(id),
+      fetchBy: {
+        fulfillment: (id) =>
+          this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
+      },
+      with() {
+        console.log("packingslip.with")
+      },
     }
-
-    return {
-      fetch: async (id) => await this.#shippoOrder.fetchPackingSlip(id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-    }
+    return new ShippoFacade(methods)
   }
 
   #rates() {
@@ -140,16 +144,16 @@ class ShippoService extends BaseService {
   }
 
   #track() {
-    const fetchBy = {
-      fulfillment: async (id) =>
-        await this.#shippoTrack.fetchByFulfillmentId(id),
+    const methods = {
+      fetch: (carrier, trackNum) => this.#shippoTrack.fetch(carrier, trackNum),
+      fetchBy: {
+        fulfillment: (id) => this.#shippoTrack.fetchByFulfillmentId(id),
+      },
+      with() {
+        console.log("track.with")
+      },
     }
-
-    return {
-      fetch: async (carrier, trackingNum) =>
-        await this.#shippoTrack.fetch(carrier, trackingNum),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-    }
+    return new ShippoFacade(methods)
   }
 
   #transaction() {
