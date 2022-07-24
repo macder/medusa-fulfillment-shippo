@@ -499,7 +499,7 @@ await shippoService.packer.pack(lineItems)
 
 ### Packingslip
 
-#### `packingslip.fetch`
+#### `fetch()`
 
 ```javascript
 const { object_id } = order
@@ -507,13 +507,13 @@ const { object_id } = order
 await shippoService.packingslip.fetch(object_id)
 ```
 
-#### `packingslip.with.fetch`
+#### `with([entity]).fetch(id)`
 
 ```javascript
 await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 ```
 
-#### `packingslip.fetchBy`
+#### `fetchBy([entity])`
 
 ```javascript
 await shippoService.packingslip.fetchBy(["fulfillment", id])
