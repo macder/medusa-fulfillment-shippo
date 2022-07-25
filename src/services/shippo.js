@@ -1,4 +1,5 @@
 import { BaseService } from "medusa-interfaces"
+import ShippoFacade from "../facades"
 
 class ShippoService extends BaseService {
   #client
@@ -103,15 +104,17 @@ class ShippoService extends BaseService {
   }
 
   #order() {
-    const fetchBy = {
-      fulfillment: async (id) =>
-        await this.#shippoOrder.fetchByFulfillmentId(id),
+    const methods = {
+      fetch: (id) => this.#shippoOrder.fetch(id),
+      fetchBy: {
+        fulfillment: (id) => this.#shippoOrder.fetchByFulfillmentId(id),
+      },
+      with: {
+        fulfillment: (object_id) =>
+          this.#shippoOrder.findFulfillment(object_id),
+      },
     }
-
-    return {
-      fetch: async (id) => await this.#shippoOrder.fetch(id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-    }
+    return new ShippoFacade(methods)
   }
 
   #packer() {
@@ -121,15 +124,18 @@ class ShippoService extends BaseService {
   }
 
   #packingslip() {
-    const fetchBy = {
-      fulfillment: async (id) =>
-        await this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
+    const methods = {
+      fetch: (id) => this.#shippoOrder.fetchPackingSlip(id),
+      fetchBy: {
+        fulfillment: (id) =>
+          this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
+      },
+      with: {
+        fulfillment: (object_id) =>
+          this.#shippoOrder.findFulfillment(object_id),
+      },
     }
-
-    return {
-      fetch: async (id) => await this.#shippoOrder.fetchPackingSlip(id),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-    }
+    return new ShippoFacade(methods)
   }
 
   #rates() {
@@ -140,49 +146,42 @@ class ShippoService extends BaseService {
   }
 
   #track() {
-    const fetchBy = {
-      fulfillment: async (id) =>
-        await this.#shippoTrack.fetchByFulfillmentId(id),
+    const methods = {
+      fetch: (carrier, trackNum) => this.#shippoTrack.fetch(carrier, trackNum),
+      fetchBy: {
+        fulfillment: (id) => this.#shippoTrack.fetchByFulfillmentId(id),
+      },
+      with() {
+        console.log("track.with")
+      },
     }
-
-    return {
-      fetch: async (carrier, trackingNum) =>
-        await this.#shippoTrack.fetch(carrier, trackingNum),
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
-    }
+    return new ShippoFacade(methods)
   }
 
   #transaction() {
-    const fetch = {
-      default: async (id) => await this.#shippoTransaction.fetch(id),
-      extended: async (id) => await this.#shippoTransaction.fetchExtended(id),
-    }
+    const methods = {
+      fetch: (id, { variant = "default" } = "default") =>
+        ({
+          default: (id) => this.#shippoTransaction.fetch(id),
+          extended: (id) => this.#shippoTransaction.fetchExtended(id),
+        }[variant](id)),
+      fetchBy: {
+        order: (id, { variant = "default" } = "default") =>
+          ({
+            default: (id) => this.#shippoTransaction.fetchByOrder(id),
+            extended: (id) => this.#shippoTransaction.fetchExtendedByOrder(id),
+          }[variant](id)),
 
-    const fetchBy = {
-      order: {
-        default: async (id) => await this.#shippoTransaction.fetchByOrder(id),
-        extended: async (id) =>
-          await this.#shippoTransaction.fetchExtendedByOrder(id),
+        fulfillment: (id, { variant = "default" } = "default") =>
+          ({
+            default: (id) => this.#shippoTransaction.fetchByFulfillment(id),
+            extended: (id) =>
+              this.#shippoTransaction.fetchExtendedByFulfillment(id),
+          }[variant](id)),
       },
-      fulfillment: {
-        default: async (id) =>
-          await this.#shippoTransaction.fetchByFulfillment(id),
-        extended: async (id) =>
-          await this.#shippoTransaction.fetchExtendedByFulfillment(id),
-      },
+      isReturn: (id) => this.#shippoTransaction.isReturn(id),
     }
-
-    return {
-      fetch: async (id, { variant = "default" } = "default") =>
-        await fetch[variant](id),
-      fetchBy: async ([entity, id], { variant = "default" } = "default") =>
-        await fetchBy[entity][variant](id),
-      isReturn: async (id) => await this.#shippoTransaction.isReturn(id),
-
-      /* @deprecated */
-      fetchExtended: async (id) =>
-        await this.#shippoTransaction.fetchExtended(id),
-    }
+    return new ShippoFacade(methods)
   }
 }
 

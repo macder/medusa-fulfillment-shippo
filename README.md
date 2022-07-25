@@ -448,15 +448,24 @@ References the declared public interface for client consumption, the [semver](ht
 
 Although there is nothing stopping you from accessing and using public methods behind the interface, be aware that those implementation details can and will change. The purpose of the interface is semver compliant stability.
 
+> Notice: (semver 0.x.x) - methods labeled `@experimental` have high probability of breaking changes
+
 ### Getting Started
 
 Dependency inject `shippoService` as you would with any other service
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
+> Note: 
+> ```plaintext
+> order = shippo_order
+>
+> local_order = medusa_order
+> ```
+
 ### Account
 
-#### `account.address`
+`address`
 
 ```javascript
 await shippoService.account.address()
@@ -464,13 +473,19 @@ await shippoService.account.address()
 
 ### Order
 
-#### `order.fetch`
+`fetch(id)`
 
 ```javascript
 await shippoService.order.fetch(object_id)
 ```
 
-#### `order.fetchBy`
+`with([entity]).fetch(id)`
+
+```javascript
+await shippoService.order.with(["fulfillment"]).fetch(object_id)
+```
+
+`fetchBy([entity, id])`
 
 ```javascript
 await shippoService.order.fetchBy(["fulfillment", id])
@@ -478,15 +493,16 @@ await shippoService.order.fetchBy(["fulfillment", id])
 
 ### Packer
 
-#### `packer.pack`
+`pack([LineItem])`
 
 ```javascript
+/* @experimental */
 await shippoService.packer.pack(lineItems)
 ```
 
 ### Packingslip
 
-#### `packingslip.fetch`
+`fetch(id)`
 
 ```javascript
 const { object_id } = order
@@ -494,7 +510,13 @@ const { object_id } = order
 await shippoService.packingslip.fetch(object_id)
 ```
 
-#### `packingslip.fetchBy`
+`with([entity]).fetch(id)`
+
+```javascript
+await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
+```
+
+`fetchBy([entity, id])`
 
 ```javascript
 await shippoService.packingslip.fetchBy(["fulfillment", id])
@@ -502,25 +524,27 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ### Rates
 
-#### `rates.cart`
+`cart(id)`
 
 ```javascript
+/* @experimental */
 await shippoService.rates.cart(id)
 ```
 
 ```javascript
+/* @experimental */
 await shippoService.rates.cart(id, shipping_option_id)
 ```
 
 ### Track
 
-#### `track.fetch`
+`fetch(carrier_enum, track_num)`
 
 ```javascript
-await shippoService.track.fetch(carrier_enum, track_num)
+await shippoService.track.fetch("usps", "trackingnumber")
 ```
 
-#### `track.fetchBy`
+`fetchBy([entity, id])`
 
 ```javascript
 await shippoService.track.fetchBy(["fulfillment", id])
@@ -528,7 +552,7 @@ await shippoService.track.fetchBy(["fulfillment", id])
 
 ### Transaction
 
-#### `transaction.fetch`
+`fetch(id, {...args} = null)`
 
 ```javascript
 await shippoService.transaction.fetch(object_id)
@@ -536,7 +560,7 @@ await shippoService.transaction.fetch(object_id)
 await shippoService.transaction.fetch(object_id, { variant: "extended" })
 ```
 
-#### `transaction.fetchBy`
+`fetchBy([entity, id], {...args} = null)`
 
 ```javascript
 await shippoService.transaction.fetchBy(["order", id])
@@ -548,9 +572,10 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
 ```
 
-#### `transaction.isReturn`
+`isReturn(id)`
 
 ```javascript
+/* @experimental */
 await shippoService.transaction.isReturn(object_id)
 ```
 
@@ -564,7 +589,7 @@ const client = shippoService.client
 
 ### Find
 
-#### `find().for()`
+`find(entity).for([entity, id])`
 
 ```javascript
 /* @experimental */

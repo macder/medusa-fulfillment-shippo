@@ -51,10 +51,7 @@ class ShippoPackerService extends BaseService {
   #result(fitBins) {
     return fitBins.map((bin) => {
       const binItemsVolume = bin.items.map(
-        (item) =>
-          item.width *
-          item.height *
-          item.depth
+        (item) => item.width * item.height * item.depth
       )
 
       const totalItemVolume = binItemsVolume.reduce((a, b) => a + b, 0)
@@ -71,7 +68,7 @@ class ShippoPackerService extends BaseService {
         locus: {
           allowed_rotation: item.allowedRotation,
           rotation_type: item.rotationType,
-          position: item.position.map((e) => (e)),
+          position: item.position.map((e) => e),
         },
       }))
 
@@ -128,11 +125,7 @@ class ShippoPackerService extends BaseService {
   }
 
   #calculateVolume({ length, depth, width, height }) {
-    return length
-      ? length * width * height
-      : depth *
-          width *
-          height
+    return length ? length * width * height : depth * width * height
   }
 
   #splitItem(item) {

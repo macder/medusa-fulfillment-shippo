@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.23.0] (2022-07-24)
+
+Added
+
+*   fetch shippo order with fulfillment [#249](https://github.com/macder/medusa-fulfillment-shippo/issues/249)
+*   fetch packingslip with fulfillment [#252](https://github.com/macder/medusa-fulfillment-shippo/issues/252)
+
+Removed
+
+*   Deprecated methods in shippoClientService - use public interface instead [#210](https://github.com/macder/medusa-fulfillment-shippo/issues/210)
+
 ## \[0.22.3] (2022-07-23)
 
 Fixed
@@ -34,7 +45,6 @@ Added
 Deprecated
 
 *   shippoService.transaction.fetchExtended [#225](https://github.com/macder/medusa-fulfillment-shippo/issues/225)
-
 
 ## \[0.21.1] (2022-07-20)
 
