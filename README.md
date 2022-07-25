@@ -457,7 +457,7 @@ Dependency inject `shippoService` as you would with any other service
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
 > Note: 
-> ```
+> ```plaintext
 > order = shippo_order
 >
 > local_order = medusa_order
