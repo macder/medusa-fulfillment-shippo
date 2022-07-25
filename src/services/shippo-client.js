@@ -22,48 +22,6 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * @deprecated since 0.22.0 -
-   *    use shippoService.transaction.fetch(id, { variant: "extended" })
-   * @param {Order} order - order to get transactions for
-   * @return {array.<Object>} list of transactions
-   */
-  async fetchExtendedTransactions(order) {
-    console.log(
-      "\x1b[33m warn\x1b[0m:    shippoClientService: fetchExtendedTransactions deprecated"
-    )
-    const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
-    return await this.#client.transaction
-      .search(urlQuery)
-      .then((response) => response.results)
-  }
-
-  /**
-   * @deprecated since 0.22.0 - use shippoService.order.fetchBy(["fulfillment", ful_id])
-   * @param {string} fulfillmentId - fulfillment id for order
-   * @return {Object} shippo order
-   */
-  async fetchOrder(fulfillmentId) {
-    console.log(
-      "\x1b[33m warn\x1b[0m:    shippoClientService: fetchOrder deprecated"
-    )
-    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
-    return await this.#client.order.retrieve(shippoOrderId)
-  }
-
-  /**
-   * @deprecated since 0.22.0 - use shippoService.packingslip.fetchBy(["fulfillment", ful_id])
-   * @param {string} fulfillmentId - fulfillment id for packing slip
-   * @return {Object} packing slip
-   */
-  async fetchPackingSlip(fulfillmentId) {
-    console.log(
-      "\x1b[33m warn\x1b[0m:    shippoClientService: fetchPackingSlip deprecated"
-    )
-    const shippoOrderId = await this.#retrieveShippoOrderId(fulfillmentId)
-    return await this.#client.order.packingslip(shippoOrderId)
-  }
-
-  /**
    * Fetches the shippo account's default sender address
    * @return {Object} address object
    */
