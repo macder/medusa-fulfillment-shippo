@@ -572,11 +572,10 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
 ```
 
-`isReturn(id)`
+`is([entity, id]).type(attr)`
 
 ```javascript
-/* @experimental */
-await shippoService.transaction.isReturn(object_id)
+await shippoService.is(["transaction", id]).type("return")
 ```
 
 ### Client
