@@ -491,6 +491,13 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
+`is([entity, id]).type(attr)`
+
+```javascript
+/* @unreleased */
+await shippoService.is(["order", id]).type("replace")
+```
+
 ### Packer
 
 `pack([LineItem])`
@@ -557,7 +564,7 @@ await shippoService.track.fetchBy(["fulfillment", id])
 ```javascript
 await shippoService.transaction.fetch(object_id)
 
-await shippoService.transaction.fetch(object_id, { variant: "extended" })
+await shippoService.transaction.fetch(object_id, { type: "extended" })
 ```
 
 `fetchBy([entity, id], {...args} = null)`
@@ -565,11 +572,11 @@ await shippoService.transaction.fetch(object_id, { variant: "extended" })
 ```javascript
 await shippoService.transaction.fetchBy(["order", id])
 
-await shippoService.transaction.fetchBy(["order", id], { variant: "extended" })
+await shippoService.transaction.fetchBy(["order", id], { type: "extended" })
 
 await shippoService.transaction.fetchBy(["fulfillment", id])
 
-await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
 ```
 
 `is([entity, id]).type(attr)`

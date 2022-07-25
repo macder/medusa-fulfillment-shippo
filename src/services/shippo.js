@@ -174,24 +174,27 @@ class ShippoService extends BaseService {
 
   #transaction() {
     const methods = {
-      fetch: (id, { variant = "default" } = "default") =>
+      fetch: (id, { variant = "default", type = variant } = "default") =>
         ({
           default: (id) => this.#shippoTransaction.fetch(id),
           extended: (id) => this.#shippoTransaction.fetchExtended(id),
-        }[variant](id)),
+        }[type](id)),
       fetchBy: {
-        order: (id, { variant = "default" } = "default") =>
+        order: (id, { variant = "default", type = variant } = "default") =>
           ({
             default: (id) => this.#shippoTransaction.fetchByOrder(id),
             extended: (id) => this.#shippoTransaction.fetchExtendedByOrder(id),
-          }[variant](id)),
+          }[type](id)),
 
-        fulfillment: (id, { variant = "default" } = "default") =>
+        fulfillment: (
+          id,
+          { variant = "default", type = variant } = "default"
+        ) =>
           ({
             default: (id) => this.#shippoTransaction.fetchByFulfillment(id),
             extended: (id) =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
-          }[variant](id)),
+          }[type](id)),
       },
     }
     return new ShippoFacade(methods)

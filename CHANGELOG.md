@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+Unreleased
+
+Added
+
+*   Stable method for checking if transaction is return [#258](https://github.com/macder/medusa-fulfillment-shippo/issues/258)
+
 ## \[0.23.0] (2022-07-24)
 
 Added
