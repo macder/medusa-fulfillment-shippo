@@ -493,7 +493,7 @@ await shippoService.order.fetchBy(["fulfillment", id])
 
 ### Packer
 
-`pack`
+`pack([LineItem])`
 
 ```javascript
 /* @experimental */
