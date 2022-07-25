@@ -518,20 +518,6 @@ describe("shippoService", () => {
         ])
       })
     })
-
-    describe("isReturn", () => {
-      test("is false", async () => {
-        const id = "object_id_transaction_123"
-        const result = await shippoService.transaction.isReturn(id)
-        expect(result).toBeFalse()
-      })
-
-      test("is true", async () => {
-        const id = "object_id_return"
-        const result = await shippoService.transaction.isReturn(id)
-        expect(result).toBeTrue()
-      })
-    })
   })
   /* ===================================================== */
 
@@ -607,6 +593,34 @@ describe("shippoService", () => {
               .find("order")
               .for(["transaction", id])
             expect(result).toContainEntry(["id", "order_321"])
+          })
+        })
+      })
+    })
+
+    describe("is", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
+      })
+
+      describe("transaction", () => {
+        describe("type", () => {
+          describe("return", () => {
+            test("is false", async () => {
+              const id = "object_id_transaction_123"
+              const result = await shippoService
+                .is(["transaction", id])
+                .type("return")
+              expect(result).toBeFalse()
+            })
+
+            test("is true", async () => {
+              const id = "object_id_return"
+              const result = await shippoService
+                .is(["transaction", id])
+                .type("return")
+              expect(result).toBeTrue()
+            })
           })
         })
       })

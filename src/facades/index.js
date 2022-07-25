@@ -1,4 +1,6 @@
 class ShippoFacade {
+  #entity
+
   #method
 
   #with
@@ -10,6 +12,11 @@ class ShippoFacade {
       entity: null,
       method: null,
     }
+
+    this.#entity = {
+      id: null,
+      type: null,
+    }
   }
 
   async fetch(id, config) {
@@ -20,6 +27,23 @@ class ShippoFacade {
     } else {
       result = await this.#method.fetch(id, config)
     }
+    this.#reset()
+    return result
+  }
+
+  is([entity, id]) {
+    this.#setEntity({
+      id,
+      type: entity,
+    })
+
+    return this
+  }
+
+  async type(attr) {
+    const { id } = this.#entity
+    const result = await this.#method.type([this.#entity.type, id], attr)
+
     this.#reset()
     return result
   }
@@ -52,6 +76,13 @@ class ShippoFacade {
     return result
   }
 
+  #setEntity(params) {
+    this.#entity = {
+      ...params,
+    }
+    return this.#entity
+  }
+
   #setWith(params) {
     this.#with = {
       ...params,
@@ -64,13 +95,11 @@ class ShippoFacade {
       entity: null,
       method: null,
     }
+    this.#entity = {
+      id: null,
+      type: null,
+    }
     return this
-  }
-
-  /* @deprecated */
-  async isReturn(id) {
-    const response = await this.#method.isReturn(id)
-    return response
   }
 }
 

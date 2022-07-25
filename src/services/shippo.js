@@ -58,6 +58,8 @@ class ShippoService extends BaseService {
     this.track = this.#track()
     this.transaction = this.#transaction()
 
+    this.is = this.#is
+
     this.find = (needle) => this.#find(needle)
 
     this.fulfillment = this.#fulfillment()
@@ -101,6 +103,18 @@ class ShippoService extends BaseService {
     return {
       fetchBy: async ([entity, id]) => await fetchBy[entity](id),
     }
+  }
+
+  #is(entity) {
+    const methods = {
+      type: ([entity, id], attr) =>
+        ({
+          transaction: {
+            return: (id) => this.#shippoTransaction.isReturn(id),
+          },
+        }[entity][attr](id)),
+    }
+    return new ShippoFacade(methods).is(entity)
   }
 
   #order() {
@@ -179,7 +193,6 @@ class ShippoService extends BaseService {
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
           }[variant](id)),
       },
-      isReturn: (id) => this.#shippoTransaction.isReturn(id),
     }
     return new ShippoFacade(methods)
   }
