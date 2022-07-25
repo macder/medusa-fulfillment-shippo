@@ -17,6 +17,8 @@ class ShippoFacade {
       id: null,
       type: null,
     }
+
+    this.is = this.#setEntity
   }
 
   async fetch(id, config) {
@@ -29,15 +31,6 @@ class ShippoFacade {
     }
     this.#reset()
     return result
-  }
-
-  is([entity, id]) {
-    this.#setEntity({
-      id,
-      type: entity,
-    })
-
-    return this
   }
 
   async type(attr) {
@@ -76,11 +69,12 @@ class ShippoFacade {
     return result
   }
 
-  #setEntity(params) {
+  #setEntity([type, id]) {
     this.#entity = {
-      ...params,
+      id,
+      type,
     }
-    return this.#entity
+    return this
   }
 
   #setWith(params) {
