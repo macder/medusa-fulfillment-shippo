@@ -485,7 +485,7 @@ await shippoService.order.fetch(object_id)
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
-`fetchBy([entity ,id])`
+`fetchBy([entity, id])`
 
 ```javascript
 await shippoService.order.fetchBy(["fulfillment", id])
@@ -502,7 +502,7 @@ await shippoService.packer.pack(lineItems)
 
 ### Packingslip
 
-`fetch()`
+`fetch(id)`
 
 ```javascript
 const { object_id } = order
@@ -538,7 +538,7 @@ await shippoService.rates.cart(id, shipping_option_id)
 
 ### Track
 
-`fetch()`
+`fetch(id)`
 
 ```javascript
 await shippoService.track.fetch(carrier_enum, track_num)
@@ -572,7 +572,7 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
 ```
 
-`isReturn`
+`isReturn(id)`
 
 ```javascript
 /* @experimental */
