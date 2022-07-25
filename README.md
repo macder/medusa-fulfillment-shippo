@@ -448,6 +448,8 @@ References the declared public interface for client consumption, the [semver](ht
 
 Although there is nothing stopping you from accessing and using public methods behind the interface, be aware that those implementation details can and will change. The purpose of the interface is semver compliant stability.
 
+> Notice: (semver 0.x.x) - methods labeled with @experimental have high probability of breaking changes
+
 ### Getting Started
 
 Dependency inject `shippoService` as you would with any other service
