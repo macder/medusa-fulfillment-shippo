@@ -538,10 +538,10 @@ await shippoService.rates.cart(id, shipping_option_id)
 
 ### Track
 
-`fetch(id)`
+`fetch(carrier_enum, track_num)`
 
 ```javascript
-await shippoService.track.fetch(carrier_enum, track_num)
+await shippoService.track.fetch("usps", "trackingnumber")
 ```
 
 `fetchBy([entity, id])`
@@ -552,7 +552,7 @@ await shippoService.track.fetchBy(["fulfillment", id])
 
 ### Transaction
 
-`fetch(id)`
+`fetch(id, {...args} = null)`
 
 ```javascript
 await shippoService.transaction.fetch(object_id)
@@ -560,7 +560,7 @@ await shippoService.transaction.fetch(object_id)
 await shippoService.transaction.fetch(object_id, { variant: "extended" })
 ```
 
-`fetchBy([entity, id], {...args})`
+`fetchBy([entity, id], {...args} = null)`
 
 ```javascript
 await shippoService.transaction.fetchBy(["order", id])
