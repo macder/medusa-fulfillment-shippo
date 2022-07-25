@@ -101,9 +101,9 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 await shippoService.order.fetch(object_id)
 
 await shippoService.order.fetchBy(["fulfillment", ful_id]
-```
 
-Returns `shippo_order` object
+await shippoService.order.with(["fulfillment"]).fetch(object_id)
+```
 
 ## Packing Slips
 
@@ -115,6 +115,8 @@ const { object_id } = order
 await shippoService.packingslip.fetch(object_id)
 
 await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
+
+await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 ```
 
 ## Returns
@@ -316,9 +318,7 @@ price_type: (options[optionIndex].type === "LIVE_RATE")
 ### Raw rates
 
 ```javascript
-await shippoService.rates.cart(cart_id)
-
-await shippoService.rates.cart(cart_id. so_id)
+await shippoService.rates.for(["cart", id]).fetch()
 ```
 
 ## Webhooks
@@ -531,16 +531,17 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ### Rates
 
-`cart(id)`
+`for([entity]).fetch(id)`
 
 ```javascript
-/* @experimental */
-await shippoService.rates.cart(id)
+await shippoService.rates.for(["cart", id]).fetch()
 ```
 
+`find(entity).for([entity, id]).fetch()`
+
 ```javascript
 /* @experimental */
-await shippoService.rates.cart(id, shipping_option_id)
+await shippoService.find("rates").for(["cart", id]).fetch()
 ```
 
 ### Track
