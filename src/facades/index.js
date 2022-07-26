@@ -1,12 +1,16 @@
 class ShippoFacade {
   #entity
 
-  #method
+  #methods
+
+  #call
 
   #with
 
   constructor(methods) {
-    this.#method = methods
+    this.#methods = methods
+
+    this.#call = null
 
     this.#with = {
       entity: null,
@@ -18,36 +22,43 @@ class ShippoFacade {
       type: null,
     }
 
-    this.is = this.#setEntity
+    this.is = this.#is
+    this.for = this.#setEntity
   }
 
-  async fetch(id, config) {
-    let result = null
+  #is([entity, id], attr) {
+    this.#setEntity([entity, id])
+    this.#setCall(this.#methods.is[attr])
+    return this
+  }
 
-    if (this.#with.method) {
-      result = await this.#fetchWith(id, config)
-    } else {
-      result = await this.#method.fetch(id, config)
-    }
-    this.#reset()
+  #setCall(method) {
+    this.#call = method
+  }
+
+  async fetchTest(id = this.#entity.id, config) {
+    const result = await this.#call(id, config)
     return result
   }
 
-  async type(attr) {
-    const { id } = this.#entity
-    const result = await this.#method.type([this.#entity.type, id], attr)
+  async fetch(id = this.#entity.id, config) {
+    const fetch = this.#call ?? this.#methods.fetch
+
+    const result = this.#with.method
+      ? await this.#fetchWith(id, config)
+      : await fetch(id, config)
 
     this.#reset()
     return result
   }
 
   async fetchBy([entity, id], config) {
-    const result = await this.#method.fetchBy[entity](id, config)
+    const result = await this.#methods.fetchBy[entity](id, config)
     return result
   }
 
   with(entity) {
-    const method = this.#method.with[entity]
+    const method = this.#methods.with[entity]
 
     this.#setWith({
       entity,
@@ -58,7 +69,7 @@ class ShippoFacade {
   }
 
   async #fetchWith(id, config) {
-    const parent = await this.#method.fetch(id, config)
+    const parent = await this.#methods.fetch(id, config)
     const child = await this.#with.method(id)
 
     const result = {
@@ -69,7 +80,8 @@ class ShippoFacade {
     return result
   }
 
-  #setEntity([type, id]) {
+  #setEntity([type, id = null]) {
+    console.log("#setEntity", [type, id])
     this.#entity = {
       id,
       type,
@@ -93,6 +105,7 @@ class ShippoFacade {
       id: null,
       type: null,
     }
+    this.#call = null
     return this
   }
 }

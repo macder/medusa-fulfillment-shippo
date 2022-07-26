@@ -144,7 +144,7 @@ describe("shippoService", () => {
     321: [
       {
         id: "order_321",
-        display_id: "321",
+        display_id: "321 (replace)",
       },
     ],
   }
@@ -303,6 +303,27 @@ describe("shippoService", () => {
         })
       })
     })
+
+    describe("is", () => {
+      describe("type", () => {
+        describe("replace", () => {
+          it("returns false", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService
+              .is(["order", id], "replace")
+              .fetch()
+            expect(result).toBeFalse()
+          })
+          it("returns true", async () => {
+            const id = "object_id_order_replace_123"
+            const result = await shippoService
+              .is(["order", id], "replace")
+              .fetch()
+            expect(result).toBeTrue()
+          })
+        })
+      })
+    })
   })
   /* ===================================================== */
 
@@ -377,23 +398,23 @@ describe("shippoService", () => {
   /* ===================================================== */
 
   /* ===================================================== */
-  describe("rates", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
+  // describe("rates", () => {
+  //   beforeAll(async () => {
+  //     jest.clearAllMocks()
+  //   })
 
-    test("cart(id) returns array of live-rates with parcel id", async () => {
-      const result = await shippoService.rates.cart("cart_id_is_ready")
-      expect(result).toBeArray()
-      expect(result[0]).toContainKey("parcel")
-    })
+  //   test("cart(id) returns array of live-rates with parcel id", async () => {
+  //     const result = await shippoService.rates.cart("cart_id_is_ready")
+  //     expect(result).toBeArray()
+  //     expect(result[0]).toContainKey("parcel")
+  //   })
 
-    test("cart(id, so_id) returns single live-rate object with parcel id", async () => {
-      const result = await shippoService.rates.cart("cart_id_is_ready", "so_id")
-      expect(result).toBeObject()
-      expect(result).toContainKey("parcel")
-    })
-  })
+  //   test("cart(id, so_id) returns single live-rate object with parcel id", async () => {
+  //     const result = await shippoService.rates.cart("cart_id_is_ready", "so_id")
+  //     expect(result).toBeObject()
+  //     expect(result).toContainKey("parcel")
+  //   })
+  // })
   /* ===================================================== */
 
   /* ===================================================== */
@@ -518,6 +539,32 @@ describe("shippoService", () => {
         ])
       })
     })
+
+    describe("is", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
+      })
+
+      describe("type", () => {
+        describe("return", () => {
+          test("is false", async () => {
+            const id = "object_id_transaction_123"
+            const result = await shippoService
+              .is(["transaction", id], "return")
+              .fetch()
+            expect(result).toBeFalse()
+          })
+
+          test("is true", async () => {
+            const id = "object_id_return"
+            const result = await shippoService
+              .is(["transaction", id], "return")
+              .fetch()
+            expect(result).toBeTrue()
+          })
+        })
+      })
+    })
   })
   /* ===================================================== */
 
@@ -593,34 +640,6 @@ describe("shippoService", () => {
               .find("order")
               .for(["transaction", id])
             expect(result).toContainEntry(["id", "order_321"])
-          })
-        })
-      })
-    })
-
-    describe("is", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
-
-      describe("transaction", () => {
-        describe("type", () => {
-          describe("return", () => {
-            test("is false", async () => {
-              const id = "object_id_transaction_123"
-              const result = await shippoService
-                .is(["transaction", id])
-                .type("return")
-              expect(result).toBeFalse()
-            })
-
-            test("is true", async () => {
-              const id = "object_id_return"
-              const result = await shippoService
-                .is(["transaction", id])
-                .type("return")
-              expect(result).toBeTrue()
-            })
           })
         })
       })

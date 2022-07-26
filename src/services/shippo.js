@@ -58,11 +58,14 @@ class ShippoService extends BaseService {
     this.track = this.#track()
     this.transaction = this.#transaction()
 
-    this.is = this.#is
-
+    this.is = ([entity, id], attr) => this.#selector([entity, id], ["is", attr])
     this.find = (needle) => this.#find(needle)
 
     this.fulfillment = this.#fulfillment()
+  }
+
+  #selector([entity, id], [method, params]) {
+    return this[entity][method]([entity, id], params)
   }
 
   #account() {
@@ -105,19 +108,7 @@ class ShippoService extends BaseService {
     }
   }
 
-  #is(entity) {
-    const methods = {
-      type: ([entity, id], attr) =>
-        ({
-          transaction: {
-            return: (id) => this.#shippoTransaction.isReturn(id),
-          },
-        }[entity][attr](id)),
-    }
-    return new ShippoFacade(methods).is(entity)
-  }
-
-  #order() {
+  #order(key) {
     const methods = {
       fetch: (id) => this.#shippoOrder.fetch(id),
       fetchBy: {
@@ -126,6 +117,9 @@ class ShippoService extends BaseService {
       with: {
         fulfillment: (object_id) =>
           this.#shippoOrder.findFulfillment(object_id),
+      },
+      is: {
+        replace: (id) => this.#shippoOrder.isReplace(id),
       },
     }
     return new ShippoFacade(methods)
@@ -153,10 +147,13 @@ class ShippoService extends BaseService {
   }
 
   #rates() {
-    return {
-      cart: async (cart_id, option) =>
-        this.#shippoRates.checkout(cart_id, option),
+    const methods = {
+      cart: {
+        fetch: (cart_id, config) => this.#shippoRates.fetchCartRates(cart_id),
+      },
     }
+
+    return new ShippoFacade(methods)
   }
 
   #track() {
@@ -195,6 +192,9 @@ class ShippoService extends BaseService {
             extended: (id) =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
           }[type](id)),
+      },
+      is: {
+        return: (id) => this.#shippoTransaction.isReturn(id),
       },
     }
     return new ShippoFacade(methods)
