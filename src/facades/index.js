@@ -76,7 +76,6 @@ class ShippoFacade {
   }
 
   #setEntity([type, id = null]) {
-    console.log("#setEntity", [type, id])
     this.#entity = {
       id,
       type,
