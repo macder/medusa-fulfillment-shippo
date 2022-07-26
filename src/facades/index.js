@@ -1,36 +1,49 @@
 class ShippoFacade {
-  #method
+  #entity
+
+  #methods
+
+  #call
 
   #with
 
   constructor(methods) {
-    this.#method = methods
+    this.#methods = methods
+
+    this.#call = null
 
     this.#with = {
       entity: null,
       method: null,
     }
+
+    this.#entity = {
+      id: null,
+      type: null,
+    }
+
+    this.is = this.#is
+    this.for = this.#for
   }
 
-  async fetch(id, config) {
-    let result = null
+  async fetch(id = this.#entity.id, config) {
+    const fetch = this.#call ?? this.#methods.fetch
 
-    if (this.#with.method) {
-      result = await this.#fetchWith(id, config)
-    } else {
-      result = await this.#method.fetch(id, config)
-    }
+    const result = this.#with.method
+      ? await this.#fetchWith(id, config)
+      : await fetch(id, config)
+
     this.#reset()
     return result
   }
 
   async fetchBy([entity, id], config) {
-    const result = await this.#method.fetchBy[entity](id, config)
+    const result = await this.#methods.fetchBy[entity](id, config)
     return result
   }
 
   with(entity) {
-    const method = this.#method.with[entity]
+    const method = this.#methods.with[entity]
 
     this.#setWith({
       entity,
@@ -41,7 +54,7 @@ class ShippoFacade {
   }
 
   async #fetchWith(id, config) {
-    const parent = await this.#method.fetch(id, config)
+    const parent = await this.#methods.fetch(id, config)
     const child = await this.#with.method(id)
 
     const result = {
@@ -52,11 +65,16 @@ class ShippoFacade {
     return result
   }
 
-  #setWith(params) {
-    this.#with = {
-      ...params,
-    }
-    return this.#with
+  #for([entity, id]) {
+    this.#setEntity([entity, id])
+    this.#setCall(this.#methods.for[entity])
+    return this
+  }
+
+  #is([entity, id], attr) {
+    this.#setEntity([entity, id])
+    this.#setCall(this.#methods.is[attr])
+    return this
   }
 
   #reset() {
@@ -64,13 +82,31 @@ class ShippoFacade {
       entity: null,
       method: null,
     }
+    this.#entity = {
+      id: null,
+      type: null,
+    }
+    this.#call = null
     return this
   }
 
-  /* @deprecated */
-  async isReturn(id) {
-    const response = await this.#method.isReturn(id)
-    return response
+  #setCall(method) {
+    this.#call = method
+  }
+
+  #setEntity([type, id = null]) {
+    this.#entity = {
+      id,
+      type,
+    }
+    return this
+  }
+
+  #setWith(params) {
+    this.#with = {
+      ...params,
+    }
+    return this.#with
   }
 }
 

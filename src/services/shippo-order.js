@@ -154,6 +154,11 @@ class ShippoOrderService extends BaseService {
     return fulfillment[0]
   }
 
+  async isReplace(id) {
+    const order = await this.fetch(id)
+    return order.order_number.includes("replace")
+  }
+
   async #getId(fulfillmentId) {
     const fulfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
 

@@ -53,6 +53,7 @@ const shippo = jest.fn(() => ({
       const order = {
         object_id_order_123: {
           object_id: id,
+          order_number: "123",
           transactions: [
             {
               object_id: "object_id_transaction_123",
@@ -62,6 +63,7 @@ const shippo = jest.fn(() => ({
         },
         object_id_order_replace_123: {
           object_id: id,
+          order_number: "123 (replace)",
           transactions: [
             {
               object_id: "object_id_transaction_replace_123",
