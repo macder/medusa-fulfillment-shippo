@@ -491,20 +491,25 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
-`is([entity, id]).type(attr)`
+`is([entity, id], attr).fetch()`
 
 ```javascript
-/* @unreleased */
-await shippoService.is(["order", id]).type("replace")
+await shippoService.is(["order", id], "replace").fetch()
 ```
 
 ### Packer
 
-`pack([LineItem])`
+`select(attr).for([entity, id]).fetch()`
 
 ```javascript
-/* @experimental */
-await shippoService.packer.pack(lineItems)
+/* @unreleased */
+shippoService.select("box").for(["cart", id]).fetch()
+
+/* @unreleased */
+shippoService.select("box").for(["fulfillment", id]).fetch()
+
+/* @unreleased */
+shippoService.select("box").for(["items", [...LineItems]]).fetch()
 ```
 
 ### Packingslip
@@ -580,10 +585,10 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
 ```
 
-`is([entity, id]).type(attr)`
+`is([entity, id], attr).fetch()`
 
 ```javascript
-await shippoService.is(["transaction", id]).type("return")
+await shippoService.is(["transaction", id], "replace").fetch()
 ```
 
 ### Client
