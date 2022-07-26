@@ -2,11 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-Unreleased
+## Unreleased
 
 Added
 
-*   Stable method for checking if transaction is return [#258](https://github.com/macder/medusa-fulfillment-shippo/issues/258)
+*   Public Interface - Stable method for checking if transaction is return [#258](https://github.com/macder/medusa-fulfillment-shippo/issues/258)
+*   Public Interface - Stable method for checking if order is for replacement [#259](https://github.com/macder/medusa-fulfillment-shippo/issues/259)
+*   Public Interface - Stable method for bin packing line items [#260](https://github.com/macder/medusa-fulfillment-shippo/issues/260)
+*   Public Interface - Stable method rates for cart [#263](https://github.com/macder/medusa-fulfillment-shippo/issues/263)
 
 ## \[0.23.0] (2022-07-24)
 
