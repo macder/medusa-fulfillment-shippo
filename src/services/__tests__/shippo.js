@@ -225,8 +225,6 @@ describe("shippoService", () => {
     })
 
     it("returns address object", async () => {
-      // const shippoService = newShippoService()
-
       const result = await shippoService.account.address()
       expect(result).toContainKeys([
         "name",
@@ -328,15 +326,14 @@ describe("shippoService", () => {
   /* ===================================================== */
 
   /* ===================================================== */
-  describe("packer", () => {
+  describe("package", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
 
     it("returns packer output", async () => {
       const lineItems = makeArrayOf(mockLineItem, 2)
-      const result = await shippoService.packer.pack(lineItems)
-
+      const result = await shippoService.package.for(["items", lineItems]).fetch()
       expect(result).toBeArray()
       expect(result[0]).toContainKey("packer_output")
     })

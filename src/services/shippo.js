@@ -52,7 +52,7 @@ class ShippoService extends BaseService {
     this.account = this.#account()
     this.client = this.#shippoClient.getClient()
     this.order = this.#order()
-    this.packer = this.#packer()
+    this.package = this.#package()
     this.packingslip = this.#packingslip()
     this.rates = this.#rates()
     this.track = this.#track()
@@ -127,10 +127,14 @@ class ShippoService extends BaseService {
     return new ShippoFacade(methods)
   }
 
-  #packer() {
-    return {
-      pack: async (items) => await this.#shippoPacker.packBins(items),
+  #package() {
+    const methods = {
+      for: {
+        items: (items) => this.#shippoPacker.packBins(items) 
+      }
     }
+
+    return new ShippoFacade(methods)
   }
 
   #packingslip() {
