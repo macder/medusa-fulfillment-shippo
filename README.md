@@ -503,13 +503,13 @@ await shippoService.is(["order", id], "replace").fetch()
 
 ```javascript
 /* @unreleased */
-shippoService.select("box").for(["cart", id]).fetch()
+await shippoService.select("box").for(["cart", id]).fetch()
 
 /* @unreleased */
-shippoService.select("box").for(["fulfillment", id]).fetch()
+await shippoService.select("box").for(["fulfillment", id]).fetch()
 
 /* @unreleased */
-shippoService.select("box").for(["items", [...LineItems]]).fetch()
+await shippoService.select("box").for(["items", [...LineItems]]).fetch()
 ```
 
 ### Packingslip
