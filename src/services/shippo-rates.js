@@ -38,17 +38,7 @@ class ShippoRatesService extends BaseService {
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
 
-    this.checkout = this.#checkout
-  }
-
-  /**
-   * @deprecated since 0.17.0 use shippingProfileService.fetchCartOptions instead
-   * @param {string} cartId - cart id to fetch shipping options for
-   * @return {array.<ShippingOption>} contextually priced list of available shipping options
-   */
-  async fetchCartOptions(cartId) {
-    await this.#setProps(cartId)
-    return this.shippingOptions_
+    // this.checkout = this.#checkout
   }
 
   /**
@@ -58,7 +48,8 @@ class ShippoRatesService extends BaseService {
    */
   async fetchCartRates(cartId) {
     await this.#setProps(cartId)
-    return await this.#fetchRates()
+    const rates = await this.#fetchRates()
+    return rates
   }
 
   /**
@@ -121,11 +112,11 @@ class ShippoRatesService extends BaseService {
     }
   }
 
-  async #checkout(cartId, option = null) {
-    return option
-      ? await this.fetchOptionRate(cartId, option)
-      : await this.fetchCartRates(cartId)
-  }
+  // async #checkout(cartId, option = null) {
+  //   return option
+  //     ? await this.fetchOptionRate(cartId, option)
+  //     : await this.fetchCartRates(cartId)
+  // }
 
   async #fetchCart(cartId) {
     return await this.cartService_.retrieve(cartId, {
@@ -148,20 +139,34 @@ class ShippoRatesService extends BaseService {
   }
 
   async #fetchRates() {
+    console.log("FETCH RATES**************************") // TODO - why is it making 2 calls
     const params = await this.#buildRequestParams()
     const { parcel } = params
-    const fulfillmentOptions = this.shippingOptions_.map((so) => so.data)
+    const fulfillmentOptions = this.shippingOptions_.map((so) => ({
+      ...so.data,
+      so_id: so.id,
+    }))
 
-    return await this.shippo_.useClient.liverates
+    const rates = await this.shippo_.useClient.liverates
       .create(params)
       .then((rates) =>
         rates.results
           .filter((rate) =>
             fulfillmentOptions.find((fo) => fo.name === rate.title && true)
           )
-          .map((rate) => ({ ...rate, parcel }))
+          .map((rate) => ({
+            ...rate,
+            parcel,
+            shipping_option: fulfillmentOptions.find(
+              (fo) => fo.name === rate.title
+            ).so_id,
+          }))
       )
       .catch((e) => console.error(e))
+
+    console.log(rates)
+
+    return rates
   }
 
   #findRate(shippingOption, rates) {
