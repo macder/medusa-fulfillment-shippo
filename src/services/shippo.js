@@ -174,7 +174,7 @@ class ShippoService extends BaseService {
           extended: () => this.#shippoTransaction.fetchExtended(id),
         }[type](id)),
       fetchBy: {
-        local_order: (
+        order: (
           id,
           { variant = "default", type = variant } = "default"
         ) =>
