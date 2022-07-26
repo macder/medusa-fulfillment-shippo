@@ -37,8 +37,6 @@ class ShippoRatesService extends BaseService {
 
     /** @private @const {TotalsService} */
     this.totalsService_ = totalsService
-
-    // this.checkout = this.#checkout
   }
 
   /**
@@ -111,12 +109,6 @@ class ShippoRatesService extends BaseService {
       parcel: parcelId,
     }
   }
-
-  // async #checkout(cartId, option = null) {
-  //   return option
-  //     ? await this.fetchOptionRate(cartId, option)
-  //     : await this.fetchCartRates(cartId)
-  // }
 
   async #fetchCart(cartId) {
     return await this.cartService_.retrieve(cartId, {
