@@ -3,8 +3,6 @@ import { BaseService } from "medusa-interfaces"
 class ShippoTrackService extends BaseService {
   #client
 
-  #fetchBy
-
   #fulfillmentService
 
   #shippo
@@ -13,15 +11,12 @@ class ShippoTrackService extends BaseService {
 
   #shippoTransactionService
 
-  constructor(
-    {
-      fulfillmentService,
-      shippoClientService,
-      shippoOrderService,
-      shippoTransactionService,
-    },
-    options
-  ) {
+  constructor({
+    fulfillmentService,
+    shippoClientService,
+    shippoOrderService,
+    shippoTransactionService,
+  }) {
     super()
 
     /** @private @const {FulfillmentService} */
@@ -46,11 +41,9 @@ class ShippoTrackService extends BaseService {
    * @return {Promise.<Object>} shippo tracking status
    */
   async fetch(carrier, trackingNum) {
-    return await this.#client.track
-      .get_status(carrier, trackingNum)
-      .catch((e) => {
-        console.error(e)
-      })
+    return this.#client.track.get_status(carrier, trackingNum).catch((e) => {
+      console.error(e)
+    })
   }
 
   /**
@@ -85,7 +78,7 @@ class ShippoTrackService extends BaseService {
       (tl) => tl.tracking_number === transaction.tracking_number
     )
 
-    return await this.fetch(carrier, tracking_number)
+    return this.fetch(carrier, tracking_number)
   }
 
   /**
@@ -96,7 +89,7 @@ class ShippoTrackService extends BaseService {
    * @return {Promise.<Object>} shippo tracking status
    */
   async registerWebhook(carrier, trackingNumber, metadata = "") {
-    return await this.#client.track.create({
+    return this.#client.track.create({
       carrier,
       tracking_number: trackingNumber,
       metadata,
@@ -104,15 +97,12 @@ class ShippoTrackService extends BaseService {
   }
 
   async #fetchTransaction(id) {
-    return await this.#shippoTransactionService
+    return this.#shippoTransactionService
       .fetch(id)
-      .then(
-        async (ta) =>
-          await this.#shippoTransactionService.fetchExtended(ta.object_id)
+      .then(async (ta) =>
+        this.#shippoTransactionService.fetchExtended(ta.object_id)
       )
   }
-
-  async addMetaData() {}
 }
 
 export default ShippoTrackService

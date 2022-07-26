@@ -15,8 +15,7 @@ export const getConfigFile = () => ({
   },
 })
 
-export const humanizeAmount = (price, currency) =>
-  parseFloat(parseInt(price) / 100)
+export const humanizeAmount = (price) => parseFloat(parseInt(price, 10) / 100)
 
 export const MedusaErrorTypes = {
   /** Errors stemming from the database */

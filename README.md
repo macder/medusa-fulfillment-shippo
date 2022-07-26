@@ -575,9 +575,9 @@ await shippoService.transaction.fetch(object_id, { type: "extended" })
 `fetchBy([entity, id], {...args} = null)`
 
 ```javascript
-await shippoService.transaction.fetchBy(["order", id])
+await shippoService.transaction.fetchBy(["local_order", id])
 
-await shippoService.transaction.fetchBy(["order", id], { type: "extended" })
+await shippoService.transaction.fetchBy(["local_order", id], { type: "extended" })
 
 await shippoService.transaction.fetchBy(["fulfillment", id])
 
