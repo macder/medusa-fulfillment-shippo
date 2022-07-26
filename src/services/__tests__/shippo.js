@@ -525,7 +525,7 @@ describe("shippoService", () => {
 
       test("order returns requested extended transaction", async () => {
         const result = await shippoService.transaction.fetchBy(
-          ["local_order", "123"],
+          ["order", "123"],
           {
             variant: "extended",
           }
