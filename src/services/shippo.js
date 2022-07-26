@@ -60,7 +60,7 @@ class ShippoService extends BaseService {
 
     this.is = ([entity, id], attr) => this.#selector([entity, id], ["is", attr])
     this.for = ([entity, id]) => this.#selector([entity, id], ["for"])
-    
+
     this.find = (needle) => this.#find(needle)
 
     this.fulfillment = this.#fulfillment()
@@ -130,8 +130,8 @@ class ShippoService extends BaseService {
   #package() {
     const methods = {
       for: {
-        items: (items) => this.#shippoPacker.packBins(items) 
-      }
+        items: (items) => this.#shippoPacker.packBins(items),
+      },
     }
 
     return new ShippoFacade(methods)
@@ -156,7 +156,7 @@ class ShippoService extends BaseService {
     const methods = {
       for: {
         cart: (id) => this.#shippoRates.fetchCartRates(id),
-      }
+      },
     }
 
     return new ShippoFacade(methods)
