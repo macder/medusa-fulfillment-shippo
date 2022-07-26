@@ -497,19 +497,19 @@ await shippoService.order.fetchBy(["fulfillment", id])
 await shippoService.is(["order", id], "replace").fetch()
 ```
 
-### Packer
+### Parcel
 
 `select(attr).for([entity, id]).fetch()`
 
 ```javascript
 /* @unreleased */
-await shippoService.select("parcel").for(["cart", id]).fetch()
+await shippoService.parcel.select("box").for(["cart", id]).fetch()
 
 /* @unreleased */
-await shippoService.select("parcel").for(["fulfillment", id]).fetch()
+await shippoService.parcel.select("box").for(["fulfillment", id]).fetch()
 
 /* @unreleased */
-await shippoService.select("parcel").for(["items", [...LineItems]]).fetch()
+await shippoService.parcel.select("box").for(["items", [...LineItems]]).fetch()
 ```
 
 ### Packingslip
