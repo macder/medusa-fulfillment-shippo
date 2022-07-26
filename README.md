@@ -588,7 +588,7 @@ await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" 
 `is([entity, id], attr).fetch()`
 
 ```javascript
-await shippoService.is(["transaction", id], "replace").fetch()
+await shippoService.is(["transaction", id], "return").fetch()
 ```
 
 ### Client
