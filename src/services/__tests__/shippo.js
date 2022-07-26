@@ -398,23 +398,23 @@ describe("shippoService", () => {
   /* ===================================================== */
 
   /* ===================================================== */
-  // describe("rates", () => {
-  //   beforeAll(async () => {
-  //     jest.clearAllMocks()
-  //   })
-
-  //   test("cart(id) returns array of live-rates with parcel id", async () => {
-  //     const result = await shippoService.rates.cart("cart_id_is_ready")
-  //     expect(result).toBeArray()
-  //     expect(result[0]).toContainKey("parcel")
-  //   })
-
-  //   test("cart(id, so_id) returns single live-rate object with parcel id", async () => {
-  //     const result = await shippoService.rates.cart("cart_id_is_ready", "so_id")
-  //     expect(result).toBeObject()
-  //     expect(result).toContainKey("parcel")
-  //   })
-  // })
+  describe("rates", () => {
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
+    describe("for", () => {
+      describe("cart", () => {
+        describe("fetch", () => {
+          test("returns rate with parcel id", async () => {
+            const id = "cart_id_is_ready"
+            const result = await shippoService.rates.for(["cart", id]).fetch()
+            expect(result).toBeArray()
+            expect(result[0]).toContainKey("parcel")
+          })
+        })
+      })
+    })
+  })
   /* ===================================================== */
 
   /* ===================================================== */

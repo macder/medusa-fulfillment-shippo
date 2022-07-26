@@ -59,6 +59,8 @@ class ShippoService extends BaseService {
     this.transaction = this.#transaction()
 
     this.is = ([entity, id], attr) => this.#selector([entity, id], ["is", attr])
+    this.for = ([entity, id]) => this.#selector([entity, id], ["for"])
+    
     this.find = (needle) => this.#find(needle)
 
     this.fulfillment = this.#fulfillment()
@@ -148,9 +150,9 @@ class ShippoService extends BaseService {
 
   #rates() {
     const methods = {
-      cart: {
-        fetch: (cart_id, config) => this.#shippoRates.fetchCartRates(cart_id),
-      },
+      for: {
+        cart: (id) => this.#shippoRates.fetchCartRates(id),
+      }
     }
 
     return new ShippoFacade(methods)

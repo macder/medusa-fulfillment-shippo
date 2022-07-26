@@ -23,17 +23,7 @@ class ShippoFacade {
     }
 
     this.is = this.#is
-    this.for = this.#setEntity
-  }
-
-  #is([entity, id], attr) {
-    this.#setEntity([entity, id])
-    this.#setCall(this.#methods.is[attr])
-    return this
-  }
-
-  #setCall(method) {
-    this.#call = method
+    this.for = this.#for
   }
 
   async fetch(id = this.#entity.id, config) {
@@ -75,19 +65,16 @@ class ShippoFacade {
     return result
   }
 
-  #setEntity([type, id = null]) {
-    this.#entity = {
-      id,
-      type,
-    }
+  #for([entity, id]) {
+    this.#setEntity([entity, id])
+    this.#setCall(this.#methods.for[entity])
     return this
   }
 
-  #setWith(params) {
-    this.#with = {
-      ...params,
-    }
-    return this.#with
+  #is([entity, id], attr) {
+    this.#setEntity([entity, id])
+    this.#setCall(this.#methods.is[attr])
+    return this
   }
 
   #reset() {
@@ -101,6 +88,25 @@ class ShippoFacade {
     }
     this.#call = null
     return this
+  }
+
+  #setCall(method) {
+    this.#call = method
+  }
+
+  #setEntity([type, id = null]) {
+    this.#entity = {
+      id,
+      type,
+    }
+    return this
+  }
+
+  #setWith(params) {
+    this.#with = {
+      ...params,
+    }
+    return this.#with
   }
 }
 
