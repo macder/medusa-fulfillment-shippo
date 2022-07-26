@@ -26,7 +26,7 @@ describe("shippoService", () => {
   })
 
   const totalsService = {
-    getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
+    getLineItemTotals: jest.fn(async () => mockLineItemTotals()),
   }
 
   const pricingService = {
@@ -68,7 +68,7 @@ describe("shippoService", () => {
   })
 
   const getShippingProfileService = (cartOptions) => ({
-    fetchCartOptions: jest.fn(async (cart) => cartOptions),
+    fetchCartOptions: jest.fn(async () => cartOptions),
   })
 
   const mockCartShippingOptions = () => {
@@ -511,7 +511,10 @@ describe("shippoService", () => {
       })
 
       test("order returns requested default transaction", async () => {
-        const result = await shippoService.transaction.fetchBy(["order", "123"])
+        const result = await shippoService.transaction.fetchBy([
+          "order",
+          "123",
+        ])
 
         expect(result[0]).toContainEntry([
           "object_id",
@@ -544,23 +547,21 @@ describe("shippoService", () => {
         jest.clearAllMocks()
       })
 
-      describe("type", () => {
-        describe("return", () => {
-          test("is false", async () => {
-            const id = "object_id_transaction_123"
-            const result = await shippoService
-              .is(["transaction", id], "return")
-              .fetch()
-            expect(result).toBeFalse()
-          })
+      describe("return", () => {
+        test("is false", async () => {
+          const id = "object_id_transaction_123"
+          const result = await shippoService
+            .is(["transaction", id], "return")
+            .fetch()
+          expect(result).toBeFalse()
+        })
 
-          test("is true", async () => {
-            const id = "object_id_return"
-            const result = await shippoService
-              .is(["transaction", id], "return")
-              .fetch()
-            expect(result).toBeTrue()
-          })
+        test("is true", async () => {
+          const id = "object_id_return"
+          const result = await shippoService
+            .is(["transaction", id], "return")
+            .fetch()
+          expect(result).toBeTrue()
         })
       })
     })

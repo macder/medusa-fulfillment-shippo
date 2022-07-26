@@ -14,16 +14,13 @@ class ShippoOrderService extends BaseService {
 
   #shippoTransactionService
 
-  constructor(
-    {
-      manager,
-      fulfillmentRepository,
-      fulfillmentService,
-      shippoClientService,
-      shippoTransactionService,
-    },
-    options
-  ) {
+  constructor({
+    manager,
+    fulfillmentRepository,
+    fulfillmentService,
+    shippoClientService,
+    shippoTransactionService,
+  }) {
     super()
 
     /** @private @const {FulfillmentRepository} */
@@ -50,7 +47,7 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>} shippo order
    */
   async fetch(id) {
-    return await this.#client.order.retrieve(id)
+    return this.#client.order.retrieve(id)
   }
 
   /**
@@ -61,7 +58,7 @@ class ShippoOrderService extends BaseService {
   async fetchByFulfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getId(fulfillmentId)
 
-    return await this.fetch(shippoOrderId).then(async (order) => {
+    return this.fetch(shippoOrderId).then(async (order) => {
       if (order?.transactions?.length) {
         const transactions = await Promise.all(
           order.transactions.map(async (ta) => {
@@ -83,7 +80,7 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>}
    */
   async fetchPackingSlip(orderId) {
-    return await this.#client.order.packingslip(orderId)
+    return this.#client.order.packingslip(orderId)
   }
 
   /**
@@ -93,36 +90,8 @@ class ShippoOrderService extends BaseService {
    */
   async fetchPackingSlipByFulfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getId(fulfillmentId)
-    return await this.fetchPackingSlip(shippoOrderId)
+    return this.fetchPackingSlip(shippoOrderId)
   }
-
-  /**
-   *
-   * @param {String}
-   * @return {Promise.<Object>}
-   */
-  async fetchByClaimId() {}
-
-  /**
-   *
-   * @param {String}
-   * @return {Promise.<Object>}
-   */
-  async fetchByOrderId() {}
-
-  /**
-   *
-   * @param {String}
-   * @return {Promise.<Object>}
-   */
-  async fetchByReturnId() {}
-
-  /**
-   *
-   * @param {String}
-   * @return {Promise.<Object>}
-   */
-  async fetchByTransactionId() {}
 
   /**
    *

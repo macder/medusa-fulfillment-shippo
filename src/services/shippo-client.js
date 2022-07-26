@@ -1,10 +1,12 @@
 import { BaseService } from "medusa-interfaces"
 import path from "path"
-import { getConfigFile, MedusaError } from "medusa-core-utils"
+import { getConfigFile } from "medusa-core-utils"
 import shippo from "shippo"
 
 class ShippoClientService extends BaseService {
   #client
+
+  #options
 
   constructor({}, options) {
     super()
@@ -20,7 +22,7 @@ class ShippoClientService extends BaseService {
    * @return {Object} address object
    */
   async fetchSenderAddress() {
-    return await this.#client.account
+    return this.#client.account
       .address()
       .then((response) =>
         response.results.find((address) => address.is_default_sender === true)
@@ -32,7 +34,7 @@ class ShippoClientService extends BaseService {
    * @return {array.<object>} list of custom parcel templates
    */
   async fetchUserParcelTemplates() {
-    return await this.#client.userparceltemplates
+    return this.#client.userparceltemplates
       .list()
       .then((response) => response.results)
   }
@@ -50,7 +52,7 @@ class ShippoClientService extends BaseService {
 
     const executePoll = async (resolve, reject) => {
       const result = await fn()
-      attempts++
+      attempts += 1
 
       if (validate(result)) {
         return resolve(result)
@@ -74,13 +76,13 @@ class ShippoClientService extends BaseService {
 
   async #fetchCarriers() {
     // should paginate or poll
-    return await this.#client.carrieraccount
+    return this.#client.carrieraccount
       .list({ service_levels: true, results: 100 })
       .then((response) => response.results)
   }
 
   async #fetchServiceGroups() {
-    return await this.#client.servicegroups.list().then((groups) =>
+    return this.#client.servicegroups.list().then((groups) =>
       groups.map((serviceGroup) => ({
         id: `shippo-fulfillment-${serviceGroup.object_id}`,
         is_group: true,
@@ -101,9 +103,9 @@ class ShippoClientService extends BaseService {
       const {
         configModule: { projectConfig },
       } = getConfigFile(path.resolve("."), "medusa-config")
-      this.options_ = projectConfig
+      this.#options = projectConfig
     } else {
-      this.options_ = options
+      this.#options = options
     }
     this.retrieveServiceOptions = this.#fulfillmentOptions
   }
@@ -113,7 +115,7 @@ class ShippoClientService extends BaseService {
   }
 
   #initClient() {
-    return shippo(this.options_.api_key)
+    return shippo(this.#options.api_key)
   }
 }
 

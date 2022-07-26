@@ -3,40 +3,49 @@ import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem } from "../utils/formatters"
 
 class ShippoRatesService extends BaseService {
-  cart_ = {}
+  #cart = {}
 
-  shippingOptions_ = []
+  #cartService
 
-  constructor(
-    {
-      cartService,
-      pricingService,
-      shippoClientService,
-      shippoPackerService,
-      shippingProfileService,
-      totalsService,
-    },
-    options
-  ) {
+  #pricingService
+
+  #shippingOptions = []
+
+  #shippo
+
+  #shippoPackerService
+
+  #shippingProfileService
+
+  #totalsService
+
+  constructor({
+    cartService,
+    pricingService,
+    shippoClientService,
+    shippoPackerService,
+    shippingProfileService,
+    totalsService,
+  }) {
     super()
 
     /** @private @const {CartService} */
-    this.cartService_ = cartService
+    this.#cartService = cartService
 
     /** @private @const {PricingService} */
-    this.pricingService_ = pricingService
+    this.#pricingService = pricingService
 
     /** @private @const {ShippoClientService} */
-    this.shippo_ = shippoClientService
+    this.#shippo = shippoClientService
 
     /** @private @const {ShippoPackerService_} */
-    this.shippoPackerService_ = shippoPackerService
+    this.#shippoPackerService = shippoPackerService
 
     /** @private @const {ShippingProfileService} */
-    this.shippingProfileService_ = shippingProfileService
+    this.#shippingProfileService = shippingProfileService
 
     /** @private @const {TotalsService} */
-    this.totalsService_ = totalsService
+    this.#totalsService = totalsService
   }
 
   /**
@@ -87,7 +96,7 @@ class ShippoRatesService extends BaseService {
     const rates = await this.#fetchRates()
 
     this.#setOptions(
-      this.shippingOptions_.map((so) =>
+      this.#shippingOptions.map((so) =>
         this.#putRate(so, this.#findRate(so, rates))
       )
     )
@@ -99,8 +108,8 @@ class ShippoRatesService extends BaseService {
       (await this.#packBins().then((result) => result[0].object_id))
 
     const toAddress = await shippoAddress(
-      this.cart_.shipping_address,
-      this.cart_.email
+      this.#cart.shipping_address,
+      this.#cart.email
     )
 
     return {
@@ -111,7 +120,7 @@ class ShippoRatesService extends BaseService {
   }
 
   async #fetchCart(cartId) {
-    return await this.cartService_.retrieve(cartId, {
+    return this.#cartService.retrieve(cartId, {
       select: ["subtotal"],
       relations: [
         "shipping_address",
@@ -127,19 +136,19 @@ class ShippoRatesService extends BaseService {
   }
 
   async #fetchOptions() {
-    return await this.shippingProfileService_.fetchCartOptions(this.cart_)
+    return this.#shippingProfileService.fetchCartOptions(this.#cart)
   }
 
   async #fetchRates() {
     // TODO - why is it making 2 calls?
     const params = await this.#buildRequestParams()
     const { parcel } = params
-    const fulfillmentOptions = this.shippingOptions_.map((so) => ({
+    const fulfillmentOptions = this.#shippingOptions.map((so) => ({
       ...so.data,
       so_id: so.id,
     }))
 
-    const rates = await this.shippo_.useClient.liverates
+    const rates = await this.#shippo.useClient.liverates
       .create(params)
       .then((rates) =>
         rates.results
@@ -163,33 +172,30 @@ class ShippoRatesService extends BaseService {
   }
 
   async #formatLineItems() {
-    return await Promise.all(
-      this.cart_.items.map(
-        async (item) =>
-          await this.totalsService_
-            .getLineItemTotals(item, this.cart_)
-            .then((totals) =>
-              shippoLineItem(
-                item,
-                totals.unit_price,
-                this.cart_.region.currency_code
-              )
+    return Promise.all(
+      this.#cart.items.map(async (item) =>
+        this.#totalsService
+          .getLineItemTotals(item, this.#cart)
+          .then((totals) =>
+            shippoLineItem(
+              item,
+              totals.unit_price,
+              this.#cart.region.currency_code
             )
+          )
       )
     )
   }
 
   async #isCartReady() {
-    if (!this.cart_.email || this.cart_.items.length === 0) {
+    if (!this.#cart.email || this.#cart.items.length === 0) {
       return false
     }
-    return await this.#validateAddress()
+    return this.#validateAddress()
   }
 
   async #packBins() {
-    const packed = await this.shippoPackerService_.packBins(this.cart_.items)
-
-    this.packerResult_ = packed
+    const packed = await this.#shippoPackerService.packBins(this.#cart.items)
     return packed
   }
 
@@ -214,24 +220,24 @@ class ShippoRatesService extends BaseService {
 
   async #requiresRates() {
     return (
-      !!this.shippingOptions_.find((so) => so.data?.type === "LIVE_RATE") &&
+      !!this.#shippingOptions.find((so) => so.data?.type === "LIVE_RATE") &&
       true
     )
   }
 
   #setCart(cart) {
-    this.cart_ = cart
+    this.#cart = cart
   }
 
   #setOptions(options) {
-    this.shippingOptions_ = options
+    this.#shippingOptions = options
   }
 
   async #setOptionPrices() {
-    const options = await this.pricingService_.setShippingOptionPrices(
-      this.shippingOptions_,
+    const options = await this.#pricingService.setShippingOptionPrices(
+      this.#shippingOptions,
       {
-        cart_id: this.cart_.id,
+        cart_id: this.#cart.id,
       }
     )
 
@@ -244,7 +250,7 @@ class ShippoRatesService extends BaseService {
   }
 
   async #validateAddress() {
-    const address = this.cart_.shipping_address
+    const address = this.#cart.shipping_address
     const requiredFields = [
       "first_name",
       "last_name",
@@ -270,7 +276,7 @@ class ShippoRatesService extends BaseService {
       await this.#applyRates()
     }
     await this.#setOptionPrices()
-    return this.shippingOptions_
+    return this.#shippingOptions
   }
 }
 

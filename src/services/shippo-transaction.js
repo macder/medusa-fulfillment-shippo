@@ -11,10 +11,7 @@ class ShippoTransactionService extends BaseService {
 
   #transaction
 
-  constructor(
-    { fulfillmentService, orderService, shippoClientService },
-    options
-  ) {
+  constructor({ fulfillmentService, orderService, shippoClientService }) {
     super()
 
     /** @private @const {FulfillmentService} */
@@ -55,9 +52,9 @@ class ShippoTransactionService extends BaseService {
 
     const { transactions } = await this.#client.order.retrieve(shippo_order_id)
 
-    return await Promise.all(
-      transactions.map(
-        async (ta) => await this.#client.transaction.retrieve(ta.object_id)
+    return Promise.all(
+      transactions.map(async (ta) =>
+        this.#client.transaction.retrieve(ta.object_id)
       )
     )
   }
@@ -74,30 +71,29 @@ class ShippoTransactionService extends BaseService {
     })
 
     // TODO - Break this apart?
-    const transactions = await Promise.all(
+    const transacts = await Promise.all(
       // filter fulfillments with shippo order
       order.fulfillments
         .filter((ful) => ful.data?.shippo_order_id)
         // map transactions over fulfillments
-        .map(
-          async ({ id, data: { shippo_order_id } }) =>
-            // fetch the fulfillment's shippo order
-            await this.#client.order.retrieve(shippo_order_id).then(
-              async ({ transactions }) =>
-                await Promise.all(
-                  // map the full transactions over shippoOrder.transactions
-                  transactions.map(
-                    async (ta) =>
-                      await this.#client.transaction
-                        .retrieve(ta.object_id)
-                        // add the fulfillment_id to transaction
-                        .then((ta) => ({ fulfillment_id: id, ...ta }))
-                  )
+        .map(async ({ id, data: { shippo_order_id } }) =>
+          // fetch the fulfillment's shippo order
+          this.#client.order
+            .retrieve(shippo_order_id)
+            .then(async ({ transactions }) =>
+              Promise.all(
+                // map the full transactions over shippoOrder.transactions
+                transactions.map(async (ta) =>
+                  this.#client.transaction
+                    .retrieve(ta.object_id)
+                    // add the fulfillment_id to transaction
+                    .then((final) => ({ fulfillment_id: id, ...final }))
                 )
+              )
             )
         )
     )
-    return transactions.flat(1)
+    return transacts.flat(1)
   }
 
   /**
@@ -127,8 +123,8 @@ class ShippoTransactionService extends BaseService {
 
     const { transactions } = await this.#client.order.retrieve(shippo_order_id)
 
-    return await Promise.all(
-      transactions.map(async (ta) => await this.fetchExtended(ta.object_id))
+    return Promise.all(
+      transactions.map(async (ta) => this.fetchExtended(ta.object_id))
     )
   }
 
@@ -140,25 +136,25 @@ class ShippoTransactionService extends BaseService {
   async fetchExtendedByOrder(id) {
     const order = await this.#orderService.retrieve(id)
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
-    return await this.#client.transaction
+    return this.#client.transaction
       .search(urlQuery)
       .then((response) => response.results)
   }
 
   async pollExtended(transactionId) {
     const poller = this.#shippo.poll
-    const fetch = async () => await this.fetchExtended(transactionId)
+    const fetch = async () => this.fetchExtended(transactionId)
 
     const validator = () => (response) =>
       response?.object_state === "VALID" ||
       response?.object_status === "SUCCESS"
-    return await poller({
+    return poller({
       fn: fetch,
       validate: validator(),
       interval: 3500,
       maxAttempts: 3,
     }).catch((e) => {
-      console.log(e)
+      console.error(e)
     })
   }
 
@@ -190,7 +186,7 @@ class ShippoTransactionService extends BaseService {
   async findOrder(transactionId) {
     const transaction = await this.fetch(transactionId)
     const orderDisplayId = await this.#parseOrderDisplayId(transaction)
-    return await this.#retrieveOrderByDisplayId(orderDisplayId)
+    return this.#retrieveOrderByDisplayId(orderDisplayId)
   }
 
   /**
@@ -207,7 +203,7 @@ class ShippoTransactionService extends BaseService {
       return Promise.reject("transaction for return label not found")
     }
 
-    return await this.fetch(transaction.object_id).then(({ label_url }) => ({
+    return this.fetch(transaction.object_id).then(({ label_url }) => ({
       ...transaction,
       label_url,
     }))
@@ -220,7 +216,7 @@ class ShippoTransactionService extends BaseService {
    */
   async isReturn(transactionId) {
     const transaction = await this.fetch(transactionId)
-    return await this.fetchExtended(transaction.object_id).then(
+    return this.fetchExtended(transaction.object_id).then(
       (response) => response.is_return
     )
   }
@@ -231,7 +227,7 @@ class ShippoTransactionService extends BaseService {
   }
 
   async #retrieveOrderByDisplayId(id) {
-    return await this.#orderService
+    return this.#orderService
       .list(
         { display_id: id },
         {

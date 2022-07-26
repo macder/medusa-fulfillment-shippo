@@ -1,4 +1,4 @@
-export default async (req, res, next) => {
+export default async (req, res) => {
   const eventBus = req.scope.resolve("eventBusService")
 
   const event = req.headers["x-shippo-event"]

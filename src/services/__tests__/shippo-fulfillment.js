@@ -23,7 +23,7 @@ describe("ShippoFulfillmentService", () => {
   })
 
   const totalsService = {
-    getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
+    getLineItemTotals: jest.fn(async () => mockLineItemTotals()),
   }
 
   const eventBusService = {
@@ -86,7 +86,7 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const cartService = {
-      retrieve: jest.fn(async (cartId, options, totalsConfig) =>
+      retrieve: jest.fn(async () =>
         mockCart({ hasAddress: true, hasItems: 1 })
       ),
     }
@@ -119,7 +119,7 @@ describe("ShippoFulfillmentService", () => {
       })
 
       const getResult = async () =>
-        await shippoFulfilService.validateFulfillmentData(
+        shippoFulfilService.validateFulfillmentData(
           mockFulfillmentOption({ type: "LIVE_RATE" }),
           { test: "test" },
           cart
@@ -141,7 +141,7 @@ describe("ShippoFulfillmentService", () => {
       delete fulfillmentOption.type
 
       const getResult = async () =>
-        await shippoFulfilService.validateFulfillmentData(
+        shippoFulfilService.validateFulfillmentData(
           fulfillmentOption,
           { test: "test" },
           cart
@@ -234,13 +234,13 @@ describe("ShippoFulfillmentService", () => {
     })
 
     const cartService = {
-      retrieve: jest.fn(async (cartId, options, totalsConfig) =>
+      retrieve: jest.fn(async () =>
         mockCart({ hasAddress: true, hasItems: 1 })
       ),
     }
 
     const shippingProfileService = {
-      fetchCartOptions: jest.fn((cart) => {
+      fetchCartOptions: jest.fn(() => {
         const shippingOption = mockShippingOption({ variant: "live_rate" })
         return [
           {

@@ -1,4 +1,4 @@
-export default async (container, options) => {
+export default async (container) => {
   const shippoFulfillmentService = container.resolve("shippoFulfillmentService")
   const shippingProfileService = container.resolve("shippingProfileService")
   const shippoRatesService = container.resolve("shippoRatesService")
@@ -13,10 +13,9 @@ export default async (container, options) => {
 
   const cloned = await shippingProfileService.withTransaction(manager)
   shippingProfileService.fetchCartOptions = async (cart) =>
-    await cloned
+    cloned
       .fetchCartOptions(cart)
-      .then(
-        async (shippingOptions) =>
-          await shippoRatesService.decorateOptions(cart.id, shippingOptions)
+      .then(async (shippingOptions) =>
+        shippoRatesService.decorateOptions(cart.id, shippingOptions)
       )
 }
