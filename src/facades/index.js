@@ -36,11 +36,6 @@ class ShippoFacade {
     this.#call = method
   }
 
-  async fetchTest(id = this.#entity.id, config) {
-    const result = await this.#call(id, config)
-    return result
-  }
-
   async fetch(id = this.#entity.id, config) {
     const fetch = this.#call ?? this.#methods.fetch
 
