@@ -297,6 +297,12 @@ POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
+### Raw rates
+
+```javascript
+await shippoService.rates.for(["cart", id]).fetch()
+```
+
 ### Help, adding a shipping method to cart throws an error
 
 This is an issue with medusa-admin. Examine line 85 [`admin/src/domain/settings/regions/new-shipping.tsx`](https://github.com/medusajs/admin/blob/a33ed20214297ffdbd2383f809dddd4870f5dad9/src/domain/settings/regions/new-shipping.tsx#L85)
@@ -313,12 +319,6 @@ Possible interim solution:
 price_type: (options[optionIndex].type === "LIVE_RATE") 
     ? "calculated" 
     : "flat_rate",
-```
-
-### Raw rates
-
-```javascript
-await shippoService.rates.for(["cart", id]).fetch()
 ```
 
 ## Webhooks
@@ -536,7 +536,7 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ### Rates
 
-`for([entity]).fetch(id)`
+`for([entity, id]).fetch(id)`
 
 ```javascript
 await shippoService.rates.for(["cart", id]).fetch()
