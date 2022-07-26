@@ -512,7 +512,7 @@ describe("shippoService", () => {
 
       test("order returns requested default transaction", async () => {
         const result = await shippoService.transaction.fetchBy([
-          "local_order",
+          "order",
           "123",
         ])
 
