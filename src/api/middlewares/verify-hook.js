@@ -31,9 +31,9 @@ export default () => async (req, res, next) => {
         ? untrustedData?.transaction
         : untrustedData?.object_id
 
-    return await shippoTransactionService
+    return shippoTransactionService
       .fetch(transactionId)
-      .catch((e) => invalidRequest())
+      .catch(() => invalidRequest())
   }
 
   const transaction = await fetchTransactionFromShippo()

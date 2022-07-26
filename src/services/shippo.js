@@ -16,17 +16,14 @@ class ShippoService extends BaseService {
 
   #shippoRates
 
-  constructor(
-    {
-      shippoClientService,
-      shippoOrderService,
-      shippoPackerService,
-      shippoRatesService,
-      shippoTrackService,
-      shippoTransactionService,
-    },
-    options
-  ) {
+  constructor({
+    shippoClientService,
+    shippoOrderService,
+    shippoPackerService,
+    shippoRatesService,
+    shippoTrackService,
+    shippoTransactionService,
+  }) {
     super()
 
     /** @private @const {ShippoClientService} */
@@ -72,7 +69,7 @@ class ShippoService extends BaseService {
 
   #account() {
     return {
-      address: async () => await this.#shippoClient.fetchSenderAddress(),
+      address: () => this.#shippoClient.fetchSenderAddress(),
     }
   }
 
@@ -81,36 +78,33 @@ class ShippoService extends BaseService {
     const find = {
       fulfillment: {
         for: {
-          transaction: async (id) =>
-            await this.#shippoTransaction.findFulfillment(id),
+          transaction: (id) => this.#shippoTransaction.findFulfillment(id),
         },
       },
       order: {
         for: {
-          transaction: async (id) =>
-            await this.#shippoTransaction.findOrder(id),
+          transaction: (id) => this.#shippoTransaction.findOrder(id),
         },
       },
     }
 
     return {
-      for: async ([haystack, id]) => await find[needle].for[haystack](id),
+      for: ([haystack, id]) => find[needle].for[haystack](id),
     }
   }
 
   /* @experimental */
   #fulfillment() {
     const fetchBy = {
-      transaction: async (id) =>
-        await this.#shippoTransaction.findFulfillment(id),
+      transaction: (id) => this.#shippoTransaction.findFulfillment(id),
     }
 
     return {
-      fetchBy: async ([entity, id]) => await fetchBy[entity](id),
+      fetchBy: ([entity, id]) => fetchBy[entity](id),
     }
   }
 
-  #order(key) {
+  #order() {
     const methods = {
       fetch: (id) => this.#shippoOrder.fetch(id),
       fetchBy: {
@@ -168,9 +162,6 @@ class ShippoService extends BaseService {
       fetchBy: {
         fulfillment: (id) => this.#shippoTrack.fetchByFulfillmentId(id),
       },
-      with() {
-        console.log("track.with")
-      },
     }
     return new ShippoFacade(methods)
   }
@@ -179,8 +170,8 @@ class ShippoService extends BaseService {
     const methods = {
       fetch: (id, { variant = "default", type = variant } = "default") =>
         ({
-          default: (id) => this.#shippoTransaction.fetch(id),
-          extended: (id) => this.#shippoTransaction.fetchExtended(id),
+          default: () => this.#shippoTransaction.fetch(id),
+          extended: () => this.#shippoTransaction.fetchExtended(id),
         }[type](id)),
       fetchBy: {
         local_order: (
@@ -188,8 +179,8 @@ class ShippoService extends BaseService {
           { variant = "default", type = variant } = "default"
         ) =>
           ({
-            default: (id) => this.#shippoTransaction.fetchByOrder(id),
-            extended: (id) => this.#shippoTransaction.fetchExtendedByOrder(id),
+            default: () => this.#shippoTransaction.fetchByOrder(id),
+            extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
           }[type](id)),
 
         fulfillment: (
@@ -197,8 +188,8 @@ class ShippoService extends BaseService {
           { variant = "default", type = variant } = "default"
         ) =>
           ({
-            default: (id) => this.#shippoTransaction.fetchByFulfillment(id),
-            extended: (id) =>
+            default: () => this.#shippoTransaction.fetchByFulfillment(id),
+            extended: () =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
           }[type](id)),
       },

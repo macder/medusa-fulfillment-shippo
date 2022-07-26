@@ -3,15 +3,17 @@ import { BaseService } from "medusa-interfaces"
 import { productLineItem } from "../utils/formatters"
 
 class ShippoPackerService extends BaseService {
-  bins_ = []
+  #bins = []
 
-  items_ = []
+  #items = []
 
-  constructor({ shippoClientService }, options) {
+  #shippo
+
+  constructor({ shippoClientService }) {
     super()
 
     /** @private @const {ShippoClientService} */
-    this.shippo_ = shippoClientService
+    this.#shippo = shippoClientService
   }
 
   /**
@@ -22,17 +24,17 @@ class ShippoPackerService extends BaseService {
   async packBins(lineItems) {
     const { Packer } = BP3D
 
-    const parcelTemplates = await this.shippo_.fetchUserParcelTemplates()
+    const parcelTemplates = await this.#shippo.fetchUserParcelTemplates()
 
     this.#setBins(parcelTemplates)
     this.#setItems(lineItems)
     const fitBins = []
 
-    this.bins_.forEach((bin) => {
+    this.#bins.forEach((bin) => {
       const packer = new Packer()
       packer.addBin(bin)
 
-      this.items_.forEach((item) => {
+      this.#items.forEach((item) => {
         packer.addItem(item)
       })
 
@@ -64,7 +66,7 @@ class ShippoPackerService extends BaseService {
         width: item.width,
         height: item.height,
         weight: item.weight,
-        volume: this.#calculateVolume(item),
+        volume: this.constructor.calculateVolume(item),
         locus: {
           allowed_rotation: item.allowedRotation,
           rotation_type: item.rotationType,
@@ -90,10 +92,10 @@ class ShippoPackerService extends BaseService {
   #setBins(parcelTemplates) {
     const { Bin } = BP3D
 
-    this.bins_ = parcelTemplates
+    this.#bins = parcelTemplates
       .map(({ object_owner, object_created, object_updated, ...bin }) => ({
         ...bin,
-        volume: this.#calculateVolume(bin),
+        volume: this.constructor.calculateVolume(bin),
       }))
       .sort((a, b) => a.volume - b.volume)
       .map(
@@ -104,9 +106,11 @@ class ShippoPackerService extends BaseService {
 
   #setItems(lineItems) {
     const { Item } = BP3D
-    this.items_ = lineItems
+    this.#items = lineItems
       .flatMap((item) =>
-        item.quantity > 1 ? this.#splitItem(item) : productLineItem(item)
+        item.quantity > 1
+          ? this.constructor.splitItem(item)
+          : productLineItem(item)
       )
       .map(
         (item) =>
@@ -124,11 +128,11 @@ class ShippoPackerService extends BaseService {
       )
   }
 
-  #calculateVolume({ length, depth, width, height }) {
+  static calculateVolume({ length, depth, width, height }) {
     return length ? length * width * height : depth * width * height
   }
 
-  #splitItem(item) {
+  static splitItem(item) {
     return [...Array(item.quantity).keys()].map(() => productLineItem(item))
   }
 }

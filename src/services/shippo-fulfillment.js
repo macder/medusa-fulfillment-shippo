@@ -8,6 +8,8 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   #eventBusService
 
+  #options
+
   #orderService
 
   #shippo
@@ -71,7 +73,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     return data.type === "LIVE_RATE"
   }
 
-  async cancelFulfillment(fulfillment) {
+  async cancelFulfillment() {
     return Promise.resolve({})
   }
 
@@ -94,7 +96,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     })
     const parcelName = methodData?.parcel_template?.name ?? null
 
-    const shippoOrder = await this.#createShippoOrder(
+    const orderShippo = await this.#createShippoOrder(
       fromOrder,
       fromAddress,
       lineItems,
@@ -112,7 +114,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     })
 
     return {
-      shippo_order_id: shippoOrder.object_id,
+      shippo_order_id: orderShippo.object_id,
     }
   }
 
@@ -184,13 +186,13 @@ class ShippoFulfillmentService extends FulfillmentService {
     }
   }
 
-  async validateOption(data) {
+  async validateOption() {
     return true
   }
 
   async verifyHookSecret(token) {
-    return this.options_.webhook_secret
-      ? this.options_.webhook_secret === token
+    return this.#options.webhook_secret
+      ? this.#options.webhook_secret === token
       : false
   }
 
@@ -198,7 +200,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     const client = this.#shippo.getClient()
     const params = await shippoOrder(order, fromAddress, lineItems, parcelName)
 
-    return await client.order.create(params).catch((e) => {
+    return client.order.create(params).catch((e) => {
       throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, e)
     })
   }
@@ -243,18 +245,13 @@ class ShippoFulfillmentService extends FulfillmentService {
       })
     }
 
-    return await Promise.all(
-      items.map(
-        async (item) =>
-          await this.#totalsService
-            .getLineItemTotals(item, order)
-            .then((totals) =>
-              shippoLineItem(
-                item,
-                totals.unit_price,
-                order.region.currency_code
-              )
-            )
+    return Promise.all(
+      items.map(async (item) =>
+        this.#totalsService
+          .getLineItemTotals(item, order)
+          .then((totals) =>
+            shippoLineItem(item, totals.unit_price, order.region.currency_code)
+          )
       )
     )
   }
@@ -289,14 +286,14 @@ class ShippoFulfillmentService extends FulfillmentService {
       const {
         configModule: { projectConfig },
       } = getConfigFile(path.resolve("."), "medusa-config")
-      this.options_ = projectConfig
+      this.#options = projectConfig
     } else {
-      this.options_ = options
+      this.#options = options
     }
   }
 
   getWebhookConfig() {
-    const { webhook_secret, webhook_test_mode } = this.options_
+    const { webhook_secret, webhook_test_mode } = this.#options
 
     return {
       webhook_secret,

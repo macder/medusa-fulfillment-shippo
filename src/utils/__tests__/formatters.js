@@ -1,9 +1,4 @@
-import {
-  productLineItem,
-  shippoAddress,
-  shippoLineItem,
-  shippoOrder,
-} from "../formatters"
+import { productLineItem, shippoAddress, shippoLineItem } from "../formatters"
 
 const lineItem = {
   title: "Line Item Title",
@@ -55,62 +50,6 @@ const address = {
   postal_code: "A1A 1A1",
   phone: "123-456-7890",
   metadata: null,
-}
-
-const order = {
-  id: "order_01G69PZYKRK39SGE255RBWYFVB",
-  region: {
-    name: "Canada",
-    currency_code: "cad",
-  },
-  fulfillments: [],
-  shipping_address: address,
-  shipping_methods: [
-    {
-      shipping_option: {
-        name: "Expedited Shipping",
-      },
-    },
-  ],
-  created_at: "2022-06-24T01:59:58.247Z",
-  display_id: 124,
-  email: "test1@test.com",
-  currency_code: "usd",
-  tax_rate: null,
-  metadata: {
-    shippo_parcel_template: "123abc123abc123abc123abc",
-  },
-  subtotal: 3000,
-  shipping_total: 2357,
-  discount_total: 0,
-  tax_total: 0,
-  gift_card_total: 0,
-  total: 5357,
-}
-
-const lineItems = [
-  {
-    title: "Medusa Coffee Mug",
-    variant_title: "One Size",
-    quantity: 3,
-    total_price: "10",
-    currency: "USD",
-    sku: "SKU_935611",
-    weight: "500",
-    weight_unit: "g",
-    manufacture_country: "Canada",
-  },
-]
-
-const parcel = {
-  object_id: "123abc123abc123abc123abc",
-  name: "Package for 4 Coffee Mugs",
-  length: "20",
-  width: "20",
-  height: "14",
-  distance_unit: "cm",
-  weight: null,
-  weight_unit: null,
 }
 
 test("Formatter: productLineItem", () => {})

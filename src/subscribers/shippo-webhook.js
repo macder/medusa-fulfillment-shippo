@@ -48,7 +48,7 @@ class ShippoSubscriber {
   }
 
   handleTrackUpdated = async (data) => {
-    // this.#eventBusService.emit("shippo.track_updated", {})
+    this.#eventBusService.emit("shippo.track_updated.payload", data)
   }
 
   handleTransactionCreated = async ({ transaction }) => {
@@ -86,7 +86,7 @@ class ShippoSubscriber {
             url: expandedTransaction.tracking_url_provider,
           },
         ])
-        .then((order) => {
+        .then(() => {
           const { label_url } = transaction
           this.#eventBusService.emit("shippo.transaction_created.shipment", {
             [`${[type.name]}_id`]: type.id,

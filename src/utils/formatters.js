@@ -63,7 +63,7 @@ export const shippoAddress = async (address, email) => ({
   country: address.country_code.toUpperCase(),
   phone: address.phone,
   email,
-  validate: address.country_code == "us" ?? true,
+  validate: address.country_code === "us" ?? true,
 })
 
 export const shippoOrder = async (

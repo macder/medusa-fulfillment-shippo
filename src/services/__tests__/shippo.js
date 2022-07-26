@@ -26,7 +26,7 @@ describe("shippoService", () => {
   })
 
   const totalsService = {
-    getLineItemTotals: jest.fn(async (item, order) => mockLineItemTotals()),
+    getLineItemTotals: jest.fn(async () => mockLineItemTotals()),
   }
 
   const pricingService = {
@@ -68,7 +68,7 @@ describe("shippoService", () => {
   })
 
   const getShippingProfileService = (cartOptions) => ({
-    fetchCartOptions: jest.fn(async (cart) => cartOptions),
+    fetchCartOptions: jest.fn(async () => cartOptions),
   })
 
   const mockCartShippingOptions = () => {
