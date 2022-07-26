@@ -139,7 +139,7 @@ class ShippoRatesService extends BaseService {
   }
 
   async #fetchRates() {
-    console.log("FETCH RATES**************************") // TODO - why is it making 2 calls
+    // TODO - why is it making 2 calls?
     const params = await this.#buildRequestParams()
     const { parcel } = params
     const fulfillmentOptions = this.shippingOptions_.map((so) => ({
@@ -163,9 +163,6 @@ class ShippoRatesService extends BaseService {
           }))
       )
       .catch((e) => console.error(e))
-
-    console.log(rates)
-
     return rates
   }
 
