@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## \[0.24.1] (2022-07-26)
+
+*   Performance improvements
+
+## \[0.24.0] (2022-07-25)
 
 Added
 
