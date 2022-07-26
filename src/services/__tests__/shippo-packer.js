@@ -30,13 +30,10 @@ describe("ShippoPackerService", () => {
       // const result = await shippoPackerService.packBins(
       //   lineItems
       // )
-
       // console.log(result.name, result.packer_output.volume)
-
       // result.forEach(e => {
       //   console.log(e.name, e.packer_output.volume)
       // })
-
       // console.log('*********result: ', JSON.stringify(result, null, 2))
     })
   })

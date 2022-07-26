@@ -511,7 +511,10 @@ describe("shippoService", () => {
       })
 
       test("order returns requested default transaction", async () => {
-        const result = await shippoService.transaction.fetchBy(["order", "123"])
+        const result = await shippoService.transaction.fetchBy([
+          "local_order",
+          "123",
+        ])
 
         expect(result[0]).toContainEntry([
           "object_id",
@@ -522,7 +525,7 @@ describe("shippoService", () => {
 
       test("order returns requested extended transaction", async () => {
         const result = await shippoService.transaction.fetchBy(
-          ["order", "123"],
+          ["local_order", "123"],
           {
             variant: "extended",
           }
@@ -544,23 +547,21 @@ describe("shippoService", () => {
         jest.clearAllMocks()
       })
 
-      describe("type", () => {
-        describe("return", () => {
-          test("is false", async () => {
-            const id = "object_id_transaction_123"
-            const result = await shippoService
-              .is(["transaction", id], "return")
-              .fetch()
-            expect(result).toBeFalse()
-          })
+      describe("return", () => {
+        test("is false", async () => {
+          const id = "object_id_transaction_123"
+          const result = await shippoService
+            .is(["transaction", id], "return")
+            .fetch()
+          expect(result).toBeFalse()
+        })
 
-          test("is true", async () => {
-            const id = "object_id_return"
-            const result = await shippoService
-              .is(["transaction", id], "return")
-              .fetch()
-            expect(result).toBeTrue()
-          })
+        test("is true", async () => {
+          const id = "object_id_return"
+          const result = await shippoService
+            .is(["transaction", id], "return")
+            .fetch()
+          expect(result).toBeTrue()
         })
       })
     })

@@ -101,6 +101,13 @@ class ShippoOrderService extends BaseService {
    * @param {String}
    * @return {Promise.<Object>}
    */
+  async fetchByLocalOrderId() {}
+
+  /**
+   *
+   * @param {String}
+   * @return {Promise.<Object>}
+   */
   async fetchByClaimId() {}
 
   /**
