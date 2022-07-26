@@ -144,7 +144,7 @@ describe("shippoService", () => {
     321: [
       {
         id: "order_321",
-        display_id: "321",
+        display_id: "321 (replace)",
       },
     ],
   }
@@ -225,8 +225,6 @@ describe("shippoService", () => {
     })
 
     it("returns address object", async () => {
-      // const shippoService = newShippoService()
-
       const result = await shippoService.account.address()
       expect(result).toContainKeys([
         "name",
@@ -303,19 +301,41 @@ describe("shippoService", () => {
         })
       })
     })
+
+    describe("is", () => {
+      describe("type", () => {
+        describe("replace", () => {
+          it("returns false", async () => {
+            const id = "object_id_order_123"
+            const result = await shippoService
+              .is(["order", id], "replace")
+              .fetch()
+            expect(result).toBeFalse()
+          })
+          it("returns true", async () => {
+            const id = "object_id_order_replace_123"
+            const result = await shippoService
+              .is(["order", id], "replace")
+              .fetch()
+            expect(result).toBeTrue()
+          })
+        })
+      })
+    })
   })
   /* ===================================================== */
 
   /* ===================================================== */
-  describe("packer", () => {
+  describe("package", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
 
     it("returns packer output", async () => {
       const lineItems = makeArrayOf(mockLineItem, 2)
-      const result = await shippoService.packer.pack(lineItems)
-
+      const result = await shippoService.package
+        .for(["items", lineItems])
+        .fetch()
       expect(result).toBeArray()
       expect(result[0]).toContainKey("packer_output")
     })
@@ -381,17 +401,17 @@ describe("shippoService", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
-
-    test("cart(id) returns array of live-rates with parcel id", async () => {
-      const result = await shippoService.rates.cart("cart_id_is_ready")
-      expect(result).toBeArray()
-      expect(result[0]).toContainKey("parcel")
-    })
-
-    test("cart(id, so_id) returns single live-rate object with parcel id", async () => {
-      const result = await shippoService.rates.cart("cart_id_is_ready", "so_id")
-      expect(result).toBeObject()
-      expect(result).toContainKey("parcel")
+    describe("for", () => {
+      describe("cart", () => {
+        describe("fetch", () => {
+          test("returns rate with parcel id", async () => {
+            const id = "cart_id_is_ready"
+            const result = await shippoService.rates.for(["cart", id]).fetch()
+            expect(result).toBeArray()
+            expect(result[0]).toContainKey("parcel")
+          })
+        })
+      })
     })
   })
   /* ===================================================== */
@@ -519,17 +539,29 @@ describe("shippoService", () => {
       })
     })
 
-    describe("isReturn", () => {
-      test("is false", async () => {
-        const id = "object_id_transaction_123"
-        const result = await shippoService.transaction.isReturn(id)
-        expect(result).toBeFalse()
+    describe("is", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
       })
 
-      test("is true", async () => {
-        const id = "object_id_return"
-        const result = await shippoService.transaction.isReturn(id)
-        expect(result).toBeTrue()
+      describe("type", () => {
+        describe("return", () => {
+          test("is false", async () => {
+            const id = "object_id_transaction_123"
+            const result = await shippoService
+              .is(["transaction", id], "return")
+              .fetch()
+            expect(result).toBeFalse()
+          })
+
+          test("is true", async () => {
+            const id = "object_id_return"
+            const result = await shippoService
+              .is(["transaction", id], "return")
+              .fetch()
+            expect(result).toBeTrue()
+          })
+        })
       })
     })
   })

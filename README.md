@@ -101,9 +101,9 @@ Creating an order fulfillment makes a new order in shippo. An event is emitted w
 await shippoService.order.fetch(object_id)
 
 await shippoService.order.fetchBy(["fulfillment", ful_id]
-```
 
-Returns `shippo_order` object
+await shippoService.order.with(["fulfillment"]).fetch(object_id)
+```
 
 ## Packing Slips
 
@@ -115,6 +115,8 @@ const { object_id } = order
 await shippoService.packingslip.fetch(object_id)
 
 await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
+
+await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 ```
 
 ## Returns
@@ -295,6 +297,12 @@ POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
 ```
 
+### Raw rates
+
+```javascript
+await shippoService.rates.for(["cart", id]).fetch()
+```
+
 ### Help, adding a shipping method to cart throws an error
 
 This is an issue with medusa-admin. Examine line 85 [`admin/src/domain/settings/regions/new-shipping.tsx`](https://github.com/medusajs/admin/blob/a33ed20214297ffdbd2383f809dddd4870f5dad9/src/domain/settings/regions/new-shipping.tsx#L85)
@@ -311,14 +319,6 @@ Possible interim solution:
 price_type: (options[optionIndex].type === "LIVE_RATE") 
     ? "calculated" 
     : "flat_rate",
-```
-
-### Raw rates
-
-```javascript
-await shippoService.rates.cart(cart_id)
-
-await shippoService.rates.cart(cart_id. so_id)
 ```
 
 ## Webhooks
@@ -491,13 +491,24 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
-### Packer
-
-`pack([LineItem])`
+`is([entity, id], attr).fetch()`
 
 ```javascript
-/* @experimental */
-await shippoService.packer.pack(lineItems)
+await shippoService.is(["order", id], "replace").fetch()
+```
+
+### Package
+
+`select(attr).for([entity, id]).fetch()`
+
+```javascript
+await shippoService.package.for(["items", [...LineItems]]).fetch()
+
+/* @unreleased */
+await shippoService.package.for(["cart", id]).fetch()
+
+/* @unreleased */
+await shippoService.package.for(["fulfillment", id]).fetch()
 ```
 
 ### Packingslip
@@ -524,16 +535,17 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ### Rates
 
-`cart(id)`
+`for([entity, id]).fetch(id)`
 
 ```javascript
-/* @experimental */
-await shippoService.rates.cart(id)
+await shippoService.rates.for(["cart", id]).fetch()
 ```
 
+`find(entity).for([entity, id]).fetch()`
+
 ```javascript
 /* @experimental */
-await shippoService.rates.cart(id, shipping_option_id)
+await shippoService.find("rates").for(["cart", id]).fetch()
 ```
 
 ### Track
@@ -557,7 +569,7 @@ await shippoService.track.fetchBy(["fulfillment", id])
 ```javascript
 await shippoService.transaction.fetch(object_id)
 
-await shippoService.transaction.fetch(object_id, { variant: "extended" })
+await shippoService.transaction.fetch(object_id, { type: "extended" })
 ```
 
 `fetchBy([entity, id], {...args} = null)`
@@ -565,18 +577,17 @@ await shippoService.transaction.fetch(object_id, { variant: "extended" })
 ```javascript
 await shippoService.transaction.fetchBy(["order", id])
 
-await shippoService.transaction.fetchBy(["order", id], { variant: "extended" })
+await shippoService.transaction.fetchBy(["order", id], { type: "extended" })
 
 await shippoService.transaction.fetchBy(["fulfillment", id])
 
-await shippoService.transaction.fetchBy(["fulfillment", id], { variant: "extended" })
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
 ```
 
-`isReturn(id)`
+`is([entity, id], attr).fetch()`
 
 ```javascript
-/* @experimental */
-await shippoService.transaction.isReturn(object_id)
+await shippoService.is(["transaction", id], "return").fetch()
 ```
 
 ### Client

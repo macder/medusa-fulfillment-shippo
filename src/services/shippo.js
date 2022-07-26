@@ -52,15 +52,22 @@ class ShippoService extends BaseService {
     this.account = this.#account()
     this.client = this.#shippoClient.getClient()
     this.order = this.#order()
-    this.packer = this.#packer()
+    this.package = this.#package()
     this.packingslip = this.#packingslip()
     this.rates = this.#rates()
     this.track = this.#track()
     this.transaction = this.#transaction()
 
+    this.is = ([entity, id], attr) => this.#selector([entity, id], ["is", attr])
+    this.for = ([entity, id]) => this.#selector([entity, id], ["for"])
+
     this.find = (needle) => this.#find(needle)
 
     this.fulfillment = this.#fulfillment()
+  }
+
+  #selector([entity, id], [method, params]) {
+    return this[entity][method]([entity, id], params)
   }
 
   #account() {
@@ -103,7 +110,7 @@ class ShippoService extends BaseService {
     }
   }
 
-  #order() {
+  #order(key) {
     const methods = {
       fetch: (id) => this.#shippoOrder.fetch(id),
       fetchBy: {
@@ -113,14 +120,21 @@ class ShippoService extends BaseService {
         fulfillment: (object_id) =>
           this.#shippoOrder.findFulfillment(object_id),
       },
+      is: {
+        replace: (id) => this.#shippoOrder.isReplace(id),
+      },
     }
     return new ShippoFacade(methods)
   }
 
-  #packer() {
-    return {
-      pack: async (items) => await this.#shippoPacker.packBins(items),
+  #package() {
+    const methods = {
+      for: {
+        items: (items) => this.#shippoPacker.packBins(items),
+      },
     }
+
+    return new ShippoFacade(methods)
   }
 
   #packingslip() {
@@ -139,10 +153,13 @@ class ShippoService extends BaseService {
   }
 
   #rates() {
-    return {
-      cart: async (cart_id, option) =>
-        this.#shippoRates.checkout(cart_id, option),
+    const methods = {
+      for: {
+        cart: (id) => this.#shippoRates.fetchCartRates(id),
+      },
     }
+
+    return new ShippoFacade(methods)
   }
 
   #track() {
@@ -160,26 +177,31 @@ class ShippoService extends BaseService {
 
   #transaction() {
     const methods = {
-      fetch: (id, { variant = "default" } = "default") =>
+      fetch: (id, { variant = "default", type = variant } = "default") =>
         ({
           default: (id) => this.#shippoTransaction.fetch(id),
           extended: (id) => this.#shippoTransaction.fetchExtended(id),
-        }[variant](id)),
+        }[type](id)),
       fetchBy: {
-        order: (id, { variant = "default" } = "default") =>
+        order: (id, { variant = "default", type = variant } = "default") =>
           ({
             default: (id) => this.#shippoTransaction.fetchByOrder(id),
             extended: (id) => this.#shippoTransaction.fetchExtendedByOrder(id),
-          }[variant](id)),
+          }[type](id)),
 
-        fulfillment: (id, { variant = "default" } = "default") =>
+        fulfillment: (
+          id,
+          { variant = "default", type = variant } = "default"
+        ) =>
           ({
             default: (id) => this.#shippoTransaction.fetchByFulfillment(id),
             extended: (id) =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
-          }[variant](id)),
+          }[type](id)),
       },
-      isReturn: (id) => this.#shippoTransaction.isReturn(id),
+      is: {
+        return: (id) => this.#shippoTransaction.isReturn(id),
+      },
     }
     return new ShippoFacade(methods)
   }

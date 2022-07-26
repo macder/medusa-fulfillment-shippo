@@ -6,19 +6,13 @@ import shippo from "shippo"
 class ShippoClientService extends BaseService {
   #client
 
-  #fulfillmentService
-
-  constructor({ fulfillmentService }, options) {
+  constructor({}, options) {
     super()
-
-    /** @private @const {FulfillmentService} */
-    this.#fulfillmentService = fulfillmentService
 
     this.#setConfig(options)
     this.#setClient()
 
     this.useClient = this.getClient()
-    this.fetchExpandedTransactions = this.fetchExtendedTransactions
   }
 
   /**
@@ -100,23 +94,6 @@ class ShippoClientService extends BaseService {
       carriers: await this.#fetchCarriers(),
       groups: await this.#fetchServiceGroups(),
     }
-  }
-
-  async #retrieveShippoOrderId(fulfillmentId) {
-    const fullfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
-
-    if (!fullfillment.data?.shippo_order_id) {
-      throw new MedusaError(
-        MedusaError.Types.NOT_FOUND,
-        `Shippo order not found for fulfillment with id: ${fulfillmentId}`
-      )
-    }
-
-    const {
-      data: { shippo_order_id },
-    } = fullfillment
-
-    return shippo_order_id
   }
 
   #setConfig(options) {
