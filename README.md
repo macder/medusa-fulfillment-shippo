@@ -106,7 +106,7 @@ await shippoService.order.fetchBy(["fulfillment", ful_id]
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
-[See references](#order)
+[See references](#order) for all methods
 
 ## Packing Slips
 
@@ -122,7 +122,7 @@ await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
 await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 ```
 
-[See references](#packingslip)
+[See references](#packingslip) for all methods
 
 ## Returns
 
@@ -550,13 +550,6 @@ await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ```javascript
 await shippoService.rates.for(["cart", id]).fetch()
-```
-
-`find(entity).for([entity, id]).fetch()`
-
-```javascript
-/* @experimental */
-await shippoService.find("rates").for(["cart", id]).fetch()
 ```
 
 ### Track
