@@ -532,13 +532,13 @@ await shippoService.is(["order", id], "replace").fetch()
 `for([entity, id]).fetch()`
 
 ```javascript
-await shippoService.package.for(["items", [...LineItems]]).fetch()
+await shippoService.package.for([ "line_items", [...lineItems] ]).fetch()
 
 /* @unreleased */
-await shippoService.package.for(["cart", id]).fetch()
+await shippoService.package.for([ "cart", id ]).fetch()
 
 /* @unreleased */
-await shippoService.package.for(["fulfillment", id]).fetch()
+await shippoService.package.for([ "fulfillment", id ]).fetch()
 ```
 
 ### Packingslip
