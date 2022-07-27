@@ -499,7 +499,7 @@ await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
 ```javascript
-// @return [{...}]
+// @return [...{...}]
 
 await shippoService.order.fetchBy(["local_order", id])
 
