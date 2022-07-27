@@ -12,15 +12,15 @@ class ShippoFacade {
 
     this.#call = null
 
-    this.#with = {
+    this.#with = Object.freeze({
       entity: null,
       method: null,
-    }
+    })
 
-    this.#entity = {
+    this.#entity = Object.freeze({
       id: null,
       type: null,
-    }
+    })
 
     this.is = this.#is
     this.for = this.#for
@@ -78,15 +78,12 @@ class ShippoFacade {
   }
 
   #reset() {
-    this.#with = {
+    this.#setWith({
       entity: null,
       method: null,
-    }
-    this.#entity = {
-      id: null,
-      type: null,
-    }
-    this.#call = null
+    })
+    this.#setEntity([null, null])
+    this.#setCall(null)
     return this
   }
 
@@ -95,17 +92,20 @@ class ShippoFacade {
   }
 
   #setEntity([type, id = null]) {
-    this.#entity = {
+    const set = {
       id,
       type,
     }
+    this.#entity = Object.freeze(set)
     return this
   }
 
-  #setWith(params) {
-    this.#with = {
-      ...params,
+  #setWith({ entity, method }) {
+    const set = {
+      entity,
+      method,
     }
+    this.#with = Object.freeze(set)
     return this.#with
   }
 }
