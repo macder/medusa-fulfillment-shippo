@@ -348,8 +348,6 @@ The flow at the code level is:
     3.  If the fetch resolves to the object requested, then use that data instead of the untrusted input 
     4.  Otherwise throw a HTTP 500 and do nothing
 
-The code is doing its part, follow it and see [`src/api/routes/hooks`](https://github.com/macder/medusa-fulfillment-shippo/tree/main/src/api/routes/hooks) Make sure you do your part, or leave this feature disabled.
-
 ### Setup
 
 In `.env` add `SHIPPO_WEBHOOK_SECRET=some_secret_string` 
@@ -364,40 +362,45 @@ const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
   resolve: `medusa-fulfillment-shippo`,
   options: {
     api_key: SHIPPO_API_KEY,
-    webhook_secret: SHIPPO_WEBHOOK_SECRET,
     weight_unit_type: 'g',
-    dimension_unit_type: 'cm'
+    dimension_unit_type: 'cm',
+    webhook_secret: SHIPPO_WEBHOOK_SECRET,
+    webhook_test_mode: false    
   },
 },
 ```
+### Endpoints
 
-### Hooks
+Hooks need to be setup in [Shippo app settings](https://apps.goshippo.com/settings/api)
 
-Hooks need to be added in [Shippo app settings](https://apps.goshippo.com/settings/api)
+**transaction_created**: `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
+
+**transaction_updated**: `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
+
+**track_updated**: `/hooks/shippo/track?token=SHIPPO_WEBHOOK_SECRET`
 
 Then send a sample. If everything is good you will see this in console:
 
 ```shell
 Processing shippo.received.transaction_created which has 0 subscribers
- [Error: Item not found] {
-   type: 'ShippoNotFoundError',
-   code: undefined,
-   detail: '{"detail": "Not found"}',
-   path: '/transactions/[some_random_id]',
-   statusCode: 404
- }
 Processing shippo.rejected.transaction_created which has 0 subscribers
 ```
 
 This is the expected behaviour because the data could not be verified. Since it is a sample, when the plugin tried to verify the transaction by requesting the same object back directly from shippo api, it did not exist. It will NOT use input data beyond making the verification, so it gets rejected.
 
-### How to test
+### Test Mode
 
-Documentation WIP...
+Test mode bypasses input authenticity verification, i.e. it will use the untrusted input data instead of requesting the same data back from shippo.
 
-### transaction\_created
+This allows testing using data that does not exist in shippo.
 
-**Endpoint:**
+To enable, set `webhook_test_mode: true` in `medusa-config.js` plugin options.
+
+Running in test mode is a security risk, enable only for testing purposes.
+
+### Hooks
+
+#### transaction\_created
 
 `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
@@ -406,7 +409,7 @@ Receives shippo transaction object when label purchased
 *   Updates fulfillment to “shipped”
 *   Adds tracking number and link to fulfillment
 
-**Events:**
+##### Events
 
 `shippo.transaction_created.shipment`
 
@@ -427,9 +430,7 @@ Receives shippo transaction object when label purchased
 }
 ```
 
-### transaction\_updated
-
-**Endpoint:**
+#### transaction\_updated
 
 `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
@@ -446,6 +447,10 @@ Receives shippo transaction object when transaction updated
   transaction: {...}
 }
 ```
+
+#### track\_updated
+
+`/hooks/shippo/track?token=SHIPPO_WEBHOOK_SECRET`
 
 ## Public Interface
 
