@@ -61,7 +61,6 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * Fetch all transactions related to an {Order}
-   * Shorthand for client.transaction.retrieve(id)
    * @param {string} orderId - order_id
    * @return {Promise.<object[]>} The transaction
    */
