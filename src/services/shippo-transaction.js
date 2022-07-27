@@ -217,7 +217,7 @@ class ShippoTransactionService extends BaseService {
   async isReturn(transactionId) {
     const transaction = await this.fetch(transactionId)
     return this.fetchExtended(transaction.object_id).then(
-      (response) => response.is_return
+      (response) => response?.is_return
     )
   }
 
