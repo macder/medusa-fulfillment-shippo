@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+Added
+
+*   Public Interface - packingslip fetchBy local_order [#272](https://github.com/macder/medusa-fulfillment-shippo/issues/272)
+*   Public Interface - packingslip fetchBy claim [#273](https://github.com/macder/medusa-fulfillment-shippo/issues/273)
+*   Public Interface - packingslip fetchBy swap [#274](https://github.com/macder/medusa-fulfillment-shippo/issues/274)
+
 ## \[0.25.0] (2022-07-26)
 
 Added
