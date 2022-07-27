@@ -12,7 +12,7 @@ Added
 
 Deprecated
 
-*   transaction fetchBy "order" - use "local_order" instead [#269](https://github.com/macder/medusa-fulfillment-shippo/issues/269)
+*   transaction fetchBy "order" - use "local_order" instead [#269](https://github.com/macder/medusa-fulfillment-shippo/issues/269) & [#225](https://github.com/macder/medusa-fulfillment-shippo/issues/225)
 
 ## \[0.24.1] (2022-07-26)
 
