@@ -328,9 +328,7 @@ price_type: (options[optionIndex].type === "LIVE_RATE")
 
 ## Webhooks
 
-> Note: This section is WIP
-
-### Disclaimer
+### Caution
 
 Incoming HTTP requests from Shippo to webhook endpoints lack authentication. No secret token, no signature in the request header, no bearer, nothing.
 
@@ -369,15 +367,16 @@ const SHIPPO_WEBHOOK_SECRET = process.env.SHIPPO_WEBHOOK_SECRET
   },
 },
 ```
+
 ### Endpoints
 
 Hooks need to be setup in [Shippo app settings](https://apps.goshippo.com/settings/api)
 
-**transaction_created**: `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
+**transaction\_created**: `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
-**transaction_updated**: `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
+**transaction\_updated**: `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
-**track_updated**: `/hooks/shippo/track?token=SHIPPO_WEBHOOK_SECRET`
+**track\_updated**: `/hooks/shippo/track?token=SHIPPO_WEBHOOK_SECRET`
 
 Then send a sample. If everything is good you will see this in console:
 
@@ -456,7 +455,7 @@ Receives shippo transaction object when transaction updated
 
 ```javascript
 {
-  ...
+  ...track
 }
 ```
 
@@ -474,7 +473,8 @@ Dependency inject `shippoService` as you would with any other service
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-> Note: 
+> Note:
+>
 > ```plaintext
 > order = shippo_order
 >
