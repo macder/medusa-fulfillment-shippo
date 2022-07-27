@@ -140,6 +140,11 @@ class ShippoService extends BaseService {
       fetchBy: {
         fulfillment: (id) =>
           this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
+        local_order: (id) =>
+          this.#shippoOrder.findPackingSlipBy("order_id", id),
+        claim: (id) =>
+          this.#shippoOrder.findPackingSlipBy("claim_order_id", id),
+        swap: (id) => this.#shippoOrder.findPackingSlipBy("swap_id", id),
       },
       with: {
         fulfillment: (object_id) =>
@@ -177,12 +182,15 @@ class ShippoService extends BaseService {
           extended: () => this.#shippoTransaction.fetchExtended(id),
         }[type](id)),
       fetchBy: {
-        local_order: (id, { variant = "default", type = variant } = "default") =>
-        ({
-          default: () => this.#shippoTransaction.fetchByOrder(id),
-          extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
-        }[type](id)),
-        
+        local_order: (
+          id,
+          { variant = "default", type = variant } = "default"
+        ) =>
+          ({
+            default: () => this.#shippoTransaction.fetchByOrder(id),
+            extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
+          }[type](id)),
+
         fulfillment: (
           id,
           { variant = "default", type = variant } = "default"
@@ -192,13 +200,13 @@ class ShippoService extends BaseService {
             extended: () =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
           }[type](id)),
-        
+
         /* @deprecated */
         order: (id, { variant = "default", type = variant } = "default") =>
-        ({
-          default: () => this.#shippoTransaction.fetchByOrder(id),
-          extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
-        }[type](id)),
+          ({
+            default: () => this.#shippoTransaction.fetchByOrder(id),
+            extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
+          }[type](id)),
       },
       is: {
         return: (id) => this.#shippoTransaction.isReturn(id),
