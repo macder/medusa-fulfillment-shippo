@@ -45,6 +45,7 @@ Supports returns, exchanges, and claims.
 *   [Public Interface](#public-interface)
     *   [Account](#account)
     *   [Order](#order)
+    *   [Package](#package)
     *   [Packingslip](#packingslip)
     *   [Rates](#rates)
     *   [Track](#track)
@@ -105,6 +106,8 @@ await shippoService.order.fetchBy(["fulfillment", ful_id]
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
+[See references](#order)
+
 ## Packing Slips
 
 ### Retrieve
@@ -118,6 +121,8 @@ await shippoService.packingslip.fetchBy(["fulfillment"], ful_id)
 
 await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 ```
+
+[See references](#packingslip)
 
 ## Returns
 
@@ -489,6 +494,12 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 
 ```javascript
 await shippoService.order.fetchBy(["fulfillment", id])
+
+await shippoService.order.fetchBy(["local_order", id])
+
+await shippoService.order.fetchBy(["claim", id])
+
+await shippoService.order.fetchBy(["swap", id])
 ```
 
 `is([entity, id], attr).fetch()`
@@ -499,7 +510,7 @@ await shippoService.is(["order", id], "replace").fetch()
 
 ### Package
 
-`select(attr).for([entity, id]).fetch()`
+`for([entity, id]).fetch()`
 
 ```javascript
 await shippoService.package.for(["items", [...LineItems]]).fetch()
