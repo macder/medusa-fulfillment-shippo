@@ -4,6 +4,7 @@ import * as matchers from "jest-extended"
 import ShippoService from "../shippo"
 import ShippoClientService from "../shippo-client"
 import ShippoOrderService from "../shippo-order"
+import ShippoPackageService from "../shippo-package"
 import ShippoPackerService from "../shippo-packer"
 import ShippoRatesService from "../shippo-rates"
 import ShippoTrackService from "../shippo-track"
@@ -291,12 +292,18 @@ describe("shippoService", () => {
     {}
   )
 
+  const shippoPackageService = new ShippoPackageService(
+    { shippoClientService, shippoPackerService },
+    {}
+  )
+
   const shippoRatesService = new ShippoRatesService(
     {
       cartService,
       pricingService,
       shippingProfileService,
       shippoClientService,
+      shippoPackageService,
       shippoPackerService,
       totalsService,
     },
@@ -337,6 +344,7 @@ describe("shippoService", () => {
     {
       shippoClientService,
       shippoOrderService,
+      shippoPackageService,
       shippoPackerService,
       shippoRatesService,
       shippoTrackService,

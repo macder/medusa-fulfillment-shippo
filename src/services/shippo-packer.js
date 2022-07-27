@@ -1,33 +1,26 @@
 import { BP3D } from "binpackingjs"
 import { BaseService } from "medusa-interfaces"
-import { productLineItem } from "../utils/formatters"
 
 class ShippoPackerService extends BaseService {
   #bins = []
 
   #items = []
 
-  #shippo
-
-  constructor({ shippoClientService }) {
+  constructor({}) {
     super()
-
-    /** @private @const {ShippoClientService} */
-    this.#shippo = shippoClientService
   }
 
   /**
-   * Packs line items into parcel templates defined in shippo account
-   * @param {array.<LineItem>} lineItems - array of LineItems, eg. cart.items
-   * @return {array.<object>} - array of packed bins, including its items 3D locus
+   *
+   * @param {}
+   * @return {array.<object>}
    */
-  async packBins(lineItems) {
+  async packBins(bins, items) {
     const { Packer } = BP3D
 
-    const parcelTemplates = await this.#shippo.fetchUserParcelTemplates()
+    this.#setBins(bins)
+    this.#setItems(items)
 
-    this.#setBins(parcelTemplates)
-    this.#setItems(lineItems)
     const fitBins = []
 
     this.#bins.forEach((bin) => {
@@ -89,11 +82,11 @@ class ShippoPackerService extends BaseService {
     })
   }
 
-  #setBins(parcelTemplates) {
+  #setBins(bins) {
     const { Bin } = BP3D
 
-    this.#bins = parcelTemplates
-      .map(({ object_owner, object_created, object_updated, ...bin }) => ({
+    this.#bins = bins
+      .map((bin) => ({
         ...bin,
         volume: this.constructor.calculateVolume(bin),
       }))
@@ -102,38 +95,31 @@ class ShippoPackerService extends BaseService {
         (bin) =>
           new Bin({ ...bin }, bin.width, bin.height, bin.length, bin.weight)
       )
+    return this.#bins
   }
 
-  #setItems(lineItems) {
+  #setItems(items) {
     const { Item } = BP3D
-    this.#items = lineItems
-      .flatMap((item) =>
-        item.quantity > 1
-          ? this.constructor.splitItem(item)
-          : productLineItem(item)
-      )
-      .map(
-        (item) =>
-          new Item(
-            {
-              title: item.product_title,
-              product_id: item.product_id,
-              variant_id: item.variant_id,
-            },
-            item.width,
-            item.height,
-            item.length,
-            item.weight
-          )
-      )
+
+    this.#items = items.map(
+      (item) =>
+        new Item(
+          {
+            title: item.product_title,
+            product_id: item.product_id,
+            variant_id: item.variant_id,
+          },
+          item.width,
+          item.height,
+          item.length,
+          item.weight
+        )
+    )
+    return this.#items
   }
 
   static calculateVolume({ length, depth, width, height }) {
     return length ? length * width * height : depth * width * height
-  }
-
-  static splitItem(item) {
-    return [...Array(item.quantity).keys()].map(() => productLineItem(item))
   }
 }
 

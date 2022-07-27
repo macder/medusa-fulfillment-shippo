@@ -13,7 +13,7 @@ class ShippoRatesService extends BaseService {
 
   #shippo
 
-  #shippoPackerService
+  #shippoPackageService
 
   #shippingProfileService
 
@@ -23,7 +23,7 @@ class ShippoRatesService extends BaseService {
     cartService,
     pricingService,
     shippoClientService,
-    shippoPackerService,
+    shippoPackageService,
     shippingProfileService,
     totalsService,
   }) {
@@ -38,8 +38,8 @@ class ShippoRatesService extends BaseService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
-    /** @private @const {ShippoPackerService_} */
-    this.#shippoPackerService = shippoPackerService
+    /** @private @const {ShippoPackageService} */
+    this.#shippoPackageService = shippoPackageService
 
     /** @private @const {ShippingProfileService} */
     this.#shippingProfileService = shippingProfileService
@@ -195,7 +195,7 @@ class ShippoRatesService extends BaseService {
   }
 
   async #packBins() {
-    const packed = await this.#shippoPackerService.packBins(this.#cart.items)
+    const packed = await this.#shippoPackageService.packCart(this.#cart)
     return packed
   }
 

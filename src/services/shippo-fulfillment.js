@@ -14,7 +14,7 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   #shippo
 
-  #shippoPackerService
+  #shippoPackageService
 
   #shippoRatesService
 
@@ -27,7 +27,7 @@ class ShippoFulfillmentService extends FulfillmentService {
       eventBusService,
       orderService,
       shippoClientService,
-      shippoPackerService,
+      shippoPackageService,
       shippoRatesService,
       shippoTransactionService,
       totalsService,
@@ -47,8 +47,8 @@ class ShippoFulfillmentService extends FulfillmentService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
-    /** @private @const {ShippoPackerService} */
-    this.#shippoPackerService = shippoPackerService
+    /** @private @const {ShippoPackageService} */
+    this.#shippoPackageService = shippoPackageService
 
     /** @private @const {ShippoRatesService} */
     this.#shippoRatesService = shippoRatesService
@@ -173,10 +173,10 @@ class ShippoFulfillmentService extends FulfillmentService {
       return { ...data }
     }
 
-    const parcel = await this.#shippoPackerService
-      .packBins(cart.items)
+    const parcel = await this.#shippoPackageService
+      .packCart(cart)
       .then((packed) => ({
-        id: packed[0].object_id,
+        id: packed[0].id,
         name: packed[0].name,
       }))
 

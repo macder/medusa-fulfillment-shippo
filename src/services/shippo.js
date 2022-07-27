@@ -8,7 +8,7 @@ class ShippoService extends BaseService {
 
   #shippoOrder
 
-  #shippoPacker
+  #shippoPackageService
 
   #shippoTrack
 
@@ -19,7 +19,7 @@ class ShippoService extends BaseService {
   constructor({
     shippoClientService,
     shippoOrderService,
-    shippoPackerService,
+    shippoPackageService,
     shippoRatesService,
     shippoTrackService,
     shippoTransactionService,
@@ -32,8 +32,8 @@ class ShippoService extends BaseService {
     /** @private @const {ShippoOrderService} */
     this.#shippoOrder = shippoOrderService
 
-    /** @private @const {ShippoPackerService} */
-    this.#shippoPacker = shippoPackerService
+    /** @private @const {ShippoPackageService} */
+    this.#shippoPackageService = shippoPackageService
 
     /** @private @const {ShippoRatesService} */
     this.#shippoRates = shippoRatesService
@@ -127,7 +127,7 @@ class ShippoService extends BaseService {
   #package() {
     const methods = {
       for: {
-        items: (items) => this.#shippoPacker.packBins(items),
+        items: (items) => this.#shippoPackageService.packItems(items),
       },
     }
 
