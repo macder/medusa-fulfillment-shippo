@@ -547,14 +547,14 @@ await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 `fetchBy([entity, id])`
 
 ```javascript
-// @return {}
+/* @return {Promise.<object>} */
 
 await shippoService.packingslip.fetchBy(["fulfillment", id])
 
 ```
 
 ```javascript
-// @return [{}]
+/* @return {Promise.<object[]>} */
 
 await shippoService.packingslip.fetchBy(["local_order", id]) 
 
