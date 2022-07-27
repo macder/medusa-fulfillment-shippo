@@ -177,12 +177,12 @@ class ShippoService extends BaseService {
           extended: () => this.#shippoTransaction.fetchExtended(id),
         }[type](id)),
       fetchBy: {
-        order: (id, { variant = "default", type = variant } = "default") =>
-          ({
-            default: () => this.#shippoTransaction.fetchByOrder(id),
-            extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
-          }[type](id)),
-
+        local_order: (id, { variant = "default", type = variant } = "default") =>
+        ({
+          default: () => this.#shippoTransaction.fetchByOrder(id),
+          extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
+        }[type](id)),
+        
         fulfillment: (
           id,
           { variant = "default", type = variant } = "default"
@@ -192,6 +192,13 @@ class ShippoService extends BaseService {
             extended: () =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
           }[type](id)),
+        
+        /* @deprecated */
+        order: (id, { variant = "default", type = variant } = "default") =>
+        ({
+          default: () => this.#shippoTransaction.fetchByOrder(id),
+          extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
+        }[type](id)),
       },
       is: {
         return: (id) => this.#shippoTransaction.isReturn(id),

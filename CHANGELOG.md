@@ -10,9 +10,9 @@ Added
 *   Public Interface - order fetchBy claim [#250](https://github.com/macder/medusa-fulfillment-shippo/issues/250)
 *   Public Interface - order fetchBy swap [#251](https://github.com/macder/medusa-fulfillment-shippo/issues/251)
 
-Changed
+Deprecated
 
-*   **BREAKING** transaction fetchBy "order" is now "local_order" [#266](https://github.com/macder/medusa-fulfillment-shippo/issues/266)
+*   transaction fetchBy "order" - use "local_order" instead [#269](https://github.com/macder/medusa-fulfillment-shippo/issues/269)
 
 ## \[0.24.1] (2022-07-26)
 
