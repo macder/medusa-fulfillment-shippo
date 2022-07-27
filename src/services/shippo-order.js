@@ -123,7 +123,7 @@ class ShippoOrderService extends BaseService {
     return fulfillment[0]
   }
 
-  async findBy(type, id) {
+  async findFulfillmentsBy(type, id) {
     const fulfillmentRepo = this.#manager.getCustomRepository(
       this.#fulfillmentRepo
     )
@@ -133,16 +133,45 @@ class ShippoOrderService extends BaseService {
         [type]: id,
       },
     })
+    return fulfillments
+  }
 
-    const orders = await Promise.all(fulfillments.map(async (fulfillment) => {
-      const order = await this.fetchByFulfillmentId(fulfillment.id)
-      return {
-        ...order,
-        fulfillment_id: fulfillment.id,
-      }
-    }))
+  async findBy(type, id) {
+    const fulfillments = await this.findFulfillmentsBy(type, id)
 
+    const orders = await Promise.all(
+      fulfillments.map(async (fulfillment) => {
+        const order = await this.fetchByFulfillmentId(fulfillment.id)
+        return {
+          ...order,
+          fulfillment_id: fulfillment.id,
+        }
+      })
+    )
     return orders
+  }
+
+  async findPackingSlipBy(type, id) {
+    const fulfillments = await this.findFulfillmentsBy(type, id)
+
+    const packingSlips = await Promise.all(
+      fulfillments.map(async (fulfillment) => {
+        const packingSlip = await this.fetchPackingSlipByFulfillmentId(
+          fulfillment.id
+        )
+        const {
+          id,
+          data: { shippo_order_id },
+        } = fulfillment
+
+        return {
+          ...packingSlip,
+          shippo_order_id,
+          fulfillment_id: id,
+        }
+      })
+    )
+    return packingSlips
   }
 
   async isReplace(id) {
@@ -150,8 +179,10 @@ class ShippoOrderService extends BaseService {
     return order.order_number.includes("replace")
   }
 
-  async #getIdFromFulfillment(fulfillmentId) {
-    const fulfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
+  async #getIdFromFulfillment(fulfillmentOrId) {
+    const fulfillment = fulfillmentOrId?.id
+      ? fulfillmentOrId
+      : await this.#fulfillmentService.retrieve(fulfillmentOrId)
 
     if (!fulfillment.data?.shippo_order_id) {
       throw new MedusaError(

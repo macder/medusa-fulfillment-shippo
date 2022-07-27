@@ -12,7 +12,6 @@ import ShippoTransactionService from "../shippo-transaction"
 import {
   makeArrayOf,
   mockLineItem,
-  // mockParcelTemplate,
   mockCart,
   mockLineItemTotals,
   mockShippingOption,
@@ -44,7 +43,6 @@ describe("shippoService", () => {
 
   const fulfillmentRepository = MockRepository({
     find: async (config) => {
-
       const fulfills = {
         321: {
           id: "ful_321",
@@ -96,50 +94,49 @@ describe("shippoService", () => {
               tracking_number: "track_num_1",
             },
           ],
-        }
+        },
       }
 
       const fulfillments = {
         shippo_order_id: {
-          object_id_order_123: [
-            fulfills[321]
-          ],
-          object_id_order_1234: [
-            fulfills[4321]
-          ],
+          object_id_order_123: [fulfills[321]],
+          object_id_order_1234: [fulfills[4321]],
         },
         order_id: {
-          123: [
-            fulfills[321],
-            fulfills[4321]
-          ]
+          123: [fulfills[321], fulfills[4321]],
         },
         claim_order_id: {
-          "claim_123": [
-            fulfills.claim_ful
-          ]
+          claim_123: [fulfills.claim_ful],
         },
         swap_id: {
-          "swap_123": [
-            fulfills.swap_ful
-          ]
-        }
+          swap_123: [fulfills.swap_ful],
+        },
       }
 
       if (config.where?.data?.shippo_order_id) {
-        const { where: { data: { shippo_order_id } } } = config
+        const {
+          where: {
+            data: { shippo_order_id },
+          },
+        } = config
         return fulfillments.shippo_order_id[shippo_order_id]
       }
-      else if (config.where?.order_id) {
-        const { where: { order_id } } = config
+      if (config.where?.order_id) {
+        const {
+          where: { order_id },
+        } = config
         return fulfillments.order_id[order_id]
       }
-      else if (config.where?.claim_order_id) {
-        const { where: { claim_order_id } } = config
+      if (config.where?.claim_order_id) {
+        const {
+          where: { claim_order_id },
+        } = config
         return fulfillments.claim_order_id[claim_order_id]
       }
-      else if (config.where?.swap_id) {
-        const { where: { swap_id } } = config
+      if (config.where?.swap_id) {
+        const {
+          where: { swap_id },
+        } = config
         return fulfillments.swap_id[swap_id]
       }
     },
@@ -163,66 +160,65 @@ describe("shippoService", () => {
   )
 
   const fulfillmentService = {
-    retrieve: jest.fn(async (id) => {
-
-      return {
-        ful_321: {
-          id,
-          order_id: "123",
-          data: {
-            shippo_order_id: "object_id_order_123",
-          },
-          tracking_links: [
-            {
-              tracking_number: "track_num_1",
+    retrieve: jest.fn(
+      async (id) =>
+        ({
+          ful_321: {
+            id,
+            order_id: "123",
+            data: {
+              shippo_order_id: "object_id_order_123",
             },
-          ],
-        },
-        ful_4321: {
-          id,
-          order_id: "123",
-          claim_order_id: null,
-          swap_id: null,
-          data: {
-            shippo_order_id: "object_id_order_1234",
+            tracking_links: [
+              {
+                tracking_number: "track_num_1",
+              },
+            ],
           },
-          tracking_links: [
-            {
-              tracking_number: "track_num_1",
+          ful_4321: {
+            id,
+            order_id: "123",
+            claim_order_id: null,
+            swap_id: null,
+            data: {
+              shippo_order_id: "object_id_order_1234",
             },
-          ],
-        },
-        ful_321_claim: {
-          id,
-          order_id: null,
-          claim_order_id: "claim_123",
-          swap_id: null,
-          data: {
-            shippo_order_id: "object_id_order_replace_123",
+            tracking_links: [
+              {
+                tracking_number: "track_num_1",
+              },
+            ],
           },
-          tracking_links: [
-            {
-              tracking_number: "track_num_1",
+          ful_321_claim: {
+            id,
+            order_id: null,
+            claim_order_id: "claim_123",
+            swap_id: null,
+            data: {
+              shippo_order_id: "object_id_order_replace_123",
             },
-          ],
-        },
-        ful_321_swap: {
-          id,
-          order_id: null,
-          claim_order_id: null,
-          swap_id: "swap_123",
-          data: {
-            shippo_order_id: "object_id_order_swap_123",
+            tracking_links: [
+              {
+                tracking_number: "track_num_1",
+              },
+            ],
           },
-          tracking_links: [
-            {
-              tracking_number: "track_num_1",
+          ful_321_swap: {
+            id,
+            order_id: null,
+            claim_order_id: null,
+            swap_id: "swap_123",
+            data: {
+              shippo_order_id: "object_id_order_swap_123",
             },
-          ],
-        }
-      }[id]
-
-    }),
+            tracking_links: [
+              {
+                tracking_number: "track_num_1",
+              },
+            ],
+          },
+        }[id])
+    ),
   }
 
   const mockOrder = {
@@ -281,7 +277,7 @@ describe("shippoService", () => {
   }
 
   const orderService = {
-    list: jest.fn(async ({ display_id }, { }) => mockOrder[display_id]),
+    list: jest.fn(async ({ display_id }, {}) => mockOrder[display_id]),
     retrieve: jest.fn(async (id) => mockOrder[id][0]),
   }
 
@@ -404,7 +400,10 @@ describe("shippoService", () => {
           const id = 123
           const result = await shippoService.order.fetchBy(["local_order", id])
           expect(result[0]).toContainEntry(["object_id", "object_id_order_123"])
-          expect(result[1]).toContainEntry(["object_id", "object_id_order_1234"])
+          expect(result[1]).toContainEntry([
+            "object_id",
+            "object_id_order_1234",
+          ])
         })
       })
 
@@ -412,7 +411,10 @@ describe("shippoService", () => {
         test("returns", async () => {
           const id = "claim_123"
           const result = await shippoService.order.fetchBy(["claim", id])
-          expect(result[0]).toContainEntry(["object_id", "object_id_order_replace_123"])
+          expect(result[0]).toContainEntry([
+            "object_id",
+            "object_id_order_replace_123",
+          ])
         })
       })
 
@@ -420,7 +422,10 @@ describe("shippoService", () => {
         test("returns", async () => {
           const id = "swap_123"
           const result = await shippoService.order.fetchBy(["swap", id])
-          expect(result[0]).toContainEntry(["object_id", "object_id_order_swap_123"])
+          expect(result[0]).toContainEntry([
+            "object_id",
+            "object_id_order_swap_123",
+          ])
         })
       })
     })
@@ -504,19 +509,64 @@ describe("shippoService", () => {
       jest.clearAllMocks()
     })
 
-    test("fetch returns packing slip", async () => {
-      const id = "object_id_order_123"
-      const result = await shippoService.packingslip.fetch(id)
-      expect(result).toContainKey("slip_url")
+    describe("fetch", () => {
+      test("returns packing slip", async () => {
+        const id = "object_id_order_123"
+        const result = await shippoService.packingslip.fetch(id)
+        expect(result).toContainKey("slip_url")
+      })
     })
 
-    test("fetchBy returns packing slip", async () => {
-      const id = "ful_321"
-      const result = await shippoService.packingslip.fetchBy([
-        "fulfillment",
-        id,
-      ])
-      expect(result).toContainKey("slip_url")
+    describe("fetchBy", () => {
+      describe("fulfillment", () => {
+        test("returns packing slip", async () => {
+          const id = "ful_321"
+          const result = await shippoService.packingslip.fetchBy([
+            "fulfillment",
+            id,
+          ])
+          expect(result).toContainKey("slip_url")
+        })
+      })
+
+      describe("local_order", () => {
+        test("returns packing slip", async () => {
+          const id = "123"
+          const result = await shippoService.packingslip.fetchBy([
+            "local_order",
+            id,
+          ])
+          expect(result[0]).toContainEntries([
+            ["fulfillment_id", "ful_321"],
+            ["shippo_order_id", "object_id_order_123"],
+            ["slip_url", "https://console.log"],
+          ])
+        })
+      })
+
+      describe("claim", () => {
+        test("returns packing slip", async () => {
+          const id = "claim_123"
+          const result = await shippoService.packingslip.fetchBy(["claim", id])
+          expect(result[0]).toContainEntries([
+            ["fulfillment_id", "ful_321_claim"],
+            ["shippo_order_id", "object_id_order_replace_123"],
+            ["slip_url", "https://console.log"],
+          ])
+        })
+      })
+
+      describe("swap", () => {
+        test("returns packing slip", async () => {
+          const id = "swap_123"
+          const result = await shippoService.packingslip.fetchBy(["swap", id])
+          expect(result[0]).toContainEntries([
+            ["fulfillment_id", "ful_321_swap"],
+            ["shippo_order_id", "object_id_order_swap_123"],
+            ["slip_url", "https://console.log"],
+          ])
+        })
+      })
     })
 
     describe("with", () => {
@@ -639,9 +689,7 @@ describe("shippoService", () => {
     })
 
     describe("fetchBy", () => {
-
       describe("fulfillment", () => {
-
         describe("variant: default", () => {
           test("returns transaction", async () => {
             const result = await shippoService.transaction.fetchBy([
@@ -676,12 +724,13 @@ describe("shippoService", () => {
         })
       })
 
-
       describe("local_order", () => {
-
         describe("variant: default", () => {
           test("returns transaction", async () => {
-            const result = await shippoService.transaction.fetchBy(["local_order", "123"])
+            const result = await shippoService.transaction.fetchBy([
+              "local_order",
+              "123",
+            ])
 
             expect(result[0]).toContainEntry([
               "object_id",
@@ -710,9 +759,7 @@ describe("shippoService", () => {
             ])
           })
         })
-
       })
-
     })
 
     describe("is", () => {
