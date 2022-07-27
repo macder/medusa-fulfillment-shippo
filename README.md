@@ -398,9 +398,7 @@ To enable, set `webhook_test_mode: true` in `medusa-config.js` plugin options.
 
 Running in test mode is a security risk, enable only for testing purposes.
 
-### Hooks
-
-#### transaction\_created
+### transaction\_created
 
 `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
@@ -409,7 +407,7 @@ Receives shippo transaction object when label purchased
 *   Updates fulfillment to “shipped”
 *   Adds tracking number and link to fulfillment
 
-##### Events
+#### Events
 
 `shippo.transaction_created.shipment`
 
@@ -430,13 +428,13 @@ Receives shippo transaction object when label purchased
 }
 ```
 
-#### transaction\_updated
+### transaction\_updated
 
 `/hooks/shippo/transaction?token=SHIPPO_WEBHOOK_SECRET`
 
 Receives shippo transaction object when transaction updated
 
-##### Events
+#### Events
 
 `shippo.transaction_updated.payload`
 
@@ -448,11 +446,11 @@ Receives shippo transaction object when transaction updated
 }
 ```
 
-#### track\_updated
+### track\_updated
 
 `/hooks/shippo/track?token=SHIPPO_WEBHOOK_SECRET`
 
-##### Events
+#### Events
 
 `shippo.track_updated.payload`
 
@@ -461,7 +459,6 @@ Receives shippo transaction object when transaction updated
   ...
 }
 ```
-
 
 ## Public Interface
 
