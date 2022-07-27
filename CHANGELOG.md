@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.25.0] (2022-07-26)
+
+Added
+
+*   Public Interface - order fetchBy local_order [#266](https://github.com/macder/medusa-fulfillment-shippo/issues/266)
+*   Public Interface - order fetchBy claim [#250](https://github.com/macder/medusa-fulfillment-shippo/issues/250)
+*   Public Interface - order fetchBy swap [#251](https://github.com/macder/medusa-fulfillment-shippo/issues/251)
+
+Deprecated
+
+*   transaction fetchBy "order" - use "local_order" instead [#269](https://github.com/macder/medusa-fulfillment-shippo/issues/269) & [#225](https://github.com/macder/medusa-fulfillment-shippo/issues/225)
+
 ## \[0.24.1] (2022-07-26)
 
 *   Performance improvements

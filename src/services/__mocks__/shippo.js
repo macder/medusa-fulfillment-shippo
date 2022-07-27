@@ -61,6 +61,11 @@ const shippo = jest.fn(() => ({
             },
           ],
         },
+        object_id_order_1234: {
+          object_id: id,
+          order_number: "1234",
+          transactions: [],
+        },
         object_id_order_replace_123: {
           object_id: id,
           order_number: "123 (replace)",

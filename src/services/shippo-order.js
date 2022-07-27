@@ -56,7 +56,7 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>}
    */
   async fetchByFulfillmentId(fulfillmentId) {
-    const shippoOrderId = await this.#getId(fulfillmentId)
+    const shippoOrderId = await this.#getIdFromFulfillment(fulfillmentId)
 
     return this.fetch(shippoOrderId).then(async (order) => {
       if (order?.transactions?.length) {
@@ -89,7 +89,7 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>}
    */
   async fetchPackingSlipByFulfillmentId(fulfillmentId) {
-    const shippoOrderId = await this.#getId(fulfillmentId)
+    const shippoOrderId = await this.#getIdFromFulfillment(fulfillmentId)
     return this.fetchPackingSlip(shippoOrderId)
   }
 
@@ -123,12 +123,34 @@ class ShippoOrderService extends BaseService {
     return fulfillment[0]
   }
 
+  async findBy(type, id) {
+    const fulfillmentRepo = this.#manager.getCustomRepository(
+      this.#fulfillmentRepo
+    )
+
+    const fulfillments = await fulfillmentRepo.find({
+      where: {
+        [type]: id,
+      },
+    })
+
+    const orders = await Promise.all(fulfillments.map(async (fulfillment) => {
+      const order = await this.fetchByFulfillmentId(fulfillment.id)
+      return {
+        ...order,
+        fulfillment_id: fulfillment.id,
+      }
+    }))
+
+    return orders
+  }
+
   async isReplace(id) {
     const order = await this.fetch(id)
     return order.order_number.includes("replace")
   }
 
-  async #getId(fulfillmentId) {
+  async #getIdFromFulfillment(fulfillmentId) {
     const fulfillment = await this.#fulfillmentService.retrieve(fulfillmentId)
 
     if (!fulfillment.data?.shippo_order_id) {
