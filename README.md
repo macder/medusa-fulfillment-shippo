@@ -493,13 +493,13 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 `fetchBy([entity, id])`
 
 ```javascript
-// @return {Promise.<object>}
+/* @return {Promise.<object>} */
 
 await shippoService.order.fetchBy(["fulfillment", id])
 ```
 
 ```javascript
-// @return {Promise.<object[]>}
+/* @return {Promise.<object[]>} */
 
 await shippoService.order.fetchBy(["local_order", id])
 
