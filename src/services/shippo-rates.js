@@ -104,8 +104,7 @@ class ShippoRatesService extends BaseService {
 
   async #buildRequestParams(parcelTemplate = null) {
     const parcelId =
-      parcelTemplate ??
-      (await this.#packBins().then((result) => result[0].object_id))
+      parcelTemplate ?? (await this.#packBins().then((result) => result[0].id))
 
     const toAddress = await shippoAddress(
       this.#cart.shipping_address,

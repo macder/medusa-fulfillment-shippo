@@ -128,6 +128,11 @@ class ShippoService extends BaseService {
     const methods = {
       for: {
         items: (items) => this.#shippoPackageService.packItems(items),
+        cart: (id) => this.#shippoPackageService.packCart(id),
+        order: (id) => this.#shippoPackageService.packOrder(id),
+        fulfillment: (id) => this.#shippoPackageService.packFulfillment(id),
+        claim: (id) => ({}),
+        swap: (id) => ({}),
       },
     }
 

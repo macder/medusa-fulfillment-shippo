@@ -6,6 +6,8 @@ class ShippoPackageService extends BaseService {
 
   #client
 
+  #lineItemService
+
   #fulfillmentService
 
   #items
@@ -21,6 +23,7 @@ class ShippoPackageService extends BaseService {
   constructor(
     {
       cartService,
+      lineItemService,
       fulfillmentService,
       orderService,
       shippoClientService,
@@ -32,6 +35,9 @@ class ShippoPackageService extends BaseService {
 
     /** @private @const {CartService} */
     this.#cartService = cartService
+
+    /** @private @const {LineItemService} */
+    this.#lineItemService = lineItemService
 
     /** @private @const {FulfillmentService} */
     this.#fulfillmentService = fulfillmentService
@@ -100,9 +106,87 @@ class ShippoPackageService extends BaseService {
     return this.#pack()
   }
 
+  /**
+   *
+   * @param {} id
+   * @return {}
+   */
+  async packFulfillment(fulfillmentOrId) {
+    const fulfillment = fulfillmentOrId?.items
+      ? fulfillmentOrId
+      : await this.#fulfillmentService.retrieve(fulfillmentOrId, {
+          relations: ["items", "order"],
+        })
+
+    const lineItems = await Promise.all(
+      fulfillment.items.map(
+        async (item) =>
+          await this.#lineItemService
+            .retrieve(item.item_id)
+            .then((lineItem) => {
+              lineItem.quantity = lineItem.fulfilled_quantity
+              return lineItem
+            })
+      )
+    )
+
+    this.#setItems(this.#prepareItems(lineItems))
+    return this.#pack()
+  }
+
+  /**
+   *
+   * @param {} lineItems
+   * @return {}
+   */
+  async packItems(lineItems) {
+    this.#setItems(this.#prepareItems(lineItems))
+    return this.#pack()
+  }
+
+  /**
+   *
+   * @param {} id
+   * @return {}
+   */
+  async packOrder(orderOrId) {
+    const order = orderOrId?.items
+      ? orderOrId
+      : await this.#orderService.retrieve(orderOrId, {
+          relations: ["items"],
+        })
+
+    this.#setItems(this.#prepareItems(order.items))
+    return this.#pack()
+  }
+
   setBoxes(templates) {
     this.#boxes = this.#prepareBoxes(templates)
     return this.#boxes
+  }
+
+  #prepareBoxes(templates) {
+    const boxes = templates.map(
+      ({ id, object_id, name, length, width, height, weight }) =>
+        Object.freeze({
+          id: id || object_id,
+          name,
+          length,
+          width,
+          height,
+          weight,
+        })
+    )
+    return boxes
+  }
+
+  #prepareItems(lineItems) {
+    const items = lineItems.flatMap((item) =>
+      item.quantity > 1
+        ? this.constructor.splitItem(item)
+        : productLineItem(item)
+    )
+    return items
   }
 
   #setItems(items) {
@@ -127,54 +211,6 @@ class ShippoPackageService extends BaseService {
         })
     )
     return this.#items
-  }
-
-  /**
-   *
-   * @param {} id
-   * @return {}
-   */
-  async packOrder(id) {}
-
-  /**
-   *
-   * @param {} lineItems
-   * @return {}
-   */
-  async packItems(lineItems) {
-    this.#setItems(this.#prepareItems(lineItems))
-    return this.#pack()
-  }
-
-  /**
-   *
-   * @param {} id
-   * @return {}
-   */
-  async packFulfillment(id) {}
-
-  #prepareBoxes(templates) {
-    const boxes = templates.map(
-      ({ id, object_id, name, length, width, height, weight }) =>
-        Object.freeze({
-          id: id || object_id,
-          name,
-          length,
-          width,
-          height,
-          weight,
-        })
-    )
-    return boxes
-  }
-
-  #prepareItems(lineItems) {
-    const items = lineItems.flatMap((item) =>
-      item.quantity > 1
-        ? this.constructor.splitItem(item)
-        : productLineItem(item)
-    )
-    return items
   }
 }
 
