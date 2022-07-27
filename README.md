@@ -436,7 +436,7 @@ Receives shippo transaction object when label purchased
 
 Receives shippo transaction object when transaction updated
 
-**Event:**
+##### Events
 
 `shippo.transaction_updated.payload`
 
@@ -451,6 +451,17 @@ Receives shippo transaction object when transaction updated
 #### track\_updated
 
 `/hooks/shippo/track?token=SHIPPO_WEBHOOK_SECRET`
+
+##### Events
+
+`shippo.track_updated.payload`
+
+```javascript
+{
+  ...
+}
+```
+
 
 ## Public Interface
 
