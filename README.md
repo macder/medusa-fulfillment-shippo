@@ -542,6 +542,12 @@ await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 
 ```javascript
 await shippoService.packingslip.fetchBy(["fulfillment", id])
+
+await shippoService.packingslip.fetchBy(["local_order", id])
+
+await shippoService.packingslip.fetchBy(["claim", id])
+
+await shippoService.packingslip.fetchBy(["swap", id])
 ```
 
 ### Rates
