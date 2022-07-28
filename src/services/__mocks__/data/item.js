@@ -58,3 +58,11 @@ export const mockLineItem = ({ ...params }) =>
     ...params,
     variant: mockVariantProduct({ ...params }),
   })
+
+export const fnLineItemMock =
+  () =>
+  ({ ...params }) =>
+    lineItem({ ...params })({
+      ...params,
+      variant: mockVariantProduct({ ...params }),
+    })

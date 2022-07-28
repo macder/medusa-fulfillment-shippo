@@ -30,11 +30,11 @@ const product = ({ product_id: id, title, description }) => ({
  * @param {string} obj.title -
  * @param {string} obj.description -
  */
-export const mockVariantProduct = ({ ...args }) =>
+export const mockVariantProduct = ({ ...params }) =>
   variant({
-    ...args,
+    ...params,
   })({
     product: product({
-      ...args,
+      ...params,
     }),
   })

@@ -48,7 +48,7 @@ export const mockFulfillment = ({ ...params }) =>
       ...params,
     }),
     items: makeArrayOf(
-      (e, i) => fulfillmentItem({ ...params, item_id: params.items[i] }),
+      (i) => fulfillmentItem({ ...params, item_id: params.items[i] }),
       params.items.length
     ),
   })

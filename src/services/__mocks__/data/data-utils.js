@@ -5,7 +5,7 @@
  * @return {array} - array of [mockFn] objects
  */
 export const makeArrayOf = (mockFn, count, args = {}) =>
-  [...Array(count).keys()].map((e, i) => mockFn(e, i))
+  [...Array(count).keys()].map((i) => mockFn(i))
 
 /** toSnakeCase
  * @param {string} str - string to snake case
