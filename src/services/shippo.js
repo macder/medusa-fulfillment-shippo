@@ -8,7 +8,7 @@ class ShippoService extends BaseService {
 
   #shippoOrder
 
-  #shippoPacker
+  #shippoPackageService
 
   #shippoTrack
 
@@ -19,7 +19,7 @@ class ShippoService extends BaseService {
   constructor({
     shippoClientService,
     shippoOrderService,
-    shippoPackerService,
+    shippoPackageService,
     shippoRatesService,
     shippoTrackService,
     shippoTransactionService,
@@ -32,8 +32,8 @@ class ShippoService extends BaseService {
     /** @private @const {ShippoOrderService} */
     this.#shippoOrder = shippoOrderService
 
-    /** @private @const {ShippoPackerService} */
-    this.#shippoPacker = shippoPackerService
+    /** @private @const {ShippoPackageService} */
+    this.#shippoPackageService = shippoPackageService
 
     /** @private @const {ShippoRatesService} */
     this.#shippoRates = shippoRatesService
@@ -127,7 +127,14 @@ class ShippoService extends BaseService {
   #package() {
     const methods = {
       for: {
-        items: (items) => this.#shippoPacker.packBins(items),
+        line_items: (lineItems) =>
+          this.#shippoPackageService.packItems(lineItems),
+        items: (items) => this.#shippoPackageService.packItems(items),
+        cart: (id) => this.#shippoPackageService.packCart(id),
+        order: (id) => this.#shippoPackageService.packOrder(id),
+        fulfillment: (id) => this.#shippoPackageService.packFulfillment(id),
+        claim: (id) => ({}),
+        swap: (id) => ({}),
       },
     }
 
@@ -140,6 +147,11 @@ class ShippoService extends BaseService {
       fetchBy: {
         fulfillment: (id) =>
           this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
+        local_order: (id) =>
+          this.#shippoOrder.findPackingSlipBy("order_id", id),
+        claim: (id) =>
+          this.#shippoOrder.findPackingSlipBy("claim_order_id", id),
+        swap: (id) => this.#shippoOrder.findPackingSlipBy("swap_id", id),
       },
       with: {
         fulfillment: (object_id) =>
@@ -177,12 +189,15 @@ class ShippoService extends BaseService {
           extended: () => this.#shippoTransaction.fetchExtended(id),
         }[type](id)),
       fetchBy: {
-        local_order: (id, { variant = "default", type = variant } = "default") =>
-        ({
-          default: () => this.#shippoTransaction.fetchByOrder(id),
-          extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
-        }[type](id)),
-        
+        local_order: (
+          id,
+          { variant = "default", type = variant } = "default"
+        ) =>
+          ({
+            default: () => this.#shippoTransaction.fetchByOrder(id),
+            extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
+          }[type](id)),
+
         fulfillment: (
           id,
           { variant = "default", type = variant } = "default"
@@ -192,13 +207,6 @@ class ShippoService extends BaseService {
             extended: () =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
           }[type](id)),
-        
-        /* @deprecated */
-        order: (id, { variant = "default", type = variant } = "default") =>
-        ({
-          default: () => this.#shippoTransaction.fetchByOrder(id),
-          extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
-        }[type](id)),
       },
       is: {
         return: (id) => this.#shippoTransaction.isReturn(id),

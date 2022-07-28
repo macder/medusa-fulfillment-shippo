@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.26.0] (2022-07-28)
+
+Added
+
+*   Public Interface - packingslip fetchBy local_order [#272](https://github.com/macder/medusa-fulfillment-shippo/issues/272)
+*   Public Interface - packingslip fetchBy claim [#273](https://github.com/macder/medusa-fulfillment-shippo/issues/273)
+*   Public Interface - packingslip fetchBy swap [#274](https://github.com/macder/medusa-fulfillment-shippo/issues/274)
+*   Public Interface - package - binpack cart [#261](https://github.com/macder/medusa-fulfillment-shippo/issues/261)
+*   Public Interface - package - binpack fulfillment [#262](https://github.com/macder/medusa-fulfillment-shippo/issues/262)
+*   Public Interface - package - binpack local_order [#276](https://github.com/macder/medusa-fulfillment-shippo/issues/276)
+
+Deprecated
+
+*   Public Interface - package - binpack "items" - use "line_items" instead  [#221](https://github.com/macder/medusa-fulfillment-shippo/issues/221)
+
+Removed
+
+*   transaction fetchBy "order" - use "local_order" instead [#269](https://github.com/macder/medusa-fulfillment-shippo/issues/269) & [#225](https://github.com/macder/medusa-fulfillment-shippo/issues/225)
+
 ## \[0.25.0] (2022-07-26)
 
 Added

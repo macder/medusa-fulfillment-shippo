@@ -1,5 +1,6 @@
 import * as matchers from "jest-extended"
 import { faker } from "@faker-js/faker"
+import ShippoPackageService from "../shippo-package"
 import ShippoPackerService from "../shippo-packer"
 import ShippoClientService from "../shippo-client"
 import ShippoFulfillmentService from "../shippo-fulfillment"
@@ -96,15 +97,19 @@ describe("ShippoFulfillmentService", () => {
       { shippoClientService },
       {}
     )
+    const shippoPackageService = new ShippoPackageService(
+      { shippoClientService, shippoPackerService },
+      {}
+    )
     const shippoRatesService = new ShippoRatesService(
-      { shippoClientService, totalsService },
+      { shippoClientService, shippoPackageService, totalsService },
       {}
     )
     const shippoFulfilService = new ShippoFulfillmentService(
       {
         shippoClientService,
         shippoRatesService,
-        shippoPackerService,
+        shippoPackageService,
         cartService,
         totalsService,
       },
@@ -279,18 +284,29 @@ describe("ShippoFulfillmentService", () => {
       { shippoClientService },
       {}
     )
+    const shippoPackageService = new ShippoPackageService(
+      { shippoClientService, shippoPackerService },
+      {}
+    )
     const shippoRatesService = new ShippoRatesService(
       {
         cartService,
         shippingProfileService,
         shippoClientService,
+        shippoPackageService,
         shippoPackerService,
         totalsService,
       },
       {}
     )
     const shippoFulfilService = new ShippoFulfillmentService(
-      { cartService, eventBusService, shippoClientService, shippoRatesService },
+      {
+        cartService,
+        eventBusService,
+        shippoClientService,
+        shippoPackageService,
+        shippoRatesService,
+      },
       options
     )
 

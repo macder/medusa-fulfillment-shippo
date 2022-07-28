@@ -1,4 +1,5 @@
 import * as matchers from "jest-extended"
+import ShippoPackageService from "../shippo-package"
 import ShippoPackerService from "../shippo-packer"
 import ShippoClientService from "../shippo-client"
 import ShippoRatesService from "../shippo-rates"
@@ -50,13 +51,17 @@ describe("ShippoRatesService", () => {
     { shippoClientService },
     {}
   )
+  const shippoPackageService = new ShippoPackageService(
+    { shippoClientService, shippoPackerService },
+    {}
+  )
   const getShippoRatesService = (cartService) =>
     new ShippoRatesService(
       {
         cartService,
         shippingProfileService,
         shippoClientService,
-        shippoPackerService,
+        shippoPackageService,
         pricingService,
         totalsService,
       },
