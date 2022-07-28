@@ -6,7 +6,7 @@ import ShippoRatesService from "../shippo-rates"
 
 import {
   mockCart,
-  mockLineItemTotals,
+  mockLineItemOLDTotals,
   mockShippingOption,
 } from "../__mocks__/data"
 
@@ -18,7 +18,7 @@ describe("ShippoRatesService", () => {
   })
 
   const totalsService = {
-    getLineItemTotals: jest.fn(async () => mockLineItemTotals()),
+    getLineItemTotals: jest.fn(async () => mockLineItemOLDTotals()),
   }
 
   const pricingService = {

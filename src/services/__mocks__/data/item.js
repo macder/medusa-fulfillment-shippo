@@ -1,68 +1,60 @@
 import { faker } from "@faker-js/faker"
-import { mockProduct, mockVariant } from "./product"
+import { mockVariantProduct } from "./product"
 
-const mockItemCommon = () => ({
-  prod_id: `prod_${faker.database.mongodbObjectId()}`,
-  variant_id: `variant_${faker.database.mongodbObjectId()}`,
-  prod_title: faker.commerce.productName(),
-  variant_title: faker.random.words(2),
-  dim: {
-    weight: faker.datatype.number({ min: 10, max: 20 }),
-    length: faker.datatype.number({ min: 2, max: 10 }),
-    width: faker.datatype.number({ min: 2, max: 10 }),
-    height: faker.datatype.number({ min: 2, max: 10 }),
-  },
-})
+const lineItem =
+  ({
+    id,
+    order_id = null,
+    claim_order_id = null,
+    swap_id = null,
+    cart_id = null,
+    title,
+    variant_title: description,
+  }) =>
+  ({ variant_id = null, variant = null }) => {
+    const lineItem = {
+      id,
+      cart_id,
+      order_id,
+      swap_id,
+      claim_order_id,
+      title,
+      description,
+      variant_id,
+      unit_price: faker.datatype.number({ min: 500, max: 1000000 }),
+      quantity: faker.datatype.number({ min: 1, max: 3 }),
+      variant,
+    }
 
-export const mockItem = () => ({
-  id: `item_${faker.database.mongodbObjectId()}`,
-  created_at: faker.date.past(),
-  updated_at: faker.date.past(),
-  cart_id: `cart_${faker.database.mongodbObjectId()}`,
-  order_id: `order_${faker.database.mongodbObjectId()}`,
-  swap_id: null,
-  claim_order_id: null,
-  title: faker.commerce.productName(),
-  description: faker.commerce.productDescription(),
-  thumbnail: "",
-  is_return: false,
-  is_giftcard: false,
-  should_merge: true,
-  allow_discounts: true,
-  has_shipping: true,
-  unit_price: faker.datatype.number({ min: 500, max: 1000000 }),
-  variant_id: `variant_${faker.database.mongodbObjectId()}`,
-  quantity: faker.datatype.number({ min: 1, max: 3 }),
-  fulfilled_quantity: null,
-  returned_quantity: null,
-  shipped_quantity: null,
-  metadata: {},
-  variant: {},
-  tax_lines: [],
-  adjustments: [],
-})
-
-// WIP
-export const mockLineItem = () => {
-  const common = mockItemCommon()
-
-  const lineItem = {
-    ...mockItem(),
-    title: common.prod_title,
-    description: common.variant_title,
-    variant: {
-      ...mockVariant(),
-      product_id: common.prod_id,
-      title: common.variant_title,
-      ...common.dim,
-      product: {
-        ...mockProduct(),
-        id: common.prod_id,
-        title: common.prod_title,
-        ...common.dim,
-      },
-    },
+    return lineItem
   }
 
-  return lineItem
-}
+// const params = {
+//   id: "item_01234567890",
+//   order_id: "order_01234567890",
+//   title: "Medusa Sweatshirt",
+//   variant_id: "variant_01234567890",
+//   product_id: "prod_01234567890",
+//   variant_title: "Small",
+//   description: "Reimagine the feeling of a classic sweatshirt.",
+// }
+
+/**
+ * Compose a {LineItem} mock
+ * @param {Object} obj
+ * @param {string} obj.id - line item id
+ * @param {string} [obj.order_id] - order id
+ * @param {string} [obj.cart_id] - cart id
+ * @param {string} [obj.claim_order_id ] - claim order id
+ * @param {string} [obj.swap_id] - swap id
+ * @param {string} obj.title - product title
+ * @param {string} obj.variant_id - variant id
+ * @param {string} obj.product_id - product id
+ * @param {string} obj.variant_title - variant title
+ * @param {string} obj.description - product description
+ */
+export const mockLineItem = ({ ...params }) =>
+  lineItem({ ...params })({
+    ...params,
+    variant: mockVariantProduct({ ...params }),
+  })
