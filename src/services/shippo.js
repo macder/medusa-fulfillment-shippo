@@ -127,6 +127,8 @@ class ShippoService extends BaseService {
   #package() {
     const methods = {
       for: {
+        line_items: (lineItems) =>
+          this.#shippoPackageService.packItems(lineItems),
         items: (items) => this.#shippoPackageService.packItems(items),
         cart: (id) => this.#shippoPackageService.packCart(id),
         order: (id) => this.#shippoPackageService.packOrder(id),
