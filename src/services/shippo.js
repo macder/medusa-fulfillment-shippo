@@ -127,6 +127,8 @@ class ShippoService extends BaseService {
   #package() {
     const methods = {
       for: {
+        line_items: (lineItems) =>
+          this.#shippoPackageService.packItems(lineItems),
         items: (items) => this.#shippoPackageService.packItems(items),
         cart: (id) => this.#shippoPackageService.packCart(id),
         order: (id) => this.#shippoPackageService.packOrder(id),
@@ -204,13 +206,6 @@ class ShippoService extends BaseService {
             default: () => this.#shippoTransaction.fetchByFulfillment(id),
             extended: () =>
               this.#shippoTransaction.fetchExtendedByFulfillment(id),
-          }[type](id)),
-
-        /* @deprecated */
-        order: (id, { variant = "default", type = variant } = "default") =>
-          ({
-            default: () => this.#shippoTransaction.fetchByOrder(id),
-            extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
           }[type](id)),
       },
       is: {
