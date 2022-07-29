@@ -1,58 +1,33 @@
-import { faker } from "@faker-js/faker"
 import { makeArrayOf } from "./data-utils"
 
-const fulfillment =
-  ({
-    id,
-    order_id = null,
-    claim_order_id = null,
-    swap_id = null,
-    tracking_links = [],
-  }) =>
-  ({ data, items }) => ({
-    id,
-    order_id,
-    claim_order_id,
-    swap_id,
-    data,
-    tracking_links,
-    items,
+const fulfillmentItem = (...[fulfillment_id, item_id, quantity]) =>
+  Object.freeze({
+    fulfillment_id,
+    item_id,
+    quantity,
   })
 
-const fulfillmentData = ({ shippo_order_id }) => ({ shippo_order_id })
-
-const fulfillmentItem = ({ id: fulfillment_id, item_id, quantity = 1 }) => ({
-  fulfillment_id,
-  item_id,
-  quantity,
-})
-
-// const params = {
-//   id: "ful_01234567890",
-//   order_id: "order_01234567890",
-//   shippo_order_id: "shippo_order_01234567890",
-//   items: ["item_01234567890", "item_09876543210", "item_00000000001"],
-// }
-
-/**
- *
- * @param {Object} obj
- * @param {string} obj.id -
- * @param {string} obj.order_id -
- * @param {string} obj.shippo_order_id -
- * @param {Array} obj.items -
- */
-export const mockFulfillment = ({ ...params }) =>
-  fulfillment({ ...params })({
-    data: fulfillmentData({
-      ...params,
-    }),
-    items: makeArrayOf(
-      (i) => fulfillmentItem({ ...params, item_id: params.items[i] }),
-      params.items.length
-    ),
+const fulfillment = (id, getId) => (getItems, getTrackingLinks) =>
+  Object.freeze({
+    id,
+    order_id: getId("order"),
+    claim_order_id: getId("claim"),
+    swap_id: getId("swap"),
+    no_notification: false,
+    provider_id: "shippo",
+    tracking_numbers: [],
+    data: {
+      shippo_order_id: getId("shippo_order"),
+    },
+    shipped_at: "2022-07-27T14:55:50.745Z",
+    canceled_at: null,
+    metadata: {},
+    idempotency_key: null,
+    tracking_links: getTrackingLinks(),
+    items: getItems(id),
   })
 
-// const test = mockFulfillment(params)
+export const mockfulfillmentItem = (fulfillment_id, item_id, quantity = 1) =>
+  fulfillmentItem(fulfillment_id, item_id, quantity)
 
-// console.log(test)
+export const mockFulfillment = ({ id, getId }) => fulfillment(id, getId)
