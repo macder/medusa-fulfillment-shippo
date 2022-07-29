@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { mockAddress } from "./customer"
-import { mockLineItem } from "./item"
+import { mockLineItemOLD } from "./item-old"
 import { mockRegion } from "./region"
 import { makeArrayOf } from "./data-utils"
 
@@ -14,7 +14,7 @@ import { makeArrayOf } from "./data-utils"
  */
 export const mockCart = ({ hasAddress = true, hasItems }) => {
   const shippingAddress = mockAddress(hasAddress)
-  const lineItems = hasItems ? makeArrayOf(mockLineItem, hasItems) : []
+  const lineItems = hasItems ? makeArrayOf(mockLineItemOLD, hasItems) : []
   const region = mockRegion({ countries: 3 })
 
   const common = {

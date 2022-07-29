@@ -99,7 +99,7 @@ const shippo = jest.fn(() => ({
     retrieve: jest.fn(async (id) => mockTransaction(id)),
     search: jest.fn(async (q) => {
       const id = q.replace(/[^0-9]/g, "")
-      const transactions = makeArrayOf(mockExtendedTransaction, 4, id)
+      const transactions = makeArrayOf(() => mockExtendedTransaction(id), 4)
       transactions[1].object_id = "object_id_transaction_replace_123"
       transactions[2].object_id = "object_id_transaction_swap_123"
       transactions[3].object_id = "object_id_return"
