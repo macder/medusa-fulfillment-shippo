@@ -8,8 +8,8 @@ import ShippoRatesService from "../shippo-rates"
 import {
   makeArrayOf,
   mockCart,
-  mockLineItem,
-  mockLineItemTotals,
+  mockLineItemOLD,
+  mockLineItemOLDTotals,
   mockLiveRate,
   mockShippingOption,
   mockParcelTemplateResponse,
@@ -24,7 +24,7 @@ describe("ShippoFulfillmentService", () => {
   })
 
   const totalsService = {
-    getLineItemTotals: jest.fn(async () => mockLineItemTotals()),
+    getLineItemTotals: jest.fn(async () => mockLineItemOLDTotals()),
   }
 
   const eventBusService = {
@@ -363,7 +363,7 @@ describe("ShippoFulfillmentService", () => {
       },
     }
 
-    const fulfillmentItems = makeArrayOf(mockLineItem, 2)
+    const fulfillmentItems = makeArrayOf(mockLineItemOLD, 2)
     const fromOrder = mockCart({ hasAddress: true, hasItems: 2 })
     fromOrder.currency_code = "usd"
     fromOrder.shipping_methods = [

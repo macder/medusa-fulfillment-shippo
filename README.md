@@ -536,6 +536,8 @@ await shippoService.package.for(["line_items", [...lineItems]]).fetch()
 
 await shippoService.package.for(["cart", id]).fetch()
 
+await shippoService.package.for(["local_order", id]).fetch()
+
 await shippoService.package.for(["fulfillment", id]).fetch()
 ```
 
@@ -782,6 +784,18 @@ Triggered when the `transaction_updated` webhook receives an updated transaction
   order_id: "",
   fulfillment_id: "",
   transaction: {...}
+}
+```
+
+### `shippo.track_updated.payload`
+
+Triggered when the `track_updated` webhook receives an updated track
+
+#### Payload
+
+```javascript
+{
+  ...track
 }
 ```
 

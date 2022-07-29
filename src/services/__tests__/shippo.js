@@ -12,9 +12,9 @@ import ShippoTransactionService from "../shippo-transaction"
 
 import {
   makeArrayOf,
-  mockLineItem,
+  mockLineItemOLD,
   mockCart,
-  mockLineItemTotals,
+  mockLineItemOLDTotals,
   mockShippingOption,
 } from "../__mocks__/data"
 
@@ -26,7 +26,7 @@ describe("shippoService", () => {
   })
 
   const totalsService = {
-    getLineItemTotals: jest.fn(async () => mockLineItemTotals()),
+    getLineItemTotals: jest.fn(async () => mockLineItemOLDTotals()),
   }
 
   const pricingService = {
@@ -501,7 +501,7 @@ describe("shippoService", () => {
     })
 
     it("returns packer output", async () => {
-      const lineItems = makeArrayOf(mockLineItem, 2)
+      const lineItems = makeArrayOf(mockLineItemOLD, 2)
       const result = await shippoService.package
         .for(["items", lineItems])
         .fetch()

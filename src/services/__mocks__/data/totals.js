@@ -1,4 +1,4 @@
-export const mockLineItemTotals = () => ({
+export const mockLineItemOLDTotals = () => ({
   unit_price: 1000,
   quantity: 1,
   subtotal: 1000,
