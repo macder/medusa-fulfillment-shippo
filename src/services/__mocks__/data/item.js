@@ -1,22 +1,20 @@
-import { faker } from "@faker-js/faker"
-import { mockVariantProduct } from "./product"
+import { variantProductMock } from "./variant"
 
 const lineItem =
-  (...[id, getId, quantity]) =>
-  (getVariant) =>
+  ({ ...props }) =>
+  (variant) =>
     Object.freeze({
-      id,
-      cart_id: getId("cart"),
-      order_id: getId("order"),
-      swap_id: getId("swap"),
-      claim_order_id: getId("claim"),
-      title: getVariant().product.title,
-      description: getVariant().title,
-      variant_id: getVariant().id,
-      unit_price: faker.datatype.number({ min: 500, max: 1000000 }),
-      quantity,
-      variant: getVariant(),
+      id: props.id ?? "item_11",
+      cart_id: props.cart_id ?? "cart_11",
+      order_id: props.order_id,
+      swap_id: props.swap_id,
+      claim_order_id: props.claim_id,
+      title: props.variant?.product?.title ?? "Product Title",
+      description: props.variant?.title ?? "Variant Title",
+      variant_id: props.variant?.id ?? "variant_id_11",
+      unit_price: 10000,
+      quantity: props?.quantity ?? 1,
+      variant: variant(props.variant),
     })
 
-export const mockLineItem = ({ id, getId, quantity = 1 }) =>
-  lineItem(id, getId, quantity)(mockVariantProduct)
+export const lineItemMock = (props) => lineItem(props)(variantProductMock)

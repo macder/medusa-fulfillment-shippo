@@ -1,33 +1,29 @@
-import { makeArrayOf } from "./data-utils"
-
-const fulfillmentItem = (...[fulfillment_id, item_id, quantity]) =>
+const fulfillmentItem = ({ ...props }) =>
   Object.freeze({
-    fulfillment_id,
-    item_id,
-    quantity,
+    fulfillment_id: props.fulfillment_id,
+    item_id: props.id,
+    quantity: props.quantity,
   })
 
-const fulfillment = (id, getId) => (getItems, getTrackingLinks) =>
-  Object.freeze({
-    id,
-    order_id: getId("order"),
-    claim_order_id: getId("claim"),
-    swap_id: getId("swap"),
-    no_notification: false,
-    provider_id: "shippo",
-    tracking_numbers: [],
-    data: {
-      shippo_order_id: getId("shippo_order"),
-    },
-    shipped_at: "2022-07-27T14:55:50.745Z",
-    canceled_at: null,
-    metadata: {},
-    idempotency_key: null,
-    tracking_links: getTrackingLinks(),
-    items: getItems(id),
-  })
+const fulfillment =
+  ({ ...props }) =>
+  (items, trackingLinks = null) =>
+    Object.freeze({
+      id: props.id,
+      order_id: props.order_id,
+      claim_order_id: props.claim_id,
+      swap_id: props.swap_id,
+      no_notification: false,
+      provider_id: "shippo",
+      tracking_numbers: [],
+      data: props.data,
+      shipped_at: "",
+      canceled_at: null,
+      metadata: {},
+      // tracking_links: trackingLinks(),
+      items: items(props.items),
+    })
 
-export const mockfulfillmentItem = (fulfillment_id, item_id, quantity = 1) =>
-  fulfillmentItem(fulfillment_id, item_id, quantity)
+export const fulfillmentItemMock = (props) => fulfillmentItem(props)
 
-export const mockFulfillment = ({ id, getId }) => fulfillment(id, getId)
+export const fulfillmentMock = (props) => fulfillment(props)

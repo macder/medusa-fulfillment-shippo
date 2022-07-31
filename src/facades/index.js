@@ -42,6 +42,15 @@ class ShippoFacade {
     return result
   }
 
+  async get() {
+    return this.fetch()
+  }
+
+  set(prop, value) {
+    this.#methods.set[prop](value)
+    return this
+  }
+
   with(entity) {
     const method = this.#methods.with[entity]
 
