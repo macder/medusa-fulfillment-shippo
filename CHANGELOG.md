@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.27.0] (2022-07-31)
+
+Added
+
+*   Public Interface - package - binpack set any package templates [#285](https://github.com/macder/medusa-fulfillment-shippo/issues/285)
+
+Removed
+
+*   Public Interface - package - binpack "items" - use "line_items" instead  [#221](https://github.com/macder/medusa-fulfillment-shippo/issues/221)
+
 ## \[0.26.1] (2022-07-29)
 
 *   Documentation updates
