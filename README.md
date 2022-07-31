@@ -532,6 +532,8 @@ await shippoService.is(["order", id], "replace").fetch()
 `for([entity, id]).fetch()`
 
 ```javascript
+// use parcel templates defined in shippo account
+
 await shippoService.package.for(["line_items", [...lineItems]]).fetch()
 
 await shippoService.package.for(["cart", id]).fetch()
@@ -539,6 +541,26 @@ await shippoService.package.for(["cart", id]).fetch()
 await shippoService.package.for(["local_order", id]).fetch()
 
 await shippoService.package.for(["fulfillment", id]).fetch()
+```
+
+```javascript
+// use any parcel templates 
+const packages = [
+  {
+    id: "id123",
+    name: "My Package",
+    length: "40",
+    width: "30",
+    height: "30",
+    weight: "10000", // max-weight
+  },
+  {...}
+]
+
+shippoService.package.set("boxes", packages)
+
+await shippoService.package.for(["cart", id]).get()
+...
 ```
 
 ### Packingslip
