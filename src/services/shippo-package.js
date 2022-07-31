@@ -89,6 +89,7 @@ class ShippoPackageService extends BaseService {
     const boxes =
       this.#boxes ?? this.#prepareBoxes(await this.fetchUserTemplates())
     const result = await this.#shippoPacker.packBins(boxes, this.#items)
+    this.setBoxes(null)
     return this.#resultType === "single" ? result[0] : result
   }
 
