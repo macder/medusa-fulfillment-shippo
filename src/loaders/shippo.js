@@ -5,9 +5,11 @@ export default async (container) => {
   const manager = container.resolve("manager")
   const config = shippoFulfillmentService.getWebhookConfig()
 
+  const logger = container.resolve("logger")
+
   if (config.webhook_test_mode) {
-    console.warn(
-      "\x1b[33m WARNING: medusa-fulfillment-shippo - Webhook test mode enabled: Accepting untrusted input from req.body\x1b[0m"
+    logger.warn(
+      "medusa-fulfillment-shippo - Webhook test mode enabled: Accepting untrusted input from req.body"
     )
   }
 
