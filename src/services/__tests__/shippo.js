@@ -503,7 +503,7 @@ describe("shippoService", () => {
     it("returns packer output", async () => {
       const lineItems = makeArrayOf(mockLineItemOLD, 2)
       const result = await shippoService.package
-        .for(["items", lineItems])
+        .for(["line_items", lineItems])
         .fetch()
       expect(result).toBeArray()
       expect(result[0]).toContainKey("packer_output")
