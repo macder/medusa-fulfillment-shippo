@@ -136,6 +136,9 @@ class ShippoService extends BaseService {
         claim: (id) => ({}),
         swap: (id) => ({}),
       },
+      set: {
+        boxes: (bins) => this.#shippoPackageService.setBoxes(bins),
+      },
     }
 
     return new ShippoFacade(methods)

@@ -16,6 +16,8 @@ class ShippoPackageService extends BaseService {
 
   #orderService
 
+  #resultType
+
   #shippoClient
 
   #shippoPacker
@@ -83,11 +85,11 @@ class ShippoPackageService extends BaseService {
    * @param {}
    * @return {}
    */
-  async #pack() {
+  async #binpack() {
     const boxes =
       this.#boxes ?? this.#prepareBoxes(await this.fetchUserTemplates())
     const result = await this.#shippoPacker.packBins(boxes, this.#items)
-    return result
+    return this.#resultType === "single" ? result[0] : result
   }
 
   /**
@@ -95,7 +97,9 @@ class ShippoPackageService extends BaseService {
    * @param {} cartOrId
    * @return {}
    */
-  async packCart(cartOrId) {
+  async packCart(cartOrId, resultType = null) {
+    this.#setResultType(resultType)
+
     const cart = cartOrId?.items
       ? cartOrId
       : await this.#cartService.retrieve(cartOrId, {
@@ -103,7 +107,7 @@ class ShippoPackageService extends BaseService {
         })
 
     this.#setItems(this.#prepareItems(cart.items))
-    return this.#pack()
+    return this.#binpack()
   }
 
   /**
@@ -111,7 +115,9 @@ class ShippoPackageService extends BaseService {
    * @param {} id
    * @return {}
    */
-  async packFulfillment(fulfillmentOrId) {
+  async packFulfillment(fulfillmentOrId, resultType = null) {
+    this.#setResultType(resultType)
+
     const fulfillment = fulfillmentOrId?.items
       ? fulfillmentOrId
       : await this.#fulfillmentService.retrieve(fulfillmentOrId, {
@@ -131,7 +137,7 @@ class ShippoPackageService extends BaseService {
     )
 
     this.#setItems(this.#prepareItems(lineItems))
-    return this.#pack()
+    return this.#binpack()
   }
 
   /**
@@ -139,9 +145,10 @@ class ShippoPackageService extends BaseService {
    * @param {} lineItems
    * @return {}
    */
-  async packItems(lineItems) {
+  async packItems(lineItems, resultType = null) {
+    this.#setResultType(resultType)
     this.#setItems(this.#prepareItems(lineItems))
-    return this.#pack()
+    return this.#binpack()
   }
 
   /**
@@ -157,11 +164,12 @@ class ShippoPackageService extends BaseService {
         })
 
     this.#setItems(this.#prepareItems(order.items))
-    return this.#pack()
+    return this.#binpack()
   }
 
   setBoxes(templates) {
-    this.#boxes = this.#prepareBoxes(templates)
+    this.#boxes = templates ? this.#prepareBoxes(templates) : null
+
     return this.#boxes
   }
 
@@ -187,6 +195,11 @@ class ShippoPackageService extends BaseService {
         : productLineItem(item)
     )
     return items
+  }
+
+  #setResultType(type) {
+    this.#resultType = type
+    return this.#resultType
   }
 
   #setItems(items) {
