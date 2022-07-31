@@ -132,8 +132,6 @@ class ShippoService extends BaseService {
         cart: (id) => this.#shippoPackageService.packCart(id),
         local_order: (id) => this.#shippoPackageService.packOrder(id),
         fulfillment: (id) => this.#shippoPackageService.packFulfillment(id),
-        claim: (id) => ({}),
-        swap: (id) => ({}),
       },
       set: {
         boxes: (bins) => this.#shippoPackageService.setBoxes(bins),
