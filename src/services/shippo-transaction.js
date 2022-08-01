@@ -1,9 +1,12 @@
 import { BaseService } from "medusa-interfaces"
+import { MedusaError } from "medusa-core-utils"
 
 class ShippoTransactionService extends BaseService {
   #client
 
   #fulfillmentService
+
+  #logger
 
   #orderService
 
@@ -11,7 +14,12 @@ class ShippoTransactionService extends BaseService {
 
   #transaction
 
-  constructor({ fulfillmentService, orderService, shippoClientService }) {
+  constructor({
+    fulfillmentService,
+    logger,
+    orderService,
+    shippoClientService,
+  }) {
     super()
 
     /** @private @const {FulfillmentService} */
@@ -25,6 +33,8 @@ class ShippoTransactionService extends BaseService {
 
     /** @private @const {Shippo} */
     this.#client = this.#shippo.useClient
+
+    this.#logger = logger
   }
 
   /**
@@ -153,7 +163,7 @@ class ShippoTransactionService extends BaseService {
       interval: 3500,
       maxAttempts: 3,
     }).catch((e) => {
-      console.error(e)
+      this.#logger.error(e)
     })
   }
 
@@ -184,7 +194,9 @@ class ShippoTransactionService extends BaseService {
    */
   async findOrder(transactionId) {
     const transaction = await this.fetch(transactionId)
-    const orderDisplayId = await this.#parseOrderDisplayId(transaction)
+    const orderDisplayId = await this.constructor.#parseOrderDisplayId(
+      transaction
+    )
     return this.#retrieveOrderByDisplayId(orderDisplayId)
   }
 
@@ -199,7 +211,12 @@ class ShippoTransactionService extends BaseService {
     const transaction = transactions.find((ta) => ta.is_return)
 
     if (!transaction) {
-      return Promise.reject("transaction for return label not found")
+      return Promise.reject(
+        new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          "transaction for return label not found"
+        )
+      )
     }
 
     return this.fetch(transaction.object_id).then(({ label_url }) => ({
@@ -220,7 +237,7 @@ class ShippoTransactionService extends BaseService {
     )
   }
 
-  async #parseOrderDisplayId(transaction) {
+  static #parseOrderDisplayId(transaction) {
     const displayId = transaction.metadata
     return displayId.replace(/[^0-9]/g, "")
   }

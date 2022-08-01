@@ -7,6 +7,8 @@ class ShippoRatesService extends BaseService {
 
   #cartService
 
+  #logger
+
   #pricingService
 
   #shippingOptions = []
@@ -21,6 +23,7 @@ class ShippoRatesService extends BaseService {
 
   constructor({
     cartService,
+    logger,
     pricingService,
     shippoClientService,
     shippoPackageService,
@@ -46,6 +49,8 @@ class ShippoRatesService extends BaseService {
 
     /** @private @const {TotalsService} */
     this.#totalsService = totalsService
+
+    this.#logger = logger
   }
 
   /**
@@ -97,7 +102,7 @@ class ShippoRatesService extends BaseService {
 
     this.#setOptions(
       this.#shippingOptions.map((so) =>
-        this.#putRate(so, this.#findRate(so, rates))
+        this.#putRate(so, this.constructor.#findRate(so, rates))
       )
     )
   }
@@ -149,8 +154,8 @@ class ShippoRatesService extends BaseService {
 
     const rates = await this.#shippo.useClient.liverates
       .create(params)
-      .then((rates) =>
-        rates.results
+      .then((liverates) =>
+        liverates.results
           .filter((rate) =>
             fulfillmentOptions.find((fo) => fo.name === rate.title && true)
           )
@@ -162,11 +167,11 @@ class ShippoRatesService extends BaseService {
             ).so_id,
           }))
       )
-      .catch((e) => console.error(e))
+      .catch((e) => this.#logger.error(e))
     return rates
   }
 
-  #findRate(shippingOption, rates) {
+  static #findRate(shippingOption, rates) {
     return rates.find((rate) => rate.title === shippingOption.data.name)
   }
 
