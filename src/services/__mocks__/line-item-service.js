@@ -18,6 +18,6 @@ export const lineItemServiceMock = (config) => {
 
   return {
     list: jest.fn(),
-    retrieve: jest.fn((id) => itemTemplate(itemProps(id))),
+    retrieve: jest.fn(async (id) => itemTemplate(itemProps(id))),
   }
 }

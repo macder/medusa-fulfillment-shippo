@@ -18,6 +18,6 @@ export const fulfillmentServiceMock = (config) => {
 
   return {
     list: jest.fn(),
-    retrieve: jest.fn((id) => fulfillmentTemplate(fulfillmentProps(id))),
+    retrieve: jest.fn(async (id) => fulfillmentTemplate(fulfillmentProps(id))),
   }
 }
