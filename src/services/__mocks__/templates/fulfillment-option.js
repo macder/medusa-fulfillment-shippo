@@ -27,10 +27,10 @@ export const fulfillOptionTemplate = (type) =>
         object_id: props.object_id ?? "",
         description: props.description ?? "",
         service_levels: [
-          {
+          Object.freeze({
             account_object_id: "",
             service_level_token: "usps_parcel_select",
-          },
+          }),
         ],
         rate_adjustment: 0,
         flat_rate_currency: "USD",
