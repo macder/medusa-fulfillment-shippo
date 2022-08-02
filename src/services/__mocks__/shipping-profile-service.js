@@ -13,12 +13,12 @@ export const shippingProfileServiceMock = (config) => {
     })
 
   return {
-    fetchCartOptions: jest.fn(() =>
+    fetchCartOptions: jest.fn(async () =>
       config(({ shipping_options }) => shipping_options).map((so) =>
         shippingOptionTemplate(shippingOptionProps(so.id))
       )
     ),
 
-    retrieve: jest.fn((id) => shippingOptionTemplate(shippingOptionProps(id))),
+    retrieve: jest.fn(async (id) => shippingOptionTemplate(shippingOptionProps(id))),
   }
 }
