@@ -1,5 +1,7 @@
 export * from "./fulfillment"
+export * from "./fulfillment-option"
 export * from "./item"
 export * from "./order"
 export * from "./product"
+export * from "./shipping-option"
 export * from "./variant"

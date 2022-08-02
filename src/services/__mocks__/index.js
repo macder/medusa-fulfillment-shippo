@@ -1,5 +1,6 @@
 export * from "./fulfillment-service"
 export * from "./line-item-service"
 export * from "./order-service"
+export * from "./shipping-profile-service"
 export * from "./shippo"
 export * from "./shippo-new"

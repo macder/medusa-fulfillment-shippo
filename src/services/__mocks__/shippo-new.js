@@ -1,6 +1,7 @@
 import {
   shippoOrderTemplate,
   shippoOrderTransactionTemplate,
+  transactionTemplate,
 } from "./templates/shippo"
 
 export const shippoNew = (config) => {
@@ -14,11 +15,30 @@ export const shippoNew = (config) => {
       ),
     }))
 
+  const transactionProps = (object_id = null) =>
+    config(({ shippo_order }) => ({
+      ...shippo_order.transactions.find((ta) => ta.object_id === object_id),
+      object_id,
+      metadata: `Order ${shippo_order.order_number}`,
+      order_number: shippo_order.order_number,
+      order_object_id: shippo_order.object_id,
+    }))
+
   return jest.fn(async () => ({
     order: {
       retrieve: jest.fn(async (object_id) =>
         shippoOrderTemplate(orderProps(object_id))
       ),
+    },
+    transactions: {
+      retrieve: jest.fn(async (object_id) =>
+        transactionTemplate(transactionProps(object_id))
+      ),
+      search: jest.fn(async (q) => {
+        // TODO: figure this out
+        const id = q.replace(/[^0-9]/g, "")
+        return []
+      }),
     },
   }))
 }
