@@ -27,7 +27,7 @@ export const config = (fn) =>
         ],
       },
     ],
-    
+
     items: [
       {
         id: "item_01234567890",

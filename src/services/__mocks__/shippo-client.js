@@ -30,14 +30,14 @@ export const shippoClientMock = (config) => {
         results: [
           {
             is_default_sender: true,
-            is_default_return: true
+            is_default_return: true,
           },
           {
             is_default_sender: false,
-            is_default_return: false
-          }
-        ]
-      }))
+            is_default_return: false,
+          },
+        ],
+      })),
     },
     order: {
       retrieve: jest.fn(async (object_id) =>

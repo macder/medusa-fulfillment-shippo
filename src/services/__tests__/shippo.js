@@ -18,16 +18,14 @@ import {
   orderServiceMock,
   shippingProfileServiceMock,
   totalsServiceMock,
-  shippoClientMock
+  shippoClientMock,
 } from "../__mocks__"
 
 expect.extend(matchers)
 
 const mockShippoClient = shippoClientMock(defaultConfig)
 
-jest.mock("shippo", function () {
-  return () => mockShippoClient
-})
+jest.mock("shippo", () => () => mockShippoClient)
 
 const coreServiceMocks = (config) => (fn) =>
   fn({
@@ -41,7 +39,7 @@ const coreServiceMocks = (config) => (fn) =>
     totalsService: totalsServiceMock(),
     pricingService: {
       setShippingOptionPrices: jest.fn(async (options) => options),
-    }
+    },
   })
 
 const buildShippoService = (config) => {
@@ -130,7 +128,6 @@ const buildShippoService = (config) => {
   return shippoService
 }
 
-
 describe("shippoService", () => {
   beforeAll(async () => {
     jest.clearAllMocks()
@@ -165,15 +162,17 @@ describe("shippoService", () => {
           expect(result).toContainEntry(["object_id", id])
         })
       })
-    })    
-
+    })
 
     describe("fetchBy", () => {
       describe("fulfillment", () => {
         test("returns", async () => {
           const id = "ful_01234567890"
           const result = await shippoService.order.fetchBy(["fulfillment", id])
-          expect(result).toContainEntry(["object_id", "shippo_order_01234567890"])
+          expect(result).toContainEntry([
+            "object_id",
+            "shippo_order_01234567890",
+          ])
         })
       })
 
@@ -182,19 +181,18 @@ describe("shippoService", () => {
           const id = "order_01234567890"
           const result = await shippoService.order.fetchBy(["local_order", id])
           expect(result).toBeArray()
-          expect(result[0]).toContainEntry(["object_id", "shippo_order_01234567890"])
+          expect(result[0]).toContainEntry([
+            "object_id",
+            "shippo_order_01234567890",
+          ])
         })
       })
 
       // TODO
-      describe("claim", () => {
-
-      })
+      describe("claim", () => {})
 
       // TODO
-      describe("swap", () => {
-
-      })
+      describe("swap", () => {})
     })
 
     describe("with", () => {
@@ -203,9 +201,9 @@ describe("shippoService", () => {
           test("returns with correct object_id", async () => {
             const id = "shippo_order_01234567890"
             const result = await shippoService.order
-               .with(["fulfillment"])
-               .fetch(id)
-    
+              .with(["fulfillment"])
+              .fetch(id)
+
             expect(result).toContainEntry(["object_id", id])
           })
 
@@ -250,7 +248,6 @@ describe("shippoService", () => {
     })
   })
   /* ===================================================== */
-
 })
 
 // console.log('*********result: ', JSON.stringify(result, null, 2))

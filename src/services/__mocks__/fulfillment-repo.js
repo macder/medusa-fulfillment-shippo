@@ -2,7 +2,6 @@ import { MockRepository } from "medusa-test-utils"
 import { fulfillmentTemplate, fulfillmentItemTemplate } from "./templates"
 
 export const fulfillmentRepoMock = (config) => {
-
   const fulfillments = config((props) => props.fulfillments)
 
   const fulfillmentProps = (id) =>
@@ -21,8 +20,7 @@ export const fulfillmentRepoMock = (config) => {
     })
 
   return MockRepository({
-    find: async (config) => {
-      return fulfillments.map(ful => fulfillmentTemplate(fulfillmentProps(ful.id)))
-    },
+    find: async (config) =>
+      fulfillments.map((ful) => fulfillmentTemplate(fulfillmentProps(ful.id))),
   })
 }
