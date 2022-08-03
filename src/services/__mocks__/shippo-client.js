@@ -4,7 +4,7 @@ import {
   transactionTemplate,
 } from "./templates/shippo"
 
-export const shippoNew = (config) => {
+export const shippoClientMock = (config) => {
   const orderProps = (object_id) =>
     config(({ shippo_order, ...vals }) => ({
       ...shippo_order,
@@ -24,7 +24,21 @@ export const shippoNew = (config) => {
       order_object_id: shippo_order.object_id,
     }))
 
-  return jest.fn(async () => ({
+  return {
+    account: {
+      address: jest.fn(async () => ({
+        results: [
+          {
+            is_default_sender: true,
+            is_default_return: true
+          },
+          {
+            is_default_sender: false,
+            is_default_return: false
+          }
+        ]
+      }))
+    },
     order: {
       retrieve: jest.fn(async (object_id) =>
         shippoOrderTemplate(orderProps(object_id))
@@ -40,5 +54,5 @@ export const shippoNew = (config) => {
         return []
       }),
     },
-  }))
+  }
 }

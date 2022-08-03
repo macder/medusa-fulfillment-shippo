@@ -19,6 +19,8 @@ export const shippingProfileServiceMock = (config) => {
       )
     ),
 
-    retrieve: jest.fn(async (id) => shippingOptionTemplate(shippingOptionProps(id))),
+    retrieve: jest.fn(async (id) =>
+      shippingOptionTemplate(shippingOptionProps(id))
+    ),
   }
 }

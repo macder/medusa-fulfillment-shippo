@@ -5,6 +5,8 @@ export const config = (fn) =>
     display_id: "11",
     claim_id: null,
     swap_id: null,
+    shipping_address: true,
+    cart_has_items: true,
     fulfillments: [
       {
         id: "ful_01234567890",
@@ -15,7 +17,17 @@ export const config = (fn) =>
           },
         ],
       },
+      {
+        id: "ful_09876543210",
+        shippo_order_id: "shippo_order_09876543210",
+        items: [
+          {
+            item_id: "item_09876543210",
+          },
+        ],
+      },
     ],
+    
     items: [
       {
         id: "item_01234567890",

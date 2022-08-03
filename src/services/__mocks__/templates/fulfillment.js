@@ -8,7 +8,7 @@ export const fulfillmentTemplate = ({ ...props }) =>
     provider_id: "shippo",
     tracking_numbers: [],
     data: Object.freeze({
-      shippo_order_id: props.shippo_order,
+      shippo_order_id: props.shippo_order_id,
     }),
     shipped_at: "",
     canceled_at: null,
