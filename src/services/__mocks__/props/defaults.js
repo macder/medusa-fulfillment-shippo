@@ -1,4 +1,4 @@
-export const config = (fn) =>
+export const defaults = (fn) =>
   fn({
     cart_id: "cart_01234567890",
     order_id: "order_01234567890",

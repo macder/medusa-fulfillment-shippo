@@ -1,4 +1,4 @@
-export * from "./config"
+export * from "./props/defaults"
 export * from "./cart-service"
 export * from "./fulfillment-repo"
 export * from "./fulfillment-service"

@@ -2,6 +2,7 @@ import {
   shippoOrderTemplate,
   shippoOrderTransactionTemplate,
   transactionTemplate,
+  userParcelTemplate,
 } from "./templates/shippo"
 
 export const shippoClientMock = (config) => {
@@ -23,6 +24,9 @@ export const shippoClientMock = (config) => {
       order_number: shippo_order.order_number,
       order_object_id: shippo_order.object_id,
     }))
+
+  const userParcelProps = () =>
+    config(({ user_parcel_templates }) => user_parcel_templates)
 
   return {
     account: {
@@ -53,6 +57,13 @@ export const shippoClientMock = (config) => {
         const id = q.replace(/[^0-9]/g, "")
         return []
       }),
+    },
+    userparceltemplates: {
+      list: jest.fn(async () => {
+        console.log(userParcelProps())
+        return {results: userParcelProps().map(props => userParcelTemplate(props))}
+      }
+      ),
     },
   }
 }
