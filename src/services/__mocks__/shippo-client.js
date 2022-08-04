@@ -46,6 +46,11 @@ export const shippoClientMock = (config) => {
       retrieve: jest.fn(async (object_id) =>
         shippoOrderTemplate(orderProps(object_id))
       ),
+      packingslip: jest.fn(async () => ({
+        expires: "",
+        slip_url: "https://shippo-delivery.net",
+        created: "",
+      })),
     },
     transaction: {
       retrieve: jest.fn(async (object_id) =>
