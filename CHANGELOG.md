@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.27.1] (2022-08-04)
+
+Fixed
+
+*   Fetch order by fulfillment fails sometimes [#292](https://github.com/macder/medusa-fulfillment-shippo/issues/292)
+
 ## \[0.27.0] (2022-07-31)
 
 Added
