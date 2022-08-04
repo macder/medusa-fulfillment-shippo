@@ -19,15 +19,8 @@ export const shippoClientMock = (config) => {
     })
 
   const transactionProps = (object_id = null) =>
-    config(({ shippo_orders }) => ({
-      ...shippo_orders
-        .map((order) => order.transactions)
-        .flat(1)
-        .find((ta) => ta.object_id === object_id),
-      object_id,
-      metadata: `Order ${shippo_order.order_number}`,
-      order_number: shippo_order.order_number,
-      order_object_id: shippo_order.object_id,
+    config(({ transactions }) => ({
+      ...transactions.find(ta => ta.object_id === object_id)
     }))
 
   const userParcelProps = () =>
@@ -53,7 +46,7 @@ export const shippoClientMock = (config) => {
         shippoOrderTemplate(orderProps(object_id))
       ),
     },
-    transactions: {
+    transaction: {
       retrieve: jest.fn(async (object_id) =>
         transactionTemplate(transactionProps(object_id))
       ),

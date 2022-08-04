@@ -9,7 +9,7 @@ export const transactionTemplate = (props) =>
     tracking_url_provider: "https://tools.usps.com",
     label_url: "https://deliver.goshippo.com",
     messages: [],
-    order: props.tracking_number,
+    order: props.shippo_order_id,
     metadata: props.metadata,
     parcel: "parcel_01234567890",
     billing: {
