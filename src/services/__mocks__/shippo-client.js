@@ -12,7 +12,6 @@ export const shippoClientMock = (config) => {
       return {
         ...order,
         object_id,
-        order_number: vals.display_id,
         transactions: order.transactions.map((transaction) =>
           shippoOrderTransactionTemplate(transaction)
         ),

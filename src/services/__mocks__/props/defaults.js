@@ -10,6 +10,7 @@ export const defaults = (fn) =>
     fulfillments: [
       {
         id: "ful_01234567890",
+        order_id: "order_01234567890",
         shippo_order_id: "shippo_order_01234567890",
         items: [
           {
@@ -19,6 +20,7 @@ export const defaults = (fn) =>
       },
       {
         id: "ful_09876543210",
+        order_id: "order_01234567890",
         shippo_order_id: "shippo_order_09876543210",
         items: [
           {
@@ -57,7 +59,7 @@ export const defaults = (fn) =>
       },
       {
         object_id: "shippo_order_09876543210",
-        order_number: "11",
+        order_number: "11 (replace)",
         transactions: [
           {
             object_id: "transaction_01234567890",
