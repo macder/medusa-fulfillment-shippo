@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.0.0-alpha.4] (2022-08-04)
+
+Fixes undefined error and resolves reference mutation
+
 ## \[1.0.0-alpha.3] (2022-08-04)
 
 Test suite refactor in progress [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
