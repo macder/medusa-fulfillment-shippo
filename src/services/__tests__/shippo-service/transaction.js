@@ -14,36 +14,28 @@ describe("transaction", () => {
     jest.clearAllMocks()
   })
 
-  describe("fetch", () => {
-    const { shippoService } = buildShippoServices(defaultProps)
+  const { shippoService } = buildShippoServices(defaultProps)
 
+  describe("fetch", () => {
     it("returns requested default transaction", async () => {
       const result = await shippoService.transaction.fetch(
         "transaction_01234567890"
       )
-      expect(result).toContainEntry([
-        "object_id",
-        "transaction_01234567890",
-      ])
+      expect(result).toContainEntry(["object_id", "transaction_01234567890"])
       expect(result).toContainEntry(["rate", ""])
     })
 
-    // it("returns requested extended transaction", async () => {
-    //   const result = await shippoService.transaction.fetch(
-    //     "object_id_transaction_123",
-    //     {
-    //       variant: "extended",
-    //     }
-    //   )
-    //   expect(result).toContainEntry([
-    //     "object_id",
-    //     "object_id_transaction_123",
-    //   ])
-    //   expect(result.rate).toContainEntry([
-    //     "carrier_account",
-    //     "carrier_id_123",
-    //   ])
-    // })
+    it("returns requested extended transaction", async () => {
+      const result = await shippoService.transaction.fetch(
+        "transaction_01234567890",
+        {
+          variant: "extended",
+        }
+      )
+
+      expect(result).toContainEntry(["object_id", "transaction_01234567890"])
+      expect(result.rate).toContainEntry(["carrier_account", "carrier_id_here"])
+    })
   })
 
   describe("fetchBy", () => {
@@ -72,21 +64,24 @@ describe("transaction", () => {
       })
 
       describe("variant: extended", () => {
-        // test("fulfillment returns requested extended transaction", async () => {
-        //   const result = await shippoService.transaction.fetchBy(
-        //     ["fulfillment", "ful_321"],
-        //     { variant: "extended" }
-        //   )
-
-        //   expect(result[0]).toContainEntry([
-        //     "object_id",
-        //     "object_id_transaction_123",
-        //   ])
-        //   expect(result[0].rate).toContainEntry([
-        //     "carrier_account",
-        //     "carrier_id_123",
-        //   ])
-        // })
+        test("fulfillment returns requested extended transaction", async () => {
+          const result = await shippoService.transaction.fetchBy(
+            ["fulfillment", "ful_01234567890"],
+            { variant: "extended" }
+          )
+          expect(result[0]).toContainEntry([
+            "object_id",
+            "transaction_01234567890",
+          ])
+          expect(result[1]).toContainEntry([
+            "object_id",
+            "transaction_01234567890_return",
+          ])
+          expect(result[0].rate).toContainEntry([
+            "carrier_account",
+            "carrier_id_here",
+          ])
+        })
       })
     })
 
@@ -124,49 +119,54 @@ describe("transaction", () => {
       })
 
       describe("variant: extended", () => {
-        // test("returns transaction", async () => {
-        //   const result = await shippoService.transaction.fetchBy(
-        //     ["local_order", "123"],
-        //     {
-        //       variant: "extended",
-        //     }
-        //   )
-
-        //   expect(result[0]).toContainEntry([
-        //     "object_id",
-        //     "object_id_transaction_123",
-        //   ])
-        //   expect(result[0].rate).toContainEntry([
-        //     "carrier_account",
-        //     "carrier_id_123",
-        //   ])
-        // })
+        test("returns transaction", async () => {
+          const result = await shippoService.transaction.fetchBy(
+            ["local_order", "order_01234567890"],
+            {
+              variant: "extended",
+            }
+          )
+          expect(result[0]).toContainEntry([
+            "object_id",
+            "transaction_01234567890",
+          ])
+          expect(result[0].rate).toContainEntry([
+            "carrier_account",
+            "carrier_id_here",
+          ])
+          expect(result[3]).toContainEntry([
+            "object_id",
+            "transaction_09876543210_return",
+          ])
+          expect(result[3].rate).toContainEntry([
+            "carrier_account",
+            "carrier_id_here",
+          ])
+        })
       })
     })
   })
 
   describe("is", () => {
-    // beforeAll(async () => {
-    //   jest.clearAllMocks()
-    // })
+    beforeAll(async () => {
+      jest.clearAllMocks()
+    })
 
     describe("return", () => {
-      // test("is false", async () => {
-      //   const id = "object_id_transaction_123"
-      //   const result = await shippoService
-      //     .is(["transaction", id], "return")
-      //     .fetch()
-      //   expect(result).toBeFalse()
-      // })
-
-      // test("is true", async () => {
-      //   const id = "object_id_return"
-      //   const result = await shippoService
-      //     .is(["transaction", id], "return")
-      //     .fetch()
-      //   expect(result).toBeTrue()
-      // })
+      test("is false", async () => {
+        const id = "transaction_01234567890"
+        const result = await shippoService
+          .is(["transaction", id], "return")
+          .fetch()
+        expect(result).toBeFalse()
+      })
+      test("is true", async () => {
+        const id = "transaction_01234567890_return"
+        const result = await shippoService
+          .is(["transaction", id], "return")
+          .fetch()
+        expect(result).toBeTrue()
+      })
     })
   })
-
 })

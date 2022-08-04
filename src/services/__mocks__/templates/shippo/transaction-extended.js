@@ -36,7 +36,7 @@ export const transactionExtendedTemplate = (props) =>
     eta: null,
     order: {
       status: "PAID",
-      order_number: props.order_number,
-      object_id: props.order_object_id,
+      order_number: props.display_id,
+      object_id: props.shippo_order_id,
     },
   })

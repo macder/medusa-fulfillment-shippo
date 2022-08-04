@@ -2,6 +2,7 @@ import {
   shippoOrderTemplate,
   shippoOrderTransactionTemplate,
   transactionTemplate,
+  transactionExtendedTemplate,
   userParcelTemplate,
 } from "./templates/shippo"
 
@@ -20,7 +21,7 @@ export const shippoClientMock = (config) => {
 
   const transactionProps = (object_id = null) =>
     config(({ transactions }) => ({
-      ...transactions.find(ta => ta.object_id === object_id)
+      ...transactions.find((ta) => ta.object_id === object_id),
     }))
 
   const userParcelProps = () =>
@@ -50,10 +51,15 @@ export const shippoClientMock = (config) => {
       retrieve: jest.fn(async (object_id) =>
         transactionTemplate(transactionProps(object_id))
       ),
+
       search: jest.fn(async (q) => {
-        // TODO: figure this out
         const id = q.replace(/[^0-9]/g, "")
-        return []
+        const transactions = config(({ transactions }) => transactions)
+        return {
+          results: transactions.map((ta) =>
+            transactionExtendedTemplate(transactionProps(ta.object_id))
+          ),
+        }
       }),
     },
     userparceltemplates: {

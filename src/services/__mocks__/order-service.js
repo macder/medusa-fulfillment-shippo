@@ -32,10 +32,10 @@ export const orderServiceMock = (config) => {
       ),
     }))
 
-  const orderProps = (id) =>
+  const orderProps = (id = null) =>
     config(({ ...vals }) => ({
       ...vals,
-      id,
+      id: vals.order_id,
       items: vals.items.map((item, index) => itemTemplate(itemProps(index))),
       fulfillments: vals.fulfillments.map((ful, index) =>
         fulfillmentTemplate(fulfillmentProps(index))
@@ -43,7 +43,7 @@ export const orderServiceMock = (config) => {
     }))
 
   return {
-    list: jest.fn(),
+    list: jest.fn(async ({ display_id }) => [orderTemplate(orderProps())]),
     retrieve: jest.fn(async (id) => orderTemplate(orderProps(id))),
   }
 }

@@ -52,7 +52,7 @@ export const defaults = (fn) =>
             tracking_number: "track_01234567890",
           },
           {
-            object_id: "transaction_09876543210",
+            object_id: "transaction_01234567890_return",
             tracking_number: "track_09876543210",
           },
         ],
@@ -62,14 +62,42 @@ export const defaults = (fn) =>
         order_number: "11 (replace)",
         transactions: [
           {
-            object_id: "transaction_01234567890",
+            object_id: "transaction_09876543210",
             tracking_number: "track_01234567890",
           },
           {
-            object_id: "transaction_09876543210",
+            object_id: "transaction_09876543210_return",
             tracking_number: "track_09876543210",
           },
         ],
+      },
+    ],
+    transactions: [
+      {
+        object_id: "transaction_01234567890",
+        tracking_number: "track_01234567890",
+        shippo_order_id: "shippo_order_01234567890",
+        metadata: "Order 11",
+      },
+      {
+        object_id: "transaction_01234567890_return",
+        tracking_number: "track_01234567890",
+        shippo_order_id: "shippo_order_01234567890",
+        metadata: "Order 11",
+        is_return: true,
+      },
+      {
+        object_id: "transaction_09876543210",
+        tracking_number: "track_09876543210",
+        shippo_order_id: "shippo_order_09876543210",
+        metadata: "Order 11 (replace)",
+      },
+      {
+        object_id: "transaction_09876543210_return",
+        tracking_number: "track_09876543210",
+        shippo_order_id: "shippo_order_09876543210",
+        metadata: "Order 11 (replace)",
+        is_return: true,
       },
     ],
     shipping_options: [
