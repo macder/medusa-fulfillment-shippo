@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.0.0-alpha.3] (2022-08-04)
+
+Test suite refactor in progress [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
+
+## \[1.0.0-alpha.2] (2022-08-04)
+
+Test suite refactor in progress [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
+
 ## \[1.0.0-alpha.1] (2022-08-01)
 
 Minor code optimizations
