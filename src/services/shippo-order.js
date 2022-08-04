@@ -58,7 +58,7 @@ class ShippoOrderService extends BaseService {
   async fetchByFulfillmentId(fulfillmentId) {
     const shippoOrderId = await this.#getIdFromFulfillment(fulfillmentId)
 
-    return this.fetch(shippoOrderId).then(async (order) => {
+    const shippoOrder = await this.fetch(shippoOrderId).then(async (order) => {
       if (order?.transactions?.length) {
         const transactions = await Promise.all(
           order.transactions.map(async (ta) => {
@@ -72,6 +72,7 @@ class ShippoOrderService extends BaseService {
       }
       return order
     })
+    return shippoOrder
   }
 
   /**
