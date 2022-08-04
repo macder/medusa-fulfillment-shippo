@@ -40,20 +40,36 @@ export const defaults = (fn) =>
         product: "prod_09876543210",
       },
     ],
-    shippo_order: {
-      object_id: "shippo_order_01234567890",
-      order_number: "11",
-      transactions: [
-        {
-          object_id: "transaction_01234567890",
-          tracking_number: "track_01234567890",
-        },
-        {
-          object_id: "transaction_09876543210",
-          tracking_number: "track_09876543210",
-        },
-      ],
-    },
+    shippo_orders: [
+      {
+        object_id: "shippo_order_01234567890",
+        order_number: "11",
+        transactions: [
+          {
+            object_id: "transaction_01234567890",
+            tracking_number: "track_01234567890",
+          },
+          {
+            object_id: "transaction_09876543210",
+            tracking_number: "track_09876543210",
+          },
+        ],
+      },
+      {
+        object_id: "shippo_order_09876543210",
+        order_number: "11",
+        transactions: [
+          {
+            object_id: "transaction_01234567890",
+            tracking_number: "track_01234567890",
+          },
+          {
+            object_id: "transaction_09876543210",
+            tracking_number: "track_09876543210",
+          },
+        ],
+      },
+    ],
     shipping_options: [
       {
         id: "so_01234567890",

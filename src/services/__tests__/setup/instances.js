@@ -16,7 +16,6 @@ import {
   orderServiceMock,
   shippingProfileServiceMock,
   totalsServiceMock,
-  shippoClientMock,
 } from "../../__mocks__"
 
 const coreServiceMocks = (config) => (fn) =>
@@ -34,7 +33,7 @@ const coreServiceMocks = (config) => (fn) =>
     },
   })
 
-export const buildShippoServices = (config) =>  {
+export const buildShippoServices = (config) => {
   const {
     cartService,
     fulfillmentService,
@@ -58,7 +57,14 @@ export const buildShippoServices = (config) =>  {
   )
 
   const shippoPackageService = new ShippoPackageService(
-    { cartService, lineItemService, shippoClientService, shippoPackerService },
+    {
+      cartService,
+      fulfillmentService,
+      lineItemService,
+      orderService,
+      shippoClientService,
+      shippoPackerService,
+    },
     {}
   )
 
@@ -126,7 +132,6 @@ export const buildShippoServices = (config) =>  {
     shippoTransactionService,
     shippoOrderService,
     shippoTrackService,
-    shippoService
+    shippoService,
   }
-   
 }

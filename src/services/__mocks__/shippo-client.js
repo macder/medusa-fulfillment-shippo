@@ -7,18 +7,24 @@ import {
 
 export const shippoClientMock = (config) => {
   const orderProps = (object_id) =>
-    config(({ shippo_order, ...vals }) => ({
-      ...shippo_order,
-      object_id,
-      order_number: vals.display_id,
-      transactions: shippo_order.transactions.map((transaction) =>
-        shippoOrderTransactionTemplate(transaction)
-      ),
-    }))
+    config(({ shippo_orders, ...vals }) => {
+      const order = shippo_orders.find((order) => order.object_id === object_id)
+      return {
+        ...order,
+        object_id,
+        order_number: vals.display_id,
+        transactions: order.transactions.map((transaction) =>
+          shippoOrderTransactionTemplate(transaction)
+        ),
+      }
+    })
 
   const transactionProps = (object_id = null) =>
-    config(({ shippo_order }) => ({
-      ...shippo_order.transactions.find((ta) => ta.object_id === object_id),
+    config(({ shippo_orders }) => ({
+      ...shippo_orders
+        .map((order) => order.transactions)
+        .flat(1)
+        .find((ta) => ta.object_id === object_id),
       object_id,
       metadata: `Order ${shippo_order.order_number}`,
       order_number: shippo_order.order_number,
@@ -59,11 +65,9 @@ export const shippoClientMock = (config) => {
       }),
     },
     userparceltemplates: {
-      list: jest.fn(async () => {
-        console.log(userParcelProps())
-        return {results: userParcelProps().map(props => userParcelTemplate(props))}
-      }
-      ),
+      list: jest.fn(async () => ({
+        results: userParcelProps().map((props) => userParcelTemplate(props)),
+      })),
     },
   }
 }
