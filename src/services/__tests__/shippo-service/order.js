@@ -1,18 +1,11 @@
 import * as matchers from "jest-extended"
-import { buildShippoServices } from "./setup"
-import { shippoClientMock } from "../__mocks__"
-import { defaults as defaultProps, userParcelProps } from "../__mocks__/props"
+import { buildShippoServices } from "../setup"
+import { shippoClientMock } from "../../__mocks__"
+import { defaults as defaultProps } from "../../__mocks__/props"
 
 expect.extend(matchers)
 
-const propConfig = (fn) => fn({
-  ...defaultProps((vals) => ({
-    ...vals,
-    ...userParcelProps()
-  }))
-})
-
-const mockShippoClient = shippoClientMock(propConfig)
+const mockShippoClient = shippoClientMock(defaultProps)
 
 jest.mock("shippo", () => () => mockShippoClient)
 
@@ -21,33 +14,17 @@ describe("shippoService", () => {
     jest.clearAllMocks()
   })
 
-  /* ===================================================== */
-  describe("account", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    const shippoService = buildShippoServices(propConfig).shippoService
-
-    it("returns default address", async () => {
-      const result = await shippoService.account.address()
-      expect(result).toContainEntry(["is_default_sender", true])
-    })
-  })
-  /* ===================================================== */
-
-  /* ===================================================== */
   describe("order", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
 
-    const shippoService = buildShippoServices(propConfig).shippoService
+    const { shippoService } = buildShippoServices(defaultProps)
 
     describe("fetch", () => {
       describe("id", () => {
         test("returns", async () => {
-          const id = "object_id_order_123"
+          const id = "shippo_order_01234567890"
           const result = await shippoService.order.fetch(id)
           expect(result).toContainEntry(["object_id", id])
         })
@@ -70,6 +47,7 @@ describe("shippoService", () => {
         test("returns", async () => {
           const id = "order_01234567890"
           const result = await shippoService.order.fetchBy(["local_order", id])
+          // console.log('*********result: ', JSON.stringify(result, null, 2))
           expect(result).toBeArray()
           expect(result[0]).toContainEntry([
             "object_id",
@@ -137,30 +115,4 @@ describe("shippoService", () => {
       })
     })
   })
-  /* ===================================================== */
-
-  /* ===================================================== */
-  describe("package", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    const shippoService = buildShippoServices(propConfig).shippoService
-
-    describe("for", () => {
-      describe("cart", () => {
-        it("returns packer output", async () => {
-          const result = await shippoService.package
-            .for(["cart", "cart_01234567890"])
-            .fetch()
-          expect(result).toBeArray()
-          expect(result[0]).toContainKey("packer_output")
-        })
-      })
-    })
-
-  })
-  /* ===================================================== */
 })
-
-// console.log('*********result: ', JSON.stringify(result, null, 2))
