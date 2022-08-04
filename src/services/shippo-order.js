@@ -12,11 +12,14 @@ class ShippoOrderService extends BaseService {
 
   #shippo
 
+  #shippoTransactionService
+
   constructor({
     manager,
     fulfillmentRepository,
     fulfillmentService,
     shippoClientService,
+    shippoTransactionService
   }) {
     super()
 
@@ -31,6 +34,9 @@ class ShippoOrderService extends BaseService {
 
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
+
+    /** @private @const {ShippoTransactionService} */
+    this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
   }
@@ -56,13 +62,13 @@ class ShippoOrderService extends BaseService {
       if (order?.transactions?.length) {
         const transactions = await Promise.all(
           order.transactions.map(async (ta) => {
-            ta.is_return = await this.#shippoTransactionService.isReturn(
+            const is_return = await this.#shippoTransactionService.isReturn(
               ta.object_id
             )
-            return ta
+            return { ...ta, is_return }
           })
         )
-        order.transactions = transactions
+        return { ...order, transactions }
       }
       return order
     })
