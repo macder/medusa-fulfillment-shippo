@@ -2,7 +2,7 @@
 node_modules
 .DS_store
 .env*
-/*.js
+
 !index.js
 !.eslintrc.js
 yarn.lock
