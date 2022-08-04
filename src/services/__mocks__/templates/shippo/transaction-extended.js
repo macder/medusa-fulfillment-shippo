@@ -4,7 +4,7 @@ export const transactionExtendedTemplate = (props) =>
     status: props?.status ?? "SUCCESS",
     object_id: props.object_id,
     rate: {
-      object_id: "407dbbf3d2cf43d481b1a1d1bb75aa49",
+      object_id: "rate_01234567890",
       amount: "8.02",
       currency: "USD",
       amount_local: "8.02",

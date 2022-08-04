@@ -11,7 +11,7 @@ export const transactionTemplate = (props) =>
     messages: [],
     order: props.tracking_number,
     metadata: props.metadata,
-    parcel: "01ab1d94b6384c3fa8bcad0cb1b59e13",
+    parcel: "parcel_01234567890",
     billing: {
       payments: [],
     },
