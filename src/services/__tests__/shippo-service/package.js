@@ -79,5 +79,24 @@ describe("shippoService", () => {
         })
       })
     })
+
+    describe("set", () => {
+      beforeAll(async () => {
+        jest.clearAllMocks()
+      })
+
+      const packages = userParcelProps().user_parcel_templates.map((box) => ({
+        ...box,
+        name: "box",
+      }))
+
+      it("used set boxes", async () => {
+        shippoService.package.set("boxes", packages)
+        const result = await shippoService.package
+          .for(["fulfillment", "ful_01234567890"])
+          .get()
+        expect(result[0]).toContainEntry(["name", "box"])
+      })
+    })
   })
 })
