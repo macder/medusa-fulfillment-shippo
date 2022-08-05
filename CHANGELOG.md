@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.27.2] (2022-08-04)
+
+Fixed
+
+*   Removed test files that should have been ignored from package build
+
 ## \[0.27.1] (2022-08-04)
 
 Fixed
