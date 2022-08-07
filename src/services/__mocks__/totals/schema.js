@@ -1,4 +1,4 @@
-export const lineItemTotalsTemplate = () =>
+export const lineItemTotalsSchema = () =>
   Object.freeze({
     unit_price: 1000,
     quantity: 1,
