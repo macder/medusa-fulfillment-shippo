@@ -9,6 +9,6 @@ export const fulfillmentServiceMock = (keys) => {
 
   return {
     list: jest.fn(),
-    retrieve: jest.fn((id) => fulfillment(id)),
+    retrieve: jest.fn(async (id) => fulfillment(id)),
   }
 }
