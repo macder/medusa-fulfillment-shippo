@@ -1,3 +1,3 @@
 export { lineItemMock } from "./mock"
-// export * from "./service"
+export { lineItemServiceMock } from "./service"
 export { lineItemSchema } from "./schema"

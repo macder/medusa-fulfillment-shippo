@@ -1,10 +1,10 @@
 import { orderMock } from "./mock"
 
-export const orderServiceMock = (keys) => {
-  const order = (id) => orderMock(keys)(id)
+export const orderServiceMock = (state) => {
+  const order = (id) => orderMock(state)(id)
 
   return {
-    list: jest.fn(async ({ display_id }) => [order(keys.order_id)]),
+    list: jest.fn(async ({ display_id }) => [order(state.order_id)]),
     retrieve: jest.fn(async (id) => order(id)),
   }
 }
