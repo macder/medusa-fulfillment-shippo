@@ -1,10 +1,10 @@
 import { fulfillmentMock } from "./mock"
 
-export const fulfillmentServiceMock = (keys) => {
+export const fulfillmentServiceMock = (state) => {
   const fulfillment = (id) => {
-    const { fulfillments } = keys
+    const { fulfillments } = state
     const { items, shippo_order_id } = fulfillments.find((ful) => ful.id === id)
-    return fulfillmentMock({ ...keys, shippo_order_id })(items)(id)
+    return fulfillmentMock({ ...state, shippo_order_id })(items)(id)
   }
 
   return {

@@ -1,8 +1,8 @@
 import { lineItemMock } from "./mock"
 
-export const lineItemServiceMock = (keys) => {
+export const lineItemServiceMock = (state) => {
   const lineItem = (id) =>
-    lineItemMock(keys)({ id: "product_id" })({ id: "variant_id" })(id)
+    lineItemMock(state)({ id: "product_id" })({ id: "variant_id" })(id)
 
   return {
     list: jest.fn(),

@@ -1,7 +1,7 @@
 import { MockRepository } from "medusa-test-utils"
 import { fulfillmentMock } from "./mock"
 
-export const fulfillmentRepoMock = (keys) => {
+export const fulfillmentRepoMock = (state) => {
   const query = (params) => {
     const select = Object.entries(params.where?.data ?? params.where).flat(1)
     return {

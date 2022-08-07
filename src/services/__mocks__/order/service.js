@@ -1,7 +1,7 @@
 import { orderMock } from "./mock"
 
 export const orderServiceMock = (state) => {
-  const order = (id) => orderMock(state)(id)
+  const order = orderMock(state)
 
   return {
     list: jest.fn(async ({ display_id }) => [order(state.order_id)]),
