@@ -1,11 +1,11 @@
 import * as matchers from "jest-extended"
-import { buildShippoServices } from "../setup"
+import { makeShippoService } from "../setup"
+import { orderState } from "../../__mocks__/order"
 import { shippoClientMock } from "../../__mocks__"
-import { defaults as defaultProps } from "../../__mocks__/props"
 
 expect.extend(matchers)
 
-const mockShippoClient = shippoClientMock(defaultProps)
+const mockShippoClient = shippoClientMock({})
 
 jest.mock("shippo", () => () => mockShippoClient)
 
@@ -13,12 +13,12 @@ describe("shippoService", () => {
   beforeAll(async () => {
     jest.clearAllMocks()
   })
+  const shippoService = makeShippoService({})
 
   describe("account", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
-    const { shippoService } = buildShippoServices(defaultProps)
 
     it("returns default address", async () => {
       const result = await shippoService.account.address()
