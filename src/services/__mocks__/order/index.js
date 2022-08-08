@@ -1,4 +1,4 @@
 export { orderMock } from "./mock"
 export { orderSchema } from "./schema"
 export { orderServiceMock } from "./service"
-export { defaultOrder } from "./state"
+export { orderState } from "./state"
