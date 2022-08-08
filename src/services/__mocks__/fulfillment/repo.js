@@ -1,18 +1,10 @@
 import { MockRepository } from "medusa-test-utils"
 import { fulfillmentMock } from "./mock"
 
-export const fulfillmentRepoMock = (state) => {
-  const query = (params) => {
-    const select = Object.entries(params.where?.data ?? params.where).flat(1)
-    return {
-      key: select[0],
-      value: select[1],
-    }
-  }
-
-  return MockRepository({
-    find: async (params) => {
-      const selectBy = query(params)
-    },
+export const fulfillmentRepoMock = ({ ...state }) =>
+  MockRepository({
+    find: async (params) =>
+      state.fulfillments.map(({ items, shippo_order_id, id }) =>
+        fulfillmentMock({ ...state, shippo_order_id })(items)(id)
+      ),
   })
-}

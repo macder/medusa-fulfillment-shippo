@@ -28,6 +28,6 @@ const baseState = () => ({
 export const orderState = ({ display_id }) => ({
   default: {
     ...baseState(),
-    display_id
+    display_id,
   },
 })

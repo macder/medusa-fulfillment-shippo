@@ -19,7 +19,7 @@ class ShippoOrderService extends BaseService {
     fulfillmentRepository,
     fulfillmentService,
     shippoClientService,
-    shippoTransactionService
+    shippoTransactionService,
   }) {
     super()
 
