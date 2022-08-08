@@ -1,5 +1,5 @@
 const baseState = (order_number) => ({
-  object_id: "shippo_order_11",
+  object_id: "shippo_order_default_id_1",
   order_number,
   transactions: [],
 })

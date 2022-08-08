@@ -1,6 +1,6 @@
 const baseState = () => ({
   order_id: "order_default",
-  display_id: "93",
+  display_id: "11",
   cart_id: "cart_default_id",
   claim_order_id: null,
   swap_id: null,
@@ -25,9 +25,9 @@ const baseState = () => ({
   ],
 })
 
-
-export const orderState = () => ({
+export const orderState = ({ display_id }) => ({
   default: {
-    ...baseState()
-  }
+    ...baseState(),
+    display_id
+  },
 })

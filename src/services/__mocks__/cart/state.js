@@ -51,7 +51,7 @@ export const cartState = () => ({
       ...baseState(),
       line_items: [],
       shipping_address: false,
-      email: false, 
-    }
+      email: false,
+    },
   },
 })

@@ -1,0 +1,1 @@
+export { shippingProfileServiceMock } from "./service"

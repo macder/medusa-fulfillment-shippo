@@ -1,8 +1,10 @@
 import { shippoOrderMock } from "./shippo/order"
-import { shippoTransactionMock, shippoTransactionExtendedMock } from "./shippo/transaction"
+import {
+  shippoTransactionMock,
+  shippoTransactionExtendedMock,
+} from "./shippo/transaction"
 
 export const shippoClientMock = ({ ...state }) => {
-
   const order = shippoOrderMock(state.order)
   const transaction = shippoTransactionMock(state.transaction)
 
