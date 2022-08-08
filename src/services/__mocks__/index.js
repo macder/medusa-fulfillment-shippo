@@ -1,4 +1,1 @@
-export { makeShippoClientService, makeShippoPackerService } from "./setup"
-export { shippoClient } from "./shippo-client"
-
-export * from "./sand"
+export { shippoClientMock } from "./shippo-client"
