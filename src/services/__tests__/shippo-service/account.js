@@ -1,6 +1,5 @@
 import * as matchers from "jest-extended"
 import { makeShippoService } from "../setup"
-import { orderState } from "../../__mocks__/order"
 import { shippoClientMock } from "../../__mocks__"
 
 expect.extend(matchers)
