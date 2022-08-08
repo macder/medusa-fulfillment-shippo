@@ -1,4 +1,4 @@
-import * as matchers from "jest-extended"
+import { toBeArray, toContainKey, toContainEntry } from "jest-extended"
 import { makeShippoService } from "../setup"
 import { lineItemMock } from "../../__mocks__/line-item"
 import { shippoClientMock } from "../../__mocks__"
@@ -6,7 +6,7 @@ import { cartState } from "../../__mocks__/cart"
 import { orderState } from "../../__mocks__/order"
 import { userParcelState } from "../../__mocks__/shippo/user-parcel"
 
-expect.extend(matchers)
+expect.extend({ toBeArray, toContainKey, toContainEntry })
 
 const mockShippoClient = shippoClientMock({
   user_parcels: userParcelState(),

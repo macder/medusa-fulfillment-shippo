@@ -1,11 +1,11 @@
-import * as matchers from "jest-extended"
+import { toContainKey, toContainEntries, toContainEntry } from "jest-extended"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
 import { orderState } from "../../__mocks__/order"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
 
-expect.extend(matchers)
+expect.extend({ toContainKey, toContainEntries, toContainEntry })
 
 const mockShippoClient = shippoClientMock({
   order: shippoOrderState({ order_number: "11" }).default,

@@ -1,8 +1,8 @@
-import * as matchers from "jest-extended"
+import { toContainEntry } from "jest-extended"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
 
-expect.extend(matchers)
+expect.extend({ toContainEntry })
 
 const mockShippoClient = shippoClientMock({})
 
