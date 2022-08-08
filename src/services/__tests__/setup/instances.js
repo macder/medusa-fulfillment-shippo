@@ -18,20 +18,6 @@ import { orderServiceMock } from "../../__mocks__/order"
 import { totalsServiceMock } from "../../__mocks__/totals"
 import { shippingProfileServiceMock } from "../../__mocks__/shipping"
 
-// const coreServiceMocks = () => ({
-//   cartService: (state) => cartServiceMock(state),
-//   fulfillmentService: (state) => fulfillmentServiceMock(state),
-//   orderService: (state) => orderServiceMock(state),
-//   lineItemService: (state) => lineItemServiceMock(state),
-//   shippingProfileService: (state) => shippingProfileServiceMock(state),
-//   manager: MockManager,
-//   fulfillmentRepository: (state) => fulfillmentRepoMock(state),
-//   totalsService: totalsServiceMock(),
-//   pricingService: {
-//     setShippingOptionPrices: jest.fn(async (options) => options),
-//   },
-// })
-
 const coreServiceMocks = (state) => ({
   cartService: cartServiceMock(state),
   fulfillmentService: fulfillmentServiceMock(state),
