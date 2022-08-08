@@ -6,7 +6,7 @@ import {
 
 export const shippoClientMock = ({ ...state }) => {
   const order = shippoOrderMock(state.order)
-  const transaction = shippoTransactionMock(state.transaction)
+  const transaction = shippoTransactionMock(state?.transaction?.label)
 
   return {
     account: {
@@ -35,15 +35,19 @@ export const shippoClientMock = ({ ...state }) => {
     transaction: {
       retrieve: jest.fn(async (object_id) => transaction(object_id)),
 
-      // search: jest.fn(async (q) => {
-      //   const id = q.replace(/[^0-9]/g, "")
-      //   const transactions = config(({ transactions }) => transactions)
-      //   return {
-      //     results: transactions.map((ta) =>
-      //       transactionExtendedTemplate(transactionProps(ta.object_id))
-      //     ),
-      //   }
-      // }),
+      search: jest.fn(async (q) =>
+        // const id = q.replace(/[^0-9]/g, "")
+        // const transactions = config(({ transactions }) => transactions)
+        ({
+          results: state.order.transactions.map((ta) =>
+            shippoTransactionExtendedMock(
+              ta.object_id === "ta_label"
+                ? state.transaction.label
+                : state.transaction.return
+            )(ta.object_id)
+          ),
+        })
+      ),
     },
     // userparceltemplates: {
     //   list: jest.fn(async () => ({

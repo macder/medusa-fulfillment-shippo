@@ -1,16 +1,15 @@
 import * as matchers from "jest-extended"
 import { makeShippoService } from "../setup"
+import { shippoClientMock } from "../../__mocks__"
 import { orderState } from "../../__mocks__/order"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
-
-import { shippoClientMock } from "../../__mocks__"
 
 expect.extend(matchers)
 
 const mockShippoClient = shippoClientMock({
   order: shippoOrderState({ order_number: "11" }).default,
-  transaction: shippoTransactionState({ order_number: "11" }).default,
+  transaction: shippoTransactionState({ order_number: "11" }),
 })
 
 jest.mock("shippo", () => () => mockShippoClient)
