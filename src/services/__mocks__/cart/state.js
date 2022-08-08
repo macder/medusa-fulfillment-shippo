@@ -1,4 +1,4 @@
-const baseCart = () => ({
+const baseState = () => ({
   order_id: null,
   cart_id: "cart_default_id",
   claim_order_id: null,
@@ -16,34 +16,34 @@ const baseCart = () => ({
 export const cartState = () => ({
   has: {
     items: {
-      ...baseCart(),
+      ...baseState(),
     },
     items_address: {
-      ...baseCart(),
+      ...baseState(),
       shipping_address: true,
     },
     items_email: {
-      ...baseCart(),
+      ...baseState(),
       email: true,
     },
     address: {
-      ...baseCart(),
+      ...baseState(),
       shipping_address: true,
       line_items: [],
     },
     address_email: {
-      ...baseCart(),
+      ...baseState(),
       shipping_address: true,
       email: true,
       line_items: [],
     },
     email: {
-      ...baseCart(),
+      ...baseState(),
       email: true,
       line_items: [],
     },
     items_address_email: {
-      ...baseCart(),
+      ...baseState(),
       shipping_address: true,
       email: true,
     },
