@@ -104,7 +104,6 @@ class ShippoRatesService extends BaseService {
 
   #isReady(cart) {
     if (!cart.email || cart.items.length === 0) {
-      console.log("NOT READY")
       return false
     }
     return this.#validateAddress(cart.shipping_address)
