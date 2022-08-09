@@ -1,7 +1,7 @@
 import { BaseService } from "medusa-interfaces"
 import path from "path"
 import { getConfigFile } from "medusa-core-utils"
-import shippo from "shippo"
+import shippo from "@macder/shippo"
 
 class ShippoClientService extends BaseService {
   #client

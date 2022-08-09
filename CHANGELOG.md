@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.27.3] (2022-08-09)
+
+*   Updated dependencies
+
+## \[0.27.2] (2022-08-04)
+
+Fixed
+
+*   Removed test files that should have been ignored from package build
+
+## \[0.27.1] (2022-08-04)
 ## \[1.0.0-beta.0] (2022-08-09)
 
 Refactored tests [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
