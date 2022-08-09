@@ -1,7 +1,4 @@
-import {
-  toBeNumber,
-  toContainKeys,
-} from "jest-extended"
+import { toBeNumber, toContainKeys } from "jest-extended"
 
 import { makeShippoRatesService } from "./setup"
 import { shippoClientMock } from "../__mocks__"
