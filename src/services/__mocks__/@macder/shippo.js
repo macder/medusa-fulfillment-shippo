@@ -9,7 +9,7 @@ import {
   mockTransaction,
   mockExtendedTransaction,
   mockTrack,
-} from "./data"
+} from "../data"
 
 const shippo = jest.fn(() => ({
   carrieraccount: {
