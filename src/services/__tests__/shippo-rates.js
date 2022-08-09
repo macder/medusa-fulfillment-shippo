@@ -1,4 +1,8 @@
-import * as matchers from "jest-extended"
+import {
+  toBeNumber,
+  toContainKeys,
+} from "jest-extended"
+
 import { makeShippoRatesService } from "./setup"
 import { shippoClientMock } from "../__mocks__"
 import { cartState } from "../__mocks__/cart"
@@ -6,7 +10,7 @@ import { userParcelState } from "../__mocks__/shippo/user-parcel"
 import { liveRateState } from "../__mocks__/shippo/live-rate"
 import { shippingOptionMock } from "../__mocks__/shipping"
 
-expect.extend(matchers)
+expect.extend({ toBeNumber, toContainKeys })
 
 const mockShippoClient = shippoClientMock({
   live_rate: liveRateState(),
