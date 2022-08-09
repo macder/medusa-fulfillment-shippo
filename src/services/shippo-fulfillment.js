@@ -62,11 +62,10 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
     const rate = await this.#shippoRatesService.fetchOptionRate(
-      cart.id,
-      fulfillmentOption
+      fulfillmentOption,
+      cart
     )
-
-    return this.#shippoRatesService.getPrice(rate)
+    return rate ? this.#shippoRatesService.getPrice(rate) : null
   }
 
   async canCalculate(data) {

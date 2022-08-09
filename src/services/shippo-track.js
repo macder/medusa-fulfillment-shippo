@@ -5,6 +5,8 @@ class ShippoTrackService extends BaseService {
 
   #fulfillmentService
 
+  #logger
+
   #shippo
 
   #shippoOrderService
@@ -13,6 +15,7 @@ class ShippoTrackService extends BaseService {
 
   constructor({
     fulfillmentService,
+    logger,
     shippoClientService,
     shippoOrderService,
     shippoTransactionService,
@@ -32,6 +35,8 @@ class ShippoTrackService extends BaseService {
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    this.#logger = logger
   }
 
   /**
@@ -42,7 +47,7 @@ class ShippoTrackService extends BaseService {
    */
   async fetch(carrier, trackingNum) {
     return this.#client.track.get_status(carrier, trackingNum).catch((e) => {
-      console.error(e)
+      this.#logger.error(e)
     })
   }
 

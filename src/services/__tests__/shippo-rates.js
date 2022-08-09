@@ -1,392 +1,207 @@
-import * as matchers from "jest-extended"
-import ShippoPackageService from "../shippo-package"
-import ShippoPackerService from "../shippo-packer"
-import ShippoClientService from "../shippo-client"
-import ShippoRatesService from "../shippo-rates"
+import { toBeNumber, toContainKeys } from "jest-extended"
 
-import {
-  mockCart,
-  mockLineItemOLDTotals,
-  mockShippingOption,
-} from "../__mocks__/data"
+import { makeShippoRatesService } from "./setup"
+import { shippoClientMock } from "../__mocks__"
+import { cartState } from "../__mocks__/cart"
+import { userParcelState } from "../__mocks__/shippo/user-parcel"
+import { liveRateState } from "../__mocks__/shippo/live-rate"
+import { shippingOptionMock } from "../__mocks__/shipping"
 
-expect.extend(matchers)
+expect.extend({ toBeNumber, toContainKeys })
 
-describe("ShippoRatesService", () => {
+const mockShippoClient = shippoClientMock({
+  live_rate: liveRateState(),
+  user_parcels: userParcelState(),
+})
+
+jest.mock("@macder/shippo", () => () => mockShippoClient)
+
+describe("shippoRatesService", () => {
   beforeAll(async () => {
     jest.clearAllMocks()
   })
 
-  const totalsService = {
-    getLineItemTotals: jest.fn(async () => mockLineItemOLDTotals()),
-  }
+  // describe("decorateOptions", () => {
+  //   const options = cartState().has.items.shipping_options.map((so) =>
+  //     shippingOptionMock({ ...so })()
+  //   )
 
-  const pricingService = {
-    setShippingOptionPrices: jest.fn(async (options) => options),
-  }
+  //   describe("cart has", () => {
+  //     describe("items, address, email", () => {
+  //       // cart has items, no address, no email
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.items_address_email,
+  //       })
 
-  const getCartService = (cart) => ({
-    retrieve: jest.fn(async () => cart),
-  })
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNumber()
+  //           }
+  //         })
+  //       })
+  //     })
 
-  const getShippingProfileService = (cartOptions) => ({
-    fetchCartOptions: jest.fn(async () => cartOptions),
-  })
+  //     describe("items", () => {
+  //       // cart has items, no address, no email
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.items,
+  //       })
 
-  const mockCartShippingOptions = () => {
-    const soCalculated = [mockShippingOption({ variant: "live_rate" })]
-    const soFlatRate = [mockShippingOption({ variant: "default" })]
-    soCalculated[0].data.name = "testing 123"
-    soCalculated[0].data.object_id = "object_id"
-    soCalculated[0].id = "so_id"
-    return soCalculated.concat(soFlatRate)
-  }
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
 
-  const shippingProfileService = getShippingProfileService(
-    mockCartShippingOptions()
-  )
+  //     describe("items, address", () => {
+  //       // cart has items, address, no email
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.items_address,
+  //       })
 
-  const shippoClientService = new ShippoClientService({}, {})
-  const shippoPackerService = new ShippoPackerService(
-    { shippoClientService },
-    {}
-  )
-  const shippoPackageService = new ShippoPackageService(
-    { shippoClientService, shippoPackerService },
-    {}
-  )
-  const getShippoRatesService = (cartService) =>
-    new ShippoRatesService(
-      {
-        cartService,
-        shippingProfileService,
-        shippoClientService,
-        shippoPackageService,
-        pricingService,
-        totalsService,
-      },
-      {}
-    )
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
 
-  describe("fetchCartOptions", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
+  //     describe("items, email", () => {
+  //       // cart has items, email, no address
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.items_email,
+  //       })
 
-    /* ===================================================== */
-    describe("cart has items, address, email", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
 
-      const cart = mockCart({ hasAddress: true, hasItems: 1 })
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
+  //     describe("address", () => {
+  //       // cart has address, no email, no items
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.address,
+  //       })
 
-      test("calculated options prop.amount is number", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNumber()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
 
-    /* ===================================================== */
-    describe("cart has no items, no address, no email", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
+  //     describe("address email", () => {
+  //       // cart has address, email, no items
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.address_email,
+  //       })
 
-      const cart = mockCart({ hasAddress: false, hasItems: false })
-      cart.shipping_address = null
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
 
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
+  //     describe("email", () => {
+  //       // cart has email, no items, no address
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.email,
+  //       })
 
-    /* ===================================================== */
-    describe("cart has items, no address, no email", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
 
-      const cart = mockCart({ hasAddress: false, hasItems: 1 })
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
+  //     describe("nothing", () => {
+  //       // cart is new - blank
+  //       const shippoRatesService = makeShippoRatesService({
+  //         ...cartState().has.nothing,
+  //       })
 
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
+  //       test("", async () => {
+  //         const results = await shippoRatesService.decorateOptions(
+  //           "cart_id",
+  //           options
+  //         )
+  //         results.forEach((result) => {
+  //           if (result.data.type === "LIVE_RATE") {
+  //             expect(result.amount).toBeNull()
+  //           }
+  //         })
+  //       })
+  //     })
+  //   })
 
-    /* ===================================================== */
-    describe("cart has items, address, no email", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
+  // describe("fetchOptionRate", () => {
+  //   const shippoRatesService = makeShippoRatesService({
+  //     ...cartState().has.items_address_email,
+  //   })
 
-      const cart = mockCart({ hasAddress: true, hasItems: 1 })
-      cart.email = null
-
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
-
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
-
-    /* ===================================================== */
-    describe("cart has items, email, no address", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
-
-      const cart = mockCart({ hasAddress: false, hasItems: 1 })
-      cart.email = "test@test.com"
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
-
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
-
-    /* ===================================================== */
-    describe("cart has address, no items, no email", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
-
-      const cart = mockCart({ hasAddress: true, hasItems: false })
-      cart.email = null
-
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
-
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
-
-    /* ===================================================== */
-    describe("cart has address, email, no items", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
-
-      const cart = mockCart({ hasAddress: true, hasItems: false })
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
-
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
-
-    /* ===================================================== */
-    describe("cart has email, no address, no items", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
-
-      const cart = mockCart({ hasAddress: false, hasItems: false })
-      cart.email = "test@test.com"
-      const cartService = getCartService(cart)
-      const shippoRatesService = getShippoRatesService(cartService)
-
-      test("calculated options prop.amount is null", async () => {
-        const results = await shippoRatesService.decorateOptions(
-          "cart_id",
-          mockCartShippingOptions()
-        )
-        results.forEach((result) => {
-          if (result.data.type === "LIVE_RATE") {
-            expect(result.amount).toBeNull()
-          }
-        })
-      })
-    })
-    /* ===================================================== */
-  })
-
-  describe("fetchCartRates", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    const cart = mockCart({ hasAddress: false, hasItems: 1 })
-    const cartService = getCartService(cart)
-    const shippoRatesService = getShippoRatesService(cartService)
-
-    test("rate objects have parcel property", async () => {
-      const results = await shippoRatesService.fetchCartRates("cart_id")
-      results.forEach((result) => {
-        expect(result).toContainKey("parcel")
-      })
-    })
-  })
-
-  describe("fetchOptionRate", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
-    describe("option param is id", () => {
-      /* ===================================================== */
-      describe("cart is ready", () => {
-        beforeAll(async () => {
-          jest.clearAllMocks()
-        })
-
-        const cart = mockCart({ hasAddress: true, hasItems: 1 })
-        const cartService = getCartService(cart)
-        const shippoRatesService = getShippoRatesService(cartService)
-
-        test("object has parcel prop", async () => {
-          const result = await shippoRatesService.fetchOptionRate(
-            "cart_id",
-            "so_id"
-          )
-          expect(result).toContainKey("parcel")
-        })
-      })
-      /* ===================================================== */
-
-      /* ===================================================== */
-      describe("cart not ready", () => {
-        beforeAll(async () => {
-          jest.clearAllMocks()
-        })
-
-        const cart = mockCart({ hasAddress: false, hasItems: 1 })
-        const cartService = getCartService(cart)
-        const shippoRatesService = getShippoRatesService(cartService)
-
-        test("returned promise.reject", async () => {
-          expect(async () =>
-            shippoRatesService.fetchOptionRate("cart_id", "so_id")
-          ).rejects.toEqual({ error: "cart not ready" })
-        })
-      })
-      /* ===================================================== */
-    })
-
-    describe("option param is FulfillmentOption", () => {
-      const option = {
-        name: "testing 123",
-        object_id: "object_id",
-      }
-
-      /* ===================================================== */
-      describe("cart is ready", () => {
-        beforeAll(async () => {
-          jest.clearAllMocks()
-        })
-
-        const cart = mockCart({ hasAddress: true, hasItems: 1 })
-        const cartService = getCartService(cart)
-        const shippoRatesService = getShippoRatesService(cartService)
-
-        test("object has parcel prop", async () => {
-          const result = await shippoRatesService.fetchOptionRate(
-            "cart_id",
-            option
-          )
-          expect(result).toContainKey("parcel")
-        })
-      })
-      /* ===================================================== */
-
-      /* ===================================================== */
-      describe("cart not ready", () => {
-        beforeAll(async () => {
-          jest.clearAllMocks()
-        })
-
-        const cart = mockCart({ hasAddress: false, hasItems: 1 })
-        const cartService = getCartService(cart)
-        const shippoRatesService = getShippoRatesService(cartService)
-
-        test("returned promise.reject", async () => {
-          expect(async () =>
-            shippoRatesService.fetchOptionRate("cart_id", option)
-          ).rejects.toEqual({ error: "cart not ready" })
-        })
-      })
-      /* ===================================================== */
-    })
-  })
+  //   test("has parcel and shipping option props", async () => {
+  //     const result = await shippoRatesService.fetchOptionRate(
+  //       "cart_default_id",
+  //       options[0].data
+  //     )
+  //     expect(result).toContainKeys(["parcel", "shipping_option"])
+  //   })
+  // })
 
   describe("getPrice", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
 
-    const shippoRatesService = new ShippoRatesService({}, {})
+    const shippoRatesService = makeShippoRatesService({
+      ...cartState().has.items_address_email,
+    })
 
     it("returns price from amount * 100", async () => {
       const rate = {
@@ -407,3 +222,4 @@ describe("ShippoRatesService", () => {
     })
   })
 })
+// })

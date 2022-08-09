@@ -22,17 +22,14 @@ class ShippoPackageService extends BaseService {
 
   #shippoPacker
 
-  constructor(
-    {
-      cartService,
-      lineItemService,
-      fulfillmentService,
-      orderService,
-      shippoClientService,
-      shippoPackerService,
-    },
-    options
-  ) {
+  constructor({
+    cartService,
+    lineItemService,
+    fulfillmentService,
+    orderService,
+    shippoClientService,
+    shippoPackerService,
+  }) {
     super()
 
     /** @private @const {CartService} */
@@ -76,12 +73,6 @@ class ShippoPackageService extends BaseService {
 
   /**
    *
-   * @return {}
-   */
-  async fetchCarrierTemplates() {}
-
-  /**
-   *
    * @param {}
    * @return {}
    */
@@ -100,13 +91,11 @@ class ShippoPackageService extends BaseService {
    */
   async packCart(cartOrId, resultType = null) {
     this.#setResultType(resultType)
-
     const cart = cartOrId?.items
       ? cartOrId
       : await this.#cartService.retrieve(cartOrId, {
           relations: ["items"],
         })
-
     this.#setItems(this.#prepareItems(cart.items))
     return this.#binpack()
   }
@@ -126,14 +115,11 @@ class ShippoPackageService extends BaseService {
         })
 
     const lineItems = await Promise.all(
-      fulfillment.items.map(
-        async (item) =>
-          await this.#lineItemService
-            .retrieve(item.item_id)
-            .then((lineItem) => {
-              lineItem.quantity = lineItem.fulfilled_quantity
-              return lineItem
-            })
+      fulfillment.items.map(async (item) =>
+        this.#lineItemService.retrieve(item.item_id).then((lineItem) => ({
+          quantity: lineItem.fulfilled_quantit,
+          ...lineItem,
+        }))
       )
     )
 

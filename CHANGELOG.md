@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.28.0] (2022-08-09)
+
+Changed
+
+*   Requires medusa ^1.3.5
+
+Fixed
+
+*   Retrieving shipping options hangs system on medusa v1.3.5 [#297](https://github.com/macder/medusa-fulfillment-shippo/issues/297)
+
 ## \[0.27.3] (2022-08-09)
 
 *   Updated dependencies

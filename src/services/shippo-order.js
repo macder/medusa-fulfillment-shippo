@@ -62,13 +62,13 @@ class ShippoOrderService extends BaseService {
       if (order?.transactions?.length) {
         const transactions = await Promise.all(
           order.transactions.map(async (ta) => {
-            ta.is_return = await this.#shippoTransactionService.isReturn(
+            const is_return = await this.#shippoTransactionService.isReturn(
               ta.object_id
             )
-            return ta
+            return { ...ta, is_return }
           })
         )
-        order.transactions = transactions
+        return { ...order, transactions }
       }
       return order
     })

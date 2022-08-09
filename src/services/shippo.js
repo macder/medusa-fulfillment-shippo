@@ -2,8 +2,6 @@ import { BaseService } from "medusa-interfaces"
 import ShippoFacade from "../facades"
 
 class ShippoService extends BaseService {
-  #client
-
   #shippoClient
 
   #shippoOrder
@@ -14,13 +12,10 @@ class ShippoService extends BaseService {
 
   #shippoTransaction
 
-  #shippoRates
-
   constructor({
     shippoClientService,
     shippoOrderService,
     shippoPackageService,
-    shippoRatesService,
     shippoTrackService,
     shippoTransactionService,
   }) {
@@ -35,23 +30,17 @@ class ShippoService extends BaseService {
     /** @private @const {ShippoPackageService} */
     this.#shippoPackageService = shippoPackageService
 
-    /** @private @const {ShippoRatesService} */
-    this.#shippoRates = shippoRatesService
-
     /** @private @const {ShippoTrackService} */
     this.#shippoTrack = shippoTrackService
 
     /** @private @const {ShippoTransactionService} */
     this.#shippoTransaction = shippoTransactionService
 
-    this.#client = this.#shippoClient.getClient()
-
     this.account = this.#account()
     this.client = this.#shippoClient.getClient()
     this.order = this.#order()
     this.package = this.#package()
     this.packingslip = this.#packingslip()
-    this.rates = this.#rates()
     this.track = this.#track()
     this.transaction = this.#transaction()
 
@@ -132,8 +121,6 @@ class ShippoService extends BaseService {
         cart: (id) => this.#shippoPackageService.packCart(id),
         local_order: (id) => this.#shippoPackageService.packOrder(id),
         fulfillment: (id) => this.#shippoPackageService.packFulfillment(id),
-        claim: (id) => ({}),
-        swap: (id) => ({}),
       },
       set: {
         boxes: (bins) => this.#shippoPackageService.setBoxes(bins),
@@ -160,16 +147,6 @@ class ShippoService extends BaseService {
           this.#shippoOrder.findFulfillment(object_id),
       },
     }
-    return new ShippoFacade(methods)
-  }
-
-  #rates() {
-    const methods = {
-      for: {
-        cart: (id) => this.#shippoRates.fetchCartRates(id),
-      },
-    }
-
     return new ShippoFacade(methods)
   }
 

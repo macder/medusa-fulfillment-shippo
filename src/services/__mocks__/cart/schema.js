@@ -1,0 +1,26 @@
+export const cartSchema = ({ ...props }) =>
+  Object.freeze({
+    object: "cart",
+    id: props?.id ?? "cart_418",
+    gift_cards: [],
+    region: Object.freeze({
+      currency_code: "usd",
+    }),
+    items: props?.items ?? [],
+    payment: null,
+    shipping_address: props?.address ?? null,
+    billing_address: props?.address ?? null,
+    shipping_methods: [],
+    payment_sessions: [],
+    discounts: [],
+    email: props?.email ?? null,
+    type: "default",
+    metadata: null,
+    subtotal: 2400,
+    tax_total: 240,
+    shipping_total: 0,
+    discount_total: 0,
+    gift_card_total: 0,
+    gift_card_tax_total: 0,
+    total: 2640,
+  })

@@ -30,16 +30,6 @@ class ShippoClientService extends BaseService {
   }
 
   /**
-   * Fetches all custom parcel templates from shippo account
-   * @return {array.<object>} list of custom parcel templates
-   */
-  async fetchUserParcelTemplates() {
-    return this.#client.userparceltemplates
-      .list()
-      .then((response) => response.results)
-  }
-
-  /**
    * Generic polling
    * @param {function} fn - callable to execute with
    * @param {function} validate - callable to validate each result, must return bool

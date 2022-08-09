@@ -2,12 +2,16 @@ import { BP3D } from "@macder/binpackingjs"
 import { BaseService } from "medusa-interfaces"
 
 class ShippoPackerService extends BaseService {
-  #bins = []
+  #bins
 
-  #items = []
+  #items
 
-  constructor({}) {
+  constructor() {
     super()
+
+    this.#bins = []
+
+    this.#items = []
   }
 
   /**
