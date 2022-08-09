@@ -16,11 +16,13 @@ const baseState = () => ({
       id: "ful_default_id_1",
       shippo_order_id: "shippo_order_default_id_1",
       items: ["item_123", "item_321"],
+      tracking_links: ["track_01234567890"],
     },
     {
       id: "ful_default_id_2",
       shippo_order_id: "shippo_order_default_id_2",
       items: ["item_11", "item_31"],
+      tracking_links: ["track_09876543210"],
     },
   ],
 })

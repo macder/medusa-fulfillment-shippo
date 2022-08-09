@@ -9,8 +9,11 @@ export const orderMock =
       id,
       ...state,
       display_id: "11",
-      fulfillments: state.fulfillments.map(({ id, items, shippo_order_id }) =>
-        fulfillmentMock({ ...state, shippo_order_id })(items)(id)
+      fulfillments: state.fulfillments.map(
+        ({ id, items, shippo_order_id, tracking_links }) =>
+          fulfillmentMock({ ...state, shippo_order_id })(items, tracking_links)(
+            id
+          )
       ),
       items: state.line_items.map(({ product_id, variant_id, id }) =>
         lineItemMock(state)({ id: product_id })({ id: variant_id })(id)

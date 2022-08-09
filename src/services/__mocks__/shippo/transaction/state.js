@@ -7,12 +7,14 @@ export const shippoTransactionState = ({ order_number }) => ({
     ...baseState(),
     object_id: "ta_label",
     order_number,
+    tracking_number: "track_01234567890",
     is_return: false,
   },
   return: {
     ...baseState(),
     object_id: "ta_return_label",
     order_number,
+    tracking_number: "track_09876543210",
     is_return: true,
   },
 })

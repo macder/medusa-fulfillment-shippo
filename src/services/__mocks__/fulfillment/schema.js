@@ -13,7 +13,7 @@ export const fulfillmentSchema = ({ ...props }) =>
     shipped_at: "",
     canceled_at: null,
     metadata: {},
-    // tracking_links: trackingLinks(),
+    tracking_links: props?.tracking_links ?? [],
     items: props.items,
   })
 

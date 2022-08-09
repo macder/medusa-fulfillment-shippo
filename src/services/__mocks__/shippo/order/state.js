@@ -14,6 +14,7 @@ export const shippoOrderState = ({ order_number }) => ({
     transactions: [
       {
         object_id: "ta_label",
+        tracking_number: "track_01234567890",
       },
     ],
   },

@@ -20,6 +20,12 @@ export const shippoClientMock = ({ ...state }) => ({
       ],
     })),
   },
+  carrieraccount: {
+    list: jest.fn(async () => []),
+    retrieve: jest.fn(async (id) => ({
+      carrier: "usps",
+    })),
+  },
   order: {
     retrieve: jest.fn(async (object_id) =>
       shippoOrderMock(state.order)(object_id)
@@ -29,6 +35,12 @@ export const shippoClientMock = ({ ...state }) => ({
       expires: "",
       slip_url: "https://shippo-delivery.net",
       created: "",
+    })),
+  },
+  track: {
+    get_status: jest.fn(async (carrier, tracking_number) => ({
+      tracking_number,
+      carrier,
     })),
   },
   transaction: {
