@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.28.0] (2022-08-09)
+
+Changed
+
+*   Requires medusa ^1.3.5
+
+Fixed
+
+*   Retrieving shipping options hangs system on medusa v1.3.5 [#297](https://github.com/macder/medusa-fulfillment-shippo/issues/297)
+
 ## \[0.27.3] (2022-08-09)
 
 *   Updated dependencies
@@ -13,29 +23,10 @@ Fixed
 *   Removed test files that should have been ignored from package build
 
 ## \[0.27.1] (2022-08-04)
-## \[1.0.0-beta.0] (2022-08-09)
 
-Refactored tests [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
+Fixed
 
-## \[1.0.0-alpha.4] (2022-08-04)
-
-Fixes undefined error and resolves reference mutation
-
-## \[1.0.0-alpha.3] (2022-08-04)
-
-Test suite refactor in progress [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
-
-## \[1.0.0-alpha.2] (2022-08-04)
-
-Test suite refactor in progress [#277](https://github.com/macder/medusa-fulfillment-shippo/issues/277)
-
-## \[1.0.0-alpha.1] (2022-08-01)
-
-Minor code optimizations
-
-## \[1.0.0-alpha.0] (2022-07-31)
-
-Initial pre-release
+*   Fetch order by fulfillment fails sometimes [#292](https://github.com/macder/medusa-fulfillment-shippo/issues/292)
 
 ## \[0.27.0] (2022-07-31)
 
