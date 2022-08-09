@@ -1,4 +1,6 @@
 export default async (container) => {
+  const shippoFulfillmentService = container.resolve("shippoFulfillmentService")
+
   const logger = container.resolve("logger")
   const config = shippoFulfillmentService.getWebhookConfig()
 

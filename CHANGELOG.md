@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.28.1] (2022-08-09)
+
+Fixed
+
+*   Running loader failed [#300](https://github.com/macder/medusa-fulfillment-shippo/issues/300)
+
 ## \[0.28.0] (2022-08-09)
 
 Changed
