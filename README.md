@@ -274,7 +274,7 @@ In your medusa store, make sure products have correct values for length, width, 
 
 [Retrieve shipping options for cart](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) as usual and any `price_type: calculated` options belonging to `provider: shippo` will have `amount: Number`.
 
-*Rates calculate only if cart has shipping address and items*
+Rates calculate only if cart has shipping address and items
 
 **HTTP:**
 
