@@ -1,76 +1,72 @@
+import { shippoOrderMock } from "./shippo/order"
 import {
-  shippoOrderTemplate,
-  shippoOrderTransactionTemplate,
-  transactionTemplate,
-  transactionExtendedTemplate,
-  userParcelTemplate,
-} from "./templates/shippo"
+  shippoTransactionMock,
+  shippoTransactionExtendedMock,
+} from "./shippo/transaction"
+import { liveRateMock } from "./shippo/live-rate"
+import { userParcelMock } from "./shippo/user-parcel"
 
-export const shippoClientMock = (config) => {
-  const orderProps = (object_id) =>
-    config(({ shippo_orders, ...vals }) => {
-      const order = shippo_orders.find((order) => order.object_id === object_id)
-      return {
-        ...order,
-        object_id,
-        transactions: order.transactions.map((transaction) =>
-          shippoOrderTransactionTemplate(transaction)
-        ),
-      }
-    })
+export const shippoClientMock = ({ ...state }) => ({
+  account: {
+    address: jest.fn(async () => ({
+      results: [
+        {
+          is_default_sender: true,
+          is_default_return: true,
+        },
+        {
+          is_default_sender: false,
+          is_default_return: false,
+        },
+      ],
+    })),
+  },
+  carrieraccount: {
+    list: jest.fn(async () => []),
+    retrieve: jest.fn(async (id) => ({
+      carrier: "usps",
+    })),
+  },
+  liverates: {
+    create: jest.fn(async () => ({
+      results: state.live_rate.map((rate) => liveRateMock(rate)),
+    })),
+  },
+  order: {
+    retrieve: jest.fn(async (object_id) =>
+      shippoOrderMock(state.order)(object_id)
+    ),
 
-  const transactionProps = (object_id = null) =>
-    config(({ transactions }) => ({
-      ...transactions.find((ta) => ta.object_id === object_id),
-    }))
+    packingslip: jest.fn(async () => ({
+      expires: "",
+      slip_url: "https://shippo-delivery.net",
+      created: "",
+    })),
+  },
+  track: {
+    get_status: jest.fn(async (carrier, tracking_number) => ({
+      tracking_number,
+      carrier,
+    })),
+  },
+  transaction: {
+    retrieve: jest.fn(async (object_id) =>
+      shippoTransactionMock(state?.transaction?.label)(object_id)
+    ),
 
-  const userParcelProps = () =>
-    config(({ user_parcel_templates }) => user_parcel_templates)
-
-  return {
-    account: {
-      address: jest.fn(async () => ({
-        results: [
-          {
-            is_default_sender: true,
-            is_default_return: true,
-          },
-          {
-            is_default_sender: false,
-            is_default_return: false,
-          },
-        ],
-      })),
-    },
-    order: {
-      retrieve: jest.fn(async (object_id) =>
-        shippoOrderTemplate(orderProps(object_id))
+    search: jest.fn(async (q) => ({
+      results: state.order.transactions.map((ta) =>
+        shippoTransactionExtendedMock(
+          ta.object_id === "ta_label"
+            ? state.transaction.label
+            : state.transaction.return
+        )(ta.object_id)
       ),
-      packingslip: jest.fn(async () => ({
-        expires: "",
-        slip_url: "https://shippo-delivery.net",
-        created: "",
-      })),
-    },
-    transaction: {
-      retrieve: jest.fn(async (object_id) =>
-        transactionTemplate(transactionProps(object_id))
-      ),
-
-      search: jest.fn(async (q) => {
-        const id = q.replace(/[^0-9]/g, "")
-        const transactions = config(({ transactions }) => transactions)
-        return {
-          results: transactions.map((ta) =>
-            transactionExtendedTemplate(transactionProps(ta.object_id))
-          ),
-        }
-      }),
-    },
-    userparceltemplates: {
-      list: jest.fn(async () => ({
-        results: userParcelProps().map((props) => userParcelTemplate(props)),
-      })),
-    },
-  }
-}
+    })),
+  },
+  userparceltemplates: {
+    list: jest.fn(async () => ({
+      results: state.user_parcels.map((parcel) => userParcelMock(parcel)),
+    })),
+  },
+})

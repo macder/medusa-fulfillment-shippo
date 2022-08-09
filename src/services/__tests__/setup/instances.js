@@ -8,55 +8,51 @@ import ShippoRatesService from "../../shippo-rates"
 import ShippoTrackService from "../../shippo-track"
 import ShippoTransactionService from "../../shippo-transaction"
 
+import { cartServiceMock } from "../../__mocks__/cart"
 import {
-  cartServiceMock,
   fulfillmentServiceMock,
   fulfillmentRepoMock,
-  lineItemServiceMock,
-  orderServiceMock,
-  shippingProfileServiceMock,
-  totalsServiceMock,
-} from "../../__mocks__"
+} from "../../__mocks__/fulfillment"
+import { lineItemServiceMock } from "../../__mocks__/line-item"
+import { orderServiceMock } from "../../__mocks__/order"
+import { totalsServiceMock } from "../../__mocks__/totals"
+import { shippingProfileServiceMock } from "../../__mocks__/shipping"
 
-const coreServiceMocks = (config) => (fn) =>
-  fn({
-    cartService: cartServiceMock(config),
-    fulfillmentService: fulfillmentServiceMock(config),
-    orderService: orderServiceMock(config),
-    lineItemService: lineItemServiceMock(config),
-    shippingProfileService: shippingProfileServiceMock(config),
-    manager: MockManager,
-    fulfillmentRepository: fulfillmentRepoMock(config),
-    totalsService: totalsServiceMock(),
-    pricingService: {
-      setShippingOptionPrices: jest.fn(async (options) => options),
-    },
-  })
+const coreServiceMocks = (state) => ({
+  cartService: cartServiceMock(state),
+  fulfillmentService: fulfillmentServiceMock(state),
+  orderService: orderServiceMock(state),
+  lineItemService: lineItemServiceMock(state),
+  shippingProfileService: shippingProfileServiceMock(state),
+  manager: MockManager,
+  fulfillmentRepository: fulfillmentRepoMock(state),
+  totalsService: totalsServiceMock(),
+  pricingService: {
+    setShippingOptionPrices: jest.fn(async (options) => options),
+  },
+  logger: {
+    error: jest.fn(async (msg) => ""),
+  },
+})
 
-export const buildShippoServices = (config) => {
-  const {
-    cartService,
-    fulfillmentService,
-    orderService,
-    lineItemService,
-    shippingProfileService,
-    fulfillmentRepository,
-    manager,
-    pricingService,
-    totalsService,
-  } = coreServiceMocks(config)((mocks) => mocks)
+export const makeShippoClientService = (state) => {
+  const { fulfillmentService } = coreServiceMocks(state)
+  return new ShippoClientService({ fulfillmentService }, {})
+}
 
-  const shippoClientService = new ShippoClientService(
-    { fulfillmentService },
-    {}
-  )
+export const makeShippoPackerService = (state) => {
+  const shippoClientService = makeShippoClientService(state)
+  return new ShippoPackerService({ shippoClientService }, {})
+}
 
-  const shippoPackerService = new ShippoPackerService(
-    { shippoClientService },
-    {}
-  )
+export const makeShippoPackageService = (state) => {
+  const { cartService, fulfillmentService, lineItemService, orderService } =
+    coreServiceMocks(state)
 
-  const shippoPackageService = new ShippoPackageService(
+  const shippoClientService = makeShippoClientService(state)
+  const shippoPackerService = makeShippoPackerService(state)
+
+  return new ShippoPackageService(
     {
       cartService,
       fulfillmentService,
@@ -67,10 +63,25 @@ export const buildShippoServices = (config) => {
     },
     {}
   )
+}
 
-  const shippoRatesService = new ShippoRatesService(
+export const makeShippoRatesService = (state) => {
+  const {
+    cartService,
+    logger,
+    pricingService,
+    shippingProfileService,
+    totalsService,
+  } = coreServiceMocks(state)
+
+  const shippoClientService = makeShippoClientService(state)
+  const shippoPackerService = makeShippoPackerService(state)
+  const shippoPackageService = makeShippoPackageService(state)
+
+  return new ShippoRatesService(
     {
       cartService,
+      logger,
       pricingService,
       shippingProfileService,
       shippoClientService,
@@ -80,8 +91,13 @@ export const buildShippoServices = (config) => {
     },
     {}
   )
+}
 
-  const shippoTransactionService = new ShippoTransactionService(
+export const makeShippoTransactionService = (state) => {
+  const { fulfillmentService, orderService } = coreServiceMocks(state)
+  const shippoClientService = makeShippoClientService(state)
+
+  return new ShippoTransactionService(
     {
       fulfillmentService,
       shippoClientService,
@@ -89,8 +105,16 @@ export const buildShippoServices = (config) => {
     },
     {}
   )
+}
 
-  const shippoOrderService = new ShippoOrderService(
+export const makeShippoOrderService = (state) => {
+  const { fulfillmentService, fulfillmentRepository, manager } =
+    coreServiceMocks(state)
+
+  const shippoClientService = makeShippoClientService(state)
+  const shippoTransactionService = makeShippoTransactionService(state)
+
+  return new ShippoOrderService(
     {
       manager,
       fulfillmentService,
@@ -100,8 +124,16 @@ export const buildShippoServices = (config) => {
     },
     {}
   )
+}
 
-  const shippoTrackService = new ShippoTrackService(
+export const makeShippoTrackService = (state) => {
+  const { fulfillmentService } = coreServiceMocks(state)
+
+  const shippoClientService = makeShippoClientService(state)
+  const shippoOrderService = makeShippoOrderService(state)
+  const shippoTransactionService = makeShippoTransactionService(state)
+
+  return new ShippoTrackService(
     {
       fulfillmentService,
       shippoClientService,
@@ -110,8 +142,18 @@ export const buildShippoServices = (config) => {
     },
     {}
   )
+}
 
-  const shippoService = new ShippoService(
+export const makeShippoService = (state) => {
+  const shippoClientService = makeShippoClientService(state)
+  const shippoOrderService = makeShippoOrderService(state)
+  const shippoPackerService = makeShippoPackerService(state)
+  const shippoPackageService = makeShippoPackageService(state)
+  const shippoRatesService = makeShippoRatesService(state)
+  const shippoTrackService = makeShippoTrackService(state)
+  const shippoTransactionService = makeShippoTransactionService(state)
+
+  return new ShippoService(
     {
       shippoClientService,
       shippoOrderService,
@@ -123,15 +165,4 @@ export const buildShippoServices = (config) => {
     },
     {}
   )
-
-  return {
-    shippoClientService,
-    shippoPackerService,
-    shippoPackageService,
-    shippoRatesService,
-    shippoTransactionService,
-    shippoOrderService,
-    shippoTrackService,
-    shippoService,
-  }
 }

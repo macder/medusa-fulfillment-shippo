@@ -1,0 +1,1 @@
+export { productSchema } from "./schema"
