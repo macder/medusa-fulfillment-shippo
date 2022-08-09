@@ -4,7 +4,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
 
-> :information\_source: Requires Medusa 1.3.3^
+> :information\_source: Requires Medusa 1.3.5^
 
 Shippo fulfillment provider for Medusa Commerce.
 
@@ -47,7 +47,6 @@ Supports returns, exchanges, and claims.
     *   [Order](#order)
     *   [Package](#package)
     *   [Packingslip](#packingslip)
-    *   [Rates](#rates)
     *   [Track](#track)
     *   [Transaction](#transaction)
     *   [Client](#client)
@@ -275,6 +274,8 @@ In your medusa store, make sure products have correct values for length, width, 
 
 [Retrieve shipping options for cart](https://docs.medusajs.com/api/store/shipping-option/retrieve-shipping-options-for-cart) as usual and any `price_type: calculated` options belonging to `provider: shippo` will have `amount: Number`.
 
+Rates calculate only if cart has shipping address and items
+
 **HTTP:**
 
 ```plaintext
@@ -287,10 +288,6 @@ GET /store/shipping-options/:cart_id
 const shippingOptions = await shippingProfileService.fetchCartOptions(cart)
 ```
 
-Implementation needs to consider rates only calculate if cart has items and complete shipping address. Otherwise `price_type: calculated` will have `amount: null`
-
-Retrieving only decorates the shipping options with rates for display purposes. They are stateless objects. Each retrieval will re-fetch rates from shippo's api and re-decorate the options.
-
 ### Add to Cart
 
 [Add a Shipping Method](https://docs.medusajs.com/api/store/cart/add-a-shipping-method) and if  `shipping_option` has `price_type: calculated` the rate will be saved to the `shipping_method`
@@ -300,12 +297,6 @@ Retrieving only decorates the shipping options with rates for display purposes. 
 ```plaintext
 POST /store/carts/:id/shipping-methods
  --data '{"option_id":"example_cart_option_id"}'
-```
-
-### Raw rates
-
-```javascript
-await shippoService.rates.for(["cart", id]).fetch()
 ```
 
 ### Help, adding a shipping method to cart throws an error
@@ -596,14 +587,6 @@ await shippoService.packingslip.fetchBy(["local_order", id])
 await shippoService.packingslip.fetchBy(["claim", id]) 
 
 await shippoService.packingslip.fetchBy(["swap", id]) 
-```
-
-### Rates
-
-`for([entity, id]).fetch(id)`
-
-```javascript
-await shippoService.rates.for(["cart", id]).fetch()
 ```
 
 ### Track
