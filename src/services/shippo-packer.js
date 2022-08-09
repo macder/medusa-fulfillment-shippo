@@ -1,4 +1,4 @@
-import { BP3D } from "binpackingjs"
+import { BP3D } from "@macder/binpackingjs"
 import { BaseService } from "medusa-interfaces"
 
 class ShippoPackerService extends BaseService {

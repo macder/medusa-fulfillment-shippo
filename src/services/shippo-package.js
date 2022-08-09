@@ -91,13 +91,11 @@ class ShippoPackageService extends BaseService {
    */
   async packCart(cartOrId, resultType = null) {
     this.#setResultType(resultType)
-
     const cart = cartOrId?.items
       ? cartOrId
       : await this.#cartService.retrieve(cartOrId, {
           relations: ["items"],
         })
-
     this.#setItems(this.#prepareItems(cart.items))
     return this.#binpack()
   }

@@ -12,7 +12,7 @@ const mockShippoClient = shippoClientMock({
   transaction: shippoTransactionState({ order_number: "11" }),
 })
 
-jest.mock("shippo", () => () => mockShippoClient)
+jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("packingslip", () => {
   beforeAll(async () => {

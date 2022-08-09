@@ -6,7 +6,7 @@ expect.extend({ toContainEntry })
 
 const mockShippoClient = shippoClientMock({})
 
-jest.mock("shippo", () => () => mockShippoClient)
+jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("shippoService", () => {
   beforeAll(async () => {

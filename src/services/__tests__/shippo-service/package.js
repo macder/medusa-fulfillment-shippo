@@ -12,7 +12,7 @@ const mockShippoClient = shippoClientMock({
   user_parcels: userParcelState(),
 })
 
-jest.mock("shippo", () => () => mockShippoClient)
+jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("shippoService", () => {
   beforeAll(async () => {
