@@ -1,3 +1,5 @@
+import { shippingOptionState } from "../shipping"
+
 const baseState = () => ({
   order_id: null,
   cart_id: "cart_default_id",
@@ -11,6 +13,7 @@ const baseState = () => ({
       variant_id: "variant_default_id_1",
     },
   ],
+  shipping_options: [...shippingOptionState()],
 })
 
 export const cartState = () => ({

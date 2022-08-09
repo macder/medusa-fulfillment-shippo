@@ -3,6 +3,7 @@ import {
   shippoTransactionMock,
   shippoTransactionExtendedMock,
 } from "./shippo/transaction"
+import { liveRateMock } from "./shippo/live-rate"
 import { userParcelMock } from "./shippo/user-parcel"
 
 export const shippoClientMock = ({ ...state }) => ({
@@ -24,6 +25,11 @@ export const shippoClientMock = ({ ...state }) => ({
     list: jest.fn(async () => []),
     retrieve: jest.fn(async (id) => ({
       carrier: "usps",
+    })),
+  },
+  liverates: {
+    create: jest.fn(async () => ({
+      results: state.live_rate.map((rate) => liveRateMock(rate)),
     })),
   },
   order: {
