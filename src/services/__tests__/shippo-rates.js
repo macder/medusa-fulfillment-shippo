@@ -21,11 +21,11 @@ describe("shippoRatesService", () => {
     jest.clearAllMocks()
   })
 
-  describe("fetchOptionRate", () => {
-    const shippoRatesService = makeShippoRatesService({
-      ...cartState().has.items_address_email,
-    })
+  const shippoRatesService = makeShippoRatesService({
+    ...cartState().has.items_address_email,
+  })
 
+  describe("fetchOptionRate", () => {
     const options = cartState().has.items.shipping_options.map((so) =>
       shippingOptionMock({ ...so })()
     )
@@ -46,10 +46,6 @@ describe("shippoRatesService", () => {
   describe("getPrice", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
-    })
-
-    const shippoRatesService = makeShippoRatesService({
-      ...cartState().has.items_address_email,
     })
 
     it("returns price from amount * 100", async () => {

@@ -37,6 +37,7 @@ export const shippoClientMock = ({ ...state }) => ({
     })),
   },
   order: {
+    create: jest.fn(async () => shippoOrderMock(state.order)("321")),
     retrieve: jest.fn(async (object_id) =>
       shippoOrderMock(state.order)(object_id)
     ),
