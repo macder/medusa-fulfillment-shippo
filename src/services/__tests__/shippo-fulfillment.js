@@ -1,20 +1,24 @@
-import { toBeNumber, toContainKey } from "jest-extended"
+import { toBeNumber, toContainKey, toContainKeys } from "jest-extended"
 import { cartMock, cartState } from "../__mocks__/cart"
 
 import { makeShippoFulfillmentService } from "./setup"
 import { shippoClientMock } from "../__mocks__"
 import { userParcelState } from "../__mocks__/shippo/user-parcel"
 import { liveRateState } from "../__mocks__/shippo/live-rate"
+import { carrierAccountState } from "../__mocks__/shippo/carrier"
+import { serviceGroupState } from "../__mocks__/shippo/service-group"
 
 import {
   fulfillmentOptionGroupSchema,
   fulfillmentOptionServiceSchema,
 } from "../__mocks__/fulfillment-option"
 
-expect.extend({ toBeNumber, toContainKey })
+expect.extend({ toBeNumber, toContainKey, toContainKeys })
 
 const mockShippoClient = shippoClientMock({
+  carriers: carrierAccountState(),
   live_rate: liveRateState(),
+  service_groups: serviceGroupState(),
   user_parcels: userParcelState(),
 })
 
@@ -113,16 +117,54 @@ describe("ShippoFulfillmentService", () => {
   })
 
   describe("getFulfillmentOptions", () => {
-    test("", async () => {
-      // const result = await shippoFulfillmentService
-      // expect(result)
+    const shippoFulfillmentService = makeShippoFulfillmentService({})
+    test("has required props", async () => {
+      const result = await shippoFulfillmentService.getFulfillmentOptions()
+      expect(result[0]).toContainKeys(["name", "object_id"])
     })
   })
 
   describe("validateFulfillmentData", () => {
-    test("", async () => {
-      // const result = await shippoFulfillmentService
-      // expect(result)
+    const shippoFulfillmentService = makeShippoFulfillmentService({})
+
+    describe("is return", () => {
+      const optionData = { is_return: true }
+      test("only return data param", async () => {
+        const result = await shippoFulfillmentService.validateFulfillmentData(
+          optionData,
+          { test: "testing" },
+          {}
+        )
+        expect(result).toStrictEqual({ test: "testing" })
+      })
+    })
+
+    describe("no cart", () => {
+      const optionData = { is_return: false }
+      test("only return data param", async () => {
+        const result = await shippoFulfillmentService.validateFulfillmentData(
+          optionData,
+          { test: "testing" },
+          {}
+        )
+        expect(result).toStrictEqual({ test: "testing" })
+      })
+    })
+
+    describe("has complete cart", () => {
+      const cart = cartMock(cartState().has.items_address_email)(
+        "cart_default_id"
+      )
+      const optionData = { is_return: false }
+      test("", async () => {
+        const result = await shippoFulfillmentService.validateFulfillmentData(
+          optionData,
+          { test: "testing" },
+          cart
+        )
+        expect(result).toContainKey("parcel_template")
+        expect(result.parcel_template).toContainKeys(["id", "name"])
+      })
     })
   })
 
