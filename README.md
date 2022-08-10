@@ -483,36 +483,28 @@ Fetch default sender address
 shippoService.account.address()
 ```
 
-### Order
+### order.fetch(id)
 
-#### order.fetch(id)
-
-| Name     | Type       | Description                           |
-|----------|------------|---------------------------------------|
-| id | `String` | The object_id for an order |
-
-Fetch an order from shippo
-
-```javascript
-shippoService.order.fetch(object_id)
-```
-
----
-
-#### order.fetch(id)
-
-Fetch an order from shippo
+#### `@params`
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | id | `String` | The object_id for an order |
 
+#### `@return`
 
+| Type       | Description                           |
+------------|---------------------------------------|
+| `Promise.<object>` | Shippo order object |
+    
+
+#### Example
 ```javascript
-shippoService.order.fetch(object_id)
+await shippoService.order.fetch(object_id)
 ```
 
-#### order.with([entity]).fetch(id)
+
+### order.with([entity]).fetch(id)
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
