@@ -17,8 +17,8 @@ export const fulfillmentOptionServiceSchema = ({ ...props }) =>
 export const fulfillmentOptionGroupSchema = ({ ...props }) =>
   Object.freeze({
     id: props.id ?? "shippo-fulfillment-11",
-    name: props.name ?? "Express Shipping",
-    type: props.type,
+    name: props.name ?? "Live Rate 1",
+    type: props.type ?? "LIVE_RATE",
     is_group: true,
     flat_rate: props.flat_rate ?? "10",
     is_active: props.active ?? true,
