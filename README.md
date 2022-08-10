@@ -485,7 +485,7 @@ shippoService.account.address()
 
 ### Order
 
-#### `order.fetch(id)`
+#### order.fetch(id)
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
@@ -497,7 +497,9 @@ Fetch an order from shippo
 shippoService.order.fetch(object_id)
 ```
 
-#### `order.fetch(id)`
+---
+
+#### order.fetch(id)
 
 Fetch an order from shippo
 
@@ -510,7 +512,7 @@ Fetch an order from shippo
 shippoService.order.fetch(object_id)
 ```
 
-#### `order.with([entity]).fetch(id)`
+#### order.with([entity]).fetch(id)
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
