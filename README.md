@@ -485,7 +485,7 @@ shippoService.account.address()
 
 ### Order
 
-#### order.fetch(id)
+#### `order.fetch(id)`
 
 `@param {string} id - Order object_id`
 
@@ -504,18 +504,6 @@ Fetch an order from shippo
 `@param {string} id - Order object_id`
 
 `@return Promise.<object>`
-
-```javascript
-shippoService.order.fetch(object_id)
-```
-
-#### order.fetch(id)
-```javascript
-@param {string} id - Order object_id
-@return Promise.<object>
-```
-
-Fetch an order from shippo
 
 ```javascript
 shippoService.order.fetch(object_id)
