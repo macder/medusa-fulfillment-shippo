@@ -4,7 +4,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
 
-> :information\_source: Requires Medusa 1.3.5^
+> :information\_source: Requires Medusa ^1.3.5
 
 Shippo fulfillment provider for Medusa Commerce.
 
@@ -474,21 +474,54 @@ For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend
 
 ### Account
 
-`address`
+#### address.fetch()
+`@return Promise.<object>`
+
+Fetch default sender address
 
 ```javascript
-await shippoService.account.address()
+shippoService.account.address()
 ```
 
 ### Order
 
-`fetch(id)`
+#### order.fetch(id)
+
+`@param {string} id - Order object_id`
+
+`@return Promise.<object>`
+
+Fetch an order from shippo
 
 ```javascript
-await shippoService.order.fetch(object_id)
+shippoService.order.fetch(object_id)
 ```
 
-`with([entity]).fetch(id)`
+#### order.fetch(id)
+
+Fetch an order from shippo
+
+`@param {string} id - Order object_id`
+
+`@return Promise.<object>`
+
+```javascript
+shippoService.order.fetch(object_id)
+```
+
+#### order.fetch(id)
+```javascript
+@param {string} id - Order object_id
+@return Promise.<object>
+```
+
+Fetch an order from shippo
+
+```javascript
+shippoService.order.fetch(object_id)
+```
+
+#### order.with([entity]).fetch(id)
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
