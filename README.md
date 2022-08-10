@@ -487,15 +487,9 @@ shippoService.account.address()
 
 #### `order.fetch(id)`
 
-<details>
-  <summary>params</summary>
-    
-    @param {string} id - Order object_id
-    @return Promise.<object>
-    
-</details>
-
-
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | The object_id for an order |
 
 Fetch an order from shippo
 
@@ -503,19 +497,20 @@ Fetch an order from shippo
 shippoService.order.fetch(object_id)
 ```
 
-#### order.fetch(id)
+#### `order.fetch(id)`
 
 Fetch an order from shippo
 
-`@param {string} id - Order object_id`
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | The object_id for an order |
 
-`@return Promise.<object>`
 
 ```javascript
 shippoService.order.fetch(object_id)
 ```
 
-#### order.with([entity]).fetch(id)
+#### `order.with([entity]).fetch(id)`
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
