@@ -211,12 +211,7 @@ class ShippoTransactionService extends BaseService {
     const transaction = transactions.find((ta) => ta.is_return)
 
     if (!transaction) {
-      return Promise.reject(
-        new MedusaError(
-          MedusaError.Types.NOT_FOUND,
-          "transaction for return label not found"
-        )
-      )
+      return Promise.reject("transaction for return label not found")
     }
 
     return this.fetch(transaction.object_id).then(({ label_url }) => ({
