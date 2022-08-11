@@ -461,13 +461,18 @@ For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend
 
 ---
 
-### address.fetch()
-`@return Promise.<object>`
+### account.address()
 
 Fetch default sender address
 
+#### Return
+
+`Promise.<object>`
+
+#### Example
+
 ```javascript
-shippoService.account.address()
+await shippoService.account.address()
 ```
 
 ---
@@ -836,7 +841,6 @@ await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" 
 
 ---
 
-
 ### Misc
 
 #### is([entity, id], attr).fetch()
@@ -869,9 +873,13 @@ await shippoService.find("order").for(["transaction", id])
 
 ### Quick Reference
 
+#### Account
+
 ```javascript
 await shippoService.account.address()
 ```
+
+#### Order
 
 ```javascript
 await shippoService.order.fetch(object_id)
@@ -894,6 +902,8 @@ await shippoService.order.fetchBy(["swap", id])
 ```javascript
 await shippoService.is(["order", id], "replace").fetch()
 ```
+
+#### Package
 
 ```javascript
 await shippoService.package.for(["line_items", [...lineItems]]).fetch()
@@ -924,6 +934,8 @@ shippoService.package.set("boxes", packages)
 await shippoService.package.for(["cart", id]).get()
 ```
 
+#### Packingslip
+
 ```javascript
 await shippoService.packingslip.fetch(object_id)
 ```
@@ -942,6 +954,8 @@ await shippoService.packingslip.fetchBy(["claim", id])
 await shippoService.packingslip.fetchBy(["swap", id]) 
 ```
 
+#### Track
+
 ```javascript
 await shippoService.track.fetch("usps", "trackingnumber")
 ```
@@ -949,6 +963,8 @@ await shippoService.track.fetch("usps", "trackingnumber")
 ```javascript
 await shippoService.track.fetchBy(["fulfillment", id])
 ```
+
+#### Transaction
 
 ```javascript
 await shippoService.transaction.fetch(object_id)
@@ -970,10 +986,13 @@ await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" 
 await shippoService.is(["transaction", id], "return").fetch()
 ```
 
+#### Client
+
 ```javascript
 const client = shippoService.client 
 ```
 
+#### Find
 ```javascript
 /* @experimental */
 
