@@ -516,14 +516,6 @@ Fetch a shippo order with a related entity.
 #### Return
 `Promise.<object>`
 
-```javascript
-{
-  ...order,
-  [entity]: {
-    ...[entity]
-  }
-}
-```
 
 #### Example
 
@@ -533,7 +525,7 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 
 ---
 
-### fetchBy([entity, id])
+### order.fetchBy([entity, id])
 
 Fetch a shippo order using the id of a related entity
 
@@ -573,24 +565,49 @@ await shippoService.order.fetchBy(["swap", id])
 
 ---
 
-### Package
+### package.for([entity, id]).fetch()
 
-`for([entity, id]).fetch()`
+Bin pack items to determine best fit parcel using package templates from [shippo account](https://apps.goshippo.com/settings/packages)
 
+Will return full output from binpacker, including locus. The first array member is best fit
+
+See also: [override package templates](#override-parcel-templates)
+
+#### Parameters
+
+`@param {[entity: string, id: string>]}`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| entity | `Array.<string>` | Entity type  |
+| id \| items | `string\|array` | The id of {[entity]} or array of items |
+
+#### Supported Entities 
+
+`cart` `local_order` `fulfillment` `line_items`
+
+#### Return
+
+`Promise.<object[]>`
+
+#### Example
 ```javascript
 // use parcel templates defined in shippo account
-
-await shippoService.package.for(["line_items", [...lineItems]]).fetch()
 
 await shippoService.package.for(["cart", id]).fetch()
 
 await shippoService.package.for(["local_order", id]).fetch()
 
 await shippoService.package.for(["fulfillment", id]).fetch()
+
+await shippoService.package.for(["line_items", [...lineItems]]).fetch()
 ```
 
+#### Override Parcel Templates
+
+`package.set("boxes", [...packages])`
+
 ```javascript
-// use any parcel templates 
 const packages = [
   {
     id: "id123",
@@ -609,17 +626,32 @@ await shippoService.package.for(["cart", id]).get()
 ...
 ```
 
-### Packingslip
+---
 
-`fetch(id)`
+### packingslip.fetch(id)
 
+Fetch the packingslip for shippo order
+
+#### Parameters
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | The object_id of the order to get packingslip for |
+
+#### Return
+
+`Promise.<object>`
+
+#### Example
 ```javascript
 const { object_id } = order
 
 await shippoService.packingslip.fetch(object_id)
 ```
 
-`with([entity]).fetch(id)`
+---
+
+### packingslip.with([entity]).fetch(id)
 
 ```javascript
 await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
