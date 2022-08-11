@@ -521,6 +521,14 @@ Fetch a shippo order with a related entity.
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
+
+/* @return */
+{
+  ...order,
+  fulfillment: {
+    ...fulfillment
+  }
+}
 ```
 
 ---
@@ -653,11 +661,40 @@ await shippoService.packingslip.fetch(object_id)
 
 ### packingslip.with([entity]).fetch(id)
 
+Fetch the packingslip for shippo order with a related entity.
+
+#### Parameters
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | The object_id of the order to get packingslip for |
+| entity | `Array.<string>` | The entity to attach  |
+
+#### Supported Entities 
+
+`fulfillment`
+
+#### Return
+`Promise.<object>`
+
+
+#### Example
+
 ```javascript
 await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
+
+/* @return */
+{
+  ...packingslip,
+  fulfillment: {
+    ...fulfillment
+  }
+}
 ```
 
-`fetchBy([entity, id])`
+---
+
+### packingslip.fetchBy([entity, id])
 
 ```javascript
 /* @return {Promise.<object>} */
