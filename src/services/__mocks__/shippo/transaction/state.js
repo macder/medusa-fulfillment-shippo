@@ -1,5 +1,5 @@
 const baseState = () => ({
-  order_object_id: "shippo_order_11",
+  order_object_id: "shippo_order_default_id_1",
 })
 
 export const shippoTransactionState = ({ order_number }) => ({
