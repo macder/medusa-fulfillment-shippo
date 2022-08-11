@@ -43,13 +43,8 @@ Supports returns, exchanges, and claims.
     *   [Help, adding a shipping method to cart throws an error](#help-adding-a-shipping-method-to-cart-throws-an-error)
 *   [Webhooks](#webhooks)
 *   [Public Interface](#public-interface)
-    *   [Account](#account)
-    *   [Order](#order)
-    *   [Package](#package)
-    *   [Packingslip](#packingslip)
-    *   [Track](#track)
-    *   [Transaction](#transaction)
-    *   [Client](#client)
+    *   [Detailed Reference](#public-interface)
+    *   [Quick Reference](#quick-reference)
 *   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
 *   [Shipping Rates](#shipping-rates)
@@ -822,7 +817,7 @@ Fetch a transaction using the id of a related entity
 
 #### Supported Entities 
 
-`fulfillment` `local_order` `claim` `swap`
+`fulfillment` `local_order`
 
 #### Return
 
@@ -871,6 +866,121 @@ await shippoService.find("order").for(["transaction", id])
 ```
 
 ---
+
+### Quick Reference
+
+```javascript
+await shippoService.account.address()
+```
+
+```javascript
+await shippoService.order.fetch(object_id)
+```
+
+```javascript
+await shippoService.order.with(["fulfillment"]).fetch(object_id)
+```
+
+```javascript
+await shippoService.order.fetchBy(["fulfillment", id])
+
+await shippoService.order.fetchBy(["local_order", id])
+
+await shippoService.order.fetchBy(["claim", id])
+
+await shippoService.order.fetchBy(["swap", id])
+```
+
+```javascript
+await shippoService.is(["order", id], "replace").fetch()
+```
+
+```javascript
+await shippoService.package.for(["line_items", [...lineItems]]).fetch()
+
+await shippoService.package.for(["cart", id]).fetch()
+
+await shippoService.package.for(["local_order", id]).fetch()
+
+await shippoService.package.for(["fulfillment", id]).fetch()
+```
+
+```javascript
+// use any parcel templates 
+const packages = [
+  {
+    id: "id123",
+    name: "My Package",
+    length: "40",
+    width: "30",
+    height: "30",
+    weight: "10000", // max-weight
+  },
+  {...}
+]
+
+shippoService.package.set("boxes", packages)
+
+await shippoService.package.for(["cart", id]).get()
+```
+
+```javascript
+await shippoService.packingslip.fetch(object_id)
+```
+
+```javascript
+await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
+```
+
+```javascript
+await shippoService.packingslip.fetchBy(["fulfillment", id])
+
+await shippoService.packingslip.fetchBy(["local_order", id]) 
+
+await shippoService.packingslip.fetchBy(["claim", id]) 
+
+await shippoService.packingslip.fetchBy(["swap", id]) 
+```
+
+```javascript
+await shippoService.track.fetch("usps", "trackingnumber")
+```
+
+```javascript
+await shippoService.track.fetchBy(["fulfillment", id])
+```
+
+```javascript
+await shippoService.transaction.fetch(object_id)
+
+await shippoService.transaction.fetch(object_id, { type: "extended" })
+```
+
+```javascript
+await shippoService.transaction.fetchBy(["local_order", id])
+
+await shippoService.transaction.fetchBy(["local_order", id], { type: "extended" })
+
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+```
+
+```javascript
+await shippoService.is(["transaction", id], "return").fetch()
+```
+
+```javascript
+const client = shippoService.client 
+```
+
+```javascript
+/* @experimental */
+
+await shippoService.find("fulfillment").for(["transaction", id])
+
+await shippoService.find("order").for(["transaction", id])
+```
 
 ## Events
 
