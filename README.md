@@ -513,7 +513,9 @@ Fetch a shippo order with a related entity.
 | id | `String` | The object_id for an order |
 | entity | `Array.<string>` | The entity to attach  |
 
-Supported entities: `fulfillment`
+#### Supported Entities 
+
+`fulfillment`
 
 #### Return
 `Promise.<object>`
@@ -546,7 +548,7 @@ Fetch a shippo order using the id of a related entity
 | entity | `string` | The entity type to fetch order by |
 | id | `string` | Id of the entity | 
 
-#### Supported entities 
+#### Supported Entities 
 
 `fulfillment` `local_order` `claim` `swap`
 
