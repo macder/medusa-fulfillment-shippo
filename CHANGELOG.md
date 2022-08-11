@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.0.0-beta.3] (2022-08-11)
+
+Public interface docs revamp [#289](https://github.com/macder/medusa-fulfillment-shippo/issues/289)
+
 ## \[1.0.0-beta.2] (2022-08-10)
 
 Updated test cases
