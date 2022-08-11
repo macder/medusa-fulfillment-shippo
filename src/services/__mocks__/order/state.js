@@ -32,4 +32,16 @@ export const orderState = ({ display_id }) => ({
     ...baseState(),
     display_id,
   },
+  claim: {
+    ...baseState(),
+    display_id,
+    order_id: null,
+    claim_order_id: "claim_order_93",
+  },
+  swap: {
+    ...baseState(),
+    display_id,
+    order_id: null,
+    swap_id: "swap_93",
+  },
 })

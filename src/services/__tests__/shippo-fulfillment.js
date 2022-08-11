@@ -1,6 +1,7 @@
 import { toBeNumber, toContainKey, toContainKeys } from "jest-extended"
 import { cartMock, cartState } from "../__mocks__/cart"
 import { orderMock, orderState } from "../__mocks__/order"
+import { returnMock, returnState } from "../__mocks__/return"
 
 import { makeShippoFulfillmentService } from "./setup"
 import { shippoClientMock } from "../__mocks__"
@@ -9,6 +10,7 @@ import { userParcelState } from "../__mocks__/shippo/user-parcel"
 import { liveRateState } from "../__mocks__/shippo/live-rate"
 import { carrierAccountState } from "../__mocks__/shippo/carrier"
 import { serviceGroupState } from "../__mocks__/shippo/service-group"
+import { shippoTransactionState } from "../__mocks__/shippo/transaction"
 
 import {
   fulfillmentOptionGroupSchema,
@@ -20,9 +22,10 @@ expect.extend({ toBeNumber, toContainKey, toContainKeys })
 const mockShippoClient = shippoClientMock({
   carriers: carrierAccountState(),
   live_rate: liveRateState(),
-  order: shippoOrderState({ order_number: "11" }).default,
+  order: shippoOrderState({ order_number: "11" }).has_return_label,
   service_groups: serviceGroupState(),
   user_parcels: userParcelState(),
+  transaction: shippoTransactionState({ order_number: "11" }),
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
@@ -123,9 +126,21 @@ describe("ShippoFulfillmentService", () => {
   })
 
   describe("createReturn", () => {
-    test("", async () => {
-      // const result = await shippoFulfillmentService
-      // expect(result)
+    describe("is claim", () => {
+      const shippoFulfillmentService = makeShippoFulfillmentService({
+        ...orderState({ display_id: "11" }).claim,
+      })
+      const returnOrder = returnMock(
+        returnState({
+          id: "ret_claim_replace",
+          claim_order_id: "claim_replace",
+        }).claim.replace
+      )
+
+      test("returns obj with rate", async () => {
+        const result = await shippoFulfillmentService.createReturn(returnOrder)
+        expect(result).toContainKey("rate")
+      })
     })
   })
 

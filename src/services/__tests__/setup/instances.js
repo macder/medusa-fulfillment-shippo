@@ -32,7 +32,8 @@ const coreServiceMocks = (state) => ({
     setShippingOptionPrices: jest.fn(async (options) => options),
   },
   logger: {
-    error: jest.fn(async (msg) => ""),
+    error: jest.fn(async (msg) => console.error(msg)),
+    warn: jest.fn(async (msg) => console.warn(msg)),
   },
   eventBusService: {
     emit: jest.fn(),
@@ -149,7 +150,7 @@ export const makeShippoTrackService = (state) => {
 }
 
 export const makeShippoFulfillmentService = (state) => {
-  const { eventBusService, orderService, totalsService } =
+  const { eventBusService, logger, orderService, totalsService } =
     coreServiceMocks(state)
 
   const shippoClientService = makeShippoClientService(state)
@@ -160,6 +161,7 @@ export const makeShippoFulfillmentService = (state) => {
   return new ShippoFulfillmentService(
     {
       eventBusService,
+      logger,
       orderService,
       totalsService,
       shippoClientService,
