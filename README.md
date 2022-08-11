@@ -451,15 +451,13 @@ References the declared public interface for client consumption, the [semver](ht
 
 Although there is nothing stopping you from accessing and using public methods behind the interface, be aware that those implementation details can and will change. The purpose of the interface is semver compliant stability.
 
-> Notice: (semver 0.x.x) - methods labeled `@experimental` have high probability of breaking changes
-
 ### Getting Started
 
 Dependency inject `shippoService` as you would with any other service
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
----
+***
 
 ### account.address()
 
@@ -475,7 +473,7 @@ Fetch default sender address
 await shippoService.account.address()
 ```
 
----
+***
 
 ### order.fetch(id)
 
@@ -485,20 +483,21 @@ Fetch an order from shippo
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `String` | The object_id for an order |
+| id | `String` | The object\_id for an order |
 
 #### Return
 
 `Promise.<object>`
 
 #### Example
+
 ```javascript
 await shippoService.order.fetch(object_id)
 ```
 
----
+***
 
-### order.with([entity]).fetch(id)
+### order.with(\[entity]).fetch(id)
 
 Fetch a shippo order with a related entity.
 
@@ -506,16 +505,16 @@ Fetch a shippo order with a related entity.
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `String` | The object_id for an order |
+| id | `String` | The object\_id for an order |
 | entity | `Array.<string>` | The entity to attach  |
 
-#### Supported Entities 
+#### Supported Entities
 
 `fulfillment`
 
 #### Return
-`Promise.<object>`
 
+`Promise.<object>`
 
 #### Example
 
@@ -531,9 +530,9 @@ await shippoService.order.with(["fulfillment"]).fetch(object_id)
 }
 ```
 
----
+***
 
-### order.fetchBy([entity, id])
+### order.fetchBy(\[entity, id])
 
 Fetch a shippo order using the id of a related entity
 
@@ -544,9 +543,9 @@ Fetch a shippo order using the id of a related entity
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | entity | `string` | The entity type to fetch order by |
-| id | `string` | Id of the entity | 
+| id | `string` | Id of the entity |
 
-#### Supported Entities 
+#### Supported Entities
 
 `fulfillment` `local_order` `claim` `swap`
 
@@ -555,6 +554,7 @@ Fetch a shippo order using the id of a related entity
 `Promise.<object|object[]>`
 
 #### Example
+
 ```javascript
 /* @return {Promise.<object>} */
 
@@ -571,9 +571,9 @@ await shippoService.order.fetchBy(["claim", id])
 await shippoService.order.fetchBy(["swap", id])
 ```
 
----
+***
 
-### package.for([entity, id]).fetch()
+### package.for(\[entity, id]).fetch()
 
 Bin pack items to determine best fit parcel using package templates from [shippo account](https://apps.goshippo.com/settings/packages)
 
@@ -588,9 +588,9 @@ See also: [override package templates](#override-parcel-templates)
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | entity | `string` | Entity type  |
-| id \| items | `string\|array` | The id of {[entity]} or array of items |
+| id | items | `string\|array` | The id of {\[entity]} or array of items |
 
-#### Supported Entities 
+#### Supported Entities
 
 `cart` `local_order` `fulfillment` `line_items`
 
@@ -599,6 +599,7 @@ See also: [override package templates](#override-parcel-templates)
 `Promise.<object[]>`
 
 #### Example
+
 ```javascript
 // use parcel templates defined in shippo account
 
@@ -634,7 +635,7 @@ await shippoService.package.for(["cart", id]).get()
 ...
 ```
 
----
+***
 
 ### packingslip.fetch(id)
 
@@ -644,22 +645,23 @@ Fetch the packingslip for shippo order
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `String` | The object_id of the order to get packingslip for |
+| id | `String` | The object\_id of the order to get packingslip for |
 
 #### Return
 
 `Promise.<object>`
 
 #### Example
+
 ```javascript
 const { object_id } = order
 
 await shippoService.packingslip.fetch(object_id)
 ```
 
----
+***
 
-### packingslip.with([entity]).fetch(id)
+### packingslip.with(\[entity]).fetch(id)
 
 Fetch the packingslip for shippo order with a related entity.
 
@@ -667,14 +669,15 @@ Fetch the packingslip for shippo order with a related entity.
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `String` | The object_id of the order to get packingslip for |
+| id | `String` | The object\_id of the order to get packingslip for |
 | entity | `Array.<string>` | The entity to attach  |
 
-#### Supported Entities 
+#### Supported Entities
 
 `fulfillment`
 
 #### Return
+
 `Promise.<object>`
 
 #### Example
@@ -691,9 +694,9 @@ await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 }
 ```
 
----
+***
 
-### packingslip.fetchBy([entity, id])
+### packingslip.fetchBy(\[entity, id])
 
 Fetch the packing slip for a shippo order, using the id of a related entity
 
@@ -704,9 +707,9 @@ Fetch the packing slip for a shippo order, using the id of a related entity
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | entity | `string` | The entity type to fetch packingslip by |
-| id | `string` | Id of the entity | 
+| id | `string` | Id of the entity |
 
-#### Supported Entities 
+#### Supported Entities
 
 `fulfillment` `local_order` `claim` `swap`
 
@@ -715,6 +718,7 @@ Fetch the packing slip for a shippo order, using the id of a related entity
 `Promise.<object|object[]>`
 
 #### Example
+
 ```javascript
 /* @return {Promise.<object>} */
 
@@ -731,19 +735,18 @@ await shippoService.packingslip.fetchBy(["claim", id])
 await shippoService.packingslip.fetchBy(["swap", id])
 ```
 
----
+***
 
-### track.fetch(carrier_enum, track_num)
+### track.fetch(carrier\_enum, track\_num)
 
 Fetch a tracking status object
 
 #### Parameters
 
-
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| carrier_enum | `string` | The [carrier enum token](https://goshippo.com/docs/reference#carriers) |
-| track_num | `string` | The tracking number | 
+| carrier\_enum | `string` | The [carrier enum token](https://goshippo.com/docs/reference#carriers) |
+| track\_num | `string` | The tracking number |
 
 #### Return
 
@@ -755,9 +758,9 @@ Fetch a tracking status object
 await shippoService.track.fetch("usps", "trackingnumber")
 ```
 
----
+***
 
-### track.fetchBy([entity, id])
+### track.fetchBy(\[entity, id])
 
 Fetch a tracking status object using id of related entity
 
@@ -766,10 +769,9 @@ Fetch a tracking status object using id of related entity
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | entity | `string` | The entity type to fetch tracking status by |
-| id | `string` | Id of the entity | 
+| id | `string` | Id of the entity |
 
-
-#### Supported Entities 
+#### Supported Entities
 
 `fulfillment`
 
@@ -783,7 +785,7 @@ Fetch a tracking status object using id of related entity
 await shippoService.track.fetchBy(["fulfillment", id])
 ```
 
----
+***
 
 ### transaction.fetch(id)
 
@@ -793,7 +795,7 @@ To fetch an extended version with additional fields, use `transaction.fetch(id, 
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `String` | The object_id for transaction |
+| id | `String` | The object\_id for transaction |
 
 #### Return
 
@@ -807,7 +809,7 @@ await shippoService.transaction.fetch(object_id)
 await shippoService.transaction.fetch(object_id, { type: "extended" })
 ```
 
-### transaction.fetchBy([entity, id])
+### transaction.fetchBy(\[entity, id])
 
 Fetch a transaction using the id of a related entity
 
@@ -818,9 +820,9 @@ Fetch a transaction using the id of a related entity
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | entity | `string` | The entity type to fetch transaction by |
-| id | `string` | Id of the entity | 
+| id | `string` | Id of the entity |
 
-#### Supported Entities 
+#### Supported Entities
 
 `fulfillment` `local_order`
 
@@ -829,6 +831,7 @@ Fetch a transaction using the id of a related entity
 `Promise.<object|object[]>`
 
 #### Example
+
 ```javascript
 await shippoService.transaction.fetchBy(["local_order", id])
 
@@ -839,11 +842,11 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
 ```
 
----
+***
 
 ### Misc
 
-#### is([entity, id], attr).fetch()
+#### is(\[entity, id], attr).fetch()
 
 ```javascript
 await shippoService.is(["transaction", id], "return").fetch()
@@ -859,7 +862,7 @@ await shippoService.is(["order", id], "replace").fetch()
 const client = shippoService.client 
 ```
 
-#### find(entity).for([entity, id])
+#### find(entity).for(\[entity, id])
 
 ```javascript
 /* @experimental */
@@ -869,7 +872,7 @@ await shippoService.find("fulfillment").for(["transaction", id])
 await shippoService.find("order").for(["transaction", id])
 ```
 
----
+***
 
 ### Quick Reference
 
@@ -993,6 +996,7 @@ const client = shippoService.client
 ```
 
 #### Find
+
 ```javascript
 /* @experimental */
 
@@ -1009,7 +1013,7 @@ List of all events, their triggers, and expected payload for handlers
 
 These events only emit if the action pertains to `provider: shippo`
 
-### shippo.order_created
+### shippo.order\_created
 
 Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/create-a-fulfillment) creates a shippo order.
 
@@ -1024,9 +1028,9 @@ Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/cre
 }
 ```
 
----
+***
 
-### shippo.return_requested
+### shippo.return\_requested
 
 Triggered when a [return is requested](https://docs.medusajs.com/api/admin/order/request-a-return)
 
@@ -1041,9 +1045,9 @@ If the return `ShippingMethod` has `provider: shippo` it attempts to find an exi
 }
 ```
 
----
+***
 
-### shippo.swap_created
+### shippo.swap\_created
 
 Triggered when a [swap is created](https://docs.medusajs.com/api/admin/order/create-a-swap)
 
@@ -1058,9 +1062,9 @@ If return `ShippingMethod` has `provider: shippo` it attempts to find an existin
 }
 ```
 
----
+***
 
-### shippo.replace_order_created
+### shippo.replace\_order\_created
 
 Triggered when a [swap](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) or [claim](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) fulfillment is created.
 
@@ -1077,9 +1081,9 @@ If the `ShippingMethod` has `provider: shippo` a shippo order is created
 }
 ```
 
----
+***
 
-### shippo.claim_refund_created
+### shippo.claim\_refund\_created
 
 Triggered when a `type: refund` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
 
@@ -1094,9 +1098,9 @@ If return `ShippingMethod` has `provider: shippo`, it attempts to find an existi
 }
 ```
 
----
+***
 
-### shippo.claim_replace_created
+### shippo.claim\_replace\_created
 
 Triggered when a `type: replace` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
 
@@ -1111,9 +1115,9 @@ If return `ShippingMethod` has `provider: shippo`, it attempts to find an existi
 }
 ```
 
----
+***
 
-### shippo.transaction_created.shipment
+### shippo.transaction\_created.shipment
 
 Triggered when the `transaction_created` webhook updates a `Fulfillment` status to `shipped`
 
@@ -1127,9 +1131,9 @@ Triggered when the `transaction_created` webhook updates a `Fulfillment` status 
 }
 ```
 
----
+***
 
-### shippo.transaction_created.return_label
+### shippo.transaction\_created.return\_label
 
 Triggered when the `transaction_created` webhook receives a return label transaction
 
@@ -1142,9 +1146,9 @@ Triggered when the `transaction_created` webhook receives a return label transac
 }
 ```
 
----
+***
 
-### shippo.transaction_updated.payload
+### shippo.transaction\_updated.payload
 
 Triggered when the `transaction_updated` webhook receives an updated transaction
 
@@ -1158,9 +1162,9 @@ Triggered when the `transaction_updated` webhook receives an updated transaction
 }
 ```
 
----
+***
 
-### shippo.track_updated.payload
+### shippo.track\_updated.payload
 
 Triggered when the `track_updated` webhook receives an updated track
 
@@ -1172,7 +1176,7 @@ Triggered when the `track_updated` webhook receives an updated track
 }
 ```
 
----
+***
 
 ## Shippo Node Client
 
