@@ -528,19 +528,21 @@ Supported entity types:
 ------------|---------------------------------------|
 | `Promise.<object>` | Shippo order object with related entity |
 
+```javascript
+{
+  ...order,
+  [entity]: {
+    ...[entity]
+  }
+}
+```
+
 #### Example
 
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
-
-/* @return */
-{
-  ...order,
-  fulfillment: {
-    ...fulfillment
-  }
-}
 ```
+
 
 ### fetchBy([entity, id])
 
