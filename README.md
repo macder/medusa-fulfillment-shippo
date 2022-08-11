@@ -506,14 +506,14 @@ await shippoService.order.fetch(object_id)
 
 Fetch a shippo order with a related entity.
 
-Supported entities: `fulfillment`
-
 #### Parameters
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | id | `String` | The object_id for an order |
 | entity | `Array.<string>` | The entity to attach  |
+
+Supported entities: `fulfillment`
 
 #### Return
 `Promise.<object>`
@@ -533,7 +533,6 @@ Supported entities: `fulfillment`
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
 
-
 ### fetchBy([entity, id])
 
 Fetch a shippo order using the id of a related entity
@@ -547,12 +546,13 @@ Fetch a shippo order using the id of a related entity
 | entity | `string` | The entity type to fetch order by |
 | id | `string` | Id of the entity | 
 
+#### Supported entities 
+
+`fulfillment` `local_order` `claim` `swap`
 
 #### Return
 
-| Type       | Description                           |
-------------|---------------------------------------|
-| `Promise.<object\|object[]>` | Shippo order object OR array of objects
+`Promise.<object|object[]>`
 
 #### Example
 ```javascript
