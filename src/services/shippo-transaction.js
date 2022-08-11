@@ -62,6 +62,8 @@ class ShippoTransactionService extends BaseService {
 
     const { transactions } = await this.#client.order.retrieve(shippo_order_id)
 
+    console.log("transactions", transactions)
+
     return Promise.all(
       transactions.map(async (ta) =>
         this.#client.transaction.retrieve(ta.object_id)
@@ -74,35 +76,34 @@ class ShippoTransactionService extends BaseService {
    * @param {string} orderId - order_id
    * @return {Promise.<object[]>} The transaction
    */
-  async fetchByOrder(orderId) {
+  async fetchByLocalOrder(orderId) {
     const order = await this.#orderService.retrieve(orderId, {
       relations: ["fulfillments"],
     })
 
-    // TODO - Break this apart?
-    const transacts = await Promise.all(
-      // filter fulfillments with shippo order
-      order.fulfillments
-        .filter((ful) => ful.data?.shippo_order_id)
-        // map transactions over fulfillments
-        .map(async ({ id, data: { shippo_order_id } }) =>
-          // fetch the fulfillment's shippo order
-          this.#client.order
-            .retrieve(shippo_order_id)
-            .then(async ({ transactions }) =>
-              Promise.all(
-                // map the full transactions over shippoOrder.transactions
-                transactions.map(async (ta) =>
-                  this.#client.transaction
-                    .retrieve(ta.object_id)
-                    // add the fulfillment_id to transaction
-                    .then((final) => ({ fulfillment_id: id, ...final }))
-                )
-              )
-            )
-        )
+    const fulfillments = order.fulfillments.filter(
+      (ful) => ful.data?.shippo_order_id
     )
-    return transacts.flat(1)
+
+    const shippoOrders = await Promise.all(
+      fulfillments.map(async ({ id, data: { shippo_order_id } }) =>
+        this.#client.order
+          .retrieve(shippo_order_id)
+          .then((shippoOrder) => ({ ...shippoOrder, fulfillment_id: id }))
+      )
+    )
+
+    const transactions = await Promise.all(
+      shippoOrders.flatMap(({ transactions, fulfillment_id }) =>
+        transactions.map(async (ta) =>
+          this.#client.transaction
+            .retrieve(ta.object_id)
+            .then((response) => ({ ...response, fulfillment_id }))
+        )
+      )
+    )
+
+    return transactions
   }
 
   /**
