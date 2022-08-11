@@ -8,6 +8,8 @@ class ShippoFulfillmentService extends FulfillmentService {
 
   #eventBusService
 
+  #logger
+
   #options
 
   #orderService
@@ -25,6 +27,7 @@ class ShippoFulfillmentService extends FulfillmentService {
   constructor(
     {
       eventBusService,
+      logger,
       orderService,
       shippoClientService,
       shippoPackageService,
@@ -58,6 +61,8 @@ class ShippoFulfillmentService extends FulfillmentService {
 
     /** @private @const {TotalsService} */
     this.#totalsService = totalsService
+
+    this.#logger = logger
   }
 
   async calculatePrice(fulfillmentOption, fulfillmentData, cart) {
@@ -130,7 +135,7 @@ class ShippoFulfillmentService extends FulfillmentService {
     const returnLabel = await this.#shippoTransactionService
       .fetchReturnByOrder(order)
       .catch((e) => {
-        console.log(e)
+        this.#logger.warn(e)
       })
 
     const eventType = await this.#eventType(returnOrder)
