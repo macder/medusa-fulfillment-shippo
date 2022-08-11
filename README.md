@@ -485,6 +485,8 @@ shippoService.account.address()
 
 ### order.fetch(id)
 
+Fetch an order from shippo
+
 #### Parameters
 
 | Name     | Type       | Description                           |
@@ -507,9 +509,44 @@ await shippoService.order.fetch(object_id)
 
 ### order.with([entity]).fetch(id)
 
+Fetch a shippo order with a related entity
+
+Supported entity types:
+
+* fulfillment
+
+#### Parameters
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| entity | `Array.<string>` | The entity to attach  |
+| id | `String` | The object_id for an order |
+
+#### Return
+
+| Type       | Description                           |
+------------|---------------------------------------|
+| `Promise.<object>` | Shippo order object with related entity |
+
+#### Example
+
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
+
+/* @return */
+{
+  ...order,
+  fulfillment: {
+    ...fulfillment
+  }
+}
 ```
+
+---
+
+---
+
+
 
 `fetchBy([entity, id])`
 
