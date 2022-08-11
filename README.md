@@ -587,7 +587,7 @@ See also: [override package templates](#override-parcel-templates)
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| entity | `Array.<string>` | Entity type  |
+| entity | `string` | Entity type  |
 | id \| items | `string\|array` | The id of {[entity]} or array of items |
 
 #### Supported Entities 
@@ -734,8 +734,23 @@ await shippoService.packingslip.fetchBy(["swap", id])
 
 ---
 
-
 ### track.fetch(carrier_enum, track_num)
+
+Fetch a tracking status object
+
+#### Parameters
+
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| carrier_enum | `string` | The [carrier enum token](https://goshippo.com/docs/reference#carriers) |
+| track_num | `string` | The tracking number | 
+
+#### Return
+
+`Promise.<object>`
+
+#### Example
 
 ```javascript
 await shippoService.track.fetch("usps", "trackingnumber")
