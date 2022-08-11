@@ -485,13 +485,13 @@ shippoService.account.address()
 
 ### order.fetch(id)
 
-#### `@params`
+#### Parameters
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | id | `String` | The object_id for an order |
 
-#### `@return`
+#### Return
 
 | Type       | Description                           |
 ------------|---------------------------------------|
