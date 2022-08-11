@@ -696,32 +696,52 @@ await shippoService.packingslip.with(["fulfillment"]).fetch(object_id)
 
 ### packingslip.fetchBy([entity, id])
 
+Fetch the packing slip for a shippo order, using the id of a related entity
+
+#### Parameters
+
+`@param {[entity: string, id: string>]}`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| entity | `string` | The entity type to fetch packingslip by |
+| id | `string` | Id of the entity | 
+
+#### Supported Entities 
+
+`fulfillment` `local_order` `claim` `swap`
+
+#### Return
+
+`Promise.<object|object[]>`
+
+#### Example
 ```javascript
 /* @return {Promise.<object>} */
 
 await shippoService.packingslip.fetchBy(["fulfillment", id])
-
 ```
 
 ```javascript
 /* @return {Promise.<object[]>} */
 
-await shippoService.packingslip.fetchBy(["local_order", id]) 
+await shippoService.packingslip.fetchBy(["local_order", id])
 
-await shippoService.packingslip.fetchBy(["claim", id]) 
+await shippoService.packingslip.fetchBy(["claim", id])
 
-await shippoService.packingslip.fetchBy(["swap", id]) 
+await shippoService.packingslip.fetchBy(["swap", id])
 ```
 
-### Track
+---
 
-`fetch(carrier_enum, track_num)`
+
+### track.fetch(carrier_enum, track_num)
 
 ```javascript
 await shippoService.track.fetch("usps", "trackingnumber")
 ```
 
-`fetchBy([entity, id])`
+`track.fetchBy([entity, id])`
 
 ```javascript
 await shippoService.track.fetchBy(["fulfillment", id])
