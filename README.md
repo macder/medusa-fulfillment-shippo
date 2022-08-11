@@ -677,7 +677,6 @@ Fetch the packingslip for shippo order with a related entity.
 #### Return
 `Promise.<object>`
 
-
 #### Example
 
 ```javascript
@@ -756,15 +755,51 @@ Fetch a tracking status object
 await shippoService.track.fetch("usps", "trackingnumber")
 ```
 
-`track.fetchBy([entity, id])`
+---
+
+### track.fetchBy([entity, id])
+
+Fetch a tracking status object using id of related entity
+
+`@param {[entity: string, id: string>]}`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| entity | `string` | The entity type to fetch tracking status by |
+| id | `string` | Id of the entity | 
+
+
+#### Supported Entities 
+
+`fulfillment`
+
+#### Return
+
+`Promise.<object>`
+
+#### Example
 
 ```javascript
 await shippoService.track.fetchBy(["fulfillment", id])
 ```
 
-### Transaction
+---
 
-`fetch(id, {...args} = null)`
+### transaction.fetch(id)
+
+Fetch a transaction object from shippo.
+
+To fetch an extended version with additional fields, use `transaction.fetch(id, { type: extended})`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `String` | The object_id for transaction |
+
+#### Return
+
+`Promise.<object>`
+
+#### Example
 
 ```javascript
 await shippoService.transaction.fetch(object_id)
@@ -772,8 +807,28 @@ await shippoService.transaction.fetch(object_id)
 await shippoService.transaction.fetch(object_id, { type: "extended" })
 ```
 
-`fetchBy([entity, id], {...args} = null)`
+### transaction.fetchBy([entity, id])
 
+Fetch a transaction using the id of a related entity
+
+#### Parameters
+
+`@param {[entity: string, id: string>]}`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| entity | `string` | The entity type to fetch transaction by |
+| id | `string` | Id of the entity | 
+
+#### Supported Entities 
+
+`fulfillment` `local_order` `claim` `swap`
+
+#### Return
+
+`Promise.<object|object[]>`
+
+#### Example
 ```javascript
 await shippoService.transaction.fetchBy(["local_order", id])
 
@@ -784,13 +839,20 @@ await shippoService.transaction.fetchBy(["fulfillment", id])
 await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
 ```
 
-`is([entity, id], attr).fetch()`
+---
+
+
+### Misc
+
+#### is([entity, id], attr).fetch()
 
 ```javascript
 await shippoService.is(["transaction", id], "return").fetch()
+
+await shippoService.is(["order", id], "replace").fetch()
 ```
 
-### Client
+#### Client
 
 `shippo-node-client` ([forked](#shippo-node-client))
 
@@ -798,9 +860,7 @@ await shippoService.is(["transaction", id], "return").fetch()
 const client = shippoService.client 
 ```
 
-### Find
-
-`find(entity).for([entity, id])`
+#### find(entity).for([entity, id])
 
 ```javascript
 /* @experimental */
@@ -810,11 +870,7 @@ await shippoService.find("fulfillment").for(["transaction", id])
 await shippoService.find("order").for(["transaction", id])
 ```
 
-### is([entity, id], attr).fetch()
-
-```javascript
-await shippoService.is(["order", id], "replace").fetch()
-```
+---
 
 ## Events
 
@@ -824,7 +880,7 @@ List of all events, their triggers, and expected payload for handlers
 
 These events only emit if the action pertains to `provider: shippo`
 
-### `shippo.order_created`
+### shippo.order_created
 
 Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/create-a-fulfillment) creates a shippo order.
 
@@ -839,7 +895,9 @@ Triggered when a new [fulfillment](https://docs.medusajs.com/api/admin/order/cre
 }
 ```
 
-### `shippo.return_requested`
+---
+
+### shippo.return_requested
 
 Triggered when a [return is requested](https://docs.medusajs.com/api/admin/order/request-a-return)
 
@@ -854,7 +912,9 @@ If the return `ShippingMethod` has `provider: shippo` it attempts to find an exi
 }
 ```
 
-### `shippo.swap_created`
+---
+
+### shippo.swap_created
 
 Triggered when a [swap is created](https://docs.medusajs.com/api/admin/order/create-a-swap)
 
@@ -869,7 +929,9 @@ If return `ShippingMethod` has `provider: shippo` it attempts to find an existin
 }
 ```
 
-### `shippo.replace_order_created`
+---
+
+### shippo.replace_order_created
 
 Triggered when a [swap](https://docs.medusajs.com/api/admin/order/create-a-swap-fulfillment) or [claim](https://docs.medusajs.com/api/admin/order/create-a-claim-fulfillment) fulfillment is created.
 
@@ -886,7 +948,9 @@ If the `ShippingMethod` has `provider: shippo` a shippo order is created
 }
 ```
 
-### `shippo.claim_refund_created`
+---
+
+### shippo.claim_refund_created
 
 Triggered when a `type: refund` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
 
@@ -901,7 +965,9 @@ If return `ShippingMethod` has `provider: shippo`, it attempts to find an existi
 }
 ```
 
-### `shippo.claim_replace_created`
+---
+
+### shippo.claim_replace_created
 
 Triggered when a `type: replace` [claim is created](https://docs.medusajs.com/api/admin/order/create-a-claim)
 
@@ -916,7 +982,9 @@ If return `ShippingMethod` has `provider: shippo`, it attempts to find an existi
 }
 ```
 
-### `shippo.transaction_created.shipment`
+---
+
+### shippo.transaction_created.shipment
 
 Triggered when the `transaction_created` webhook updates a `Fulfillment` status to `shipped`
 
@@ -930,7 +998,9 @@ Triggered when the `transaction_created` webhook updates a `Fulfillment` status 
 }
 ```
 
-### `shippo.transaction_created.return_label`
+---
+
+### shippo.transaction_created.return_label
 
 Triggered when the `transaction_created` webhook receives a return label transaction
 
@@ -943,7 +1013,9 @@ Triggered when the `transaction_created` webhook receives a return label transac
 }
 ```
 
-### `shippo.transaction_updated.payload`
+---
+
+### shippo.transaction_updated.payload
 
 Triggered when the `transaction_updated` webhook receives an updated transaction
 
@@ -957,7 +1029,9 @@ Triggered when the `transaction_updated` webhook receives an updated transaction
 }
 ```
 
-### `shippo.track_updated.payload`
+---
+
+### shippo.track_updated.payload
 
 Triggered when the `track_updated` webhook receives an updated track
 
@@ -968,6 +1042,8 @@ Triggered when the `track_updated` webhook receives an updated track
   ...track
 }
 ```
+
+---
 
 ## Shippo Node Client
 
