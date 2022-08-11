@@ -16,7 +16,7 @@ Fulfillments create orders in shippo.
 
 Supports returns, exchanges, and claims.
 
-[Public interface](#public-interface) for rapid custom integration.
+Public interface for rapid custom integration. [Reference](#public-interface) | [Quick Reference](#quick-reference)
 
 [Eventbus payloading](#events) instead of arbitrary data assumption and storage.
 
