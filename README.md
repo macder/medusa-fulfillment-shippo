@@ -464,17 +464,9 @@ Dependency inject `shippoService` as you would with any other service
 
 For guide, see [Using Custom Service](https://docs.medusajs.com/advanced/backend/services/create-service#using-your-custom-service)
 
-> Note:
->
-> ```plaintext
-> order = shippo_order
->
-> local_order = medusa_order
-> ```
+---
 
-### Account
-
-#### address.fetch()
+### address.fetch()
 `@return Promise.<object>`
 
 Fetch default sender address
@@ -482,6 +474,8 @@ Fetch default sender address
 ```javascript
 shippoService.account.address()
 ```
+
+---
 
 ### order.fetch(id)
 
@@ -501,6 +495,8 @@ Fetch an order from shippo
 ```javascript
 await shippoService.order.fetch(object_id)
 ```
+
+---
 
 ### order.with([entity]).fetch(id)
 
@@ -534,6 +530,8 @@ Fetch a shippo order with a related entity.
 ```javascript
 await shippoService.order.with(["fulfillment"]).fetch(object_id)
 ```
+
+---
 
 ### fetchBy([entity, id])
 
@@ -574,17 +572,6 @@ await shippoService.order.fetchBy(["swap", id])
 ```
 
 ---
-
----
-
----
-
-
-`is([entity, id], attr).fetch()`
-
-```javascript
-await shippoService.is(["order", id], "replace").fetch()
-```
 
 ### Package
 
@@ -717,6 +704,12 @@ const client = shippoService.client
 await shippoService.find("fulfillment").for(["transaction", id])
 
 await shippoService.find("order").for(["transaction", id])
+```
+
+### is([entity, id], attr).fetch()
+
+```javascript
+await shippoService.is(["order", id], "replace").fetch()
 ```
 
 ## Events
