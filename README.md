@@ -503,6 +503,7 @@ shippoService.account.address()
 await shippoService.order.fetch(object_id)
 ```
 
+---
 
 ### order.with([entity]).fetch(id)
 
