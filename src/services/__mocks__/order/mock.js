@@ -9,7 +9,7 @@ export const orderMock =
     orderSchema({
       id,
       ...state,
-      display_id: "11",
+      // display_id: "11",
       shipping_address: addressSchema({}),
       fulfillments: state.fulfillments.map(
         ({ id, items, shippo_order_id, tracking_links }) =>

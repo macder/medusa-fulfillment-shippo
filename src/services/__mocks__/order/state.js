@@ -1,6 +1,8 @@
+import { fulfillmentState } from "../fulfillment"
+
 const baseState = () => ({
   order_id: "order_default",
-  display_id: "11",
+  display_id: "12",
   cart_id: "cart_default_id",
   claim_order_id: null,
   swap_id: null,
@@ -27,20 +29,52 @@ const baseState = () => ({
   ],
 })
 
-export const orderState = ({ display_id }) => ({
+const baseStateNew = () => ({
+  order_id: "order_default",
+  display_id: "11",
+  cart_id: "cart_default_id",
+  claim_order_id: null,
+  swap_id: null,
+  line_items: [
+    {
+      id: "item_default_id_1",
+      product_id: "prod_default_id_1",
+      variant_id: "variant_default_id_1",
+    },
+  ],
+})
+
+export const orderStateNew = (key) => ({
   default: {
-    ...baseState(),
-    display_id,
+    ...baseStateNew(),
   },
-  claim: {
-    ...baseState(),
-    display_id,
+  has_claim: {
+    ...baseStateNew(),
     order_id: null,
     claim_order_id: "claim_order_93",
   },
+  has_swap: {
+    ...baseStateNew(),
+    order_id: null,
+    swap_id: "swap_93",
+  },
+}[key])
+
+export const orderState = () => ({
+
+  default: {
+    ...baseState(),
+    // display_id,
+  },
+  claim: {
+    // ...baseState(),
+    // display_id,
+    // order_id: null,
+    // claim_order_id: "claim_order_93",
+  },
   swap: {
     ...baseState(),
-    display_id,
+    // display_id,
     order_id: null,
     swap_id: "swap_93",
   },

@@ -1,16 +1,49 @@
-const baseState = (order_number) => ({
+const baseState = () => ({
   object_id: "shippo_order_default_id_1",
-  order_number,
+  order_number: "56",
   transactions: [],
 })
 
-export const shippoOrderState = ({ order_number }) => ({
+export const shippoOrderState = ({ order_number = "56" }) => ({
+
+  shippo_order_no_transactions: {
+    object_id: "shippo_order_no_transactions",
+    order_number,
+    transactions: [],
+  },
+
+  shippo_order_has_transaction_for_label: {
+    object_id: "shippo_order_has_transaction_for_label",
+    order_number,
+    transactions: [
+      {
+        object_id: "transaction_for_label",
+        tracking_number: "track_01234567890",
+      }
+    ],
+  },
+
+  shippo_order_has_transaction_for_label_and_return_label: {
+    object_id: "shippo_order_has_transaction_for_label_and_return_label",
+    order_number,
+    transactions: [
+      {
+        object_id: "transaction_for_label",
+        tracking_number: "track_01234567890",
+      },
+      {
+        object_id: "transaction_for_return_label",
+        tracking_number: "track_09876543210",
+      },
+    ],
+  },
+
   default: {
-    ...baseState(order_number),
+    ...baseState(),
     transactions: [],
   },
   has_label: {
-    ...baseState(order_number),
+    ...baseState(),
     transactions: [
       {
         object_id: "ta_label",
@@ -19,7 +52,7 @@ export const shippoOrderState = ({ order_number }) => ({
     ],
   },
   has_return_label: {
-    ...baseState(order_number),
+    ...baseState(),
     transactions: [
       {
         object_id: "ta_label",

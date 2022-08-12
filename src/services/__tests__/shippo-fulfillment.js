@@ -1,6 +1,7 @@
 import { toBeNumber, toContainKey, toContainKeys } from "jest-extended"
 import { cartMock, cartState } from "../__mocks__/cart"
-import { orderMock, orderState } from "../__mocks__/order"
+import { orderMock, orderState, orderStateNew } from "../__mocks__/order"
+import { fulfillmentState } from "../__mocks__/fulfillment"
 import { returnMock, returnState } from "../__mocks__/return"
 
 import { makeShippoFulfillmentService } from "./setup"
@@ -128,7 +129,7 @@ describe("ShippoFulfillmentService", () => {
   describe("createReturn", () => {
     describe("is claim", () => {
       const shippoFulfillmentService = makeShippoFulfillmentService({
-        ...orderState({ display_id: "11" }).claim,
+        ...orderState().default
       })
       const returnOrder = returnMock(
         returnState({
@@ -219,3 +220,13 @@ describe("ShippoFulfillmentService", () => {
     })
   })
 })
+
+const orderTest = {
+  ...orderStateNew("default"),
+  fulfillments: [
+    fulfillmentState("has_transaction_for_label")
+  ]
+}
+
+console.log('*********orderState: ', JSON.stringify(orderTest, null, 2))
+

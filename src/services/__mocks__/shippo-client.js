@@ -38,8 +38,11 @@ export const shippoClientMock = ({ ...state }) => ({
   },
   order: {
     create: jest.fn(async () => shippoOrderMock(state.order)("321")),
-    retrieve: jest.fn(async (object_id) =>
-      shippoOrderMock(state.order)(object_id)
+    retrieve: jest.fn(async (object_id) => {
+      // console.log("order", object_id)
+      return shippoOrderMock(state.order)(object_id)
+    }
+      
     ),
 
     packingslip: jest.fn(async () => ({
@@ -60,8 +63,11 @@ export const shippoClientMock = ({ ...state }) => ({
     })),
   },
   transaction: {
-    retrieve: jest.fn(async (object_id) =>
-      shippoTransactionMock(state?.transaction?.label)(object_id)
+    retrieve: jest.fn(async (object_id) => {
+      // console.log("transaction", object_id)
+      return shippoTransactionMock(state?.transaction?.label)(object_id)
+    }
+      
     ),
 
     search: jest.fn(async (q) => ({
