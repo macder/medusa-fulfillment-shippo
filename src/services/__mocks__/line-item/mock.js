@@ -1,10 +1,11 @@
 import { lineItemSchema } from "./schema"
 import { variantMock } from "../variant"
 
-export const lineItemMock = (foreignKeys) => (product) => (variant) => (id) =>
+export const lineItemMock = ({ ...state }) =>
   lineItemSchema({
-    id,
-    ...foreignKeys,
-    variant_id: variant.id,
-    variant: variantMock({ product_id: product.id })(variant.id),
+    ...state,
+    variant: variantMock({
+      id: state.variant_id,
+      product_id: state.product_id,
+    }),
   })

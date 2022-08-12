@@ -9,6 +9,8 @@ import {
 import { fulfillmentState } from "../../__mocks__/fulfillment"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
+import { lineItemState } from "../../__mocks__/line-item"
+
 import { orderState } from "../../__mocks__/order"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
@@ -56,46 +58,97 @@ describe("shippoService", () => {
 
     describe("fetchBy", () => {
       describe("fulfillment", () => {
-        test("returns", async () => {
-          // arrange
-          const shippoService = makeShippoService({
-            ...orderState("default")({ display_id: "11" }),
-            fulfillments: [fulfillmentState("ful_has_transaction_for_label")],
+        describe("has shippo order", () => {
+          test("returns", async () => {
+            // arrange
+            const shippoService = makeShippoService({
+              line_items: [],
+              fulfillments: [fulfillmentState("has_shippo_order")],
+            })
+            const { id } = fulfillmentState("has_shippo_order")
+
+            // act
+            const result = await shippoService.order.fetchBy([
+              "fulfillment",
+              id,
+            ])
+
+            // // assert
+            expect(result).toContainKeys(["object_id", "transactions"])
           })
-          const id = "ful_has_transaction_for_label"
+        })
 
-          // act
-          const result = await shippoService.order.fetchBy(["fulfillment", id])
+        describe("no shippo order", () => {
+          test("returns Promise.reject", async () => {
+            // arrange
+            const shippoService = makeShippoService({
+              line_items: [],
+              fulfillments: [fulfillmentState("no_shippo_order")],
+            })
+            const { id } = fulfillmentState("no_shippo_order")
 
-          // assert
-          expect(result).toContainKeys(["object_id", "transactions"])
+            // act
+            const result = shippoService.order.fetchBy(["fulfillment", id])
+
+            // // assert
+            expect(result).rejects.toContainKeys(["type", "code", "message"])
+          })
         })
       })
 
       describe("local_order", () => {
+        describe("has fulfillment", () => {
+          describe("with shippo order", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              line_items: [],
+              fulfillments: [fulfillmentState("has_shippo_order")],
+            })
+            const id = "order_id"
+
+            test("returns array", async () => {
+              // act
+              const result = await shippoService.order.fetchBy([
+                "local_order",
+                id,
+              ])
+              // assert
+              expect(result).toBeArray()
+            })
+          })
+
+          describe("without shippo order", () => {})
+        })
+
         test("returns", async () => {
           // arrange
-          const shippoService = makeShippoService({
-            ...orderState("default")({ display_id: "11" }),
-            fulfillments: [fulfillmentState("ful_has_transaction_for_label")],
-          })
-          const id = "order_default"
-
-          // act
-          const result = await shippoService.order.fetchBy(["local_order", id])
-
-          // assert
-          expect(result).toBeArray()
-          expect(result[0]).toContainEntry([
-            "fulfillment_id",
-            "ful_has_transaction_for_label",
-          ])
+          // const shippoService = makeShippoService({
+          //   ...orderState("default")({ display_id: "11" }),
+          //   fulfillments: [fulfillmentState("ful_has_transaction_for_label")],
+          // })
+          // const id = "order_default"
+          // // act
+          // const result = await shippoService.order.fetchBy(["local_order", id])
+          // // assert
+          // expect(result).toBeArray()
+          // expect(result[0]).toContainEntry([
+          //   "fulfillment_id",
+          //   "ful_has_transaction_for_label",
+          // ])
         })
       })
 
       describe("claim", () => {
         test("returns", async () => {
-          const id = "claim_01234567890"
+          // const shippoService = makeShippoService({
+          //   order_id: "order_default",
+          //   display_id: "11",
+          //   cart_id: "cart_default_id",
+          //   claim_order_id: null,
+          //   swap_id: null,
+          //   fulfillments: [
+          //     fulfillmentState("ful_has_transaction_for_label")],
+          // })
           // const result = await shippoService.order.fetchBy(["claim", id])
           // expect(result).toBeArray()
           // expect(result[0]).toContainEntry([

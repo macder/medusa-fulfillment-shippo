@@ -4,7 +4,5 @@ import { fulfillmentMock } from "./mock"
 export const fulfillmentRepoMock = ({ ...state }) =>
   MockRepository({
     find: async (params) =>
-      state.fulfillments.map((ful) =>
-        fulfillmentMock(ful)
-      ),
+      state.fulfillments.map((ful) => fulfillmentMock(ful)),
   })

@@ -8,7 +8,5 @@ export const orderMock = ({ ...state }) =>
     ...state,
     shipping_address: addressSchema({}),
     fulfillments: state.fulfillments.map((ful) => fulfillmentMock(ful)),
-    items: state.line_items.map(({ product_id, variant_id, id }) =>
-      lineItemMock(state)({ id: product_id })({ id: variant_id })(id)
-    ),
+    items: state.line_items.map((item) => lineItemMock({ ...state, ...item })),
   })
