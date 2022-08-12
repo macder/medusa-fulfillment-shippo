@@ -60,13 +60,24 @@ class ShippoTransactionService extends BaseService {
       data: { shippo_order_id },
     } = await this.#fulfillmentService.retrieve(id)
 
-    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
+    const { transactions: miniTransactions } =
+      await this.#client.order.retrieve(shippo_order_id)
 
-    return Promise.all(
-      transactions.map(async (ta) =>
-        this.#client.transaction.retrieve(ta.object_id)
-      )
-    )
+    const transactions =
+      miniTransactions.length > 0
+        ? await Promise.all(
+            miniTransactions.map(async (ta) =>
+              this.#client.transaction.retrieve(ta.object_id)
+            )
+          )
+        : Promise.reject(
+            new MedusaError(
+              MedusaError.Types.NOT_FOUND,
+              `Transactions for fulfillment with id: ${id} not found`
+            )
+          )
+
+    return transactions
   }
 
   /**
@@ -74,35 +85,34 @@ class ShippoTransactionService extends BaseService {
    * @param {string} orderId - order_id
    * @return {Promise.<object[]>} The transaction
    */
-  async fetchByOrder(orderId) {
+  async fetchByLocalOrder(orderId) {
     const order = await this.#orderService.retrieve(orderId, {
       relations: ["fulfillments"],
     })
 
-    // TODO - Break this apart?
-    const transacts = await Promise.all(
-      // filter fulfillments with shippo order
-      order.fulfillments
-        .filter((ful) => ful.data?.shippo_order_id)
-        // map transactions over fulfillments
-        .map(async ({ id, data: { shippo_order_id } }) =>
-          // fetch the fulfillment's shippo order
-          this.#client.order
-            .retrieve(shippo_order_id)
-            .then(async ({ transactions }) =>
-              Promise.all(
-                // map the full transactions over shippoOrder.transactions
-                transactions.map(async (ta) =>
-                  this.#client.transaction
-                    .retrieve(ta.object_id)
-                    // add the fulfillment_id to transaction
-                    .then((final) => ({ fulfillment_id: id, ...final }))
-                )
-              )
-            )
-        )
+    const fulfillments = order.fulfillments.filter(
+      (ful) => ful.data?.shippo_order_id
     )
-    return transacts.flat(1)
+
+    const shippoOrders = await Promise.all(
+      fulfillments.map(async ({ id, data: { shippo_order_id } }) =>
+        this.#client.order
+          .retrieve(shippo_order_id)
+          .then((shippoOrder) => ({ ...shippoOrder, fulfillment_id: id }))
+      )
+    )
+
+    const transactions = await Promise.all(
+      shippoOrders.flatMap(({ transactions, fulfillment_id }) =>
+        transactions.map(async (ta) =>
+          this.#client.transaction
+            .retrieve(ta.object_id)
+            .then((response) => ({ ...response, fulfillment_id }))
+        )
+      )
+    )
+
+    return transactions
   }
 
   /**
@@ -211,12 +221,7 @@ class ShippoTransactionService extends BaseService {
     const transaction = transactions.find((ta) => ta.is_return)
 
     if (!transaction) {
-      return Promise.reject(
-        new MedusaError(
-          MedusaError.Types.NOT_FOUND,
-          "transaction for return label not found"
-        )
-      )
+      return Promise.reject("transaction for return label not found")
     }
 
     return this.fetch(transaction.object_id).then(({ label_url }) => ({

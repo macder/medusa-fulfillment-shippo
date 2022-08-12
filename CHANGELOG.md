@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[0.29.0] (2022-08-12)
+
+Fixed
+
+*   Transaction fetchBy fulfillment empty array instead of Promise.reject if no transactions [#306](https://github.com/macder/medusa-fulfillment-shippo/issues/306)
+
+Changed
+*   Public interface docs revamp [#289](https://github.com/macder/medusa-fulfillment-shippo/issues/289)
+
 ## \[0.28.1] (2022-08-09)
 
 Fixed

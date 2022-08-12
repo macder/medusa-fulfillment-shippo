@@ -1,5 +1,6 @@
 export {
   makeShippoClientService,
+  makeShippoFulfillmentService,
   makeShippoPackerService,
   makeShippoPackageService,
   makeShippoRatesService,

@@ -8,6 +8,7 @@ export const getConfigFile = () => ({
       admin_cors: "ADMIN_CORS",
       store_address: "SHIPPO_DEFAULT_SENDER_ADDRESS_ID",
       api_key: "11111111",
+      webhook_secret: "secret",
       weight_unit_type: "g",
       dimension_unit_type: "cm",
     },

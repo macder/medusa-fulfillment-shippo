@@ -1,6 +1,7 @@
 import { MockManager } from "medusa-test-utils"
 import ShippoService from "../../shippo"
 import ShippoClientService from "../../shippo-client"
+import ShippoFulfillmentService from "../../shippo-fulfillment"
 import ShippoOrderService from "../../shippo-order"
 import ShippoPackageService from "../../shippo-package"
 import ShippoPackerService from "../../shippo-packer"
@@ -31,7 +32,11 @@ const coreServiceMocks = (state) => ({
     setShippingOptionPrices: jest.fn(async (options) => options),
   },
   logger: {
-    error: jest.fn(async (msg) => ""),
+    error: jest.fn(async (msg) => console.error(msg)),
+    warn: jest.fn(async (msg) => console.warn(msg)),
+  },
+  eventBusService: {
+    emit: jest.fn(),
   },
 })
 
@@ -138,6 +143,30 @@ export const makeShippoTrackService = (state) => {
       fulfillmentService,
       shippoClientService,
       shippoOrderService,
+      shippoTransactionService,
+    },
+    {}
+  )
+}
+
+export const makeShippoFulfillmentService = (state) => {
+  const { eventBusService, logger, orderService, totalsService } =
+    coreServiceMocks(state)
+
+  const shippoClientService = makeShippoClientService(state)
+  const shippoPackageService = makeShippoPackageService(state)
+  const shippoRatesService = makeShippoRatesService(state)
+  const shippoTransactionService = makeShippoTransactionService(state)
+
+  return new ShippoFulfillmentService(
+    {
+      eventBusService,
+      logger,
+      orderService,
+      totalsService,
+      shippoClientService,
+      shippoPackageService,
+      shippoRatesService,
       shippoTransactionService,
     },
     {}

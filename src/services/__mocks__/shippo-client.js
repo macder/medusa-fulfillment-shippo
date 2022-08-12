@@ -1,3 +1,4 @@
+import { carrierAccountMock } from "./shippo/carrier"
 import { shippoOrderMock } from "./shippo/order"
 import {
   shippoTransactionMock,
@@ -5,6 +6,7 @@ import {
 } from "./shippo/transaction"
 import { liveRateMock } from "./shippo/live-rate"
 import { userParcelMock } from "./shippo/user-parcel"
+import { serviceGroupMock } from "./shippo/service-group"
 
 export const shippoClientMock = ({ ...state }) => ({
   account: {
@@ -22,7 +24,9 @@ export const shippoClientMock = ({ ...state }) => ({
     })),
   },
   carrieraccount: {
-    list: jest.fn(async () => []),
+    list: jest.fn(async () => ({
+      results: state.carriers.map((carrier) => carrierAccountMock(carrier)),
+    })),
     retrieve: jest.fn(async (id) => ({
       carrier: "usps",
     })),
@@ -33,6 +37,7 @@ export const shippoClientMock = ({ ...state }) => ({
     })),
   },
   order: {
+    create: jest.fn(async () => shippoOrderMock(state.order)("321")),
     retrieve: jest.fn(async (object_id) =>
       shippoOrderMock(state.order)(object_id)
     ),
@@ -42,6 +47,11 @@ export const shippoClientMock = ({ ...state }) => ({
       slip_url: "https://shippo-delivery.net",
       created: "",
     })),
+  },
+  servicegroups: {
+    list: jest.fn(async () =>
+      state.service_groups.map((sg) => serviceGroupMock(sg))
+    ),
   },
   track: {
     get_status: jest.fn(async (carrier, tracking_number) => ({

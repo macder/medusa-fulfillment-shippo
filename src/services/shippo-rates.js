@@ -37,7 +37,7 @@ class ShippoRatesService extends BaseService {
     const rates = await this.#shippo.useClient.liverates
       .create(params)
       .then((response) => response.results)
-    return rates
+    return rates.map((rate) => ({ ...rate, parcel: params.parcel }))
   }
 
   async fetchOptionRate(option, cart) {
