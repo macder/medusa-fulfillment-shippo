@@ -60,15 +60,24 @@ class ShippoTransactionService extends BaseService {
       data: { shippo_order_id },
     } = await this.#fulfillmentService.retrieve(id)
 
-    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
+    const { transactions: miniTransactions } =
+      await this.#client.order.retrieve(shippo_order_id)
 
-    console.log("transactions", transactions)
+    const transactions =
+      miniTransactions.length > 0
+        ? await Promise.all(
+            miniTransactions.map(async (ta) =>
+              this.#client.transaction.retrieve(ta.object_id)
+            )
+          )
+        : Promise.reject(
+            new MedusaError(
+              MedusaError.Types.NOT_FOUND,
+              `Transactions for fulfillment with id: ${id} not found`
+            )
+          )
 
-    return Promise.all(
-      transactions.map(async (ta) =>
-        this.#client.transaction.retrieve(ta.object_id)
-      )
-    )
+    return transactions
   }
 
   /**
