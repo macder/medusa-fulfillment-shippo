@@ -8,7 +8,7 @@ import { liveRateMock } from "./shippo/live-rate"
 import { userParcelMock } from "./shippo/user-parcel"
 import { serviceGroupMock } from "./shippo/service-group"
 
-export const shippoClientMock = ({ ...state }) => ({
+export const shippoClientMock = (state) => ({
   account: {
     address: jest.fn(async () => ({
       results: [
@@ -37,12 +37,12 @@ export const shippoClientMock = ({ ...state }) => ({
     })),
   },
   order: {
-    create: jest.fn(async () => shippoOrderMock(state.order)("321")),
-    retrieve: jest.fn(async (object_id) => {
+    create: jest.fn(async () =>
+      shippoOrderMock(state.order("shippo_order_no_transactions"), {})
+    ),
+    retrieve: jest.fn(async (object_id) =>
       // console.log("order", object_id)
-      return shippoOrderMock(state.order)(object_id)
-    }
-      
+      shippoOrderMock(state.order(object_id, {}))
     ),
 
     packingslip: jest.fn(async () => ({
@@ -63,21 +63,14 @@ export const shippoClientMock = ({ ...state }) => ({
     })),
   },
   transaction: {
-    retrieve: jest.fn(async (object_id) => {
-      // console.log("transaction", object_id)
-      return shippoTransactionMock(state?.transaction?.label)(object_id)
-    }
-      
+    retrieve: jest.fn(async (object_id) =>
+      shippoTransactionMock(state.transaction(object_id))
     ),
 
     search: jest.fn(async (q) => ({
-      results: state.order.transactions.map((ta) =>
-        shippoTransactionExtendedMock(
-          ta.object_id === "ta_label"
-            ? state.transaction.label
-            : state.transaction.return
-        )(ta.object_id)
-      ),
+      results: state
+        .transaction(q.replace(/[^0-9]/g, ""))
+        .map((ta) => shippoTransactionExtendedMock(ta)),
     })),
   },
   userparceltemplates: {

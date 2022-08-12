@@ -29,9 +29,9 @@ const baseState = () => ({
   ],
 })
 
-const baseStateNew = () => ({
+const baseStateNew = (display_id) => ({
   order_id: "order_default",
-  display_id: "11",
+  display_id,
   cart_id: "cart_default_id",
   claim_order_id: null,
   swap_id: null,
@@ -44,38 +44,41 @@ const baseStateNew = () => ({
   ],
 })
 
-export const orderStateNew = (key) => ({
-  default: {
-    ...baseStateNew(),
-  },
-  has_claim: {
-    ...baseStateNew(),
-    order_id: null,
-    claim_order_id: "claim_order_93",
-  },
-  has_swap: {
-    ...baseStateNew(),
-    order_id: null,
-    swap_id: "swap_93",
-  },
-}[key])
+export const orderState =
+  (key) =>
+  ({ display_id }) =>
+    ({
+      default: {
+        ...baseStateNew(display_id),
+      },
+      has_claim: {
+        ...baseStateNew(display_id),
+        order_id: null,
+        claim_order_id: "claim_order_93",
+      },
+      has_swap: {
+        ...baseStateNew(display_id),
+        order_id: null,
+        swap_id: "swap_93",
+      },
+    }[key])
 
-export const orderState = () => ({
+// export const orderState = () => ({
 
-  default: {
-    ...baseState(),
-    // display_id,
-  },
-  claim: {
-    // ...baseState(),
-    // display_id,
-    // order_id: null,
-    // claim_order_id: "claim_order_93",
-  },
-  swap: {
-    ...baseState(),
-    // display_id,
-    order_id: null,
-    swap_id: "swap_93",
-  },
-})
+//   default: {
+//     ...baseState(),
+//     // display_id,
+//   },
+//   claim: {
+//     // ...baseState(),
+//     // display_id,
+//     // order_id: null,
+//     // claim_order_id: "claim_order_93",
+//   },
+//   swap: {
+//     ...baseState(),
+//     // display_id,
+//     order_id: null,
+//     swap_id: "swap_93",
+//   },
+// })
