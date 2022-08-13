@@ -68,9 +68,11 @@ export const shippoClientMock = (state) => ({
     ),
 
     search: jest.fn(async (q) => ({
-      results: state
-        .transaction(q.replace(/[^0-9]/g, ""))
-        .map((ta) => shippoTransactionExtendedStub(ta)),
+      results: state.transaction(q.replace(/[^0-9]/g, ""))
+        ? state
+            .transaction(q.replace(/[^0-9]/g, ""))
+            .map((ta) => shippoTransactionExtendedStub(ta))
+        : [],
     })),
   },
   userparceltemplates: {

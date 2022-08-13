@@ -24,4 +24,7 @@ export const shippoTransactionState = (key) =>
     get 22() {
       return [this.transaction_for_label, this.transaction_for_return_label]
     },
+    get 33() {
+      return [this.transaction_for_label, this.transaction_for_label]
+    },
   }[key])

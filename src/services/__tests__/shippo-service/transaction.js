@@ -292,53 +292,245 @@ describe("shippoService", () => {
       })
 
       describe("local_order", () => {
-        describe("variant: default", () => {
-          test("returns transaction", async () => {
-            // const result = await shippoService.transaction.fetchBy([
-            //   "local_order",
-            //   "order_default",
-            // ])
-            // expect(result[0]).toContainEntry([
-            //   "fulfillment_id",
-            //   "ful_default_id_1",
-            // ])
-            // expect(result[1]).toContainEntry([
-            //   "fulfillment_id",
-            //   "ful_default_id_1",
-            // ])
-            // expect(result[2]).toContainEntry([
-            //   "fulfillment_id",
-            //   "ful_default_id_2",
-            // ])
-            // expect(result[3]).toContainEntry([
-            //   "fulfillment_id",
-            //   "ful_default_id_2",
-            // ])
-            // expect(result[0]).toContainEntry(["rate", ""])
-            // expect(result[1]).toContainEntry(["rate", ""])
-            // expect(result[2]).toContainEntry(["rate", ""])
-            // expect(result[3]).toContainEntry(["rate", ""])
+        describe("has single fulfillment", () => {
+          describe("with transaction for label", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              line_items: [],
+              fulfillments: [fulfillmentState("has_transaction_for_label")],
+            })
+            describe("variant: default", () => {
+              test("returns array with 1 member", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result).toBeArrayOfSize(1)
+              })
+
+              test("return is default transaction", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result[0]).toContainKeys([
+                  "object_id",
+                  "object_state",
+                  "label_url",
+                ])
+              })
+
+              test("return has prop/value pair for fulfillment_id", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result[0]).toContainEntry([
+                  "fulfillment_id",
+                  "ful_has_transaction_for_label",
+                ])
+              })
+            })
+
+            describe("variant: extended", () => {
+              test("returns array with 1 member", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy(
+                  ["local_order", id],
+                  { type: "extended" }
+                )
+
+                // assert
+                expect(result).toBeArrayOfSize(1)
+              })
+
+              test("return is extended transaction", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy(
+                  ["local_order", id],
+                  { type: "extended" }
+                )
+
+                // assert
+                expect(result[0]).toContainKeys([
+                  "object_id",
+                  "object_state",
+                  "is_return",
+                ])
+              })
+            })
+          })
+          describe("with transaction for label and return", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              display_id: "22",
+              line_items: [],
+              fulfillments: [
+                fulfillmentState("has_transaction_for_label_with_return"),
+              ],
+            })
+
+            describe("variant: default", () => {
+              test("returns array with 2 members", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label_and_return"
+
+                // act
+                const result = await shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result).toBeArrayOfSize(2)
+              })
+            })
+
+            describe("variant: extended", () => {
+              test("returns array with 2 members", async () => {
+                // arrange
+                const id =
+                  "local_order_single_fulfillment_with_transaction_for_label_and_return"
+
+                // act
+                const result = await shippoService.transaction.fetchBy(
+                  ["local_order", id],
+                  { type: "extended" }
+                )
+
+                // assert
+                expect(result).toBeArrayOfSize(2)
+              })
+            })
+          })
+          describe("with no transaction", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              display_id: "44",
+              line_items: [],
+              fulfillments: [fulfillmentState("no_transaction")],
+            })
+
+            describe("variant: default", () => {
+              test("return promise.reject", async () => {
+                // arrange
+                const id = "local_order_single_fulfillment_with_no_transaction"
+
+                // act
+                const result = shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result).rejects.toContainKeys([
+                  "type",
+                  "code",
+                  "message",
+                ])
+              })
+            })
+
+            describe("variant: extended", () => {
+              test("return promise.reject", async () => {
+                // arrange
+                const id = "local_order_single_fulfillment_with_no_transaction"
+
+                // act
+                const result = shippoService.transaction.fetchBy(
+                  ["local_order", id],
+                  { type: "extended" }
+                )
+
+                // assert
+                expect(result).rejects.toContainKeys([
+                  "type",
+                  "code",
+                  "message",
+                ])
+              })
+            })
           })
         })
+        describe("has multi fulfillments", () => {
+          describe("with a transaction", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              display_id: "33",
+              line_items: [],
+              fulfillments: [
+                fulfillmentState("has_transaction_for_label"),
+                fulfillmentState("has_transaction_for_label"),
+              ],
+            })
 
-        describe("variant: extended", () => {
-          test("returns transaction", async () => {
-            // const result = await shippoService.transaction.fetchBy(
-            //   ["local_order", "order_default"],
-            //   {
-            //     variant: "extended",
-            //   }
-            // )
-            // expect(result[0]).toContainEntry(["object_id", "ta_label"])
-            // expect(result[0].rate).toContainEntry([
-            //   "carrier_account",
-            //   "carrier_id_here",
-            // ])
-            // expect(result[1]).toContainEntry(["object_id", "ta_return_label"])
-            // expect(result[1].rate).toContainEntry([
-            //   "carrier_account",
-            //   "carrier_id_here",
-            // ])
+            describe("variant: default", () => {
+              test("returns array with 2 members", async () => {
+                // arrange
+                const id =
+                  "local_order_multi_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result).toBeArrayOfSize(2)
+              })
+            })
+
+            describe("variant: extended", () => {
+              test("returns array with 2 members", async () => {
+                // arrange
+                const id =
+                  "local_order_multi_fulfillment_with_transaction_for_label"
+
+                // act
+                const result = await shippoService.transaction.fetchBy(
+                  ["local_order", id],
+                  { type: "extended" }
+                )
+
+                // assert
+                expect(result).toBeArrayOfSize(2)
+              })
+            })
           })
         })
       })
@@ -351,18 +543,40 @@ describe("shippoService", () => {
 
       describe("return", () => {
         test("is false", async () => {
-          // const id = "ta_label"
-          // const result = await shippoService
-          //   .is(["transaction", id], "return")
-          //   .fetch()
-          // expect(result).toBeFalse()
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            display_id: "11",
+            line_items: [],
+            fulfillments: [],
+          })
+          const id = "transaction_for_label"
+
+          // act
+          const result = await shippoService
+            .is(["transaction", id], "return")
+            .fetch()
+
+          // assert
+          expect(result).toBeFalse()
         })
         test("is true", async () => {
-          // const id = "ta_return_label"
-          // const result = await shippoService
-          //   .is(["transaction", id], "return")
-          //   .fetch()
-          // expect(result).toBeTrue()
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            display_id: "22",
+            line_items: [],
+            fulfillments: [],
+          })
+          const id = "transaction_for_return_label"
+
+          // act
+          const result = await shippoService
+            .is(["transaction", id], "return")
+            .fetch()
+
+          // assert
+          expect(result).toBeTrue()
         })
       })
     })
