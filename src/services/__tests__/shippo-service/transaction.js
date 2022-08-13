@@ -209,18 +209,84 @@ describe("shippoService", () => {
           })
         })
 
-        describe("variant: extended", () => {
-          test("fulfillment returns requested extended transaction", async () => {
-            // const result = await shippoService.transaction.fetchBy(
-            //   ["fulfillment", "ful_default_id_1"],
-            //   { variant: "extended" }
-            // )
-            // expect(result[0]).toContainEntry(["object_id", "ta_label"])
-            // expect(result[1]).toContainEntry(["object_id", "ta_return_label"])
-            // expect(result[0].rate).toContainEntry([
-            //   "carrier_account",
-            //   "carrier_id_here",
-            // ])
+        describe("no shippo order", () => {
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            line_items: [],
+            fulfillments: [fulfillmentState("no_shippo_order")],
+          })
+
+          describe("variant: default", () => {
+            test("return promise.reject", async () => {
+              // arrange
+              const { id } = fulfillmentState("no_shippo_order")
+
+              // act
+              const result = shippoService.transaction.fetchBy([
+                "fulfillment",
+                id,
+              ])
+
+              // assert
+              expect(result).rejects.toContainKeys(["type", "code", "message"])
+            })
+          })
+
+          describe("variant: extended", () => {
+            test("return promise.reject", async () => {
+              // arrange
+              const { id } = fulfillmentState("no_shippo_order")
+
+              // act
+              const result = shippoService.transaction.fetchBy(
+                ["fulfillment", id],
+                { type: "extended" }
+              )
+
+              // assert
+              expect(result).rejects.toContainKeys(["type", "code", "message"])
+            })
+          })
+        })
+
+        describe("no transaction", () => {
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            line_items: [],
+            fulfillments: [fulfillmentState("no_transaction")],
+          })
+
+          describe("variant: default", () => {
+            test("return promise.reject", async () => {
+              // arrange
+              const { id } = fulfillmentState("no_transaction")
+
+              // act
+              const result = shippoService.transaction.fetchBy([
+                "fulfillment",
+                id,
+              ])
+
+              // assert
+              expect(result).rejects.toContainKeys(["type", "code", "message"])
+            })
+          })
+
+          describe("variant: extended", () => {
+            test("return promise.reject", async () => {
+              // arrange
+              const { id } = fulfillmentState("no_transaction")
+
+              // act
+              const result = shippoService.transaction.fetchBy(
+                ["fulfillment", id],
+                { type: "extended" }
+              )
+              // assert
+              expect(result).rejects.toContainKeys(["type", "code", "message"])
+            })
           })
         })
       })
