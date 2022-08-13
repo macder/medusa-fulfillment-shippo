@@ -10,9 +10,6 @@ import {
 import { fulfillmentState } from "../../__mocks__/fulfillment"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
-import { lineItemState } from "../../__mocks__/line-item"
-
-import { orderState } from "../../__mocks__/order"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
 
