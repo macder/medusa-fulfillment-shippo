@@ -1,2 +1,2 @@
 export { trackingLinkSchema } from "./schema"
-export { trackingLinkMock } from "./mock"
+export { trackingLinkStub } from "./stub"

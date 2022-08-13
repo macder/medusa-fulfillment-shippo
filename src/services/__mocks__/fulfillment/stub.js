@@ -1,7 +1,7 @@
 import { fulfillmentSchema, fulfillmentItemSchema } from "./schema"
 import { trackingLinkSchema } from "../tracking-link"
 
-export const fulfillmentMock = ({ ...state }) =>
+export const fulfillmentStub = ({ ...state }) =>
   fulfillmentSchema({
     ...state,
     items: state.items.map((item_id) =>

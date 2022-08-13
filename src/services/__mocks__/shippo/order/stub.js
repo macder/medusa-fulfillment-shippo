@@ -1,6 +1,6 @@
 import { shippoOrderSchema, shippoOrderTransactionSchema } from "./schema"
 
-export const shippoOrderMock = ({ ...state }) =>
+export const shippoOrderStub = ({ ...state }) =>
   shippoOrderSchema({
     ...state,
     transactions: state.transactions.map((ta) =>

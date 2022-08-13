@@ -1,4 +1,4 @@
-export { fulfillmentMock } from "./mock"
+export { fulfillmentStub } from "./stub"
 export { fulfillmentRepoMock } from "./repo"
 export { fulfillmentServiceMock } from "./service"
 export { fulfillmentSchema, fulfillmentItemSchema } from "./schema"

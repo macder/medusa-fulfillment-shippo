@@ -1,10 +1,10 @@
 import { lineItemSchema } from "./schema"
-import { variantMock } from "../variant"
+import { variantStub } from "../variant"
 
-export const lineItemMock = ({ ...state }) =>
+export const lineItemStub = ({ ...state }) =>
   lineItemSchema({
     ...state,
-    variant: variantMock({
+    variant: variantStub({
       id: state.variant_id,
       product_id: state.product_id,
     }),

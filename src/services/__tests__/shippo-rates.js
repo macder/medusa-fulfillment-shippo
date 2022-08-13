@@ -5,7 +5,7 @@ import { shippoClientMock } from "../__mocks__"
 import { cartMock, cartState } from "../__mocks__/cart"
 import { userParcelState } from "../__mocks__/shippo/user-parcel"
 import { liveRateState } from "../__mocks__/shippo/live-rate"
-import { shippingOptionMock } from "../__mocks__/shipping"
+import { shippingOptionStub } from "../__mocks__/shipping"
 
 expect.extend({ toBeNumber, toContainKey })
 
@@ -27,7 +27,7 @@ describe("shippoRatesService", () => {
 
   describe("fetchOptionRate", () => {
     const options = cartState().has.items.shipping_options.map((so) =>
-      shippingOptionMock({ ...so })()
+      shippingOptionStub({ ...so })()
     )
 
     const cart = cartMock(cartState().has.items_address_email)(

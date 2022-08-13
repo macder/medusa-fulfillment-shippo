@@ -1,6 +1,6 @@
 import { toBeNumber, toContainKey, toContainKeys } from "jest-extended"
 import { cartMock, cartState } from "../__mocks__/cart"
-import { orderMock, orderState, orderStateNew } from "../__mocks__/order"
+import { orderStub, orderState } from "../__mocks__/order"
 import { fulfillmentState } from "../__mocks__/fulfillment"
 import { returnMock, returnState } from "../__mocks__/return"
 
@@ -110,7 +110,7 @@ describe("ShippoFulfillmentService", () => {
   describe("createFulfillment", () => {
     const methodData = { parcel_template: "box" }
     const fulfillment = { order_id: "order_default" }
-    const order = orderMock(orderState({ display_id: "11" }).default)(
+    const order = orderStub(orderState({ display_id: "11" }).default)(
       "order_default"
     )
     const fulfillmentItems = [...order.items]
@@ -129,7 +129,7 @@ describe("ShippoFulfillmentService", () => {
   describe("createReturn", () => {
     describe("is claim", () => {
       const shippoFulfillmentService = makeShippoFulfillmentService({
-        ...orderState().default
+        ...orderState().default,
       })
       const returnOrder = returnMock(
         returnState({
@@ -221,12 +221,9 @@ describe("ShippoFulfillmentService", () => {
   })
 })
 
-const orderTest = {
-  ...orderStateNew("default"),
-  fulfillments: [
-    fulfillmentState("has_transaction_for_label")
-  ]
-}
+// const orderTest = {
+//   ...orderState("default"),
+//   fulfillments: [fulfillmentState("has_transaction_for_label")],
+// }
 
-console.log('*********orderState: ', JSON.stringify(orderTest, null, 2))
-
+// console.log("*********orderState: ", JSON.stringify(orderTest, null, 2))

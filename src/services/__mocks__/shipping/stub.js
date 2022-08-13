@@ -4,7 +4,7 @@ import {
   fulfillmentOptionGroupSchema,
 } from "../fulfillment-option"
 
-export const shippingOptionMock =
+export const shippingOptionStub =
   ({ ...state }) =>
   (id = null) =>
     shippingOptionSchema({

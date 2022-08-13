@@ -1,7 +1,7 @@
 import { claimSchema } from "../claim"
 import { returnSchema } from "./schema"
 
-export const returnMock = ({ ...state }) =>
+export const returnStub = ({ ...state }) =>
   returnSchema({
     ...state,
     claim_order: state?.claim_order

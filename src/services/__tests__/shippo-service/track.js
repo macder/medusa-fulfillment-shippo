@@ -8,8 +8,8 @@ import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
 expect.extend({ toContainEntries, toContainKeys })
 
 const mockShippoClient = shippoClientMock({
-  order: shippoOrderState({ order_number: "11" }).has_label,
-  transaction: shippoTransactionState({ order_number: "11" }),
+  order: shippoOrderState,
+  transaction: shippoTransactionState,
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)

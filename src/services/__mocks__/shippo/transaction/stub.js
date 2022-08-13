@@ -1,11 +1,11 @@
 import { transactionSchema, transactionExtendedSchema } from "./schema"
 
-export const shippoTransactionMock = ({ ...state }) =>
+export const shippoTransactionStub = ({ ...state }) =>
   transactionSchema({
     ...state,
   })
 
-export const shippoTransactionExtendedMock = ({ ...state }) =>
+export const shippoTransactionExtendedStub = ({ ...state }) =>
   transactionExtendedSchema({
     ...state,
   })

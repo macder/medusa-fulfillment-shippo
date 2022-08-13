@@ -24,10 +24,10 @@ describe("ShippoTransactionService", () => {
   )
 
   describe("pollExtended", () => {
-    test("returns extended transaction", async () => {
-      const result = await shippoTransactionService.pollExtended("ta_label")
-      expect(result).toContainKeys(["rate", "is_return"])
-    })
+    // test("returns extended transaction", async () => {
+    //   const result = await shippoTransactionService.pollExtended("ta_label")
+    //   expect(result).toContainKeys(["rate", "is_return"])
+    // })
   })
 
   describe("findFulfillment", () => {

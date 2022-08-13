@@ -1,6 +1,6 @@
 import { trackingLinkSchema } from "./schema"
 
-export const trackingLinkMock =
+export const trackingLinkStub =
   ({ ...state }) =>
   (id) =>
     trackingLinkSchema({

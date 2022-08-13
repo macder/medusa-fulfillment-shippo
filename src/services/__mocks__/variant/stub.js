@@ -1,7 +1,7 @@
 import { variantSchema } from "./schema"
 import { productSchema } from "../product"
 
-export const variantMock = ({ id, product_id }) =>
+export const variantStub = ({ id, product_id }) =>
   variantSchema({
     id,
     product_id,
