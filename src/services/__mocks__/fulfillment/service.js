@@ -4,7 +4,7 @@ export const fulfillmentServiceMock = (state) => {
   const fulfillment = (id) => {
     const { fulfillments } = state
     const fulfillment = fulfillments.find((ful) => ful.id === id)
-    return fulfillmentMock(fulfillment)
+    return fulfillmentMock({ ...state, ...fulfillment })
   }
 
   return {
