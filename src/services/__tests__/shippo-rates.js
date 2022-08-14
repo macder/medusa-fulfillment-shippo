@@ -2,16 +2,18 @@ import { toBeNumber, toContainKey } from "jest-extended"
 
 import { makeShippoRatesService } from "./setup"
 import { shippoClientMock } from "../__mocks__"
-import { cartMock, cartState } from "../__mocks__/cart"
+import { cartStub } from "../__mocks__/cart"
 import { userParcelState } from "../__mocks__/shippo/user-parcel"
 import { liveRateState } from "../__mocks__/shippo/live-rate"
-import { shippingOptionStub } from "../__mocks__/shipping"
+import { shippingOptionState, shippingOptionStub } from "../__mocks__/shipping"
+import { lineItemState } from "../__mocks__/line-item"
+import { addressState } from "../__mocks__/address"
 
 expect.extend({ toBeNumber, toContainKey })
 
 const mockShippoClient = shippoClientMock({
-  live_rate: liveRateState(),
-  user_parcels: userParcelState(),
+  live_rate: liveRateState,
+  user_parcels: userParcelState,
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
@@ -21,24 +23,41 @@ describe("shippoRatesService", () => {
     jest.clearAllMocks()
   })
 
-  const shippoRatesService = makeShippoRatesService({
-    ...cartState().has.items_address_email,
+  const defaultIds = () => ({
+    order_id: "order_default",
+    display_id: "11",
+    cart_id: "cart_default_id",
+    claim_order_id: null,
+    swap_id: null,
   })
 
   describe("fetchOptionRate", () => {
-    const options = cartState().has.items.shipping_options.map((so) =>
-      shippingOptionStub({ ...so })()
-    )
-
-    const cart = cartMock(cartState().has.items_address_email)(
-      "cart_default_id"
-    )
-
     test("has parcel and shipping option props", async () => {
+      // arrange
+      const state = {
+        ...defaultIds(),
+        cart_id: "cart_has_address_items_email",
+        line_items: [
+          lineItemState({ quantity: 1 }),
+          lineItemState({ quantity: 2 }),
+        ],
+        fulfillments: [],
+        email: "test@test.com",
+        address: addressState("complete"),
+      }
+      const cart = cartStub({ ...state })
+      const shippoRatesService = makeShippoRatesService(state)
+      const options = shippingOptionState().map((so) =>
+        shippingOptionStub({ ...so })()
+      )
+
+      // act
       const result = await shippoRatesService.fetchOptionRate(
         options[0].data,
         cart
       )
+
+      // assert
       expect(result).toContainKey("parcel")
     })
   })
@@ -48,21 +67,34 @@ describe("shippoRatesService", () => {
       jest.clearAllMocks()
     })
 
+    // arrange
+    const shippoRatesService = makeShippoRatesService({})
+
     it("returns price from amount * 100", async () => {
+      // arrange
       const rate = {
         amount: "93.56",
         amount_local: "",
       }
+
+      // act
       const result = shippoRatesService.getPrice(rate)
+
+      // assert
       expect(result).toBe(9356)
     })
 
     it("returns price from amount_local * 100", async () => {
+      // arrange
       const rate = {
         amount: "93.56",
         amount_local: "41.8",
       }
+
+      // act
       const result = shippoRatesService.getPrice(rate)
+
+      // assert
       expect(result).toBe(4180)
     })
   })
