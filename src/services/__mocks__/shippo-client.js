@@ -25,7 +25,7 @@ export const shippoClientMock = (state) => ({
   },
   carrieraccount: {
     list: jest.fn(async () => ({
-      results: state.carriers.map((carrier) => carrierAccountStub(carrier)),
+      results: state.carriers().map((carrier) => carrierAccountStub(carrier)),
     })),
     retrieve: jest.fn(async (id) => ({
       carrier: "usps",
@@ -76,7 +76,7 @@ export const shippoClientMock = (state) => ({
   },
   userparceltemplates: {
     list: jest.fn(async () => ({
-      results: state.user_parcels.map((parcel) => userParcelStub(parcel)),
+      results: state.user_parcels().map((parcel) => userParcelStub(parcel)),
     })),
   },
 })
