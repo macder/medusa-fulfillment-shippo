@@ -33,7 +33,7 @@ export const shippoClientMock = (state) => ({
   },
   liverates: {
     create: jest.fn(async () => ({
-      results: state.live_rate.map((rate) => liveRateStub(rate)),
+      results: state.live_rate().map((rate) => liveRateStub(rate)),
     })),
   },
   order: {
@@ -52,7 +52,7 @@ export const shippoClientMock = (state) => ({
   },
   servicegroups: {
     list: jest.fn(async () =>
-      state.service_groups.map((sg) => serviceGroupStub(sg))
+      state.service_groups().map((sg) => serviceGroupStub(sg))
     ),
   },
   track: {
