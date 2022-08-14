@@ -41,7 +41,6 @@ export const shippoClientMock = (state) => ({
       shippoOrderStub(state.order("shippo_order_no_transactions"), {})
     ),
     retrieve: jest.fn(async (object_id) =>
-      // console.log("order", object_id)
       shippoOrderStub(state.order(object_id, {}))
     ),
 

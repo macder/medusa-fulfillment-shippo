@@ -30,10 +30,6 @@ const mockShippoClient = shippoClientMock({
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("shippoService", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
-
   describe("order", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
