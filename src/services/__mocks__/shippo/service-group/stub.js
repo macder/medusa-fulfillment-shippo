@@ -1,6 +1,6 @@
 import { serviceGroupSchema } from "./schema"
 
-export const serviceGroupMock = ({ ...state }) =>
+export const serviceGroupStub = ({ ...state }) =>
   serviceGroupSchema({
     ...state,
   })

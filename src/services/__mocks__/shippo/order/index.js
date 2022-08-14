@@ -1,3 +1,3 @@
 export { shippoOrderSchema, shippoOrderTransactionSchema } from "./schema"
-export { shippoOrderMock } from "./mock"
+export { shippoOrderStub } from "./stub"
 export { shippoOrderState } from "./state"

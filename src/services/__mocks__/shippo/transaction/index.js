@@ -1,3 +1,3 @@
 export { transactionSchema, transactionExtendedSchema } from "./schema"
-export { shippoTransactionMock, shippoTransactionExtendedMock } from "./mock"
+export { shippoTransactionStub, shippoTransactionExtendedStub } from "./stub"
 export { shippoTransactionState } from "./state"

@@ -138,7 +138,15 @@ class ShippoOrderService extends BaseService {
   }
 
   async findBy(type, id) {
-    const fulfillments = await this.findFulfillmentsBy(type, id)
+    const fulfillments = await this.findFulfillmentsBy(type, id).then(
+      (response) => response.filter((ful) => ful.data.shippo_order_id)
+    )
+
+    if (fulfillments.length === 0) {
+      return Promise.reject(
+        new MedusaError(MedusaError.Types.NOT_FOUND, `Shippo order not found`)
+      )
+    }
 
     const orders = await Promise.all(
       fulfillments.map(async (fulfillment) => {
@@ -153,7 +161,15 @@ class ShippoOrderService extends BaseService {
   }
 
   async findPackingSlipBy(type, id) {
-    const fulfillments = await this.findFulfillmentsBy(type, id)
+    const fulfillments = await this.findFulfillmentsBy(type, id).then(
+      (response) => response.filter((ful) => ful.data.shippo_order_id)
+    )
+
+    if (fulfillments.length === 0) {
+      return Promise.reject(
+        new MedusaError(MedusaError.Types.NOT_FOUND, `Shippo order not found`)
+      )
+    }
 
     const packingSlips = await Promise.all(
       fulfillments.map(async (fulfillment) => {
@@ -186,9 +202,11 @@ class ShippoOrderService extends BaseService {
       : await this.#fulfillmentService.retrieve(fulfillmentOrId)
 
     if (!fulfillment.data?.shippo_order_id) {
-      throw new MedusaError(
-        MedusaError.Types.NOT_FOUND,
-        `Shippo order not found for fulfillment with id: ${fulfillmentId}`
+      return Promise.reject(
+        new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `Shippo order not found for fulfillment with id: ${fulfillment.id}`
+        )
       )
     }
 

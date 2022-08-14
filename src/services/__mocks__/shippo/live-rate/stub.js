@@ -1,6 +1,6 @@
 import { liveRateSchema } from "./schema"
 
-export const liveRateMock = ({ ...state }) =>
+export const liveRateStub = ({ ...state }) =>
   liveRateSchema({
     ...state,
   })
