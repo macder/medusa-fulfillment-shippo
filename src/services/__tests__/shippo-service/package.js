@@ -9,7 +9,7 @@ import { fulfillmentState } from "../../__mocks__/fulfillment"
 expect.extend({ toBeArray, toContainKey, toContainEntry })
 
 const mockShippoClient = shippoClientMock({
-  user_parcels: userParcelState(),
+  user_parcels: userParcelState,
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
