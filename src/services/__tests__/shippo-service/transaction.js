@@ -71,7 +71,7 @@ describe("shippoService", () => {
 
           // act
           const result = await shippoService.transaction.fetch(id, {
-            variant: "extended",
+            type: "extended",
           })
 
           // assert
