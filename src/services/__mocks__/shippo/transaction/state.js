@@ -10,6 +10,7 @@ export const shippoTransactionState = (key) =>
       order_number: 11,
       tracking_number: "track_label_01234567890",
       is_return: false,
+      order_object_id: "shippo_order_has_transaction_for_label",
     },
 
     transaction_for_return_label: {
