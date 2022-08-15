@@ -3,8 +3,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
-![npm (tag)](https://img.shields.io/npm/v/medusa-fulfillment-shippo/latest)
-![npm (tag)](https://img.shields.io/npm/v/medusa-fulfillment-shippo/beta)
+[![npm version](https://badge.fury.io/js/medusa-fulfillment-shippo.svg)](https://badge.fury.io/js/medusa-fulfillment-shippo)
 
 > :information\_source: Requires Medusa ^1.3.5
 
@@ -49,7 +48,9 @@ Public interface for rapid custom integration. [Reference](#public-interface) | 
     *   [Quick Reference](#quick-reference)
 *   [Events](#events)
 *   [Shippo Node Client](#shippo-node-client)
-*   [Shipping Rates](#shipping-rates)
+*   [Release Policy](#release-policy)
+    *   [Versioning](#versioning)
+    *   [Breaking Changes](#breaking-changes) 
 *   [Limitations](#limitations)
 *   [Resources](#resources)
 
@@ -1213,17 +1214,19 @@ See [Shippo API Reference](https://goshippo.com/docs/reference) for methods
 
 [Forked client](https://github.com/macder/shippo-node-client/tree/medusa)
 
-## Shipping Rates
+## Release Policy
 
-Dimensional weight is a major factor in determining costs. Estimates are frivolous when based on inaccurate parcel volume and weight. This raises a challenging problem in computing which parcel box to use. While this is simple for single items, it becomes increasingly difficult when packing multiple items of various dimensions. It is a classic [bin packing problem](https://en.wikipedia.org/wiki/Bin_packing_problem), [NP-Hard](https://en.wikipedia.org/wiki/NP-hardness) stuff.
+### Versioning
 
-This plugin uses [binpackingjs](https://github.com/olragon/binpackingjs) which provides a [first-fit](https://en.wikipedia.org/wiki/First-fit_bin_packing) algorithm. Additional logic is wrapped around it to get a more optimized [first-fit-decreasing](https://en.wikipedia.org/wiki/First-fit-decreasing_bin_packing) algorithm. In order for this to be effective, parcel templates need to be setup in the Shippo account, and all products in medusa must have values for length, width, height, and weight.
+Follows Semantic versioning (semver) principles.
 
-### Accuracy of Rates
+### Breaking Changes
 
-Shipping rate estimates are calculated by third parties using data you supply. The onus is on the store admin to supply accurate data values about their products and packaging. This plugin does its best to use this data to create optimized requests, within reason and scope, to retrieve rates from Shippo. The intent is to provide a cost-cutting solution, but there is no one-size-fits all.
+Breaking change refers to a backwards incompatible change to the **public interface** or **core feature**.
 
-Assuming accurate data for product dimensions, weight, and package templates in shippo reflect a carefully planned boxing strategy, expect reasonably accurate rates for single item and multi-item fulfillment's that fit in a single parcel. Multi parcel for rates at checkout is currently not supported (future consideration). If items cannot fit into a single box, the default package template set in [Shippo app settings](https://apps.goshippo.com/settings/rates-at-checkout) is used.
+The public interface and core features are declared and defined in this document. Breaking changes will be announced in advance, and once released the major version number is incremented.
+
+Undocumented API and internal data structures are considered implementation details and are subject to change without notice. In other words, you are on your own when relying on undocumented usage.
 
 ## Limitations
 
