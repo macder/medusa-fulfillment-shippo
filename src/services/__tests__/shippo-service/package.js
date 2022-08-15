@@ -1,96 +1,151 @@
 import { toBeArray, toContainKey, toContainEntry } from "jest-extended"
 import { makeShippoService } from "../setup"
-import { lineItemMock } from "../../__mocks__/line-item"
+import { lineItemState, lineItemStub } from "../../__mocks__/line-item"
 import { shippoClientMock } from "../../__mocks__"
-import { cartState } from "../../__mocks__/cart"
-import { orderState } from "../../__mocks__/order"
+import { addressState } from "../../__mocks__/address"
 import { userParcelState } from "../../__mocks__/shippo/user-parcel"
+import { fulfillmentState } from "../../__mocks__/fulfillment"
 
 expect.extend({ toBeArray, toContainKey, toContainEntry })
 
 const mockShippoClient = shippoClientMock({
-  user_parcels: userParcelState(),
+  user_parcels: userParcelState,
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("shippoService", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
-
   describe("package", () => {
     beforeAll(async () => {
       jest.clearAllMocks()
     })
 
-    const shippoService = makeShippoService(
-      orderState({ display_id: "11" }).default
-    )
+    const defaultIds = () => ({
+      order_id: "order_default",
+      display_id: "11",
+      cart_id: "cart_default_id",
+      claim_order_id: null,
+      swap_id: null,
+    })
 
     describe("for", () => {
       describe("local_order", () => {
-        it("returns packer output", async () => {
+        test("returns packer output", async () => {
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            order_id: "local_order_has_line_items",
+            line_items: [
+              lineItemState({ quantity: 1 }),
+              lineItemState({ quantity: 2 }),
+            ],
+            fulfillments: [],
+          })
+          const id = "local_order_has_line_items"
+
+          // act
           const result = await shippoService.package
-            .for(["local_order", "order_default"])
+            .for(["local_order", id])
             .fetch()
-          expect(result).toBeArray()
+
+          // assert
           expect(result[0]).toContainKey("packer_output")
         })
       })
 
       describe("cart", () => {
-        const shippoService = makeShippoService(cartState().has.items)
-        it("returns packer output", async () => {
-          const result = await shippoService.package
-            .for(["cart", "cart_01234567890"])
-            .fetch()
-          expect(result).toBeArray()
-          expect(result[0]).toContainKey("packer_output")
+        describe("has items", () => {
+          test("returns packer output", async () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              cart_id: "cart_has_address_items_email",
+              line_items: [
+                lineItemState({ quantity: 1 }),
+                lineItemState({ quantity: 2 }),
+              ],
+              fulfillments: [],
+              email: "test@test.com",
+              address: addressState("complete"),
+            })
+            const id = "cart_has_address_items_email"
+
+            // act
+            const result = await shippoService.package.for(["cart", id]).fetch()
+
+            // assert
+            expect(result[0]).toContainKey("packer_output")
+          })
         })
       })
 
       describe("line_items", () => {
-        const lineItems = ["item_123", "item_321"].map((id) =>
-          lineItemMock({})({ id: "product_id" })({ id: "variant_id" })(id)
-        )
+        test("returns packer output", async () => {
+          // arrange
+          const shippoService = makeShippoService({})
+          const lineItems = ["1", "2", "3"].map((quantity) =>
+            lineItemStub(lineItemState({ quantity }))
+          )
 
-        it("returns packer output", async () => {
+          // act
           const result = await shippoService.package
             .for(["line_items", lineItems])
             .fetch()
-          expect(result).toBeArray()
+
+          // expect(result).toBeArray()
           expect(result[0]).toContainKey("packer_output")
         })
       })
 
       describe("fulfillment", () => {
-        it("returns packer output", async () => {
+        test("returns packer output", async () => {
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            line_items: [
+              lineItemState({ quantity: 1 }),
+              lineItemState({ quantity: 2 }),
+            ],
+            fulfillments: [fulfillmentState("has_shippo_order")],
+          })
+          const id = "ful_has_shippo_order"
+
+          // act
           const result = await shippoService.package
-            .for(["fulfillment", "ful_default_id_1"])
+            .for(["fulfillment", id])
             .fetch()
 
-          expect(result).toBeArray()
+          // assert
           expect(result[0]).toContainKey("packer_output")
         })
       })
     })
 
     describe("set", () => {
-      beforeAll(async () => {
-        jest.clearAllMocks()
-      })
+      test("used set boxes", async () => {
+        // arrange
+        const shippoService = makeShippoService({
+          ...defaultIds(),
+          line_items: [
+            lineItemState({ quantity: 1 }),
+            lineItemState({ quantity: 2 }),
+          ],
+          fulfillments: [fulfillmentState("has_shippo_order")],
+        })
+        const id = "ful_has_shippo_order"
 
-      const packages = userParcelState().map((box) => ({
-        ...box,
-        name: "box",
-      }))
+        const packages = userParcelState().map((box) => ({
+          ...box,
+          name: "box",
+        }))
 
-      it("used set boxes", async () => {
+        // act
         shippoService.package.set("boxes", packages)
         const result = await shippoService.package
-          .for(["fulfillment", "ful_default_id_1"])
+          .for(["fulfillment", id])
           .get()
+
+        // assert
         expect(result[0]).toContainEntry(["name", "box"])
       })
     })

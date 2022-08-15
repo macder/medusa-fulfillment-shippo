@@ -1,15 +1,15 @@
 import { toContainEntries, toContainKeys } from "jest-extended"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
-import { orderState } from "../../__mocks__/order"
+import { fulfillmentState } from "../../__mocks__/fulfillment"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
 
 expect.extend({ toContainEntries, toContainKeys })
 
 const mockShippoClient = shippoClientMock({
-  order: shippoOrderState({ order_number: "11" }).has_label,
-  transaction: shippoTransactionState({ order_number: "11" }),
+  order: shippoOrderState,
+  transaction: shippoTransactionState,
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
@@ -19,11 +19,22 @@ describe("track", () => {
     jest.clearAllMocks()
   })
 
-  const shippoService = makeShippoService(
-    orderState({ display_id: "11" }).default
-  )
+  const defaultIds = () => ({
+    order_id: "order_default",
+    display_id: "11",
+    cart_id: "cart_default_id",
+    claim_order_id: null,
+    swap_id: null,
+  })
+
   test("fetch returns requested track", async () => {
+    // arrange
+    const shippoService = makeShippoService({})
+
+    // act
     const result = await shippoService.track.fetch("usps", "track_num_1")
+
+    // assert
     expect(result).toContainEntries([
       ["tracking_number", "track_num_1"],
       ["carrier", "usps"],
@@ -31,10 +42,18 @@ describe("track", () => {
   })
 
   test("fetchBy ful_id returns requested track", async () => {
-    const result = await shippoService.track.fetchBy([
-      "fulfillment",
-      "ful_default_id_1",
-    ])
+    // arrange
+    const shippoService = makeShippoService({
+      ...defaultIds(),
+      line_items: [],
+      fulfillments: [fulfillmentState("has_transaction_for_label")],
+    })
+    const { id } = fulfillmentState("has_transaction_for_label")
+
+    // act
+    const result = await shippoService.track.fetchBy(["fulfillment", id])
+
+    // asseert
     expect(result).toContainKeys(["tracking_number", "carrier"])
   })
 })

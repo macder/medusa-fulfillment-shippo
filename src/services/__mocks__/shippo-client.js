@@ -1,14 +1,14 @@
-import { carrierAccountMock } from "./shippo/carrier"
-import { shippoOrderMock } from "./shippo/order"
+import { carrierAccountStub } from "./shippo/carrier"
+import { shippoOrderStub } from "./shippo/order"
 import {
-  shippoTransactionMock,
-  shippoTransactionExtendedMock,
+  shippoTransactionStub,
+  shippoTransactionExtendedStub,
 } from "./shippo/transaction"
-import { liveRateMock } from "./shippo/live-rate"
-import { userParcelMock } from "./shippo/user-parcel"
-import { serviceGroupMock } from "./shippo/service-group"
+import { liveRateStub } from "./shippo/live-rate"
+import { userParcelStub } from "./shippo/user-parcel"
+import { serviceGroupStub } from "./shippo/service-group"
 
-export const shippoClientMock = ({ ...state }) => ({
+export const shippoClientMock = (state) => ({
   account: {
     address: jest.fn(async () => ({
       results: [
@@ -25,7 +25,7 @@ export const shippoClientMock = ({ ...state }) => ({
   },
   carrieraccount: {
     list: jest.fn(async () => ({
-      results: state.carriers.map((carrier) => carrierAccountMock(carrier)),
+      results: state.carriers().map((carrier) => carrierAccountStub(carrier)),
     })),
     retrieve: jest.fn(async (id) => ({
       carrier: "usps",
@@ -33,13 +33,15 @@ export const shippoClientMock = ({ ...state }) => ({
   },
   liverates: {
     create: jest.fn(async () => ({
-      results: state.live_rate.map((rate) => liveRateMock(rate)),
+      results: state.live_rate().map((rate) => liveRateStub(rate)),
     })),
   },
   order: {
-    create: jest.fn(async () => shippoOrderMock(state.order)("321")),
+    create: jest.fn(async () =>
+      shippoOrderStub(state.order("shippo_order_no_transactions"), {})
+    ),
     retrieve: jest.fn(async (object_id) =>
-      shippoOrderMock(state.order)(object_id)
+      shippoOrderStub(state.order(object_id, {}))
     ),
 
     packingslip: jest.fn(async () => ({
@@ -50,7 +52,7 @@ export const shippoClientMock = ({ ...state }) => ({
   },
   servicegroups: {
     list: jest.fn(async () =>
-      state.service_groups.map((sg) => serviceGroupMock(sg))
+      state.service_groups().map((sg) => serviceGroupStub(sg))
     ),
   },
   track: {
@@ -61,22 +63,20 @@ export const shippoClientMock = ({ ...state }) => ({
   },
   transaction: {
     retrieve: jest.fn(async (object_id) =>
-      shippoTransactionMock(state?.transaction?.label)(object_id)
+      shippoTransactionStub(state.transaction(object_id))
     ),
 
     search: jest.fn(async (q) => ({
-      results: state.order.transactions.map((ta) =>
-        shippoTransactionExtendedMock(
-          ta.object_id === "ta_label"
-            ? state.transaction.label
-            : state.transaction.return
-        )(ta.object_id)
-      ),
+      results: state.transaction(q.replace(/[^0-9]/g, ""))
+        ? state
+            .transaction(q.replace(/[^0-9]/g, ""))
+            .map((ta) => shippoTransactionExtendedStub(ta))
+        : [],
     })),
   },
   userparceltemplates: {
     list: jest.fn(async () => ({
-      results: state.user_parcels.map((parcel) => userParcelMock(parcel)),
+      results: state.user_parcels().map((parcel) => userParcelStub(parcel)),
     })),
   },
 })

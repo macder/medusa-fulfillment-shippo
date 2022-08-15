@@ -1,3 +1,3 @@
 export { userParcelSchema } from "./schema"
-export { userParcelMock } from "./mock"
+export { userParcelStub } from "./stub"
 export { userParcelState } from "./state"

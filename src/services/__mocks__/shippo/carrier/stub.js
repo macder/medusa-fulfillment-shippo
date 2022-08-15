@@ -1,6 +1,6 @@
 import { carrierAccountSchema, carrierServiceLevelSchema } from "./schema"
 
-export const carrierAccountMock = ({ ...state }) =>
+export const carrierAccountStub = ({ ...state }) =>
   carrierAccountSchema({
     ...state,
     service_levels: state.service_levels.map((props) =>

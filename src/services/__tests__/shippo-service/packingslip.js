@@ -1,109 +1,294 @@
-import { toContainKey, toContainEntries, toContainEntry } from "jest-extended"
+import {
+  toBeArrayOfSize,
+  toContainKey,
+  toContainKeys,
+  toContainEntries,
+  toContainEntry,
+} from "jest-extended"
+import { fulfillmentState } from "../../__mocks__/fulfillment"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
-import { orderState } from "../../__mocks__/order"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
 
-expect.extend({ toContainKey, toContainEntries, toContainEntry })
+expect.extend({
+  toBeArrayOfSize,
+  toContainKey,
+  toContainKeys,
+  toContainEntries,
+  toContainEntry,
+})
 
 const mockShippoClient = shippoClientMock({
-  order: shippoOrderState({ order_number: "11" }).default,
-  transaction: shippoTransactionState({ order_number: "11" }),
+  order: shippoOrderState,
+  transaction: shippoTransactionState,
 })
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
-
-describe("packingslip", () => {
+describe("shippoService", () => {
   beforeAll(async () => {
     jest.clearAllMocks()
   })
-
-  const shippoService = makeShippoService(
-    orderState({ display_id: "11" }).default
-  )
-
-  describe("fetch", () => {
-    test("returns packing slip", async () => {
-      const id = "shippo_order_default_id_1"
-      const result = await shippoService.packingslip.fetch(id)
-      expect(result).toContainKey("slip_url")
+  describe("packingslip", () => {
+    const defaultIds = () => ({
+      order_id: "order_default",
+      display_id: "11",
+      cart_id: "cart_default_id",
+      claim_order_id: null,
+      swap_id: null,
     })
-  })
 
-  describe("fetchBy", () => {
-    describe("fulfillment", () => {
-      test("returns packing slip", async () => {
-        const id = "ful_default_id_1"
-        const result = await shippoService.packingslip.fetchBy([
-          "fulfillment",
-          id,
-        ])
+    describe("fetch", () => {
+      test("returns", async () => {
+        // arrange
+        const shippoService = makeShippoService({})
+        const id = "shippo_order_has_transaction_for_label"
+
+        // act
+        const result = await shippoService.packingslip.fetch(id)
+
+        // assert
         expect(result).toContainKey("slip_url")
       })
     })
 
-    describe("local_order", () => {
-      test("returns packing slip", async () => {
-        const id = "order_default"
-        const result = await shippoService.packingslip.fetchBy([
-          "local_order",
-          id,
-        ])
-        expect(result[0]).toContainEntries([
-          ["fulfillment_id", "ful_default_id_1"],
-          ["shippo_order_id", "shippo_order_default_id_1"],
-        ])
-        expect(result[1]).toContainEntries([
-          ["fulfillment_id", "ful_default_id_2"],
-          ["shippo_order_id", "shippo_order_default_id_2"],
-        ])
-      })
-    })
+    describe("fetchBy", () => {
+      describe("fulfillment", () => {
+        describe("has shippo order", () => {
+          test("returns", async () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              line_items: [],
+              fulfillments: [fulfillmentState("has_shippo_order")],
+            })
+            const { id } = fulfillmentState("has_shippo_order")
 
-    describe("claim", () => {
-      test("returns packing slip", async () => {
-        const id = "claim_01234567890"
-        const result = await shippoService.packingslip.fetchBy(["claim", id])
-        expect(result[0]).toContainEntries([
-          ["fulfillment_id", "ful_default_id_1"],
-          ["shippo_order_id", "shippo_order_default_id_1"],
-        ])
-        expect(result[1]).toContainEntries([
-          ["fulfillment_id", "ful_default_id_2"],
-          ["shippo_order_id", "shippo_order_default_id_2"],
-        ])
-      })
+            // act
+            const result = await shippoService.packingslip.fetchBy([
+              "fulfillment",
+              id,
+            ])
 
-      describe("swap", () => {
-        test("returns packing slip", async () => {
-          const id = "swap_01234567890"
-          const result = await shippoService.packingslip.fetchBy(["swap", id])
-          expect(result[0]).toContainEntries([
-            ["fulfillment_id", "ful_default_id_1"],
-            ["shippo_order_id", "shippo_order_default_id_1"],
-          ])
-          expect(result[1]).toContainEntries([
-            ["fulfillment_id", "ful_default_id_2"],
-            ["shippo_order_id", "shippo_order_default_id_2"],
-          ])
+            // assert
+            expect(result).toContainKey("slip_url")
+          })
+        })
+
+        describe("with no shippo order", () => {
+          test("returns Promise.reject", async () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              line_items: [],
+              fulfillments: [fulfillmentState("no_shippo_order")],
+            })
+            const { id } = fulfillmentState("no_shippo_order")
+
+            // act
+            const result = shippoService.packingslip.fetchBy([
+              "fulfillment",
+              id,
+            ])
+
+            // assert
+            expect(result).rejects.toContainKeys(["type", "code", "message"])
+          })
         })
       })
-    })
 
-    describe("with", () => {
-      describe("fulfillment", () => {
-        describe("fetch", () => {
-          test("returns packing slip", async () => {
-            const id = "shippo_order_default_id_1"
-            const result = await shippoService.packingslip
-              .with(["fulfillment"])
-              .fetch(id)
-            expect(result).toContainKey("slip_url")
-            expect(result.fulfillment).toContainEntry([
-              "id",
-              "ful_default_id_1",
-            ])
+      describe("local_order", () => {
+        describe("has single fulfillment", () => {
+          describe("with shippo order", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              line_items: [],
+              fulfillments: [fulfillmentState("has_shippo_order")],
+            })
+
+            test("returns array with 1 member", async () => {
+              // arrange
+              const id = "local_order_has_fulfillment_with_shippo_order"
+
+              // act
+              const result = await shippoService.packingslip.fetchBy([
+                "local_order",
+                id,
+              ])
+
+              // assert
+              expect(result).toBeArrayOfSize(1)
+            })
+
+            test("return has prop/value pair for fulfillment_id", async () => {
+              // arrange
+              const id = "local_order_has_fulfillment_with_shippo_order"
+
+              // act
+              const result = await shippoService.packingslip.fetchBy([
+                "local_order",
+                id,
+              ])
+
+              // assert
+              expect(result[0]).toContainEntry([
+                "fulfillment_id",
+                "ful_has_shippo_order",
+              ])
+            })
+          })
+
+          describe("with no shippo order", () => {
+            test("returns Promise.reject", async () => {
+              // arrange
+              const shippoService = makeShippoService({
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [fulfillmentState("no_shippo_order")],
+              })
+              const id = "local_order_has_fulfillment_with_no_shippo_order"
+
+              // act
+              const result = shippoService.packingslip.fetchBy([
+                "local_order",
+                id,
+              ])
+
+              // assert
+              expect(result).rejects.toContainKeys(["type", "code", "message"])
+            })
+          })
+        })
+
+        describe("has multi fulfillments", () => {
+          describe("with shippo orders", () => {
+            test("returns array with 2 members", async () => {
+              // arrange
+              const shippoService = makeShippoService({
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [
+                  fulfillmentState("has_shippo_order"),
+                  fulfillmentState("has_shippo_order"),
+                ],
+              })
+              const id = "local_order_has_multi_fulfillments_with_shippo_orders"
+
+              // act
+              const result = await shippoService.packingslip.fetchBy([
+                "local_order",
+                id,
+              ])
+
+              // assert
+              expect(result).toBeArrayOfSize(2)
+            })
+          })
+
+          describe("with and withuot shippo orders", () => {
+            test("returns array with 1 member", async () => {
+              // arrange
+              const shippoService = makeShippoService({
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [
+                  fulfillmentState("has_shippo_order"),
+                  fulfillmentState("no_shippo_order"),
+                ],
+              })
+              const id =
+                "local_order_has_multi_fulfillments_with_and_without_shippo_orders"
+
+              // act
+              const result = await shippoService.packingslip.fetchBy([
+                "local_order",
+                id,
+              ])
+
+              // assert
+              expect(result).toBeArrayOfSize(1)
+            })
+          })
+        })
+      })
+
+      describe("claim", () => {
+        test("returns packingslip", async () => {
+          // arrange
+          const shippoService = makeShippoService({
+            ...defaultIds(),
+            claim_order_id: "claim_id_11",
+            line_items: [],
+            fulfillments: [fulfillmentState("has_shippo_order")],
+          })
+          const id = "claim_id_11"
+
+          // act
+          const result = await shippoService.packingslip.fetchBy(["claim", id])
+
+          // assert
+          expect(result[0]).toContainKey("slip_url")
+        })
+
+        describe("swap", () => {
+          test("", async () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              swap_id: "swap_id_11",
+              line_items: [],
+              fulfillments: [fulfillmentState("has_shippo_order")],
+            })
+            const id = "swap_id_11"
+
+            // act
+            const result = await shippoService.packingslip.fetchBy(["swap", id])
+
+            // assert
+            expect(result[0]).toContainKey("slip_url")
+          })
+        })
+      })
+
+      describe("with", () => {
+        describe("fulfillment", () => {
+          describe("has shippo order", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              line_items: [],
+              fulfillments: [fulfillmentState("has_shippo_order")],
+            })
+
+            test("returns packing slip", async () => {
+              // arrange
+              const { id } = fulfillmentState("has_shippo_order")
+
+              // act
+              const result = await shippoService.packingslip
+                .with(["fulfillment"])
+                .fetch(id)
+
+              // assert
+              expect(result).toContainKey("slip_url")
+            })
+
+            test("returns has fulfillment", async () => {
+              // arrange
+              const { id } = fulfillmentState("has_shippo_order")
+
+              // act
+              const result = await shippoService.packingslip
+                .with(["fulfillment"])
+                .fetch(id)
+
+              // assert
+              expect(result.fulfillment).toContainEntry([
+                "id",
+                "ful_has_shippo_order",
+              ])
+            })
           })
         })
       })

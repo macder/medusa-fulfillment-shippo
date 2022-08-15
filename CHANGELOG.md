@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.0.0] (2022-08-14)
+
+Added
+
+*   [Release Policy](https://github.com/macder/medusa-fulfillment-shippo#release-policy)
+
+Fixed
+
+*   Order fetchBy returns empty array instead of Promise.reject if shippp order not found [#309](https://github.com/macder/medusa-fulfillment-shippo/issues/309)
+
+*   Transaction fetchBy fulfillment returns empty array instead of Promise.reject if no fulfillment [#310](https://github.com/macder/medusa-fulfillment-shippo/issues/310)
+
 ## \[0.29.0] (2022-08-12)
 
 Fixed

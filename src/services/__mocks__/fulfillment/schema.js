@@ -7,9 +7,11 @@ export const fulfillmentSchema = ({ ...props }) =>
     no_notification: false,
     provider_id: "shippo",
     tracking_numbers: [],
-    data: Object.freeze({
-      shippo_order_id: props.shippo_order_id,
-    }),
+    data: props.shippo_order_id
+      ? Object.freeze({
+          shippo_order_id: props.shippo_order_id,
+        })
+      : {},
     shipped_at: "",
     canceled_at: null,
     metadata: {},

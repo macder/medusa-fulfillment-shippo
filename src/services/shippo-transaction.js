@@ -56,12 +56,10 @@ class ShippoTransactionService extends BaseService {
    * @return {Promise.<object[]>} Transactions
    */
   async fetchByFulfillment(id) {
-    const {
-      data: { shippo_order_id },
-    } = await this.#fulfillmentService.retrieve(id)
+    const shippoOrderId = await this.#getOrderIdFromFulfillment(id)
 
     const { transactions: miniTransactions } =
-      await this.#client.order.retrieve(shippo_order_id)
+      await this.#client.order.retrieve(shippoOrderId)
 
     const transactions =
       miniTransactions.length > 0
@@ -70,7 +68,7 @@ class ShippoTransactionService extends BaseService {
               this.#client.transaction.retrieve(ta.object_id)
             )
           )
-        : Promise.reject(
+        : await Promise.reject(
             new MedusaError(
               MedusaError.Types.NOT_FOUND,
               `Transactions for fulfillment with id: ${id} not found`
@@ -94,6 +92,12 @@ class ShippoTransactionService extends BaseService {
       (ful) => ful.data?.shippo_order_id
     )
 
+    if (fulfillments.length === 0) {
+      return Promise.reject(
+        new MedusaError(MedusaError.Types.NOT_FOUND, `Shippo order not found`)
+      )
+    }
+
     const shippoOrders = await Promise.all(
       fulfillments.map(async ({ id, data: { shippo_order_id } }) =>
         this.#client.order
@@ -112,7 +116,14 @@ class ShippoTransactionService extends BaseService {
       )
     )
 
-    return transactions
+    return transactions.length > 0
+      ? transactions
+      : Promise.reject(
+          new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `Transactions for order with id: ${orderId} not found`
+          )
+        )
   }
 
   /**
@@ -136,15 +147,19 @@ class ShippoTransactionService extends BaseService {
    * @return {Promise.<object[]>} list of extended transactions
    */
   async fetchExtendedByFulfillment(id) {
-    const {
-      data: { shippo_order_id },
-    } = await this.#fulfillmentService.retrieve(id)
+    const shippoOrderId = await this.#getOrderIdFromFulfillment(id)
 
-    const { transactions } = await this.#client.order.retrieve(shippo_order_id)
-
-    return Promise.all(
-      transactions.map(async (ta) => this.fetchExtended(ta.object_id))
-    )
+    const { transactions } = await this.#client.order.retrieve(shippoOrderId)
+    return transactions.length > 0
+      ? Promise.all(
+          transactions.map(async (ta) => this.fetchExtended(ta.object_id))
+        )
+      : Promise.reject(
+          new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `Transactions for fulfillment with id: ${id} not found`
+          )
+        )
   }
 
   /**
@@ -155,9 +170,19 @@ class ShippoTransactionService extends BaseService {
   async fetchExtendedByOrder(id) {
     const order = await this.#orderService.retrieve(id)
     const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
-    return this.#client.transaction
+
+    const transactions = await this.#client.transaction
       .search(urlQuery)
       .then((response) => response.results)
+
+    return transactions.length > 0
+      ? transactions
+      : Promise.reject(
+          new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `Transactions for order with id: ${id} not found`
+          )
+        )
   }
 
   async pollExtended(transactionId) {
@@ -199,7 +224,7 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * Finds the order associated with the transaction
-   * @param {string|object} transaction - shippo transaction id or object
+   * @param {string} transactionId - shippo transaction id or object
    * @return {Order} The order related to this transaction
    */
   async findOrder(transactionId) {
@@ -212,7 +237,7 @@ class ShippoTransactionService extends BaseService {
 
   /**
    * @experimental - since 0.19.0
-   * @propsed - for 0.20.0 or later
+   * @proposed - for 0.20.0 or later
    * @param {Order} order
    * @return {}
    */
@@ -239,6 +264,22 @@ class ShippoTransactionService extends BaseService {
     const transaction = await this.fetch(transactionId)
     return this.fetchExtended(transaction.object_id).then(
       (response) => response?.is_return
+    )
+  }
+
+  async #getOrderIdFromFulfillment(id) {
+    const {
+      data: { shippo_order_id },
+    } = await this.#fulfillmentService.retrieve(id)
+
+    return (
+      shippo_order_id ||
+      Promise.reject(
+        new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `Shippo order for fulfillment with id: ${id} not found `
+        )
+      )
     )
   }
 

@@ -162,7 +162,7 @@ class ShippoService extends BaseService {
 
   #transaction() {
     const methods = {
-      fetch: (id, { variant = "default", type = variant } = "default") =>
+      fetch: (id, { type = "default" } = "default") =>
         ({
           default: () => this.#shippoTransaction.fetch(id),
           extended: () => this.#shippoTransaction.fetchExtended(id),
@@ -170,7 +170,7 @@ class ShippoService extends BaseService {
       fetchBy: {
         local_order: (
           id,
-          { variant = "default", type = variant } = "default"
+          { type = "default" } = "default"
         ) =>
           ({
             default: () => this.#shippoTransaction.fetchByLocalOrder(id),
@@ -179,7 +179,7 @@ class ShippoService extends BaseService {
 
         fulfillment: (
           id,
-          { variant = "default", type = variant } = "default"
+          { type = "default"} = "default"
         ) =>
           ({
             default: () => this.#shippoTransaction.fetchByFulfillment(id),
