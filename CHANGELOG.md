@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## \[1.0.0-rc.0] (2022-08-14)
+## \[1.0.0] (2022-08-14)
+
+Added
+
+*   [Release Policy](https://github.com/macder/medusa-fulfillment-shippo#release-policy)
 
 Fixed
 
