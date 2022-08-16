@@ -35,6 +35,8 @@ jobs:
       - image: 'circleci/openjdk:8-jdk'
     steps:
       - checkout
+      - node/install-packages:
+          pkg-manager: npm
       - run:
           name: Run tests coverage
           command: npm coverage
