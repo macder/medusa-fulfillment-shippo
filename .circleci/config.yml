@@ -39,7 +39,7 @@ jobs:
           pkg-manager: npm
       - run:
           name: Run tests coverage
-          command: npm coverage
+          command: npm run coverage
       - coverage-reporter/send_report:
           coverage-reports: 'report.xml,coverage.info'
           project-token: $CODACY_PROJECT_TOKEN
