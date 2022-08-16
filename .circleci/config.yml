@@ -29,10 +29,10 @@ jobs:
           pkg-manager: npm
       - run:
           name: Run tests
-          command: npm test
+          command: npm run ci-test
   codacy-coverage-report:
     docker:
-      - image: 'circleci/openjdk:8-jdk'
+      - image: cimg/node:16.10
     steps:
       - checkout
       - node/install-packages:
