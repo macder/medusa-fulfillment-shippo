@@ -41,7 +41,7 @@ jobs:
           name: Run tests coverage
           command: npm run coverage
       - coverage-reporter/send_report:
-          coverage-reports: 'report.xml,coverage.info'
+          coverage-reports: 'coverage/clover.xml,coverage/lcov.info'
           project-token: $CODACY_PROJECT_TOKEN
 
 workflows:
