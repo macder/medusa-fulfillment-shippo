@@ -14,12 +14,12 @@ const notFound =
   ([parent, id]) =>
     base(MedusaError.Types.NOT_FOUND)(msg("not_found")(entity)([parent, id]))
 
-const errorHelper = (key) =>
+const errorHelper = (entity) =>
   ({
-    fulfillment: {
-      notFound: ([parent, id]) => notFound("Fulfillment")([parent, id]),
+    [entity]: {
+      not_found_for: ([parent, id]) => notFound(entity)([parent, id]),
     },
-  }[key])
+  }[entity])
 
 /* @experimental */
 export default errorHelper

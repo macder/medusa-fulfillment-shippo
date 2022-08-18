@@ -5,6 +5,9 @@ import fulfillmentHelper from "./fulfillment"
 export default ({ fulfillmentService }) => ({
   fulfillment: {
     ...fulfillmentHelper({ fulfillmentService }),
-    errors: { ...errorHelper("fulfillment") },
+    error: { ...errorHelper("fulfillment") },
+  },
+  shippo_order: {
+    error: { ...errorHelper("shippo_order") },
   },
 })
