@@ -12,6 +12,8 @@ class ShippoOrderService extends BaseService {
 
   #shippo
 
+  #shippoHelper
+
   #shippoTransactionService
 
   constructor({
@@ -19,6 +21,7 @@ class ShippoOrderService extends BaseService {
     fulfillmentRepository,
     fulfillmentService,
     shippoClientService,
+    shippoHelper,
     shippoTransactionService,
   }) {
     super()
@@ -34,6 +37,8 @@ class ShippoOrderService extends BaseService {
 
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
+
+    this.#shippoHelper = shippoHelper
 
     /** @private @const {ShippoTransactionService} */
     this.#shippoTransactionService = shippoTransactionService
@@ -56,7 +61,18 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>}
    */
   async fetchByFulfillmentId(fulfillmentId) {
-    const shippoOrderId = await this.#getIdFromFulfillment(fulfillmentId)
+    const shippoOrderId = await this.#shippoHelper.fulfillment.shippoId(
+      fulfillmentId
+    )
+
+    if (!shippoOrderId) {
+      return Promise.reject(
+        await this.#shippoHelper.shippo_order.error.not_found_for([
+          "fulfillment",
+          fulfillmentId,
+        ])
+      )
+    }
 
     const shippoOrder = await this.fetch(shippoOrderId).then(async (order) => {
       if (order?.transactions?.length) {
