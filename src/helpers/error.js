@@ -4,17 +4,20 @@ const base = (type) => (msg) => new MedusaError(type, msg)
 const msg = (key) =>
   ({
     not_found:
-      (branch) =>
+      (entity) =>
       ([parent, id]) =>
-        `${branch} for ${parent} with id: ${id} not found`,
+        `${entity} for ${parent} with id: ${id} not found`,
   }[key])
 
-const notFound = base(MedusaError.Types.NOT_FOUND)(msg("not_found"))
+const notFound =
+  (entity) =>
+  ([parent, id]) =>
+    base(MedusaError.Types.NOT_FOUND)(msg("not_found")(entity)([parent, id]))
 
 const errorHelper = (key) =>
   ({
     fulfillment: {
-      not_found: ([parent, id]) => notFound("Fulfillment")([parent, id]),
+      notFound: ([parent, id]) => notFound("Fulfillment")([parent, id]),
     },
   }[key])
 
