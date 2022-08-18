@@ -98,9 +98,9 @@ class ShippoService extends BaseService {
       fetch: (id) => this.#shippoOrder.fetch(id),
       fetchBy: {
         fulfillment: (id) => this.#shippoOrder.fetchByFulfillmentId(id),
-        local_order: (id) => this.#shippoOrder.findBy("order_id", id),
-        claim: (id) => this.#shippoOrder.findBy("claim_order_id", id),
-        swap: (id) => this.#shippoOrder.findBy("swap_id", id),
+        local_order: (id) => this.#shippoOrder.findBy("order", id),
+        claim: (id) => this.#shippoOrder.findBy("claim_order", id),
+        swap: (id) => this.#shippoOrder.findBy("swap", id),
       },
       with: {
         fulfillment: (object_id) =>

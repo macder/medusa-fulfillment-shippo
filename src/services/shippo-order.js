@@ -4,6 +4,8 @@ import { MedusaError } from "medusa-core-utils"
 class ShippoOrderService extends BaseService {
   #client
 
+  #error
+
   #fulfillmentService
 
   #fulfillmentRepo
@@ -12,7 +14,7 @@ class ShippoOrderService extends BaseService {
 
   #shippo
 
-  #shippoHelper
+  #helper
 
   #shippoTransactionService
 
@@ -38,12 +40,14 @@ class ShippoOrderService extends BaseService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
-    this.#shippoHelper = shippoHelper
+    this.#helper = (entity) => shippoHelper[entity]
 
     /** @private @const {ShippoTransactionService} */
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    this.#error = (entity) => shippoHelper[entity].error
   }
 
   /**
@@ -61,17 +65,15 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>}
    */
   async fetchByFulfillmentId(fulfillmentId) {
-    const shippoOrderId = await this.#shippoHelper.fulfillment.shippoId(
+    const shippoOrderId = await this.#helper("fulfillment").shippoId(
       fulfillmentId
     )
 
     if (!shippoOrderId) {
-      return Promise.reject(
-        await this.#shippoHelper.shippo_order.error.not_found_for([
-          "fulfillment",
-          fulfillmentId,
-        ])
-      )
+      return this.#error("shippo_order").notFoundFor([
+        "fulfillment",
+        fulfillmentId,
+      ])
     }
 
     const shippoOrder = await this.fetch(shippoOrderId).then(async (order) => {
@@ -137,6 +139,7 @@ class ShippoOrderService extends BaseService {
         )
       )
     }
+
     return fulfillment[0]
   }
 
@@ -147,7 +150,7 @@ class ShippoOrderService extends BaseService {
 
     const fulfillments = await fulfillmentRepo.find({
       where: {
-        [type]: id,
+        [`${type}_id`]: id,
       },
     })
     return fulfillments
@@ -159,9 +162,7 @@ class ShippoOrderService extends BaseService {
     )
 
     if (fulfillments.length === 0) {
-      return Promise.reject(
-        new MedusaError(MedusaError.Types.NOT_FOUND, `Shippo order not found`)
-      )
+      return this.#error("shippo_order").notFoundFor([type, id])
     }
 
     const orders = await Promise.all(
