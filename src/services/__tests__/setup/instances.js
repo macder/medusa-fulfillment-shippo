@@ -9,6 +9,8 @@ import ShippoRatesService from "../../shippo-rates"
 import ShippoTrackService from "../../shippo-track"
 import ShippoTransactionService from "../../shippo-transaction"
 
+import shippoHelper from "../../../helpers"
+
 import { cartServiceMock } from "../../__mocks__/cart"
 import {
   fulfillmentServiceMock,
@@ -40,8 +42,12 @@ const coreServiceMocks = (state) => ({
   },
 })
 
+const makeShippoHelper = ({ fulfillmentService }) =>
+  shippoHelper({ fulfillmentService })
+
 export const makeShippoClientService = (state) => {
   const { fulfillmentService } = coreServiceMocks(state)
+
   return new ShippoClientService({ fulfillmentService }, {})
 }
 
@@ -116,6 +122,7 @@ export const makeShippoOrderService = (state) => {
   const { fulfillmentService, fulfillmentRepository, manager } =
     coreServiceMocks(state)
 
+  const shippoHelper = makeShippoHelper({ fulfillmentService })
   const shippoClientService = makeShippoClientService(state)
   const shippoTransactionService = makeShippoTransactionService(state)
 
@@ -126,6 +133,7 @@ export const makeShippoOrderService = (state) => {
       fulfillmentRepository,
       shippoClientService,
       shippoTransactionService,
+      shippoHelper,
     },
     {}
   )
