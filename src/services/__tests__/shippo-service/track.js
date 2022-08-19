@@ -15,10 +15,6 @@ const mockShippoClient = shippoClientMock({
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("track", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
-
   const defaultIds = () => ({
     order_id: "order_default",
     display_id: "11",
@@ -53,7 +49,7 @@ describe("track", () => {
     // act
     const result = await shippoService.track.fetchBy(["fulfillment", id])
 
-    // asseert
+    // assert
     expect(result).toContainKeys(["tracking_number", "carrier"])
   })
 })
