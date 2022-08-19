@@ -46,7 +46,7 @@ class ShippoOrderService extends BaseService {
 
     this.#helper = (entity) => shippoHelper[entity]
 
-    this.#error = (entity) => shippoHelper[entity].error
+    this.#error = shippoHelper.error
   }
 
   /**

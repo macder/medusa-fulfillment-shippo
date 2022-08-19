@@ -7,7 +7,5 @@ export default ({ fulfillmentService }) => ({
     ...fulfillmentHelper({ fulfillmentService }),
     error: { ...errorHelper("fulfillment") },
   },
-  shippo_order: {
-    error: { ...errorHelper("shippo_order") },
-  },
+  error: (entity) => errorHelper(entity),
 })
