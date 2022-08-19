@@ -269,26 +269,45 @@ describe("shippoService", () => {
     describe("with", () => {
       describe("fulfillment", () => {
         describe("fetch", () => {
-          test("returns with fulfillment", async () => {
-            // arrange
-            const shippoService = makeShippoService({
-              ...defaultIds(),
-              line_items: [],
-              fulfillments: [fulfillmentState("has_shippo_order")],
+          describe("has fulfillment", () => {
+            test("returns with fulfillment", async () => {
+              // arrange
+              const shippoService = makeShippoService({
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [fulfillmentState("has_shippo_order")],
+              })
+              const id = "shippo_order_no_transactions"
+
+              // act
+              const result = await shippoService.order
+                .with(["fulfillment"])
+                .fetch(id)
+
+              // assert
+              expect(result).toContainKey("object_id")
+              expect(result.fulfillment).toContainEntry([
+                "id",
+                "ful_has_shippo_order",
+              ])
             })
-            const id = "shippo_order_no_transactions"
+          })
+          describe("no fulfillment", () => {
+            test("returns promise.reject", async () => {
+              // arrange
+              const shippoService = makeShippoService({
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [],
+              })
+              const id = "shippo_order_no_transactions"
 
-            // act
-            const result = await shippoService.order
-              .with(["fulfillment"])
-              .fetch(id)
+              // act
+              const result = shippoService.order.with(["fulfillment"]).fetch(id)
 
-            // assert
-            expect(result).toContainKey("object_id")
-            expect(result.fulfillment).toContainEntry([
-              "id",
-              "ful_has_shippo_order",
-            ])
+              // assert
+              expect(result).rejects.toContainKeys(["type", "code", "message"])
+            })
           })
         })
       })
