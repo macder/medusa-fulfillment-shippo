@@ -1,5 +1,4 @@
 import { BaseService } from "medusa-interfaces"
-import { MedusaError } from "medusa-core-utils"
 
 class ShippoOrderService extends BaseService {
   #client
@@ -40,12 +39,12 @@ class ShippoOrderService extends BaseService {
     /** @private @const {ShippoClientService} */
     this.#shippo = shippoClientService
 
-    this.#helper = (entity) => shippoHelper[entity]
-
     /** @private @const {ShippoTransactionService} */
     this.#shippoTransactionService = shippoTransactionService
 
     this.#client = this.#shippo.useClient
+
+    this.#helper = (entity) => shippoHelper[entity]
 
     this.#error = (entity) => shippoHelper[entity].error
   }
@@ -108,8 +107,12 @@ class ShippoOrderService extends BaseService {
    * @return {Promise.<Object>}
    */
   async fetchPackingSlipByFulfillmentId(fulfillmentId) {
-    const shippoOrderId = await this.#getIdFromFulfillment(fulfillmentId)
-    return this.fetchPackingSlip(shippoOrderId)
+    const shippoOrderId = await this.#helper("fulfillment").shippoId(
+      fulfillmentId
+    )
+    return shippoOrderId
+      ? this.fetchPackingSlip(shippoOrderId)
+      : this.#error("shippo_order").notFoundFor(["fulfillment", fulfillmentId])
   }
 
   /**
@@ -132,12 +135,7 @@ class ShippoOrderService extends BaseService {
     })
 
     if (!fulfillment.length) {
-      return Promise.reject(
-        new MedusaError(
-          MedusaError.Types.NOT_FOUND,
-          `Fulfillment for shippo order with id: ${orderId} not found`
-        )
-      )
+      return this.#error("fulfillment").notFoundFor(["shippo order", orderId])
     }
 
     return fulfillment[0]
@@ -183,55 +181,26 @@ class ShippoOrderService extends BaseService {
     )
 
     if (fulfillments.length === 0) {
-      return Promise.reject(
-        new MedusaError(MedusaError.Types.NOT_FOUND, `Shippo order not found`)
-      )
+      return this.#error("shippo_order").notFoundFor([type, id])
     }
 
-    const packingSlips = await Promise.all(
+    return Promise.all(
       fulfillments.map(async (fulfillment) => {
         const packingSlip = await this.fetchPackingSlipByFulfillmentId(
           fulfillment.id
         )
-        const {
-          id,
-          data: { shippo_order_id },
-        } = fulfillment
-
         return {
           ...packingSlip,
-          shippo_order_id,
-          fulfillment_id: id,
+          shippo_order_id: fulfillment.data.shippo_order_id,
+          fulfillment_id: fulfillment.id,
         }
       })
     )
-    return packingSlips
   }
 
   async isReplace(id) {
     const order = await this.fetch(id)
     return order.order_number.includes("replace")
-  }
-
-  async #getIdFromFulfillment(fulfillmentOrId) {
-    const fulfillment = fulfillmentOrId?.id
-      ? fulfillmentOrId
-      : await this.#fulfillmentService.retrieve(fulfillmentOrId)
-
-    if (!fulfillment.data?.shippo_order_id) {
-      return Promise.reject(
-        new MedusaError(
-          MedusaError.Types.NOT_FOUND,
-          `Shippo order not found for fulfillment with id: ${fulfillment.id}`
-        )
-      )
-    }
-
-    const {
-      data: { shippo_order_id },
-    } = fulfillment
-
-    return shippo_order_id
   }
 }
 
