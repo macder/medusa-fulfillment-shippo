@@ -106,11 +106,14 @@ export const makeShippoRatesService = (state) => {
 
 export const makeShippoTransactionService = (state) => {
   const { fulfillmentService, orderService } = coreServiceMocks(state)
+
+  const shippoHelper = makeShippoHelper({ fulfillmentService })
   const shippoClientService = makeShippoClientService(state)
 
   return new ShippoTransactionService(
     {
       fulfillmentService,
+      shippoHelper,
       shippoClientService,
       orderService,
     },
