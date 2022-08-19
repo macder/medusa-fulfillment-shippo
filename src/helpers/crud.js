@@ -1,5 +1,5 @@
 export const retrieve =
   (service) =>
-  ({ ...args } = {}) =>
   (id) =>
+  ({ ...args } = {}) =>
     service.retrieve(id, args)
