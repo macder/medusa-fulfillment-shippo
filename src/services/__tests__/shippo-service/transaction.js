@@ -7,7 +7,6 @@ import {
 } from "jest-extended"
 import { makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
-import { orderState } from "../../__mocks__/order"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
 import { fulfillmentState } from "../../__mocks__/fulfillment"
@@ -468,6 +467,55 @@ describe("shippoService", () => {
               test("return promise.reject", async () => {
                 // arrange
                 const id = "local_order_single_fulfillment_with_no_transaction"
+
+                // act
+                const result = shippoService.transaction.fetchBy(
+                  ["local_order", id],
+                  { type: "extended" }
+                )
+
+                // assert
+                expect(result).rejects.toContainKeys([
+                  "type",
+                  "code",
+                  "message",
+                ])
+              })
+            })
+          })
+          describe("with no shippo order", () => {
+            // arrange
+            const shippoService = makeShippoService({
+              ...defaultIds(),
+              display_id: "44",
+              line_items: [],
+              fulfillments: [fulfillmentState("no_shippo_order")],
+            })
+
+            describe("variant: default", () => {
+              test("return promise.reject", async () => {
+                // arrange
+                const id = "local_order_single_fulfillment_with_no_shippo_order"
+
+                // act
+                const result = shippoService.transaction.fetchBy([
+                  "local_order",
+                  id,
+                ])
+
+                // assert
+                expect(result).rejects.toContainKeys([
+                  "type",
+                  "code",
+                  "message",
+                ])
+              })
+            })
+
+            describe("variant: extended", () => {
+              test("return promise.reject", async () => {
+                // arrange
+                const id = "local_order_single_fulfillment_with_no_shippo_order"
 
                 // act
                 const result = shippoService.transaction.fetchBy(
