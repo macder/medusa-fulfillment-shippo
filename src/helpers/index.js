@@ -5,7 +5,6 @@ import fulfillmentHelper from "./fulfillment"
 export default ({ fulfillmentService }) => ({
   fulfillment: {
     ...fulfillmentHelper({ fulfillmentService }),
-    error: { ...errorHelper("fulfillment") },
   },
   error: (entity) => errorHelper(entity),
 })
