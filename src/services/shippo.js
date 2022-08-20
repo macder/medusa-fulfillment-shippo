@@ -98,9 +98,9 @@ class ShippoService extends BaseService {
       fetch: (id) => this.#shippoOrder.fetch(id),
       fetchBy: {
         fulfillment: (id) => this.#shippoOrder.fetchByFulfillmentId(id),
-        local_order: (id) => this.#shippoOrder.findBy("order_id", id),
-        claim: (id) => this.#shippoOrder.findBy("claim_order_id", id),
-        swap: (id) => this.#shippoOrder.findBy("swap_id", id),
+        local_order: (id) => this.#shippoOrder.findBy("order", id),
+        claim: (id) => this.#shippoOrder.findBy("claim_order", id),
+        swap: (id) => this.#shippoOrder.findBy("swap", id),
       },
       with: {
         fulfillment: (object_id) =>
@@ -136,11 +136,9 @@ class ShippoService extends BaseService {
       fetchBy: {
         fulfillment: (id) =>
           this.#shippoOrder.fetchPackingSlipByFulfillmentId(id),
-        local_order: (id) =>
-          this.#shippoOrder.findPackingSlipBy("order_id", id),
-        claim: (id) =>
-          this.#shippoOrder.findPackingSlipBy("claim_order_id", id),
-        swap: (id) => this.#shippoOrder.findPackingSlipBy("swap_id", id),
+        local_order: (id) => this.#shippoOrder.findPackingSlipBy("order", id),
+        claim: (id) => this.#shippoOrder.findPackingSlipBy("claim_order", id),
+        swap: (id) => this.#shippoOrder.findPackingSlipBy("swap", id),
       },
       with: {
         fulfillment: (object_id) =>
@@ -168,19 +166,13 @@ class ShippoService extends BaseService {
           extended: () => this.#shippoTransaction.fetchExtended(id),
         }[type](id)),
       fetchBy: {
-        local_order: (
-          id,
-          { type = "default" } = "default"
-        ) =>
+        local_order: (id, { type = "default" } = "default") =>
           ({
             default: () => this.#shippoTransaction.fetchByLocalOrder(id),
             extended: () => this.#shippoTransaction.fetchExtendedByOrder(id),
           }[type](id)),
 
-        fulfillment: (
-          id,
-          { type = "default"} = "default"
-        ) =>
+        fulfillment: (id, { type = "default" } = "default") =>
           ({
             default: () => this.#shippoTransaction.fetchByFulfillment(id),
             extended: () =>

@@ -1,10 +1,14 @@
 import { BaseService } from "medusa-interfaces"
-import { MedusaError } from "medusa-core-utils"
+import { shippoHelper } from "../helpers"
 
 class ShippoTransactionService extends BaseService {
   #client
 
+  #error
+
   #fulfillmentService
+
+  #helper
 
   #logger
 
@@ -34,6 +38,10 @@ class ShippoTransactionService extends BaseService {
     /** @private @const {Shippo} */
     this.#client = this.#shippo.useClient
 
+    this.#helper = (entity) => shippoHelper().helpers[entity]
+
+    this.#error = (entity) => shippoHelper().helpers.error(entity)
+
     this.#logger = logger
   }
 
@@ -56,26 +64,22 @@ class ShippoTransactionService extends BaseService {
    * @return {Promise.<object[]>} Transactions
    */
   async fetchByFulfillment(id) {
-    const shippoOrderId = await this.#getOrderIdFromFulfillment(id)
+    const shippoOrderId = await this.#helper("fulfillment").shippoId(id)
+
+    if (!shippoOrderId) {
+      return this.#error("shippo_order").notFoundFor(["fulfillment", id])
+    }
 
     const { transactions: miniTransactions } =
       await this.#client.order.retrieve(shippoOrderId)
 
-    const transactions =
-      miniTransactions.length > 0
-        ? await Promise.all(
-            miniTransactions.map(async (ta) =>
-              this.#client.transaction.retrieve(ta.object_id)
-            )
+    return miniTransactions.length > 0
+      ? Promise.all(
+          miniTransactions.map(async (ta) =>
+            this.#client.transaction.retrieve(ta.object_id)
           )
-        : await Promise.reject(
-            new MedusaError(
-              MedusaError.Types.NOT_FOUND,
-              `Transactions for fulfillment with id: ${id} not found`
-            )
-          )
-
-    return transactions
+        )
+      : this.#error("transaction").notFoundFor(["fulfillment", id])
   }
 
   /**
@@ -93,9 +97,7 @@ class ShippoTransactionService extends BaseService {
     )
 
     if (fulfillments.length === 0) {
-      return Promise.reject(
-        new MedusaError(MedusaError.Types.NOT_FOUND, `Shippo order not found`)
-      )
+      return this.#error("shippo_order").notFoundFor(["order", orderId])
     }
 
     const shippoOrders = await Promise.all(
@@ -106,7 +108,7 @@ class ShippoTransactionService extends BaseService {
       )
     )
 
-    const transactions = await Promise.all(
+    const transacts = await Promise.all(
       shippoOrders.flatMap(({ transactions, fulfillment_id }) =>
         transactions.map(async (ta) =>
           this.#client.transaction
@@ -116,14 +118,9 @@ class ShippoTransactionService extends BaseService {
       )
     )
 
-    return transactions.length > 0
-      ? transactions
-      : Promise.reject(
-          new MedusaError(
-            MedusaError.Types.NOT_FOUND,
-            `Transactions for order with id: ${orderId} not found`
-          )
-        )
+    return transacts.length > 0
+      ? transacts
+      : this.#error("Transactions").notFoundFor(["order", orderId])
   }
 
   /**
@@ -147,19 +144,18 @@ class ShippoTransactionService extends BaseService {
    * @return {Promise.<object[]>} list of extended transactions
    */
   async fetchExtendedByFulfillment(id) {
-    const shippoOrderId = await this.#getOrderIdFromFulfillment(id)
+    const shippoOrderId = await this.#helper("fulfillment").shippoId(id)
+
+    if (!shippoOrderId) {
+      return this.#error("shippo_order").notFoundFor(["fulfillment", id])
+    }
 
     const { transactions } = await this.#client.order.retrieve(shippoOrderId)
     return transactions.length > 0
       ? Promise.all(
           transactions.map(async (ta) => this.fetchExtended(ta.object_id))
         )
-      : Promise.reject(
-          new MedusaError(
-            MedusaError.Types.NOT_FOUND,
-            `Transactions for fulfillment with id: ${id} not found`
-          )
-        )
+      : this.#error("Transactions").notFoundFor(["fulfillment", id])
   }
 
   /**
@@ -177,12 +173,7 @@ class ShippoTransactionService extends BaseService {
 
     return transactions.length > 0
       ? transactions
-      : Promise.reject(
-          new MedusaError(
-            MedusaError.Types.NOT_FOUND,
-            `Transactions for order with id: ${id} not found`
-          )
-        )
+      : this.#error("Transactions").notFoundFor(["order", id])
   }
 
   async pollExtended(transactionId) {
@@ -264,22 +255,6 @@ class ShippoTransactionService extends BaseService {
     const transaction = await this.fetch(transactionId)
     return this.fetchExtended(transaction.object_id).then(
       (response) => response?.is_return
-    )
-  }
-
-  async #getOrderIdFromFulfillment(id) {
-    const {
-      data: { shippo_order_id },
-    } = await this.#fulfillmentService.retrieve(id)
-
-    return (
-      shippo_order_id ||
-      Promise.reject(
-        new MedusaError(
-          MedusaError.Types.NOT_FOUND,
-          `Shippo order for fulfillment with id: ${id} not found `
-        )
-      )
     )
   }
 

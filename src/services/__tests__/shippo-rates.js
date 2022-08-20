@@ -1,6 +1,6 @@
 import { toBeNumber, toContainKey } from "jest-extended"
 
-import { makeShippoRatesService } from "./setup"
+import { makeShippoHelper, makeShippoRatesService } from "./setup"
 import { shippoClientMock } from "../__mocks__"
 import { cartStub } from "../__mocks__/cart"
 import { userParcelState } from "../__mocks__/shippo/user-parcel"
@@ -19,10 +19,6 @@ const mockShippoClient = shippoClientMock({
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("shippoRatesService", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
-
   const defaultIds = () => ({
     order_id: "order_default",
     display_id: "11",
@@ -50,6 +46,7 @@ describe("shippoRatesService", () => {
       const options = shippingOptionState().map((so) =>
         shippingOptionStub({ ...so })()
       )
+      makeShippoHelper(state)
 
       // act
       const result = await shippoRatesService.fetchOptionRate(
@@ -63,12 +60,14 @@ describe("shippoRatesService", () => {
   })
 
   describe("getPrice", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
     // arrange
-    const shippoRatesService = makeShippoRatesService({})
+    let shippoRatesService
+
+    beforeEach(() => {
+      const state = {}
+      shippoRatesService = makeShippoRatesService(state)
+      makeShippoHelper(state)
+    })
 
     it("returns price from amount * 100", async () => {
       // arrange

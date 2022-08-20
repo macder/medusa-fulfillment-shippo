@@ -18,6 +18,6 @@ __data__
 temp
 coverage
 sandbox
-sand.js
+tester.js
+*tester.js
 *sand.js
-old-tests

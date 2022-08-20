@@ -1,11 +1,11 @@
 import { fulfillmentStub } from "./stub"
 
 export const fulfillmentServiceMock = (state) => {
-  const fulfillment = (id) => {
-    const { fulfillments } = state
-    const fulfillment = fulfillments.find((ful) => ful.id === id)
-    return fulfillmentStub({ ...state, ...fulfillment })
-  }
+  const fulfillment = (id) =>
+    fulfillmentStub({
+      ...state,
+      ...state.fulfillments.find((ful) => ful.id === id),
+    })
 
   return {
     list: jest.fn(),

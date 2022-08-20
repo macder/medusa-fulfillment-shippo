@@ -5,7 +5,7 @@
   "author": "Maciej Derulski",
   "license": "MIT",
   "scripts": {
-    "build": "babel src -d . --ignore **/__tests__,**/__mocks__,**/sandbox,**/sand.js,**/old-tests",
+    "build": "babel src -d . --ignore **/__tests__,**/__mocks__,**/sandbox,**/sand.js,**/tester.js",
     "prepare": "cross-env NODE_ENV=production npm run build",
     "watch": "onchange -v src/** -- copyfiles {{file}} ../my-medusa-store",
     "ci-test": "jest --runInBand",
