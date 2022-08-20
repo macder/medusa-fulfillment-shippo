@@ -61,8 +61,6 @@ export const makeShippoPackageService = (state) => {
   const { cartService, fulfillmentService, lineItemService, orderService } =
     coreServiceMocks(state)
 
-  // makeShippoHelper({ fulfillmentService })
-
   const shippoClientService = makeShippoClientService(state)
   const shippoPackerService = makeShippoPackerService(state)
 
@@ -88,7 +86,6 @@ export const makeShippoRatesService = (state) => {
     shippingProfileService,
     totalsService,
   } = coreServiceMocks(state)
-  // makeShippoHelper({ fulfillmentService })
 
   const shippoClientService = makeShippoClientService(state)
   const shippoPackerService = makeShippoPackerService(state)
@@ -111,9 +108,7 @@ export const makeShippoRatesService = (state) => {
 
 export const makeShippoTransactionService = (state) => {
   const { fulfillmentService, orderService, logger } = coreServiceMocks(state)
-  // makeShippoHelper({ fulfillmentService })
   const shippoClientService = makeShippoClientService(state)
-
   const shippoTransactionService = new ShippoTransactionService(
     {
       fulfillmentService,
@@ -130,11 +125,9 @@ export const makeShippoTransactionService = (state) => {
 export const makeShippoOrderService = (state) => {
   const { fulfillmentService, fulfillmentRepository, manager } =
     coreServiceMocks(state)
-  // makeShippoHelper({ fulfillmentService })
 
   const shippoClientService = makeShippoClientService(state)
   const shippoTransactionService = makeShippoTransactionService(state)
-
   const shippoOrderService = new ShippoOrderService(
     {
       manager,
@@ -152,7 +145,6 @@ export const makeShippoOrderService = (state) => {
 
 export const makeShippoTrackService = (state) => {
   const { fulfillmentService } = coreServiceMocks(state)
-  // makeShippoHelper({ fulfillmentService })
   const shippoClientService = makeShippoClientService(state)
   const shippoOrderService = makeShippoOrderService(state)
   const shippoTransactionService = makeShippoTransactionService(state)
@@ -176,7 +168,6 @@ export const makeShippoFulfillmentService = (state) => {
     orderService,
     totalsService,
   } = coreServiceMocks(state)
-  // makeShippoHelper({ fulfillmentService })
 
   const shippoClientService = makeShippoClientService(state)
   const shippoPackageService = makeShippoPackageService(state)
@@ -199,9 +190,7 @@ export const makeShippoFulfillmentService = (state) => {
 }
 
 export const makeShippoService = (state) => {
-  // console.log(state)
   const { fulfillmentService } = coreServiceMocks(state)
-  // makeShippoHelper(state)
   const shippoClientService = makeShippoClientService(state)
   const shippoOrderService = makeShippoOrderService(state)
   const shippoPackerService = makeShippoPackerService(state)
