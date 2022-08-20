@@ -1,5 +1,5 @@
 import { toBeArray, toContainKey, toContainEntry } from "jest-extended"
-import { makeShippoService } from "../setup"
+import { makeShippoHelper, makeShippoService } from "../setup"
 import { lineItemState, lineItemStub } from "../../__mocks__/line-item"
 import { shippoClientMock } from "../../__mocks__"
 import { addressState } from "../../__mocks__/address"
@@ -16,10 +16,6 @@ jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("shippoService", () => {
   describe("package", () => {
-    beforeAll(async () => {
-      jest.clearAllMocks()
-    })
-
     const defaultIds = () => ({
       order_id: "order_default",
       display_id: "11",
@@ -28,11 +24,12 @@ describe("shippoService", () => {
       swap_id: null,
     })
 
+    let shippoService
+
     describe("for", () => {
       describe("local_order", () => {
-        test("returns packer output", async () => {
-          // arrange
-          const shippoService = makeShippoService({
+        beforeEach(() => {
+          const state = {
             ...defaultIds(),
             order_id: "local_order_has_line_items",
             line_items: [
@@ -40,9 +37,13 @@ describe("shippoService", () => {
               lineItemState({ quantity: 2 }),
             ],
             fulfillments: [],
-          })
-          const id = "local_order_has_line_items"
+          }
+          shippoService = makeShippoService(state)
+          makeShippoHelper(state)
+        })
+        const id = "local_order_has_line_items"
 
+        test("returns packer output", async () => {
           // act
           const result = await shippoService.package
             .for(["local_order", id])
@@ -55,9 +56,8 @@ describe("shippoService", () => {
 
       describe("cart", () => {
         describe("has items", () => {
-          test("returns packer output", async () => {
-            // arrange
-            const shippoService = makeShippoService({
+          beforeEach(() => {
+            const state = {
               ...defaultIds(),
               cart_id: "cart_has_address_items_email",
               line_items: [
@@ -67,9 +67,13 @@ describe("shippoService", () => {
               fulfillments: [],
               email: "test@test.com",
               address: addressState("complete"),
-            })
-            const id = "cart_has_address_items_email"
+            }
+            shippoService = makeShippoService(state)
+            makeShippoHelper(state)
+          })
+          const id = "cart_has_address_items_email"
 
+          test("returns packer output", async () => {
             // act
             const result = await shippoService.package.for(["cart", id]).fetch()
 
@@ -82,10 +86,12 @@ describe("shippoService", () => {
       describe("line_items", () => {
         test("returns packer output", async () => {
           // arrange
-          const shippoService = makeShippoService({})
+          const state = {}
+          const shippoService = makeShippoService(state)
           const lineItems = ["1", "2", "3"].map((quantity) =>
             lineItemStub(lineItemState({ quantity }))
           )
+          makeShippoHelper(state)
 
           // act
           const result = await shippoService.package
@@ -100,14 +106,17 @@ describe("shippoService", () => {
       describe("fulfillment", () => {
         test("returns packer output", async () => {
           // arrange
-          const shippoService = makeShippoService({
+          const state = {
             ...defaultIds(),
             line_items: [
               lineItemState({ quantity: 1 }),
               lineItemState({ quantity: 2 }),
             ],
             fulfillments: [fulfillmentState("has_shippo_order")],
-          })
+          }
+          const shippoService = makeShippoService(state)
+          makeShippoHelper(state)
+
           const id = "ful_has_shippo_order"
 
           // act
@@ -124,14 +133,16 @@ describe("shippoService", () => {
     describe("set", () => {
       test("used set boxes", async () => {
         // arrange
-        const shippoService = makeShippoService({
+        const state = {
           ...defaultIds(),
           line_items: [
             lineItemState({ quantity: 1 }),
             lineItemState({ quantity: 2 }),
           ],
           fulfillments: [fulfillmentState("has_shippo_order")],
-        })
+        }
+        const shippoService = makeShippoService(state)
+        makeShippoHelper(state)
         const id = "ful_has_shippo_order"
 
         const packages = userParcelState().map((box) => ({
