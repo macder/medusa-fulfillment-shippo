@@ -1,4 +1,3 @@
-import { asFunction } from "awilix"
 import path from "path"
 
 export default async (container, options) => {
@@ -6,9 +5,7 @@ export default async (container, options) => {
   const helperFull = path.join(__dirname, helperPath)
 
   const loaded = require(helperFull).default
-  container.register({
-    shippoHelper: asFunction((cradle) => loaded(cradle)).singleton(),
-  })
+  loaded(container.cradle)
 
   const shippoFulfillmentService = container.resolve("shippoFulfillmentService")
   const logger = container.resolve("logger")
