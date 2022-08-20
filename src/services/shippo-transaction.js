@@ -1,4 +1,5 @@
 import { BaseService } from "medusa-interfaces"
+import { shippoHelper } from "../helpers"
 
 class ShippoTransactionService extends BaseService {
   #client
@@ -22,7 +23,6 @@ class ShippoTransactionService extends BaseService {
     logger,
     orderService,
     shippoClientService,
-    shippoHelper,
   }) {
     super()
 
@@ -38,9 +38,9 @@ class ShippoTransactionService extends BaseService {
     /** @private @const {Shippo} */
     this.#client = this.#shippo.useClient
 
-    this.#helper = (entity) => shippoHelper[entity]
+    this.#helper = (entity) => shippoHelper().helpers[entity]
 
-    this.#error = shippoHelper.error
+    this.#error = (entity) => shippoHelper().helpers.error(entity)
 
     this.#logger = logger
   }
