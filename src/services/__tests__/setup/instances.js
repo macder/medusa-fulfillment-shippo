@@ -44,11 +44,6 @@ const coreServiceMocks = (state) => ({
 })
 
 export const makeShippoHelper = (state) =>
-  // const helperPath = "../../../helpers/index.js"
-  // const helperFull = path.join(__dirname, helperPath)
-  //
-  // const initHelper = require(helperFull).default
-  // // console.log(fulfillmentService)
   helpers({ fulfillmentService: fulfillmentServiceMock({ ...state }) })
 
 export const makeShippoClientService = (state) => {
