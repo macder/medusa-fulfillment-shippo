@@ -26,6 +26,8 @@ const coreServiceMocks = (state) => ({
   cartService: cartServiceMock(state),
   fulfillmentService: fulfillmentServiceMock(state),
   orderService: orderServiceMock(state),
+  claimService: orderServiceMock(state),
+  swapService: orderServiceMock(state),
   lineItemService: lineItemServiceMock(state),
   shippingProfileService: shippingProfileServiceMock(state),
   manager: MockManager,
@@ -43,8 +45,7 @@ const coreServiceMocks = (state) => ({
   },
 })
 
-export const makeShippoHelper = (state) =>
-  helpers({ fulfillmentService: fulfillmentServiceMock({ ...state }) })
+export const makeShippoHelper = (state) => helpers(coreServiceMocks(state))
 
 export const makeShippoClientService = (state) => {
   const { fulfillmentService } = coreServiceMocks(state)

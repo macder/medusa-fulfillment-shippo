@@ -87,17 +87,11 @@ class ShippoTransactionService extends BaseService {
    * @param {string} orderId - order_id
    * @return {Promise.<object[]>} The transaction
    */
-  async fetchByLocalOrder(orderId) {
-    const order = await this.#orderService.retrieve(orderId, {
-      relations: ["fulfillments"],
-    })
-
-    const fulfillments = order.fulfillments.filter(
-      (ful) => ful.data?.shippo_order_id
-    )
+  async fetchBy(type, id) {
+    const fulfillments = await this.#helper("fulfillment").for(type)(id)
 
     if (fulfillments.length === 0) {
-      return this.#error("shippo_order").notFoundFor(["order", orderId])
+      return this.#error("shippo_order").notFoundFor([type, id])
     }
 
     const shippoOrders = await Promise.all(
@@ -120,7 +114,7 @@ class ShippoTransactionService extends BaseService {
 
     return transacts.length > 0
       ? transacts
-      : this.#error("Transactions").notFoundFor(["order", orderId])
+      : this.#error("Transactions").notFoundFor([type, id])
   }
 
   /**
@@ -155,25 +149,23 @@ class ShippoTransactionService extends BaseService {
       ? Promise.all(
           transactions.map(async (ta) => this.fetchExtended(ta.object_id))
         )
-      : this.#error("Transactions").notFoundFor(["fulfillment", id])
+      : this.#error("transaction").notFoundFor(["fulfillment", id])
   }
 
-  /**
-   * Fetch extended transactions by order id
-   * @param {string} id - order id
-   * @return {Promise.<object[]>} list of extended transactions
-   */
-  async fetchExtendedByOrder(id) {
-    const order = await this.#orderService.retrieve(id)
-    const urlQuery = `?q=${order.display_id}&expand[]=rate&expand[]=parcel`
+  async fetchExtendedBy(type, id) {
+    const fulfillments = await this.#helper("fulfillment").for(type)(id)
 
-    const transactions = await this.#client.transaction
-      .search(urlQuery)
-      .then((response) => response.results)
+    if (fulfillments.length === 0) {
+      return this.#error("shippo_order").notFoundFor([type, id])
+    }
 
-    return transactions.length > 0
-      ? transactions
-      : this.#error("Transactions").notFoundFor(["order", id])
+    const transactions = await Promise.all(
+      fulfillments.flatMap(async (ful) =>
+        this.fetchExtendedByFulfillment(ful.id)
+      )
+    )
+
+    return transactions.flat(1)
   }
 
   async pollExtended(transactionId) {
@@ -233,7 +225,7 @@ class ShippoTransactionService extends BaseService {
    * @return {}
    */
   async fetchReturnByOrder(order) {
-    const transactions = await this.fetchExtendedByOrder(order.id)
+    const transactions = await this.fetchExtendedBy("order", order.id)
     const transaction = transactions.find((ta) => ta.is_return)
 
     if (!transaction) {

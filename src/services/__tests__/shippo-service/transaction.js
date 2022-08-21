@@ -367,6 +367,131 @@ describe("transaction", () => {
         })
       })
     })
+
+    describe("claim", () => {
+      const fetchDefaultByClaim = (claimId) =>
+        shippoService.transaction.fetchBy(["claim", claimId])
+
+      const fetchExtendedByClaim = (claimId) =>
+        shippoService.transaction.fetchBy(["claim", claimId], {
+          type: "extended",
+        })
+
+      describe("has fulfillment with transaction", () => {
+        beforeEach(() => {
+          const state = {
+            ...defaultIds(),
+            line_items: [],
+            fulfillments: [fulfillmentState("has_transaction_for_label")],
+          }
+          shippoService = makeShippoService(state)
+          makeShippoHelper(state)
+        })
+        const id = "claim_single_fulfillment_with_transaction_for_label"
+
+        describe("type: default", () => {
+          test("returns array with 1 member", async () => {
+            const result = await fetchDefaultByClaim(id)
+            expect(result).toBeArrayOfSize(1)
+          })
+
+          test("return is default transaction", async () => {
+            const result = await fetchDefaultByClaim(id)
+            expect(result[0]).toContainKeys([
+              "object_id",
+              "object_state",
+              "label_url",
+            ])
+          })
+
+          test("return has prop/value pair for fulfillment_id", async () => {
+            const result = await fetchDefaultByClaim(id)
+            expect(result[0]).toContainEntry([
+              "fulfillment_id",
+              "ful_has_transaction_for_label",
+            ])
+          })
+        })
+
+        describe("type: extended", () => {
+          test("returns array with 1 member", async () => {
+            const result = await fetchExtendedByClaim(id)
+            expect(result).toBeArrayOfSize(1)
+          })
+
+          test("return is extended transaction", async () => {
+            const result = await fetchExtendedByClaim(id)
+            expect(result[0]).toContainKeys([
+              "object_id",
+              "object_state",
+              "is_return",
+            ])
+          })
+        })
+      })
+    })
+    describe("swap", () => {
+      const fetchDefaultBySwap = (swapId) =>
+        shippoService.transaction.fetchBy(["swap", swapId])
+
+      const fetchExtendedBySwap = (swapId) =>
+        shippoService.transaction.fetchBy(["swap", swapId], {
+          type: "extended",
+        })
+
+      describe("has fulfillment with transaction", () => {
+        beforeEach(() => {
+          const state = {
+            ...defaultIds(),
+            line_items: [],
+            fulfillments: [fulfillmentState("has_transaction_for_label")],
+          }
+          shippoService = makeShippoService(state)
+          makeShippoHelper(state)
+        })
+        const id = "swap_single_fulfillment_with_transaction_for_label"
+
+        describe("type: default", () => {
+          test("returns array with 1 member", async () => {
+            const result = await fetchDefaultBySwap(id)
+            expect(result).toBeArrayOfSize(1)
+          })
+
+          test("return is default transaction", async () => {
+            const result = await fetchDefaultBySwap(id)
+            expect(result[0]).toContainKeys([
+              "object_id",
+              "object_state",
+              "label_url",
+            ])
+          })
+
+          test("return has prop/value pair for fulfillment_id", async () => {
+            const result = await fetchDefaultBySwap(id)
+            expect(result[0]).toContainEntry([
+              "fulfillment_id",
+              "ful_has_transaction_for_label",
+            ])
+          })
+        })
+
+        describe("type: extended", () => {
+          test("returns array with 1 member", async () => {
+            const result = await fetchExtendedBySwap(id)
+            expect(result).toBeArrayOfSize(1)
+          })
+
+          test("return is extended transaction", async () => {
+            const result = await fetchExtendedBySwap(id)
+            expect(result[0]).toContainKeys([
+              "object_id",
+              "object_state",
+              "is_return",
+            ])
+          })
+        })
+      })
+    })
   })
   describe("is", () => {
     describe("return", () => {
