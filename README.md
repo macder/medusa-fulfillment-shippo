@@ -9,7 +9,7 @@
 
 > :information\_source: Requires Medusa ^1.3.5
 
-**Notice:** *Shippo recently made a change causing a regression that may cause rates at checkout to only return fallback rates. Those impacted should verify that shipping options in shippo app [setting->rates-at-checkout](https://apps.goshippo.com/settings/rates-at-checkout) have services under the details column.*
+**Notice:** *Shippo recently made a change with a regression that may cause rates at checkout to only return fallback rates. To resolve, verify that shipping options in shippo app [setting->rates-at-checkout](https://apps.goshippo.com/settings/rates-at-checkout) have services under the details column. The regression may have cleared them.*
 
 Shippo fulfillment provider for Medusa Commerce.
 
