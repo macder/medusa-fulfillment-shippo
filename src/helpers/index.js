@@ -18,11 +18,17 @@ const changeState = (prop) => (value) => (state) => ({
 const stateControl = storeState()
 
 /* @experimental */
-export default (cradle) => {
+export default (container) => {
+  const services = {
+    claimService: container.resolve("claimService"),
+    fulfillmentService: container.resolve("fulfillmentService"),
+    orderService: container.resolve("orderService"),
+    swapService: container.resolve("swapService"),
+  }
   const helpers = changeState("helpers")({
     fulfillment: {
       ...fulfillmentHelper({
-        ...cradle,
+        ...services,
       }),
     },
     error: (entity) => errorHelper(entity),

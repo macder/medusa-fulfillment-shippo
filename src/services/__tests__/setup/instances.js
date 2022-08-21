@@ -45,7 +45,10 @@ const coreServiceMocks = (state) => ({
   },
 })
 
-export const makeShippoHelper = (state) => helpers(coreServiceMocks(state))
+export const makeShippoHelper = (state) =>
+  helpers({
+    resolve: (dep) => coreServiceMocks(state)[dep],
+  })
 
 export const makeShippoClientService = (state) => {
   const { fulfillmentService } = coreServiceMocks(state)
