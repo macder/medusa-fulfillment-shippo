@@ -5,7 +5,7 @@ export default async (container, options) => {
   const helperFull = path.join(__dirname, helperPath)
 
   const loaded = require(helperFull).default
-  loaded(container.cradle)
+  loaded(container)
 
   const shippoFulfillmentService = container.resolve("shippoFulfillmentService")
   const logger = container.resolve("logger")
