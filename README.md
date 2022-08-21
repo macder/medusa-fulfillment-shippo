@@ -9,6 +9,8 @@
 
 > :information\_source: Requires Medusa ^1.3.5
 
+**Notice:** *Shippo recently made a change causing a regression that may cause rates at checkout to only return fallback rates. Those impacted should verify that shipping options in shippo app [setting->rates-at-checkout](https://apps.goshippo.com/settings/rates-at-checkout) have services under the details column.*
+
 Shippo fulfillment provider for Medusa Commerce.
 
 Provides fulfillment options using carrier service levels and user created service groups that can be used to create shipping options for profiles and regions.
