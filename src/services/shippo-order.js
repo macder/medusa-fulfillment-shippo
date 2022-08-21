@@ -141,29 +141,10 @@ class ShippoOrderService extends BaseService {
     return fulfillment[0]
   }
 
-  async findFulfillmentsBy(type, id) {
-    const fulfillmentRepo = this.#manager.getCustomRepository(
-      this.#fulfillmentRepo
-    )
-
-    const fulfillments = await fulfillmentRepo.find({
-      where: {
-        [`${type}_id`]: id,
-      },
-    })
-    return fulfillments
-  }
-
   async findBy(type, id) {
-    const fulfillments = await this.findFulfillmentsBy(type, id).then(
-      (response) => response.filter((ful) => ful.data.shippo_order_id)
-    )
+    const fulfillments = await this.#retrieveFulfillments(type, id)
 
-    if (fulfillments.length === 0) {
-      return this.#error("shippo_order").notFoundFor([type, id])
-    }
-
-    const orders = await Promise.all(
+    return Promise.all(
       fulfillments.map(async (fulfillment) => {
         const order = await this.fetchByFulfillmentId(fulfillment.id)
         return {
@@ -172,17 +153,10 @@ class ShippoOrderService extends BaseService {
         }
       })
     )
-    return orders
   }
 
   async findPackingSlipBy(type, id) {
-    const fulfillments = await this.findFulfillmentsBy(type, id).then(
-      (response) => response.filter((ful) => ful.data.shippo_order_id)
-    )
-
-    if (fulfillments.length === 0) {
-      return this.#error("shippo_order").notFoundFor([type, id])
-    }
+    const fulfillments = await this.#retrieveFulfillments(type, id)
 
     return Promise.all(
       fulfillments.map(async (fulfillment) => {
@@ -201,6 +175,14 @@ class ShippoOrderService extends BaseService {
   async isReplace(id) {
     const order = await this.fetch(id)
     return order.order_number.includes("replace")
+  }
+
+  async #retrieveFulfillments(type, id) {
+    const fulfillments = await this.#helper("fulfillment").for(type)(id)
+
+    return fulfillments.length > 0
+      ? fulfillments
+      : this.#error("shippo_order").notFoundFor([type, id])
   }
 }
 
