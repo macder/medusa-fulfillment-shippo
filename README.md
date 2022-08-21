@@ -829,7 +829,7 @@ Fetch a transaction using the id of a related entity
 
 #### Supported Entities
 
-`fulfillment` `local_order`
+`fulfillment` `local_order` `claim` `swap`
 
 #### Return
 
@@ -838,13 +838,21 @@ Fetch a transaction using the id of a related entity
 #### Example
 
 ```javascript
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+
 await shippoService.transaction.fetchBy(["local_order", id])
 
 await shippoService.transaction.fetchBy(["local_order", id], { type: "extended" })
 
-await shippoService.transaction.fetchBy(["fulfillment", id])
+await shippoService.transaction.fetchBy(["claim", id])
 
-await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+await shippoService.transaction.fetchBy(["claim", id], { type: "extended" })
+
+await shippoService.transaction.fetchBy(["swap", id])
+
+await shippoService.transaction.fetchBy(["swap", id], { type: "extended" })
 ```
 
 ***
@@ -981,13 +989,21 @@ await shippoService.transaction.fetch(object_id, { type: "extended" })
 ```
 
 ```javascript
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+
 await shippoService.transaction.fetchBy(["local_order", id])
 
 await shippoService.transaction.fetchBy(["local_order", id], { type: "extended" })
 
-await shippoService.transaction.fetchBy(["fulfillment", id])
+await shippoService.transaction.fetchBy(["claim", id])
 
-await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+await shippoService.transaction.fetchBy(["claim", id], { type: "extended" })
+
+await shippoService.transaction.fetchBy(["swap", id])
+
+await shippoService.transaction.fetchBy(["swap", id], { type: "extended" })
 ```
 
 ```javascript
