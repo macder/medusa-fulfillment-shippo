@@ -8,4 +8,5 @@ export {
   makeShippoOrderService,
   makeShippoTrackService,
   makeShippoService,
+  makeShippoHelper,
 } from "./instances"

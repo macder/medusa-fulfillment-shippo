@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.1.0] (2022-08-21)
+
+Added
+
+*   Public Interface - transaction fetchBy claim [#280](https://github.com/macder/medusa-fulfillment-shippo/issues/280)
+*   Public Interface - transaction fetchBy swap [#281](https://github.com/macder/medusa-fulfillment-shippo/issues/281)
+
 ## \[1.0.0] (2022-08-14)
 
 Added

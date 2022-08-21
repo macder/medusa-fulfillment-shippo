@@ -1,5 +1,5 @@
 import { toContainEntries, toContainKeys } from "jest-extended"
-import { makeShippoService } from "../setup"
+import { makeShippoHelper, makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
 import { fulfillmentState } from "../../__mocks__/fulfillment"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
@@ -15,10 +15,6 @@ const mockShippoClient = shippoClientMock({
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("track", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
-
   const defaultIds = () => ({
     order_id: "order_default",
     display_id: "11",
@@ -30,7 +26,7 @@ describe("track", () => {
   test("fetch returns requested track", async () => {
     // arrange
     const shippoService = makeShippoService({})
-
+    makeShippoHelper({})
     // act
     const result = await shippoService.track.fetch("usps", "track_num_1")
 
@@ -43,17 +39,20 @@ describe("track", () => {
 
   test("fetchBy ful_id returns requested track", async () => {
     // arrange
-    const shippoService = makeShippoService({
+    const state = {
       ...defaultIds(),
       line_items: [],
       fulfillments: [fulfillmentState("has_transaction_for_label")],
-    })
+    }
+    const shippoService = makeShippoService(state)
+    makeShippoHelper(state)
+
     const { id } = fulfillmentState("has_transaction_for_label")
 
     // act
     const result = await shippoService.track.fetchBy(["fulfillment", id])
 
-    // asseert
+    // assert
     expect(result).toContainKeys(["tracking_number", "carrier"])
   })
 })

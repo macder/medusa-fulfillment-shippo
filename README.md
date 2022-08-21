@@ -4,6 +4,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
 [![npm version](https://badge.fury.io/js/medusa-fulfillment-shippo.svg)](https://badge.fury.io/js/medusa-fulfillment-shippo)
+[![npm](https://img.shields.io/npm/dt/medusa-fulfillment-shippo.svg?maxAge=1000)](https://www.npmjs.com/package/medusa-fulfillment-shippo)
+
 
 > :information\_source: Requires Medusa ^1.3.5
 
@@ -827,7 +829,7 @@ Fetch a transaction using the id of a related entity
 
 #### Supported Entities
 
-`fulfillment` `local_order`
+`fulfillment` `local_order` `claim` `swap`
 
 #### Return
 
@@ -836,13 +838,21 @@ Fetch a transaction using the id of a related entity
 #### Example
 
 ```javascript
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+
 await shippoService.transaction.fetchBy(["local_order", id])
 
 await shippoService.transaction.fetchBy(["local_order", id], { type: "extended" })
 
-await shippoService.transaction.fetchBy(["fulfillment", id])
+await shippoService.transaction.fetchBy(["claim", id])
 
-await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+await shippoService.transaction.fetchBy(["claim", id], { type: "extended" })
+
+await shippoService.transaction.fetchBy(["swap", id])
+
+await shippoService.transaction.fetchBy(["swap", id], { type: "extended" })
 ```
 
 ***
@@ -979,13 +989,21 @@ await shippoService.transaction.fetch(object_id, { type: "extended" })
 ```
 
 ```javascript
+await shippoService.transaction.fetchBy(["fulfillment", id])
+
+await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+
 await shippoService.transaction.fetchBy(["local_order", id])
 
 await shippoService.transaction.fetchBy(["local_order", id], { type: "extended" })
 
-await shippoService.transaction.fetchBy(["fulfillment", id])
+await shippoService.transaction.fetchBy(["claim", id])
 
-await shippoService.transaction.fetchBy(["fulfillment", id], { type: "extended" })
+await shippoService.transaction.fetchBy(["claim", id], { type: "extended" })
+
+await shippoService.transaction.fetchBy(["swap", id])
+
+await shippoService.transaction.fetchBy(["swap", id], { type: "extended" })
 ```
 
 ```javascript

@@ -6,7 +6,7 @@ import {
   toContainEntry,
 } from "jest-extended"
 import { fulfillmentState } from "../../__mocks__/fulfillment"
-import { makeShippoService } from "../setup"
+import { makeShippoHelper, makeShippoService } from "../setup"
 import { shippoClientMock } from "../../__mocks__"
 import { shippoOrderState } from "../../__mocks__/shippo/order"
 import { shippoTransactionState } from "../../__mocks__/shippo/transaction"
@@ -26,9 +26,6 @@ const mockShippoClient = shippoClientMock({
 
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 describe("shippoService", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
   describe("packingslip", () => {
     const defaultIds = () => ({
       order_id: "order_default",
@@ -37,11 +34,14 @@ describe("shippoService", () => {
       claim_order_id: null,
       swap_id: null,
     })
+    let shippoService
 
     describe("fetch", () => {
       test("returns", async () => {
         // arrange
         const shippoService = makeShippoService({})
+        makeShippoHelper({})
+
         const id = "shippo_order_has_transaction_for_label"
 
         // act
@@ -55,16 +55,18 @@ describe("shippoService", () => {
     describe("fetchBy", () => {
       describe("fulfillment", () => {
         describe("has shippo order", () => {
-          test("returns", async () => {
-            // arrange
-            const shippoService = makeShippoService({
+          beforeEach(() => {
+            const state = {
               ...defaultIds(),
               line_items: [],
               fulfillments: [fulfillmentState("has_shippo_order")],
-            })
-            const { id } = fulfillmentState("has_shippo_order")
+            }
+            shippoService = makeShippoService(state)
+            makeShippoHelper(state)
+          })
+          const { id } = fulfillmentState("has_shippo_order")
 
-            // act
+          test("returns", async () => {
             const result = await shippoService.packingslip.fetchBy([
               "fulfillment",
               id,
@@ -76,15 +78,18 @@ describe("shippoService", () => {
         })
 
         describe("with no shippo order", () => {
-          test("returns Promise.reject", async () => {
-            // arrange
-            const shippoService = makeShippoService({
+          beforeEach(() => {
+            const state = {
               ...defaultIds(),
               line_items: [],
               fulfillments: [fulfillmentState("no_shippo_order")],
-            })
-            const { id } = fulfillmentState("no_shippo_order")
+            }
+            shippoService = makeShippoService(state)
+            makeShippoHelper(state)
+          })
+          const { id } = fulfillmentState("no_shippo_order")
 
+          test("returns Promise.reject", async () => {
             // act
             const result = shippoService.packingslip.fetchBy([
               "fulfillment",
@@ -100,11 +105,14 @@ describe("shippoService", () => {
       describe("local_order", () => {
         describe("has single fulfillment", () => {
           describe("with shippo order", () => {
-            // arrange
-            const shippoService = makeShippoService({
-              ...defaultIds(),
-              line_items: [],
-              fulfillments: [fulfillmentState("has_shippo_order")],
+            beforeEach(() => {
+              const state = {
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [fulfillmentState("has_shippo_order")],
+              }
+              shippoService = makeShippoService(state)
+              makeShippoHelper(state)
             })
 
             test("returns array with 1 member", async () => {
@@ -142,11 +150,14 @@ describe("shippoService", () => {
           describe("with no shippo order", () => {
             test("returns Promise.reject", async () => {
               // arrange
-              const shippoService = makeShippoService({
+              const state = {
                 ...defaultIds(),
                 line_items: [],
                 fulfillments: [fulfillmentState("no_shippo_order")],
-              })
+              }
+              shippoService = makeShippoService(state)
+              makeShippoHelper(state)
+
               const id = "local_order_has_fulfillment_with_no_shippo_order"
 
               // act
@@ -165,14 +176,17 @@ describe("shippoService", () => {
           describe("with shippo orders", () => {
             test("returns array with 2 members", async () => {
               // arrange
-              const shippoService = makeShippoService({
+              const state = {
                 ...defaultIds(),
                 line_items: [],
                 fulfillments: [
                   fulfillmentState("has_shippo_order"),
                   fulfillmentState("has_shippo_order"),
                 ],
-              })
+              }
+              const shippoService = makeShippoService(state)
+              makeShippoHelper(state)
+
               const id = "local_order_has_multi_fulfillments_with_shippo_orders"
 
               // act
@@ -189,14 +203,17 @@ describe("shippoService", () => {
           describe("with and withuot shippo orders", () => {
             test("returns array with 1 member", async () => {
               // arrange
-              const shippoService = makeShippoService({
+              const state = {
                 ...defaultIds(),
                 line_items: [],
                 fulfillments: [
                   fulfillmentState("has_shippo_order"),
                   fulfillmentState("no_shippo_order"),
                 ],
-              })
+              }
+              const shippoService = makeShippoService(state)
+              makeShippoHelper(state)
+
               const id =
                 "local_order_has_multi_fulfillments_with_and_without_shippo_orders"
 
@@ -216,12 +233,15 @@ describe("shippoService", () => {
       describe("claim", () => {
         test("returns packingslip", async () => {
           // arrange
-          const shippoService = makeShippoService({
+          const state = {
             ...defaultIds(),
             claim_order_id: "claim_id_11",
             line_items: [],
             fulfillments: [fulfillmentState("has_shippo_order")],
-          })
+          }
+          const shippoService = makeShippoService(state)
+          makeShippoHelper(state)
+
           const id = "claim_id_11"
 
           // act
@@ -234,12 +254,15 @@ describe("shippoService", () => {
         describe("swap", () => {
           test("", async () => {
             // arrange
-            const shippoService = makeShippoService({
+            const state = {
               ...defaultIds(),
               swap_id: "swap_id_11",
               line_items: [],
               fulfillments: [fulfillmentState("has_shippo_order")],
-            })
+            }
+            const shippoService = makeShippoService(state)
+            makeShippoHelper(state)
+
             const id = "swap_id_11"
 
             // act
@@ -254,11 +277,14 @@ describe("shippoService", () => {
       describe("with", () => {
         describe("fulfillment", () => {
           describe("has shippo order", () => {
-            // arrange
-            const shippoService = makeShippoService({
-              ...defaultIds(),
-              line_items: [],
-              fulfillments: [fulfillmentState("has_shippo_order")],
+            beforeEach(() => {
+              const state = {
+                ...defaultIds(),
+                line_items: [],
+                fulfillments: [fulfillmentState("has_shippo_order")],
+              }
+              shippoService = makeShippoService(state)
+              makeShippoHelper(state)
             })
 
             test("returns packing slip", async () => {

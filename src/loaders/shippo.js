@@ -1,4 +1,12 @@
-export default async (container) => {
+import path from "path"
+
+export default async (container, options) => {
+  const helperPath = "../helpers/index.js"
+  const helperFull = path.join(__dirname, helperPath)
+
+  const loaded = require(helperFull).default
+  loaded(container)
+
   const shippoFulfillmentService = container.resolve("shippoFulfillmentService")
   const logger = container.resolve("logger")
   const config = shippoFulfillmentService.getWebhookConfig()

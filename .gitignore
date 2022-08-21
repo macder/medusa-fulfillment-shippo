@@ -14,10 +14,11 @@ yarn.lock
 /subscribers
 /utils
 /facades
+/helpers
 __data__
 temp
 coverage
 sandbox
-sand.js
+tester.js
+*tester.js
 *sand.js
-old-tests

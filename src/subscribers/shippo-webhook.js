@@ -1,4 +1,4 @@
-class ShippoSubscriber {
+class ShippoWebhookSubscriber {
   #claimService
 
   #eventBusService
@@ -10,10 +10,10 @@ class ShippoSubscriber {
   #swapService
 
   constructor({
+    shippoTransactionService,
     claimService,
     eventBusService,
     orderService,
-    shippoTransactionService,
     swapService,
   }) {
     /** @private @const {ClaimService} */
@@ -132,4 +132,4 @@ class ShippoSubscriber {
   }
 }
 
-export default ShippoSubscriber
+export default ShippoWebhookSubscriber

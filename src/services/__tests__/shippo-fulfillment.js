@@ -4,7 +4,11 @@ import { orderStub } from "../__mocks__/order"
 import { fulfillmentState } from "../__mocks__/fulfillment"
 import { returnStub, returnState } from "../__mocks__/return"
 
-import { makeShippoFulfillmentService, makeShippoService } from "./setup"
+import {
+  makeShippoHelper,
+  makeShippoFulfillmentService,
+  makeShippoService,
+} from "./setup"
 import { shippoClientMock } from "../__mocks__"
 import { shippoOrderState } from "../__mocks__/shippo/order"
 import { userParcelState } from "../__mocks__/shippo/user-parcel"
@@ -34,10 +38,6 @@ const mockShippoClient = shippoClientMock({
 jest.mock("@macder/shippo", () => () => mockShippoClient)
 
 describe("ShippoFulfillmentService", () => {
-  beforeAll(async () => {
-    jest.clearAllMocks()
-  })
-
   const defaultIds = () => ({
     order_id: "order_default",
     display_id: "11",
@@ -69,6 +69,8 @@ describe("ShippoFulfillmentService", () => {
         }
 
         const shippoFulfillmentService = makeShippoFulfillmentService(state)
+        makeShippoHelper(state)
+
         const cart = cartStub({ ...state })
 
         // act
@@ -92,6 +94,8 @@ describe("ShippoFulfillmentService", () => {
           address: addressState("empty"),
         }
         const shippoFulfillmentService = makeShippoFulfillmentService(state)
+        makeShippoHelper(state)
+
         const cart = cartStub({ ...state })
 
         // act
@@ -112,6 +116,7 @@ describe("ShippoFulfillmentService", () => {
       test("returns true", async () => {
         // arrange
         const shippoFulfillmentService = makeShippoFulfillmentService({})
+        makeShippoHelper({})
 
         // act
         const result = await shippoFulfillmentService.canCalculate(
@@ -127,7 +132,7 @@ describe("ShippoFulfillmentService", () => {
       test("returns false", async () => {
         // arrange
         const shippoFulfillmentService = makeShippoFulfillmentService({})
-
+        makeShippoHelper({})
         // act
         const result = await shippoFulfillmentService.canCalculate(
           fulfillmentOption("service")
@@ -143,6 +148,7 @@ describe("ShippoFulfillmentService", () => {
     test("", async () => {
       // arrange
       const shippoFulfillmentService = makeShippoFulfillmentService({})
+      makeShippoHelper({})
 
       // act
       const result = await shippoFulfillmentService.cancelFulfillment()
@@ -170,6 +176,7 @@ describe("ShippoFulfillmentService", () => {
         lineItemStub({ ...item })
       )
       const shippoFulfillmentService = makeShippoFulfillmentService(state)
+      makeShippoHelper(state)
 
       // act
       const result = await shippoFulfillmentService.createFulfillment(
@@ -188,7 +195,7 @@ describe("ShippoFulfillmentService", () => {
     describe("is claim", () => {
       test("returns obj with rate", async () => {
         // arrange
-        const shippoFulfillmentService = makeShippoFulfillmentService({
+        const state = {
           ...defaultIds(),
           display_id: "22",
           line_items: [
@@ -198,7 +205,10 @@ describe("ShippoFulfillmentService", () => {
           fulfillments: [
             fulfillmentState("has_transaction_for_label_with_return"),
           ],
-        })
+        }
+        const shippoFulfillmentService = makeShippoFulfillmentService(state)
+        makeShippoHelper(state)
+
         const returnOrder = returnStub(
           returnState({
             id: "ret_claim_replace",
@@ -219,6 +229,7 @@ describe("ShippoFulfillmentService", () => {
     test("has required props", async () => {
       // arrange
       const shippoFulfillmentService = makeShippoFulfillmentService({})
+      makeShippoHelper({})
 
       // act
       const result = await shippoFulfillmentService.getFulfillmentOptions()
@@ -233,6 +244,7 @@ describe("ShippoFulfillmentService", () => {
       test("only return data param", async () => {
         // arrange
         const shippoFulfillmentService = makeShippoFulfillmentService({})
+        makeShippoHelper({})
         const optionData = { is_return: true }
 
         // act
@@ -251,6 +263,8 @@ describe("ShippoFulfillmentService", () => {
       test("only return data param", async () => {
         // arrange
         const shippoFulfillmentService = makeShippoFulfillmentService({})
+        makeShippoHelper({})
+
         const optionData = { is_return: false }
 
         // act
@@ -266,10 +280,6 @@ describe("ShippoFulfillmentService", () => {
     })
 
     describe("has complete cart", () => {
-      // const cart = cartMock(cartState().has.items_address_email)(
-      //   "cart_default_id"
-      // )
-      // const optionData = { is_return: false }
       test("", async () => {
         // arrange
         const state = {
@@ -284,6 +294,7 @@ describe("ShippoFulfillmentService", () => {
           address: addressState("complete"),
         }
         const shippoFulfillmentService = makeShippoFulfillmentService({})
+        makeShippoHelper({})
         const cart = cartStub({ ...state })
         const optionData = { is_return: false }
 
@@ -304,6 +315,7 @@ describe("ShippoFulfillmentService", () => {
     test("returns true", async () => {
       // arrange
       const shippoFulfillmentService = makeShippoFulfillmentService({})
+      makeShippoHelper({})
 
       // act
       const result = await shippoFulfillmentService.validateOption()
@@ -314,8 +326,13 @@ describe("ShippoFulfillmentService", () => {
   })
 
   describe("verifyHookSecret", () => {
-    // arrange
-    const shippoFulfillmentService = makeShippoFulfillmentService({})
+    let shippoFulfillmentService
+
+    beforeEach(() => {
+      const state = {}
+      shippoFulfillmentService = makeShippoFulfillmentService({})
+      makeShippoHelper({})
+    })
 
     test("returns true", async () => {
       // act

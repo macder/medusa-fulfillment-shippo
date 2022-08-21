@@ -1,4 +1,5 @@
 import { MockManager } from "medusa-test-utils"
+import path from "path"
 import ShippoService from "../../shippo"
 import ShippoClientService from "../../shippo-client"
 import ShippoFulfillmentService from "../../shippo-fulfillment"
@@ -8,6 +9,8 @@ import ShippoPackerService from "../../shippo-packer"
 import ShippoRatesService from "../../shippo-rates"
 import ShippoTrackService from "../../shippo-track"
 import ShippoTransactionService from "../../shippo-transaction"
+
+import { default as helpers } from "../../../helpers"
 
 import { cartServiceMock } from "../../__mocks__/cart"
 import {
@@ -23,6 +26,8 @@ const coreServiceMocks = (state) => ({
   cartService: cartServiceMock(state),
   fulfillmentService: fulfillmentServiceMock(state),
   orderService: orderServiceMock(state),
+  claimService: orderServiceMock(state),
+  swapService: orderServiceMock(state),
   lineItemService: lineItemServiceMock(state),
   shippingProfileService: shippingProfileServiceMock(state),
   manager: MockManager,
@@ -40,8 +45,14 @@ const coreServiceMocks = (state) => ({
   },
 })
 
+export const makeShippoHelper = (state) =>
+  helpers({
+    resolve: (dep) => coreServiceMocks(state)[dep],
+  })
+
 export const makeShippoClientService = (state) => {
   const { fulfillmentService } = coreServiceMocks(state)
+
   return new ShippoClientService({ fulfillmentService }, {})
 }
 
@@ -73,6 +84,7 @@ export const makeShippoPackageService = (state) => {
 export const makeShippoRatesService = (state) => {
   const {
     cartService,
+    fulfillmentService,
     logger,
     pricingService,
     shippingProfileService,
@@ -99,17 +111,19 @@ export const makeShippoRatesService = (state) => {
 }
 
 export const makeShippoTransactionService = (state) => {
-  const { fulfillmentService, orderService } = coreServiceMocks(state)
+  const { fulfillmentService, orderService, logger } = coreServiceMocks(state)
   const shippoClientService = makeShippoClientService(state)
-
-  return new ShippoTransactionService(
+  const shippoTransactionService = new ShippoTransactionService(
     {
       fulfillmentService,
+      logger,
       shippoClientService,
       orderService,
     },
     {}
   )
+
+  return shippoTransactionService
 }
 
 export const makeShippoOrderService = (state) => {
@@ -118,22 +132,23 @@ export const makeShippoOrderService = (state) => {
 
   const shippoClientService = makeShippoClientService(state)
   const shippoTransactionService = makeShippoTransactionService(state)
-
-  return new ShippoOrderService(
+  const shippoOrderService = new ShippoOrderService(
     {
       manager,
       fulfillmentService,
       fulfillmentRepository,
       shippoClientService,
       shippoTransactionService,
+      // shippoHelper,
     },
     {}
   )
+
+  return shippoOrderService
 }
 
 export const makeShippoTrackService = (state) => {
   const { fulfillmentService } = coreServiceMocks(state)
-
   const shippoClientService = makeShippoClientService(state)
   const shippoOrderService = makeShippoOrderService(state)
   const shippoTransactionService = makeShippoTransactionService(state)
@@ -150,8 +165,13 @@ export const makeShippoTrackService = (state) => {
 }
 
 export const makeShippoFulfillmentService = (state) => {
-  const { eventBusService, logger, orderService, totalsService } =
-    coreServiceMocks(state)
+  const {
+    eventBusService,
+    fulfillmentService,
+    logger,
+    orderService,
+    totalsService,
+  } = coreServiceMocks(state)
 
   const shippoClientService = makeShippoClientService(state)
   const shippoPackageService = makeShippoPackageService(state)
@@ -174,6 +194,7 @@ export const makeShippoFulfillmentService = (state) => {
 }
 
 export const makeShippoService = (state) => {
+  const { fulfillmentService } = coreServiceMocks(state)
   const shippoClientService = makeShippoClientService(state)
   const shippoOrderService = makeShippoOrderService(state)
   const shippoPackerService = makeShippoPackerService(state)
