@@ -108,20 +108,16 @@ class ShippoPackageService extends BaseService {
   async packFulfillment(fulfillmentOrId, resultType = null) {
     this.#setResultType(resultType)
 
-    const fulfillment = fulfillmentOrId?.items
+    const { items } = fulfillmentOrId?.items
       ? fulfillmentOrId
       : await this.#fulfillmentService.retrieve(fulfillmentOrId, {
-          relations: ["items", "order"],
+          relations: ["items", "items.item"],
         })
 
-    const lineItems = await Promise.all(
-      fulfillment.items.map(async (item) =>
-        this.#lineItemService.retrieve(item.item_id).then((lineItem) => ({
-          quantity: lineItem.fulfilled_quantit,
-          ...lineItem,
-        }))
-      )
-    )
+    const lineItems = items.map(({ quantity, item }) => ({
+      ...item,
+      quantity,
+    }))
 
     this.#setItems(this.#prepareItems(lineItems))
     return this.#binpack()
