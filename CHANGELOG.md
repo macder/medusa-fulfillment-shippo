@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.1.1] (2022-08-21)
+
+Added
+
+*   Notice regarding a shippo regression issue causing rates at checkout to only use fallback rates. See README.md for solution.
+
+Fixed
+
+*   Bin packer - package for fulfillment using wrong item quantity [#317](https://github.com/macder/medusa-fulfillment-shippo/issues/317)
+
 ## \[1.1.0] (2022-08-21)
 
 Added
