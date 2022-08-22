@@ -1,5 +1,4 @@
 import { BaseService } from "medusa-interfaces"
-import { MedusaError } from "medusa-core-utils"
 import { shippoAddress, shippoLineItem } from "../utils/formatters"
 
 class ShippoRatesService extends BaseService {
@@ -72,22 +71,6 @@ class ShippoRatesService extends BaseService {
       line_items: await this.#formatLineItems(cart),
       parcel: parcelId,
     }
-  }
-
-  async #fetchCart(cartId) {
-    return this.#cartService.retrieve(cartId, {
-      select: ["subtotal"],
-      relations: [
-        "shipping_address",
-        "items",
-        "items.tax_lines",
-        "items.variant",
-        "items.variant.product",
-        "discounts",
-        "discounts.rule",
-        "region",
-      ],
-    })
   }
 
   async #formatLineItems(cart) {
