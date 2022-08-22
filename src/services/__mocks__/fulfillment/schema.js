@@ -11,10 +11,10 @@ export const fulfillmentSchema = ({ ...props }) =>
       ? Object.freeze({
           shippo_order_id: props.shippo_order_id,
         })
-      : {},
+      : Object.freeze({}),
     shipped_at: "",
     canceled_at: null,
-    metadata: {},
+    metadata: Object.freeze({}),
     tracking_links: props?.tracking_links ?? [],
     items: props.items,
   })
@@ -22,6 +22,7 @@ export const fulfillmentSchema = ({ ...props }) =>
 export const fulfillmentItemSchema = ({ ...props }) =>
   Object.freeze({
     fulfillment_id: props.fulfillment_id,
-    item_id: props.item_id,
+    item_id: props.id,
     quantity: props?.quantity ?? 1,
+    ...(props.item && { item: props.item }),
   })

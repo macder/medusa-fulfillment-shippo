@@ -1,4 +1,9 @@
-import { toBeArray, toContainKey, toContainEntry } from "jest-extended"
+import {
+  toBeArray,
+  toBeArrayOfSize,
+  toContainKey,
+  toContainEntry,
+} from "jest-extended"
 import { makeShippoHelper, makeShippoService } from "../setup"
 import { lineItemState, lineItemStub } from "../../__mocks__/line-item"
 import { shippoClientMock } from "../../__mocks__"
@@ -6,7 +11,7 @@ import { addressState } from "../../__mocks__/address"
 import { userParcelState } from "../../__mocks__/shippo/user-parcel"
 import { fulfillmentState } from "../../__mocks__/fulfillment"
 
-expect.extend({ toBeArray, toContainKey, toContainEntry })
+expect.extend({ toBeArray, toBeArrayOfSize, toContainKey, toContainEntry })
 
 const mockShippoClient = shippoClientMock({
   user_parcels: userParcelState,
@@ -104,16 +109,27 @@ describe("shippoService", () => {
       })
 
       describe("fulfillment", () => {
-        test("returns packer output", async () => {
+        test("returns packer output with correct item quantity", async () => {
           // arrange
           const state = {
             ...defaultIds(),
             line_items: [
-              lineItemState({ quantity: 1 }),
-              lineItemState({ quantity: 2 }),
+              lineItemState({ id: "item_123", quantity: 4 }),
+              lineItemState({ id: "item_321", quantity: 4 }),
             ],
-            fulfillments: [fulfillmentState("has_shippo_order")],
+            fulfillments: [
+              fulfillmentState("has_shippo_order", {
+                items: [
+                  {
+                    id: "item_123",
+                    quantity: 2,
+                    item: { ...lineItemState({ id: "item_123", quantity: 6 }) },
+                  },
+                ],
+              }),
+            ],
           }
+
           const shippoService = makeShippoService(state)
           makeShippoHelper(state)
 
@@ -125,7 +141,7 @@ describe("shippoService", () => {
             .fetch()
 
           // assert
-          expect(result[0]).toContainKey("packer_output")
+          expect(result[0].packer_output.items).toBeArrayOfSize(2)
         })
       })
     })
@@ -139,7 +155,17 @@ describe("shippoService", () => {
             lineItemState({ quantity: 1 }),
             lineItemState({ quantity: 2 }),
           ],
-          fulfillments: [fulfillmentState("has_shippo_order")],
+          fulfillments: [
+            fulfillmentState("has_shippo_order", {
+              items: [
+                {
+                  id: "item_123",
+                  quantity: 3,
+                  item: { ...lineItemState({ id: "item_123", quantity: 6 }) },
+                },
+              ],
+            }),
+          ],
         }
         const shippoService = makeShippoService(state)
         makeShippoHelper(state)

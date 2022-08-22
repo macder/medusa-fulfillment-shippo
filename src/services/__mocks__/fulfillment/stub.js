@@ -1,14 +1,17 @@
 import { fulfillmentSchema, fulfillmentItemSchema } from "./schema"
 import { trackingLinkSchema } from "../tracking-link"
+import { lineItemStub } from "../line-item"
 
 export const fulfillmentStub = ({ ...state }) =>
   fulfillmentSchema({
     ...state,
-    items: state.items.map((item_id) =>
+    items: state.items.map((fulfillItem) =>
       fulfillmentItemSchema({
-        item_id,
+        ...fulfillItem,
+        ...(fulfillItem.item && {
+          item: lineItemStub({ ...state, ...fulfillItem.item }),
+        }),
         fulfillment_id: state.id,
-        quantity: 2,
       })
     ),
     tracking_links: state.tracking_links.map((track) =>
