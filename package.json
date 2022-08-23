@@ -10,7 +10,7 @@
     "watch": "onchange -v src/** -- copyfiles {{file}} ../my-medusa-store",
     "ci-test": "jest --maxWorkers=50%",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage --runInBand"
   },
   "dependencies": {
     "@macder/shippo": "^1.0.0",
