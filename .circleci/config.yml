@@ -29,4 +29,4 @@ workflows:
       - build-and-test:
           post-steps:
             - codecov/upload:
-                file: '/home/circleci/project/coverage/clover.xml,/home/circleci/project/coverage/lcov.info'
+                file: './coverage/clover.xml'
