@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@4.7
   coverage-reporter: codacy/coverage-reporter@13.10.8
+  codecov: codecov/codecov@3.1.1
 
 jobs:
   build-and-test:
@@ -23,3 +24,9 @@ workflows:
   release:
     jobs:
       - build-and-test
+  upload-to-codecov:
+    jobs:
+      - build-and-test:
+          post-steps:
+            - codecov/upload:
+                file: 'coverage/clover.xml,coverage/lcov.info'
