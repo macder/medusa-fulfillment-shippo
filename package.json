@@ -1,14 +1,14 @@
 {
   "name": "medusa-fulfillment-shippo",
   "version": "1.1.1",
-  "description": "Shippo fulfillment provider for medusa",
+  "description": "Shippo fulfillment provider for Medusa",
   "author": "Maciej Derulski",
   "license": "MIT",
   "scripts": {
     "build": "babel src -d . --ignore **/__tests__,**/__mocks__,**/sandbox,**/sand.js,**/tester.js",
     "prepare": "cross-env NODE_ENV=production npm run build",
     "watch": "onchange -v src/** -- copyfiles {{file}} ../my-medusa-store",
-    "ci-test": "jest --runInBand",
+    "ci-test": "jest --maxWorkers=50%",
     "test": "jest",
     "coverage": "jest --coverage"
   },
