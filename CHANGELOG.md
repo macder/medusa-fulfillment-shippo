@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[1.1.2] (2022-08-23)
+
+Fixed
+
+*   shippo orders for swaps are missing "replace" in order number [#321](https://github.com/macder/medusa-fulfillment-shippo/issues/321)
+
 ## \[1.1.1] (2022-08-21)
 
 Added
