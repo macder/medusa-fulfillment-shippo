@@ -1,15 +1,12 @@
 # medusa-fulfillment-shippo
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/macder/medusa-fulfillment-shippo/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/macder/medusa-fulfillment-shippo/tree/main)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard?utm_source=github.com\&utm_medium=referral\&utm_content=macder/medusa-fulfillment-shippo\&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5ca5e600f1574354a8056441f589ca80)](https://www.codacy.com/gh/macder/medusa-fulfillment-shippo/dashboard)
+[![codecov](https://codecov.io/gh/macder/medusa-fulfillment-shippo/branch/develop/graph/badge.svg?token=ILQPWVVG57)](https://codecov.io/gh/macder/medusa-fulfillment-shippo)
 [![npm version](https://badge.fury.io/js/medusa-fulfillment-shippo.svg)](https://badge.fury.io/js/medusa-fulfillment-shippo)
 [![npm](https://img.shields.io/npm/dt/medusa-fulfillment-shippo.svg?maxAge=1000)](https://www.npmjs.com/package/medusa-fulfillment-shippo)
 
-
 > :information\_source: Requires Medusa ^1.3.5
-
-**Notice:** *Shippo recently made a change with a regression that may cause rates at checkout to only return fallback rates. To resolve, verify that shipping options in shippo app [setting->rates-at-checkout](https://apps.goshippo.com/settings/rates-at-checkout) have services under the details column. The regression may have cleared them.*
 
 Shippo fulfillment provider for Medusa Commerce.
 

@@ -8,6 +8,7 @@ import {
   makeShippoHelper,
   makeShippoFulfillmentService,
   makeShippoService,
+  makeShippoRatesService,
 } from "./setup"
 import { shippoClientMock } from "../__mocks__"
 import { shippoOrderState } from "../__mocks__/shippo/order"
@@ -159,8 +160,13 @@ describe("ShippoFulfillmentService", () => {
   })
 
   describe("createFulfillment", () => {
-    test("returns obj with order id", async () => {
-      // arrange
+    let shippoFulfillmentService
+    let methodData
+    let fulfillment
+    let fulfillmentItems
+    let order
+
+    beforeEach(() => {
       const state = {
         ...defaultIds(),
         line_items: [
@@ -169,20 +175,61 @@ describe("ShippoFulfillmentService", () => {
         ],
         fulfillments: [],
       }
-      const methodData = { parcel_template: "box" }
-      const fulfillment = { order_id: "order_default" }
-      const order = orderStub({ ...state })
-      const fulfillmentItems = state.line_items.map((item) =>
+      methodData = { parcel_template: "box" }
+      fulfillment = { order_id: "order_default" }
+      fulfillmentItems = state.line_items.map((item) =>
         lineItemStub({ ...item })
       )
-      const shippoFulfillmentService = makeShippoFulfillmentService(state)
+      order = orderStub({ ...state })
+      shippoFulfillmentService = makeShippoFulfillmentService(state)
       makeShippoHelper(state)
+    })
 
+    test("returns obj with order id", async () => {
       // act
       const result = await shippoFulfillmentService.createFulfillment(
         methodData,
         fulfillmentItems,
         order,
+        fulfillment
+      )
+
+      // assert
+      expect(result).toContainKey("shippo_order_id")
+    })
+
+    test("returns obj with order id when claim order", async () => {
+      // arrange
+      const claimOrder = {
+        ...order,
+        claim_order_id: "claim_123",
+        type: "replace",
+      }
+
+      // act
+      const result = await shippoFulfillmentService.createFulfillment(
+        methodData,
+        fulfillmentItems,
+        claimOrder,
+        fulfillment
+      )
+
+      // assert
+      expect(result).toContainKey("shippo_order_id")
+    })
+
+    test("returns obj with order id when swap order", async () => {
+      // arrange
+      const swapOrder = {
+        ...order,
+        swap_id: "swap_123",
+      }
+
+      // act
+      const result = await shippoFulfillmentService.createFulfillment(
+        methodData,
+        fulfillmentItems,
+        swapOrder,
         fulfillment
       )
 
