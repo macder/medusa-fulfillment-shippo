@@ -81,9 +81,10 @@ export const shippoOrder = async (
     .map((e) => e.weight * e.quantity)
     .reduce((sum, current) => sum + current, 0)
 
-  const orderNumber = order?.type
-    ? `${order.display_id} (${order?.type})`
-    : order.display_id
+  const orderNumber =
+    order?.type || order.swap_id
+      ? `${order.display_id} (replace)`
+      : order.display_id
 
   return Object.freeze({
     order_number: orderNumber,

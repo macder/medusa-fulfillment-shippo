@@ -1,11 +1,11 @@
 import { retrieve } from "./crud"
 
-const shippoOrderId = ({ data: { shippo_order_id } }) => shippo_order_id
 const objOf = (key) => (val) => ({ [key]: val })
-const relations = objOf("relations")
-const withFulfillments = relations(["fulfillments"])
+const withRelated = (type) => objOf("relations")(type)
 
-const entityFulfillments = (retriever) => async (id) =>
+const shippoOrderId = ({ data: { shippo_order_id } }) => shippo_order_id
+
+const fulfillments = (retriever) => async (id) =>
   retriever(id).then((res) =>
     res.fulfillments.filter((ful) => shippoOrderId(ful))
   )
@@ -21,9 +21,9 @@ const fulfillmentHelper = ({
     shippoOrderId(await retrieve(fulfillment)()(ful_id)),
   for: (entity) =>
     ({
-      order: entityFulfillments(retrieve(order)(withFulfillments)),
-      claim_order: entityFulfillments(retrieve(claim)(withFulfillments)),
-      swap: entityFulfillments(retrieve(swap)(withFulfillments)),
+      order: fulfillments(retrieve(order)(withRelated(["fulfillments"]))),
+      claim_order: fulfillments(retrieve(claim)(withRelated(["fulfillments"]))),
+      swap: fulfillments(retrieve(swap)(withRelated(["fulfillments"]))),
     }[entity]),
 })
 export default fulfillmentHelper
